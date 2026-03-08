@@ -107,12 +107,12 @@ const CalendarPage = () => {
       <div className="page-content space-y-4">
         {/* 3개월 연속 캘린더 */}
         {months.map((month, idx) => (
-          <Card key={idx} className="glass-card overflow-hidden">
+          <Card key={idx} ref={(el) => { monthRefs.current[idx] = el; }} className="glass-card overflow-hidden">
             <CardContent className="p-2">
               <Calendar
                 mode="single"
                 selected={selected}
-                onSelect={setSelected}
+                onSelect={handleSelect}
                 locale={ko}
                 month={month}
                 className="pointer-events-auto"
