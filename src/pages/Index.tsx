@@ -68,7 +68,7 @@ const Index = () => {
           </div>
           <div className="flex gap-2 mt-3">
             <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              {mockProfile.skinType} · {mockProfile.age}세
+              {mockProfile.skinType} · 만 {Math.floor((new Date('2026-03-08').getTime() - new Date(mockProfile.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))}세
             </span>
             <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
               {mockProfile.concerns[0]} 집중 관리

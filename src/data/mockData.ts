@@ -2,10 +2,11 @@ import { UserProfile, PointTransaction, TreatmentPackage, TreatmentRecord, Calen
 
 export const mockProfile: UserProfile = {
   skinType: '복합성',
-  age: 32,
+  birthDate: '1994-05-12',
   concerns: ['모공', '색소침착', '탄력저하', '제모', '셀룰라이트'],
   goals: ['맑은 피부톤', '모공 축소', '탄력 개선', '바디라인 정리'],
   targetAreas: ['face', 'arm', 'leg', 'abdomen'],
+  regions: ['강남', '서초'],
 };
 
 export const mockPoints: PointTransaction[] = [
