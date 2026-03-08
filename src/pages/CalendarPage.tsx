@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
-import SkinLayerBadge from '@/components/SkinLayerBadge';
+import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { mockEvents } from '@/data/mockData';
 import { CalendarDays, Bell, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,7 +19,6 @@ const CalendarPage = () => {
 
   const selectedStr = selected ? format(selected, 'yyyy-MM-dd') : '';
   const dayEvents = mockEvents.filter((e) => e.date === selectedStr);
-
   const eventDates = mockEvents.map((e) => new Date(e.date));
 
   return (
@@ -67,7 +66,10 @@ const CalendarPage = () => {
                         {event.type === 'treatment' ? '시술' : event.type === 'reminder' ? '알림' : '추천'}
                       </p>
                     </div>
-                    {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
+                    <div className="flex flex-col gap-1 items-end">
+                      {event.bodyArea && <BodyAreaBadge area={event.bodyArea} />}
+                      {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
+                    </div>
                   </CardContent>
                 </Card>
               );

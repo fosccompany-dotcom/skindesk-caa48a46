@@ -2,7 +2,7 @@ import { Wallet, TrendingUp, CalendarDays, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import SkinLayerBadge from '@/components/SkinLayerBadge';
+import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { mockPackages, mockRecords, mockEvents, currentBalance, mockProfile } from '@/data/mockData';
 
 const Index = () => {
@@ -12,7 +12,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
       <div className="gradient-sage px-5 pb-8 pt-12 text-primary-foreground">
         <p className="text-sm opacity-80">안녕하세요 👋</p>
         <h1 className="mt-1 text-2xl font-bold">나의 피부 관리</h1>
@@ -46,7 +45,10 @@ const Index = () => {
                 <p className="font-semibold">{nextEvent.title}</p>
                 <p className="text-xs text-muted-foreground">{nextEvent.date}</p>
               </div>
-              {nextEvent.skinLayer && <SkinLayerBadge layer={nextEvent.skinLayer} />}
+              <div className="flex flex-col gap-1 items-end">
+                {nextEvent.bodyArea && <BodyAreaBadge area={nextEvent.bodyArea} />}
+                {nextEvent.skinLayer && <SkinLayerBadge layer={nextEvent.skinLayer} />}
+              </div>
             </CardContent>
           </Card>
         )}
@@ -57,17 +59,18 @@ const Index = () => {
             <h2 className="font-semibold">시술권 소진 현황</h2>
             <button onClick={() => navigate('/packages')} className="text-xs text-primary font-medium">전체보기</button>
           </div>
-          {mockPackages.map((pkg) => {
+          {mockPackages.slice(0, 4).map((pkg) => {
             const progress = (pkg.usedSessions / pkg.totalSessions) * 100;
             return (
               <Card key={pkg.id} className="glass-card cursor-pointer" onClick={() => navigate('/packages')}>
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="font-medium text-sm">{pkg.name}</span>
+                      <BodyAreaBadge area={pkg.bodyArea} />
                       <SkinLayerBadge layer={pkg.skinLayer} />
                     </div>
-                    <span className="text-xs text-muted-foreground">{pkg.clinic}</span>
+                    <span className="text-xs text-muted-foreground shrink-0 ml-2">{pkg.clinic}</span>
                   </div>
                   <Progress value={progress} className="h-2" />
                   <div className="mt-1.5 flex justify-between text-xs text-muted-foreground">
@@ -90,8 +93,9 @@ const Index = () => {
                   <Sparkles className="h-5 w-5 text-amber" />
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 flex-wrap">
                     <span className="font-medium text-sm">{recentRecord.treatmentName}</span>
+                    <BodyAreaBadge area={recentRecord.bodyArea} />
                     <SkinLayerBadge layer={recentRecord.skinLayer} />
                   </div>
                   <p className="text-xs text-muted-foreground">{recentRecord.date} · {recentRecord.clinic}</p>
