@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useCallback } from 'react';
 import { Calendar } from '@/components/ui/calendar';
 import { Card, CardContent } from '@/components/ui/card';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
@@ -21,9 +21,22 @@ const CalendarPage = () => {
   const [selected, setSelected] = useState<Date | undefined>(new Date('2026-03-08'));
   const { cycles } = useCycles();
   const today = new Date('2026-03-08');
+  const monthRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // 3개월 배열
   const months = [today, addMonths(today, 1), addMonths(today, 2)];
+
+  const handleSelect = useCallback((date: Date | undefined) => {
+    setSelected(date);
+    if (date) {
+      const monthIndex = months.findIndex(
+        (m) => m.getFullYear() === date.getFullYear() && m.getMonth() === date.getMonth()
+      );
+      if (monthIndex >= 0 && monthRefs.current[monthIndex]) {
+        monthRefs.current[monthIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, []);
 
   // 주기 기반 자동 추천 이벤트 생성 (앞으로 90일)
   const cycleEvents = useMemo(() => {
@@ -94,12 +107,12 @@ const CalendarPage = () => {
       <div className="page-content space-y-4">
         {/* 3개월 연속 캘린더 */}
         {months.map((month, idx) => (
-          <Card key={idx} className="glass-card overflow-hidden">
+          <Card key={idx} ref={(el) => { monthRefs.current[idx] = el; }} className="glass-card overflow-hidden">
             <CardContent className="p-2">
               <Calendar
                 mode="single"
                 selected={selected}
-                onSelect={setSelected}
+                onSelect={handleSelect}
                 locale={ko}
                 month={month}
                 className="pointer-events-auto"
