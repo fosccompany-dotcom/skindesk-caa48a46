@@ -105,6 +105,49 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-4">
+        {/* 선택된 날짜 일정 */}
+        <div className="space-y-2">
+          <h2 className="section-title">
+            {selected ? format(selected, 'M월 d일 (EEEE)', { locale: ko }) : '날짜를 선택하세요'}
+          </h2>
+
+          {dayEvents.length === 0 ? (
+            <div className="text-center py-4">
+              <p className="text-sm text-muted-foreground">예정된 일정이 없습니다</p>
+            </div>
+          ) : (
+            dayEvents.map((event) => {
+              const isCycleEvent = event.id.startsWith('auto_');
+              const configKey = isCycleEvent ? 'cycle' : event.type;
+              const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
+              const Icon = config.icon;
+              const cycleInfo = (event as any).cycleInfo;
+
+              return (
+                <Card key={event.id} className={cn('glass-card', isCycleEvent && 'border-info/20')}>
+                  <CardContent className="flex items-center gap-3 p-4">
+                    <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', config.bg)}>
+                      <Icon className={cn('h-4 w-4', config.color)} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold">{event.title}</p>
+                      {cycleInfo ? (
+                        <p className="text-[11px] text-muted-foreground">{cycleInfo}</p>
+                      ) : (
+                        <p className="text-[11px] text-muted-foreground">{config.label}</p>
+                      )}
+                    </div>
+                    <div className="flex flex-col gap-1 items-end shrink-0">
+                      {event.bodyArea && <BodyAreaBadge area={event.bodyArea} />}
+                      {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })
+          )}
+        </div>
+
         {/* 3개월 연속 캘린더 */}
         {months.map((month, idx) => (
           <Card key={idx} ref={(el) => { monthRefs.current[idx] = el; }} className="glass-card overflow-hidden">
@@ -144,49 +187,6 @@ const CalendarPage = () => {
             <div className="h-2.5 w-2.5 rounded-full bg-amber-light" />
             <span className="text-[10px] text-muted-foreground">알림</span>
           </div>
-        </div>
-
-        {/* 선택된 날짜 일정 */}
-        <div className="space-y-2">
-          <h2 className="section-title">
-            {selected ? format(selected, 'M월 d일 (EEEE)', { locale: ko }) : '날짜를 선택하세요'}
-          </h2>
-
-          {dayEvents.length === 0 ? (
-            <div className="text-center py-8">
-              <p className="text-sm text-muted-foreground">예정된 일정이 없습니다</p>
-            </div>
-          ) : (
-            dayEvents.map((event) => {
-              const isCycleEvent = event.id.startsWith('auto_');
-              const configKey = isCycleEvent ? 'cycle' : event.type;
-              const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
-              const Icon = config.icon;
-              const cycleInfo = (event as any).cycleInfo;
-
-              return (
-                <Card key={event.id} className={cn('glass-card', isCycleEvent && 'border-info/20')}>
-                  <CardContent className="flex items-center gap-3 p-4">
-                    <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', config.bg)}>
-                      <Icon className={cn('h-4 w-4', config.color)} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold">{event.title}</p>
-                      {cycleInfo ? (
-                        <p className="text-[11px] text-muted-foreground">{cycleInfo}</p>
-                      ) : (
-                        <p className="text-[11px] text-muted-foreground">{config.label}</p>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1 items-end shrink-0">
-                      {event.bodyArea && <BodyAreaBadge area={event.bodyArea} />}
-                      {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })
-          )}
         </div>
       </div>
     </div>
