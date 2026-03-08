@@ -1,13 +1,15 @@
-import { Wallet, ChevronRight, Clock, AlertTriangle, CheckCircle2, Timer } from 'lucide-react';
+import { Wallet, ChevronRight, Clock, AlertTriangle, CheckCircle2, Timer, CalendarDays } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
-import { mockPackages, currentBalance, mockProfile } from '@/data/mockData';
+import { mockPackages, currentBalance, mockProfile, mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
-import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
+import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle, CalendarEvent } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
+import { ko } from 'date-fns/locale';
 import { CycleEditorSheet } from '@/components/CycleEditor';
+import { useMemo } from 'react';
 
 const TODAY = new Date('2026-03-08');
 
@@ -43,6 +45,51 @@ const layerIconBg: Record<SkinLayer, string> = {
 const Index = () => {
   const navigate = useNavigate();
   const { cycles, setCycles } = useCycles();
+
+  // 2주 이내 예정 일정 계산
+  const upcomingEvents = useMemo(() => {
+    const twoWeeksLater = addDays(TODAY, 14);
+    const events: (CalendarEvent & { cycleInfo?: string; daysFromNow?: number })[] = [];
+
+    // mockEvents 중 2주 이내
+    mockEvents.forEach(e => {
+      const eDate = new Date(e.date);
+      const diff = differenceInDays(eDate, TODAY);
+      if (diff >= 0 && diff <= 14) {
+        events.push({ ...e, daysFromNow: diff });
+      }
+    });
+
+    // cycle 기반 추천일 중 2주 이내
+    cycles.forEach(cycle => {
+      const lastDate = new Date(cycle.lastTreatmentDate);
+      let nextDate = addDays(lastDate, cycle.cycleDays);
+      if (nextDate < TODAY) nextDate = addDays(TODAY, 7);
+
+      for (let i = 0; i < 3; i++) {
+        const diff = differenceInDays(nextDate, TODAY);
+        if (diff > 14) break;
+        if (diff >= 0) {
+          const key = `${format(nextDate, 'yyyy-MM-dd')}_${cycle.treatmentName}`;
+          if (!events.find(e => `${e.date}_${e.title}` === key)) {
+            events.push({
+              id: `upcoming_${cycle.id}_${i}`,
+              date: format(nextDate, 'yyyy-MM-dd'),
+              title: `${cycle.treatmentName} 추천일`,
+              type: 'recommendation',
+              skinLayer: cycle.skinLayer,
+              bodyArea: cycle.bodyArea,
+              daysFromNow: diff,
+              cycleInfo: `${BODY_AREA_LABELS[cycle.bodyArea]}${cycle.product ? ` · ${cycle.product}` : ''}`,
+            });
+          }
+        }
+        nextDate = addDays(nextDate, cycle.cycleDays);
+      }
+    });
+
+    return events.sort((a, b) => (a.daysFromNow ?? 0) - (b.daysFromNow ?? 0));
+  }, [cycles]);
 
   const cyclesByLayer = layerOrder.map(layer => ({
     layer,
@@ -92,6 +139,42 @@ const Index = () => {
           </CardContent>
         </Card>
 
+        {/* 2주 이내 예정 일정 */}
+        {upcomingEvents.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between px-1 mb-2.5">
+              <h2 className="section-title flex items-center gap-1.5 mb-0">
+                <CalendarDays className="h-3.5 w-3.5 text-info" />
+                2주 내 예정 일정
+              </h2>
+              <button onClick={() => navigate('/calendar')} className="text-xs text-secondary font-semibold tap-target">캘린더</button>
+            </div>
+            <div className="space-y-2">
+              {upcomingEvents.slice(0, 5).map((event) => (
+                <Card key={event.id} className="glass-card" onClick={() => navigate('/calendar')}>
+                  <CardContent className="flex items-center gap-3 p-3.5">
+                    <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-info-light">
+                      <CalendarDays className="h-4 w-4 text-info" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold">{event.title}</p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {format(new Date(event.date), 'M월 d일 (EEE)', { locale: ko })}
+                        {(event as any).cycleInfo ? ` · ${(event as any).cycleInfo}` : ''}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-sm font-bold text-info">
+                        {(event as any).daysFromNow === 0 ? 'D-Day' : `D-${(event as any).daysFromNow}`}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* 급한 알림 */}
         {urgent.length > 0 && (
           <div>
@@ -132,7 +215,7 @@ const Index = () => {
           </div>
         )}
 
-        {/* 피부층별 관리 현황 - 헤더에 편집 버튼 */}
+        {/* 피부층별 관리 현황 */}
         <div className="flex items-center justify-between px-1">
           <h2 className="text-sm font-bold">피부층별 관리 현황</h2>
           <CycleEditorSheet cycles={cycles} onUpdate={setCycles} />

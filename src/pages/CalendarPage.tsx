@@ -6,7 +6,7 @@ import { mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
 import { CalendarDays, Bell, Sparkles, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, addDays, differenceInDays } from 'date-fns';
+import { format, addDays, addMonths, differenceInDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, BODY_AREA_LABELS } from '@/types/skin';
 
@@ -20,17 +20,19 @@ const eventTypeConfig = {
 const CalendarPage = () => {
   const [selected, setSelected] = useState<Date | undefined>(new Date('2026-03-08'));
   const { cycles } = useCycles();
+  const today = new Date('2026-03-08');
+
+  // 3개월 배열
+  const months = [today, addMonths(today, 1), addMonths(today, 2)];
 
   // 주기 기반 자동 추천 이벤트 생성 (앞으로 90일)
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
-    const today = new Date('2026-03-08');
 
     cycles.forEach((cycle) => {
       const lastDate = new Date(cycle.lastTreatmentDate);
       let nextDate = addDays(lastDate, cycle.cycleDays);
 
-      // 이미 지난 경우 → 오늘 기준으로 "지금 해야 함" 표시
       if (nextDate < today) {
         const overdueDays = differenceInDays(today, nextDate);
         events.push({
@@ -41,12 +43,10 @@ const CalendarPage = () => {
           skinLayer: cycle.skinLayer,
           bodyArea: cycle.bodyArea,
           cycleInfo: `${overdueDays}일 초과 · ${cycle.product || ''} · ${BODY_AREA_LABELS[cycle.bodyArea]}`,
-        });
-        // 다음 추천일도 계산
-        nextDate = addDays(today, 7); // 초과 시 1주 내 추천
+        } as any);
+        nextDate = addDays(today, 7);
       }
 
-      // 앞으로 3회차 추천일 생성
       for (let i = 0; i < 3; i++) {
         if (differenceInDays(nextDate, today) > 90) break;
         if (nextDate >= today) {
@@ -59,7 +59,7 @@ const CalendarPage = () => {
             skinLayer: cycle.skinLayer,
             bodyArea: cycle.bodyArea,
             cycleInfo: `${cycle.cycleDays}일 주기${cycle.product ? ` · ${cycle.product}` : ''} · D-${daysFromNow}`,
-          });
+          } as any);
         }
         nextDate = addDays(nextDate, cycle.cycleDays);
       }
@@ -68,10 +68,8 @@ const CalendarPage = () => {
     return events;
   }, [cycles]);
 
-  // 모든 이벤트 합치기 (기존 + 자동 추천)
   const allEvents = useMemo(() => {
     const combined = [...mockEvents, ...cycleEvents];
-    // 중복 제거 (같은 날 같은 시술명이면 자동 추천 제외)
     const seen = new Set(mockEvents.map(e => `${e.date}_${e.title}`));
     return combined.filter(e => {
       const key = `${e.date}_${e.title}`;
@@ -84,8 +82,6 @@ const CalendarPage = () => {
   const selectedStr = selected ? format(selected, 'yyyy-MM-dd') : '';
   const dayEvents = allEvents.filter((e) => e.date === selectedStr);
   const eventDates = [...new Set(allEvents.map(e => e.date))].map(d => new Date(d));
-
-  // 추천일이 있는 날짜
   const recommendationDates = [...new Set(cycleEvents.map(e => e.date))].map(d => new Date(d));
 
   return (
@@ -96,25 +92,30 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-4">
-        <Card className="glass-card overflow-hidden">
-          <CardContent className="p-2">
-            <Calendar
-              mode="single"
-              selected={selected}
-              onSelect={setSelected}
-              locale={ko}
-              className="pointer-events-auto"
-              modifiers={{
-                event: eventDates,
-                recommendation: recommendationDates,
-              }}
-              modifiersClassNames={{
-                event: 'bg-accent text-accent-foreground font-semibold rounded-full',
-                recommendation: 'ring-2 ring-info/30 rounded-full',
-              }}
-            />
-          </CardContent>
-        </Card>
+        {/* 3개월 연속 캘린더 */}
+        {months.map((month, idx) => (
+          <Card key={idx} className="glass-card overflow-hidden">
+            <CardContent className="p-2">
+              <Calendar
+                mode="single"
+                selected={selected}
+                onSelect={setSelected}
+                locale={ko}
+                month={month}
+                className="pointer-events-auto"
+                disableNavigation
+                modifiers={{
+                  event: eventDates,
+                  recommendation: recommendationDates,
+                }}
+                modifiersClassNames={{
+                  event: 'bg-accent text-accent-foreground font-semibold rounded-full',
+                  recommendation: 'ring-2 ring-info/30 rounded-full',
+                }}
+              />
+            </CardContent>
+          </Card>
+        ))}
 
         {/* 범례 */}
         <div className="flex items-center gap-4 px-2">
@@ -132,6 +133,7 @@ const CalendarPage = () => {
           </div>
         </div>
 
+        {/* 선택된 날짜 일정 */}
         <div className="space-y-2">
           <h2 className="section-title">
             {selected ? format(selected, 'M월 d일 (EEEE)', { locale: ko }) : '날짜를 선택하세요'}
