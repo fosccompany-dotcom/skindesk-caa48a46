@@ -89,7 +89,8 @@ const Profile = () => {
   const [goals, setGoals] = useState<string[]>(mockProfile.goals);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>(mockProfile.targetAreas);
   const [regions, setRegions] = useState<string[]>(mockProfile.regions);
-  const [customRegion, setCustomRegion] = useState('');
+  const [selectedSido, setSelectedSido] = useState('');
+  const [selectedGugun, setSelectedGugun] = useState('');
 
   const age = useMemo(() => {
     if (!birthDate) return null;
