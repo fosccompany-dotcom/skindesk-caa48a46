@@ -6,7 +6,7 @@ export const mockProfile: UserProfile = {
   concerns: ['모공', '색소침착', '탄력저하', '제모', '셀룰라이트'],
   goals: ['맑은 피부톤', '모공 축소', '탄력 개선', '바디라인 정리'],
   targetAreas: ['face', 'arm', 'leg', 'abdomen'],
-  regions: ['강남', '서초'],
+  regions: ['서울특별시 강남구', '서울특별시 서초구'],
 };
 
 export const mockPoints: PointTransaction[] = [
