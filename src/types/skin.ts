@@ -29,10 +29,11 @@ export const BODY_AREA_LABELS: Record<BodyArea, string> = {
 
 export interface UserProfile {
   skinType: SkinType;
-  age: number;
+  birthDate: string; // yyyy-MM-dd
   concerns: string[];
   goals: string[];
   targetAreas: BodyArea[];
+  regions: string[]; // 주요 활동 지역
 }
 
 export interface PointTransaction {
