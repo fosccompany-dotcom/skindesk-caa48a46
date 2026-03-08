@@ -20,13 +20,63 @@ const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여
 const goalOptions = ['맑은 피부톤', '모공 축소', '탄력 개선', '주름 개선', '트러블 완화', '보습 강화', '바디라인 정리', '제모 완료'];
 const bodyAreaOptions: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
 
-const regionOptions = [
-  '강남', '서초', '송파', '잠실', '압구정', '청담', '신사',
-  '이태원', '한남', '용산', '종로', '을지로', '명동',
-  '여의도', '마포', '홍대', '합정', '성수', '건대',
-  '분당', '판교', '수원', '일산', '부산 서면', '부산 해운대',
-  '대구 수성', '대전 둔산',
-];
+const REGION_DATA: Record<string, Record<string, string[]>> = {
+  '서울특별시': {
+    '강남구': ['역삼동', '삼성동', '논현동', '청담동', '압구정동', '신사동', '대치동'],
+    '서초구': ['서초동', '반포동', '잠원동', '방배동'],
+    '송파구': ['잠실동', '문정동', '가락동', '석촌동'],
+    '강동구': ['천호동', '길동', '명일동'],
+    '마포구': ['합정동', '망원동', '연남동', '상수동', '홍대'],
+    '용산구': ['이태원동', '한남동', '용산동'],
+    '성동구': ['성수동', '왕십리'],
+    '광진구': ['건대입구', '자양동'],
+    '종로구': ['종로', '인사동', '삼청동'],
+    '중구': ['명동', '을지로', '충무로'],
+    '영등포구': ['여의도동', '영등포동'],
+    '관악구': ['신림동', '봉천동'],
+    '강서구': ['마곡동', '화곡동'],
+  },
+  '경기도': {
+    '성남시 분당구': ['서현동', '정자동', '판교동'],
+    '성남시 수정구': ['태평동', '수진동'],
+    '수원시 팔달구': ['인계동', '매산동'],
+    '수원시 영통구': ['영통동', '광교'],
+    '고양시 일산동구': ['정발산동', '마두동'],
+    '고양시 일산서구': ['주엽동', '대화동'],
+    '용인시 수지구': ['동천동', '성복동'],
+    '하남시': ['미사동', '풍산동'],
+    '화성시': ['동탄', '병점'],
+  },
+  '부산광역시': {
+    '해운대구': ['우동', '중동', '좌동'],
+    '부산진구': ['서면', '부전동', '전포동'],
+    '수영구': ['광안동', '남천동'],
+    '남구': ['대연동', '용호동'],
+    '사하구': ['하단동', '괴정동'],
+  },
+  '대구광역시': {
+    '수성구': ['범어동', '만촌동', '수성동'],
+    '중구': ['동성로', '삼덕동'],
+    '달서구': ['월성동', '상인동'],
+  },
+  '인천광역시': {
+    '연수구': ['송도동', '동춘동'],
+    '남동구': ['구월동', '간석동'],
+    '부평구': ['부평동', '십정동'],
+  },
+  '대전광역시': {
+    '서구': ['둔산동', '월평동', '갈마동'],
+    '유성구': ['봉명동', '궁동'],
+  },
+  '광주광역시': {
+    '서구': ['치평동', '농성동'],
+    '동구': ['충장로', '금남로'],
+  },
+  '제주특별자치도': {
+    '제주시': ['연동', '노형동', '이도동'],
+    '서귀포시': ['중문동', '대정읍'],
+  },
+};
 
 const Profile = () => {
   const { toast } = useToast();
@@ -39,7 +89,8 @@ const Profile = () => {
   const [goals, setGoals] = useState<string[]>(mockProfile.goals);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>(mockProfile.targetAreas);
   const [regions, setRegions] = useState<string[]>(mockProfile.regions);
-  const [customRegion, setCustomRegion] = useState('');
+  const [selectedSido, setSelectedSido] = useState('');
+  const [selectedGugun, setSelectedGugun] = useState('');
 
   const age = useMemo(() => {
     if (!birthDate) return null;
@@ -50,17 +101,21 @@ const Profile = () => {
     setter(list.includes(item) ? list.filter((i) => i !== item) : [...list, item]);
   };
 
-  const addCustomRegion = () => {
-    const trimmed = customRegion.trim();
-    if (trimmed && !regions.includes(trimmed)) {
-      setRegions([...regions, trimmed]);
-      setCustomRegion('');
+  const addRegion = () => {
+    if (!selectedSido || !selectedGugun) return;
+    const full = `${selectedSido} ${selectedGugun}`;
+    if (!regions.includes(full)) {
+      setRegions([...regions, full]);
     }
+    setSelectedSido('');
+    setSelectedGugun('');
   };
 
   const removeRegion = (region: string) => {
     setRegions(regions.filter(r => r !== region));
   };
+
+  const gugunOptions = selectedSido ? Object.keys(REGION_DATA[selectedSido] || {}) : [];
 
   const handleSave = () => {
     toast({ title: '프로필 저장 완료', description: '피부 정보가 업데이트되었습니다.' });
@@ -158,39 +213,40 @@ const Profile = () => {
               </div>
             )}
 
-            {/* 지역 선택 */}
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              {regionOptions.filter(r => !regions.includes(r)).slice(0, 12).map((r) => (
-                <Badge
-                  key={r}
-                  variant="outline"
-                  className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                  onClick={() => setRegions([...regions, r])}
-                >
-                  {r}
-                </Badge>
-              ))}
+            {/* 도/시 → 구 선택 */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">시/도</Label>
+                <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
+                  <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="시/도 선택" /></SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(REGION_DATA).map(sido => (
+                      <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">시/군/구</Label>
+                <Select value={selectedGugun} onValueChange={setSelectedGugun} disabled={!selectedSido}>
+                  <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="구/군 선택" /></SelectTrigger>
+                  <SelectContent>
+                    {gugunOptions.map(gu => (
+                      <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-
-            {/* 직접 입력 */}
-            <div className="flex gap-2">
-              <Input
-                value={customRegion}
-                onChange={(e) => setCustomRegion(e.target.value)}
-                placeholder="직접 입력"
-                className="rounded-xl text-xs flex-1"
-                onKeyDown={(e) => e.key === 'Enter' && addCustomRegion()}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl text-xs shrink-0 tap-target"
-                onClick={addCustomRegion}
-                disabled={!customRegion.trim()}
-              >
-                추가
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full rounded-xl text-xs tap-target mb-3"
+              onClick={addRegion}
+              disabled={!selectedSido || !selectedGugun}
+            >
+              + 지역 추가
+            </Button>
           </CardContent>
         </Card>
 
