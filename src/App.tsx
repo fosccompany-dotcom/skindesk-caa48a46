@@ -19,15 +19,17 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/points" element={<Points />} />
-          <Route path="/packages" element={<Packages />} />
-          <Route path="/calendar" element={<CalendarPage />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-        <BottomNav />
+        <div className="app-container min-h-screen bg-background relative">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/points" element={<Points />} />
+            <Route path="/packages" element={<Packages />} />
+            <Route path="/calendar" element={<CalendarPage />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+          <BottomNav />
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

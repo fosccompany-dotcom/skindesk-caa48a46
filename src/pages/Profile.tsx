@@ -32,48 +32,51 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background pb-24">
-      <div className="px-5 pt-12 pb-4">
-        <h1 className="text-xl font-bold">프로필 설정</h1>
-        <p className="text-sm text-muted-foreground mt-1">나의 피부 정보를 설정하세요</p>
+    <div className="min-h-screen bg-background">
+      <div className="page-header safe-top">
+        <h1 className="text-lg font-bold">프로필 설정</h1>
+        <p className="text-xs text-muted-foreground mt-1">나의 피부 정보를 설정하세요</p>
       </div>
 
-      <div className="mx-auto max-w-lg space-y-4 px-4">
+      <div className="page-content space-y-3">
         <Card className="glass-card">
           <CardContent className="p-4 space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-              <User className="h-4 w-4 text-primary" />
-              <h2 className="font-semibold text-sm">기본 정보</h2>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
+                <User className="h-4 w-4 text-accent-foreground" />
+              </div>
+              <h2 className="font-bold text-sm">기본 정보</h2>
             </div>
             <div className="space-y-2">
-              <Label>피부 타입</Label>
+              <Label className="text-xs">피부 타입</Label>
               <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {skinTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>나이</Label>
-              <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} className="w-24" />
+              <Label className="text-xs">나이</Label>
+              <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} className="w-24 rounded-xl" />
             </div>
           </CardContent>
         </Card>
 
-        {/* Target Areas */}
         <Card className="glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <MapPin className="h-4 w-4 text-sage" />
-              <h2 className="font-semibold text-sm">관리 부위</h2>
+              <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
+                <MapPin className="h-4 w-4 text-accent-foreground" />
+              </div>
+              <h2 className="font-bold text-sm">관리 부위</h2>
             </div>
             <div className="flex flex-wrap gap-2">
               {bodyAreaOptions.map((area) => (
                 <Badge
                   key={area}
                   variant={targetAreas.includes(area) ? 'default' : 'outline'}
-                  className="cursor-pointer transition-all"
+                  className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
                   onClick={() => toggleItem(targetAreas, area, setTargetAreas)}
                 >
                   {BODY_AREA_LABELS[area]}
@@ -86,15 +89,17 @@ const Profile = () => {
         <Card className="glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <AlertCircle className="h-4 w-4 text-rose" />
-              <h2 className="font-semibold text-sm">주요 고민</h2>
+              <div className="h-8 w-8 rounded-xl bg-rose-light flex items-center justify-center">
+                <AlertCircle className="h-4 w-4 text-rose" />
+              </div>
+              <h2 className="font-bold text-sm">주요 고민</h2>
             </div>
             <div className="flex flex-wrap gap-2">
               {concernOptions.map((c) => (
                 <Badge
                   key={c}
                   variant={concerns.includes(c) ? 'default' : 'outline'}
-                  className="cursor-pointer transition-all"
+                  className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
                   onClick={() => toggleItem(concerns, c, setConcerns)}
                 >
                   {c}
@@ -107,15 +112,17 @@ const Profile = () => {
         <Card className="glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
-              <Target className="h-4 w-4 text-info" />
-              <h2 className="font-semibold text-sm">관리 목표</h2>
+              <div className="h-8 w-8 rounded-xl bg-info-light flex items-center justify-center">
+                <Target className="h-4 w-4 text-info" />
+              </div>
+              <h2 className="font-bold text-sm">관리 목표</h2>
             </div>
             <div className="flex flex-wrap gap-2">
               {goalOptions.map((g) => (
                 <Badge
                   key={g}
                   variant={goals.includes(g) ? 'default' : 'outline'}
-                  className="cursor-pointer transition-all"
+                  className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
                   onClick={() => toggleItem(goals, g, setGoals)}
                 >
                   {g}
@@ -125,7 +132,9 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Button onClick={handleSave} className="w-full">저장하기</Button>
+        <Button onClick={handleSave} className="w-full rounded-2xl h-12 font-bold text-sm tap-target">
+          저장하기
+        </Button>
       </div>
     </div>
   );
