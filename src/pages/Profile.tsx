@@ -117,9 +117,24 @@ const Profile = () => {
 
   const gugunOptions = selectedSido ? Object.keys(REGION_DATA[selectedSido] || {}) : [];
 
-  const handleSave = () => {
-    toast({ title: '프로필 저장 완료', description: '피부 정보가 업데이트되었습니다.' });
-  };
+  const isFirstRender = useRef(true);
+  const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
+  const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    setSaved(false);
+    clearTimeout(saveTimeout.current);
+    saveTimeout.current = setTimeout(() => {
+      // 여기서 실제 저장 로직 (추후 DB 연동)
+      setSaved(true);
+      setTimeout(() => setSaved(false), 1500);
+    }, 600);
+    return () => clearTimeout(saveTimeout.current);
+  }, [skinType, birthDate, concerns, goals, targetAreas, regions]);
 
   return (
     <div className="min-h-screen bg-background">
