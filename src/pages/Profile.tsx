@@ -101,17 +101,21 @@ const Profile = () => {
     setter(list.includes(item) ? list.filter((i) => i !== item) : [...list, item]);
   };
 
-  const addCustomRegion = () => {
-    const trimmed = customRegion.trim();
-    if (trimmed && !regions.includes(trimmed)) {
-      setRegions([...regions, trimmed]);
-      setCustomRegion('');
+  const addRegion = () => {
+    if (!selectedSido || !selectedGugun) return;
+    const full = `${selectedSido} ${selectedGugun}`;
+    if (!regions.includes(full)) {
+      setRegions([...regions, full]);
     }
+    setSelectedSido('');
+    setSelectedGugun('');
   };
 
   const removeRegion = (region: string) => {
     setRegions(regions.filter(r => r !== region));
   };
+
+  const gugunOptions = selectedSido ? Object.keys(REGION_DATA[selectedSido] || {}) : [];
 
   const handleSave = () => {
     toast({ title: '프로필 저장 완료', description: '피부 정보가 업데이트되었습니다.' });
