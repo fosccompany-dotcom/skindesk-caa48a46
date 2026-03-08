@@ -20,7 +20,7 @@ const Points = () => (
     </div>
 
     <div className="page-content space-y-2.5 -mt-3">
-      <h2 className="section-title">거래 내역</h2>
+      
       {mockPoints.map((tx) => {
         const config = typeConfig[tx.type];
         const Icon = config.icon;
