@@ -197,7 +197,7 @@ const Profile = () => {
               </div>
               <div>
                 <h2 className="font-bold text-sm">주요 활동 지역</h2>
-                <p className="text-[10px] text-muted-foreground">병원 추천 시 활용됩니다</p>
+                <p className="text-[10px] text-muted-foreground">병원 추천 시 활용됩니다 · 최대 7개</p>
               </div>
             </div>
 
@@ -213,40 +213,73 @@ const Profile = () => {
               </div>
             )}
 
+            {/* 초밀집 지역 퀵버튼 */}
+            {regions.length < 7 && (
+              <>
+                <p className="text-[10px] text-muted-foreground mb-1.5 px-0.5">피부과 밀집 지역</p>
+                <div className="flex flex-wrap gap-1.5 mb-3">
+                  {[
+                    '서울특별시 강남구',
+                    '서울특별시 서초구',
+                    '서울특별시 송파구',
+                    '경기도 성남시 분당구',
+                    '부산광역시 해운대구',
+                  ].filter(r => !regions.includes(r)).map((r) => (
+                    <Badge
+                      key={r}
+                      variant="outline"
+                      className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
+                      onClick={() => regions.length < 7 && setRegions([...regions, r])}
+                    >
+                      {r.replace('특별시 ', ' ').replace('광역시 ', ' ').replace('도 ', ' ')}
+                    </Badge>
+                  ))}
+                </div>
+              </>
+            )}
+
             {/* 도/시 → 구 선택 */}
-            <div className="grid grid-cols-2 gap-2 mb-3">
-              <div className="space-y-1">
-                <Label className="text-[10px] text-muted-foreground">시/도</Label>
-                <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
-                  <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="시/도 선택" /></SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(REGION_DATA).map(sido => (
-                      <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-1">
-                <Label className="text-[10px] text-muted-foreground">시/군/구</Label>
-                <Select value={selectedGugun} onValueChange={setSelectedGugun} disabled={!selectedSido}>
-                  <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="구/군 선택" /></SelectTrigger>
-                  <SelectContent>
-                    {gugunOptions.map(gu => (
-                      <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="w-full rounded-xl text-xs tap-target mb-3"
-              onClick={addRegion}
-              disabled={!selectedSido || !selectedGugun}
-            >
-              + 지역 추가
-            </Button>
+            {regions.length < 7 && (
+              <>
+                <div className="grid grid-cols-2 gap-2 mb-3">
+                  <div className="space-y-1">
+                    <Label className="text-[10px] text-muted-foreground">시/도</Label>
+                    <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
+                      <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="시/도 선택" /></SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(REGION_DATA).map(sido => (
+                          <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-1">
+                    <Label className="text-[10px] text-muted-foreground">시/군/구</Label>
+                    <Select value={selectedGugun} onValueChange={setSelectedGugun} disabled={!selectedSido}>
+                      <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="구/군 선택" /></SelectTrigger>
+                      <SelectContent>
+                        {gugunOptions.map(gu => (
+                          <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full rounded-xl text-xs tap-target"
+                  onClick={addRegion}
+                  disabled={!selectedSido || !selectedGugun}
+                >
+                  + 지역 추가 ({regions.length}/7)
+                </Button>
+              </>
+            )}
+
+            {regions.length >= 7 && (
+              <p className="text-[11px] text-muted-foreground text-center py-1">최대 7개 지역까지 등록할 수 있습니다</p>
+            )}
           </CardContent>
         </Card>
 
