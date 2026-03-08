@@ -6,13 +6,14 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { mockProfile } from '@/data/mockData';
-import { SkinType } from '@/types/skin';
-import { User, Target, AlertCircle } from 'lucide-react';
+import { SkinType, BodyArea, BODY_AREA_LABELS } from '@/types/skin';
+import { User, Target, AlertCircle, MapPin } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
-const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여드름', '홍조', '건조', '다크서클'];
-const goalOptions = ['맑은 피부톤', '모공 축소', '탄력 개선', '주름 개선', '트러블 완화', '보습 강화'];
+const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여드름', '홍조', '건조', '다크서클', '제모', '셀룰라이트', '튼살'];
+const goalOptions = ['맑은 피부톤', '모공 축소', '탄력 개선', '주름 개선', '트러블 완화', '보습 강화', '바디라인 정리', '제모 완료'];
+const bodyAreaOptions: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
 
 const Profile = () => {
   const { toast } = useToast();
@@ -20,8 +21,9 @@ const Profile = () => {
   const [age, setAge] = useState(mockProfile.age.toString());
   const [concerns, setConcerns] = useState<string[]>(mockProfile.concerns);
   const [goals, setGoals] = useState<string[]>(mockProfile.goals);
+  const [targetAreas, setTargetAreas] = useState<BodyArea[]>(mockProfile.targetAreas);
 
-  const toggleItem = (list: string[], item: string, setter: (v: string[]) => void) => {
+  const toggleItem = <T extends string>(list: T[], item: T, setter: (v: T[]) => void) => {
     setter(list.includes(item) ? list.filter((i) => i !== item) : [...list, item]);
   };
 
@@ -37,14 +39,12 @@ const Profile = () => {
       </div>
 
       <div className="mx-auto max-w-lg space-y-4 px-4">
-        {/* Basic info */}
         <Card className="glass-card">
           <CardContent className="p-4 space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <User className="h-4 w-4 text-primary" />
               <h2 className="font-semibold text-sm">기본 정보</h2>
             </div>
-
             <div className="space-y-2">
               <Label>피부 타입</Label>
               <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
@@ -54,7 +54,6 @@ const Profile = () => {
                 </SelectContent>
               </Select>
             </div>
-
             <div className="space-y-2">
               <Label>나이</Label>
               <Input type="number" value={age} onChange={(e) => setAge(e.target.value)} className="w-24" />
@@ -62,7 +61,28 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Concerns */}
+        {/* Target Areas */}
+        <Card className="glass-card">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <MapPin className="h-4 w-4 text-sage" />
+              <h2 className="font-semibold text-sm">관리 부위</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {bodyAreaOptions.map((area) => (
+                <Badge
+                  key={area}
+                  variant={targetAreas.includes(area) ? 'default' : 'outline'}
+                  className="cursor-pointer transition-all"
+                  onClick={() => toggleItem(targetAreas, area, setTargetAreas)}
+                >
+                  {BODY_AREA_LABELS[area]}
+                </Badge>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         <Card className="glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
@@ -84,7 +104,6 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        {/* Goals */}
         <Card className="glass-card">
           <CardContent className="p-4">
             <div className="flex items-center gap-2 mb-3">
