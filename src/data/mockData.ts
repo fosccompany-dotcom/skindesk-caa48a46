@@ -1,4 +1,4 @@
-import { UserProfile, PointTransaction, TreatmentPackage, TreatmentRecord, CalendarEvent } from '@/types/skin';
+import { UserProfile, PointTransaction, TreatmentPackage, TreatmentRecord, CalendarEvent, TreatmentCycle } from '@/types/skin';
 
 export const mockProfile: UserProfile = {
   skinType: '복합성',
@@ -35,6 +35,20 @@ export const mockRecords: TreatmentRecord[] = [
   { id: 'r6', date: '2026-03-08', packageId: 'p5', treatmentName: '알렉산드라이트 제모', skinLayer: 'epidermis', bodyArea: 'leg', clinic: '글로우 피부과' },
   { id: 'r7', date: '2026-03-01', packageId: 'p6', treatmentName: '바디 타이트닝', skinLayer: 'subcutaneous', bodyArea: 'abdomen', notes: '복부 중심 시술', clinic: '에스테틱 피부과' },
   { id: 'r8', date: '2026-02-28', packageId: 'p7', treatmentName: '등 여드름 필링', skinLayer: 'dermis', bodyArea: 'back', clinic: '글로우 피부과' },
+];
+
+export const mockCycles: TreatmentCycle[] = [
+  // 표피층
+  { id: 'c1', treatmentName: '레이저 토닝', skinLayer: 'epidermis', bodyArea: 'face', cycleDays: 14, lastTreatmentDate: '2026-03-03', isCustomCycle: false, clinic: '글로우 피부과' },
+  { id: 'c2', treatmentName: '제모 레이저', skinLayer: 'epidermis', bodyArea: 'arm', cycleDays: 42, lastTreatmentDate: '2026-03-08', isCustomCycle: false, clinic: '글로우 피부과' },
+  { id: 'c3', treatmentName: '제모 레이저', skinLayer: 'epidermis', bodyArea: 'leg', cycleDays: 42, lastTreatmentDate: '2026-03-08', isCustomCycle: false, clinic: '글로우 피부과' },
+  // 진피층
+  { id: 'c4', treatmentName: '리쥬란', skinLayer: 'dermis', bodyArea: 'face', cycleDays: 90, lastTreatmentDate: '2026-01-15', isCustomCycle: false, clinic: '글로우 피부과', product: '리쥬란HB' },
+  { id: 'c5', treatmentName: '보톡스', skinLayer: 'dermis', bodyArea: 'face', cycleDays: 180, lastTreatmentDate: '2025-12-20', isCustomCycle: true, clinic: '에스테틱 피부과', product: '제오민', notes: '턱 보톡스' },
+  { id: 'c6', treatmentName: '스킨보톡스', skinLayer: 'dermis', bodyArea: 'face', cycleDays: 90, lastTreatmentDate: '2026-02-01', isCustomCycle: false, clinic: '글로우 피부과' },
+  // 피하조직
+  { id: 'c7', treatmentName: '울쎄라', skinLayer: 'subcutaneous', bodyArea: 'face', cycleDays: 365, lastTreatmentDate: '2026-02-10', isCustomCycle: false, clinic: '에스테틱 피부과' },
+  { id: 'c8', treatmentName: '인모드', skinLayer: 'subcutaneous', bodyArea: 'abdomen', cycleDays: 30, lastTreatmentDate: '2026-03-01', isCustomCycle: false, clinic: '에스테틱 피부과' },
 ];
 
 export const mockEvents: CalendarEvent[] = [
