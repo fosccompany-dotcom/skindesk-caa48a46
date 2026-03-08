@@ -88,7 +88,7 @@ const Profile = () => {
   const [concerns, setConcerns] = useState<string[]>(mockProfile.concerns);
   const [goals, setGoals] = useState<string[]>(mockProfile.goals);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>(mockProfile.targetAreas);
-  const [regions, setRegions] = useState<string[]>(mockProfile.regions);
+  const [regions, setRegions] = useState<string[]>([]);
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
 
