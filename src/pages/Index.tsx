@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { Wallet, ChevronRight, Clock, AlertTriangle, CheckCircle2, Timer, Plus } from 'lucide-react';
+import { Wallet, ChevronRight, Clock, AlertTriangle, CheckCircle2, Timer } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
-import { mockPackages, mockCycles as initialCycles, currentBalance, mockProfile } from '@/data/mockData';
+import { mockPackages, currentBalance, mockProfile } from '@/data/mockData';
+import { useCycles } from '@/context/CyclesContext';
 import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
 import { CycleEditorSheet } from '@/components/CycleEditor';
@@ -42,7 +42,7 @@ const layerIconBg: Record<SkinLayer, string> = {
 
 const Index = () => {
   const navigate = useNavigate();
-  const [cycles, setCycles] = useState<TreatmentCycle[]>(initialCycles);
+  const { cycles, setCycles } = useCycles();
 
   const cyclesByLayer = layerOrder.map(layer => ({
     layer,

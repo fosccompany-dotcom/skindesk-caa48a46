@@ -10,6 +10,7 @@ import CalendarPage from "./pages/CalendarPage";
 import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
+import { CyclesProvider } from "./context/CyclesContext";
 
 const queryClient = new QueryClient();
 
@@ -18,19 +19,21 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <BrowserRouter>
-        <div className="app-container min-h-screen bg-background relative">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/points" element={<Points />} />
-            <Route path="/packages" element={<Packages />} />
-            <Route path="/calendar" element={<CalendarPage />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          <BottomNav />
-        </div>
-      </BrowserRouter>
+      <CyclesProvider>
+        <BrowserRouter>
+          <div className="app-container min-h-screen bg-background relative">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/points" element={<Points />} />
+              <Route path="/packages" element={<Packages />} />
+              <Route path="/calendar" element={<CalendarPage />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <BottomNav />
+          </div>
+        </BrowserRouter>
+      </CyclesProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
