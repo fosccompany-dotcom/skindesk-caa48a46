@@ -213,39 +213,40 @@ const Profile = () => {
               </div>
             )}
 
-            {/* 지역 선택 */}
-            <div className="flex flex-wrap gap-1.5 mb-3">
-              {regionOptions.filter(r => !regions.includes(r)).slice(0, 12).map((r) => (
-                <Badge
-                  key={r}
-                  variant="outline"
-                  className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                  onClick={() => setRegions([...regions, r])}
-                >
-                  {r}
-                </Badge>
-              ))}
+            {/* 도/시 → 구 선택 */}
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">시/도</Label>
+                <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
+                  <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="시/도 선택" /></SelectTrigger>
+                  <SelectContent>
+                    {Object.keys(REGION_DATA).map(sido => (
+                      <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1">
+                <Label className="text-[10px] text-muted-foreground">시/군/구</Label>
+                <Select value={selectedGugun} onValueChange={setSelectedGugun} disabled={!selectedSido}>
+                  <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="구/군 선택" /></SelectTrigger>
+                  <SelectContent>
+                    {gugunOptions.map(gu => (
+                      <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-
-            {/* 직접 입력 */}
-            <div className="flex gap-2">
-              <Input
-                value={customRegion}
-                onChange={(e) => setCustomRegion(e.target.value)}
-                placeholder="직접 입력"
-                className="rounded-xl text-xs flex-1"
-                onKeyDown={(e) => e.key === 'Enter' && addCustomRegion()}
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl text-xs shrink-0 tap-target"
-                onClick={addCustomRegion}
-                disabled={!customRegion.trim()}
-              >
-                추가
-              </Button>
-            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full rounded-xl text-xs tap-target mb-3"
+              onClick={addRegion}
+              disabled={!selectedSido || !selectedGugun}
+            >
+              + 지역 추가
+            </Button>
           </CardContent>
         </Card>
 
