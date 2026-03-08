@@ -42,7 +42,7 @@ const layerIconBg: Record<SkinLayer, string> = {
 
 const Index = () => {
   const navigate = useNavigate();
-  const [cycles, setCycles] = useState<TreatmentCycle[]>(initialCycles);
+  const { cycles, setCycles } = useCycles();
 
   const cyclesByLayer = layerOrder.map(layer => ({
     layer,
