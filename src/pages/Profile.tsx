@@ -370,9 +370,13 @@ const Profile = () => {
           </CardContent>
         </Card>
 
-        <Button onClick={handleSave} className="w-full rounded-2xl h-12 font-bold text-sm tap-target">
-          저장하기
-        </Button>
+        {/* Auto-save indicator */}
+        <div className={cn(
+          "text-center text-xs py-2 transition-opacity duration-300",
+          saved ? "opacity-100 text-sage-dark" : "opacity-0"
+        )}>
+          ✓ 자동 저장됨
+        </div>
       </div>
     </div>
   );
