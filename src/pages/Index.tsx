@@ -12,19 +12,19 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Status bar spacer + Header */}
+      {/* Header */}
       <div className="gradient-sage safe-top">
         <div className="page-header-gradient pt-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-80">안녕하세요 👋</p>
+              <p className="text-sm opacity-70 font-light">안녕하세요 👋</p>
               <h1 className="mt-0.5 text-xl font-bold">나의 피부 관리</h1>
             </div>
-            <div className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center">
-              <span className="text-lg">✨</span>
+            <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm">
+              <span className="text-base">✨</span>
             </div>
           </div>
-          <p className="mt-2 text-xs opacity-70 bg-white/10 inline-block px-3 py-1 rounded-full">
+          <p className="mt-3 text-[11px] opacity-60 bg-white/10 inline-block px-3 py-1.5 rounded-full backdrop-blur-sm">
             {mockProfile.skinType} · {mockProfile.age}세 · {mockProfile.concerns[0]} 집중 관리
           </p>
         </div>
@@ -69,7 +69,7 @@ const Index = () => {
         <div>
           <div className="flex items-center justify-between px-1 mb-2.5">
             <h2 className="text-sm font-bold">시술권 소진 현황</h2>
-            <button onClick={() => navigate('/packages')} className="text-xs text-primary font-semibold tap-target">전체보기</button>
+            <button onClick={() => navigate('/packages')} className="text-xs text-secondary font-semibold tap-target">전체보기</button>
           </div>
           <div className="space-y-2.5">
             {mockPackages.slice(0, 3).map((pkg) => {
