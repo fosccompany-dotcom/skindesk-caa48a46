@@ -21,9 +21,22 @@ const CalendarPage = () => {
   const [selected, setSelected] = useState<Date | undefined>(new Date('2026-03-08'));
   const { cycles } = useCycles();
   const today = new Date('2026-03-08');
+  const monthRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   // 3개월 배열
   const months = [today, addMonths(today, 1), addMonths(today, 2)];
+
+  const handleSelect = useCallback((date: Date | undefined) => {
+    setSelected(date);
+    if (date) {
+      const monthIndex = months.findIndex(
+        (m) => m.getFullYear() === date.getFullYear() && m.getMonth() === date.getMonth()
+      );
+      if (monthIndex >= 0 && monthRefs.current[monthIndex]) {
+        monthRefs.current[monthIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }, []);
 
   // 주기 기반 자동 추천 이벤트 생성 (앞으로 90일)
   const cycleEvents = useMemo(() => {
