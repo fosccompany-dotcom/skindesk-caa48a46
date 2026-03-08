@@ -1,11 +1,13 @@
-import { Wallet, ChevronRight, Clock, AlertTriangle, CheckCircle2, Timer } from 'lucide-react';
+import { useState } from 'react';
+import { Wallet, ChevronRight, Clock, AlertTriangle, CheckCircle2, Timer, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
-import { mockPackages, mockCycles, currentBalance, mockProfile } from '@/data/mockData';
+import { mockPackages, mockCycles as initialCycles, currentBalance, mockProfile } from '@/data/mockData';
 import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
+import { CycleEditorSheet } from '@/components/CycleEditor';
 
 const TODAY = new Date('2026-03-08');
 
@@ -40,14 +42,14 @@ const layerIconBg: Record<SkinLayer, string> = {
 
 const Index = () => {
   const navigate = useNavigate();
+  const [cycles, setCycles] = useState<TreatmentCycle[]>(initialCycles);
 
   const cyclesByLayer = layerOrder.map(layer => ({
     layer,
-    cycles: mockCycles.filter(c => c.skinLayer === layer),
+    cycles: cycles.filter(c => c.skinLayer === layer),
   }));
 
-  // 가장 급한 시술 찾기
-  const allStatuses = mockCycles.map(c => ({ cycle: c, ...getCycleStatus(c) }));
+  const allStatuses = cycles.map(c => ({ cycle: c, ...getCycleStatus(c) }));
   const urgent = allStatuses.filter(s => s.status === 'overdue' || s.status === 'upcoming');
 
   return (
@@ -60,7 +62,7 @@ const Index = () => {
               <p className="text-sm opacity-70 font-light">안녕하세요 👋</p>
               <h1 className="mt-0.5 text-xl font-bold">나의 피부 관리</h1>
             </div>
-            <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm" onClick={() => navigate('/profile')}>
+            <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer" onClick={() => navigate('/profile')}>
               <span className="text-base">👤</span>
             </div>
           </div>
@@ -130,9 +132,14 @@ const Index = () => {
           </div>
         )}
 
-        {/* 피부층별 관리 현황 */}
-        {cyclesByLayer.map(({ layer, cycles }) => {
-          if (cycles.length === 0) return null;
+        {/* 피부층별 관리 현황 - 헤더에 편집 버튼 */}
+        <div className="flex items-center justify-between px-1">
+          <h2 className="text-sm font-bold">피부층별 관리 현황</h2>
+          <CycleEditorSheet cycles={cycles} onUpdate={setCycles} />
+        </div>
+
+        {cyclesByLayer.map(({ layer, cycles: layerCycles }) => {
+          if (layerCycles.length === 0) return null;
           return (
             <div key={layer}>
               <div className="flex items-center gap-2 mb-2.5 px-1">
@@ -146,7 +153,7 @@ const Index = () => {
               </div>
 
               <div className="space-y-2">
-                {cycles.map((cycle) => {
+                {layerCycles.map((cycle) => {
                   const { daysRemaining, progress, nextDate, status } = getCycleStatus(cycle);
                   const config = statusConfig[status];
 
@@ -173,7 +180,6 @@ const Index = () => {
                           </div>
                         </div>
 
-                        {/* 진행 바 */}
                         <div className="relative">
                           <Progress value={progress} className="h-1.5" />
                         </div>
@@ -184,7 +190,7 @@ const Index = () => {
                             마지막: {format(new Date(cycle.lastTreatmentDate), 'M.d')}
                           </span>
                           <span>
-                            다음: {format(nextDate, 'M.d')} ({cycle.cycleDays}일 주기{cycle.isCustomCycle ? ' · 커스텀' : ''})
+                            다음: {format(nextDate, 'M.d')} ({cycle.cycleDays}일{cycle.isCustomCycle ? ' · 커스텀' : ''})
                           </span>
                         </div>
 
