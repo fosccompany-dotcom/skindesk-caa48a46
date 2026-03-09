@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
-import { treatmentCatalog, CATEGORY_LABELS, TreatmentCategory } from '@/data/treatmentCatalog';
+import { CLINIC_TREATMENTS, CATEGORY_LABELS, TreatmentCategory } from '@/data/treatmentCatalog';
 
 const categoryKeys = Object.keys(CATEGORY_LABELS) as TreatmentCategory[];
 

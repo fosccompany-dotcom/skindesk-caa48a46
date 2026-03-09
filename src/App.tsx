@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import Packages from "./pages/Packages";
 import CalendarPage from "./pages/CalendarPage";
 import Profile from "./pages/Profile";
+import Treatments from "./pages/Treatments";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import { CyclesProvider } from "./context/CyclesContext";
