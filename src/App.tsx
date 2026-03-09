@@ -23,7 +23,6 @@ const App = () => (
           <div className="app-container min-h-screen bg-background relative">
             <Routes>
               <Route path="/" element={<Index />} />
-              <Route path="/points" element={<Points />} />
               <Route path="/packages" element={<Packages />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/profile" element={<Profile />} />

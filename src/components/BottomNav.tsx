@@ -1,13 +1,12 @@
-import { Home, Wallet, Package, Calendar, User } from 'lucide-react';
+import { Home, Package, Calendar, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { path: '/', icon: Home, label: '홈' },
-  { path: '/points', icon: Wallet, label: '결제현황' },
   { path: '/packages', icon: Package, label: '시술권' },
   { path: '/calendar', icon: Calendar, label: '캘린더' },
-  { path: '/profile', icon: User, label: '프로필' },
+  { path: '/profile', icon: User, label: '마이' },
 ];
 
 const BottomNav = () => {
