@@ -1,8 +1,12 @@
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2 } from 'lucide-react';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
+import { useCycles } from '@/context/CyclesContext';
+import { SkinLayer, BodyArea, TreatmentCycle } from '@/types/skin';
 import {
   CLINIC_TREATMENTS,
   CATEGORY_LABELS,
@@ -13,6 +17,56 @@ import {
   TreatmentEffect,
   ClinicTreatment,
 } from '@/data/treatmentCatalog';
+
+// Map catalog category → skin layer
+const CATEGORY_TO_SKIN_LAYER: Partial<Record<TreatmentCategory, SkinLayer>> = {
+  botox: 'dermis',
+  filler: 'dermis',
+  lifting: 'subcutaneous',
+  thread_lifting: 'subcutaneous',
+  skin_booster: 'dermis',
+  laser_toning: 'epidermis',
+  peeling: 'epidermis',
+  pigment: 'epidermis',
+  acne: 'epidermis',
+  hair_removal: 'epidermis',
+  body_contouring: 'subcutaneous',
+  iv_injection: 'dermis',
+  skincare: 'epidermis',
+  contour: 'subcutaneous',
+  regeneration: 'dermis',
+};
+
+// Map catalog body area → cycle body area
+const BODY_AREA_MAP: Partial<Record<TreatmentBodyArea, BodyArea>> = {
+  face: 'face',
+  neck: 'neck',
+  body: 'chest',
+  arm: 'arm',
+  leg: 'leg',
+  eye: 'face',
+  bikini: 'hip',
+  full_body: 'face',
+};
+
+// Default cycle days by category
+const DEFAULT_CYCLE_DAYS: Partial<Record<TreatmentCategory, number>> = {
+  botox: 120,
+  filler: 365,
+  lifting: 180,
+  thread_lifting: 365,
+  skin_booster: 90,
+  laser_toning: 14,
+  peeling: 28,
+  pigment: 14,
+  acne: 14,
+  hair_removal: 42,
+  body_contouring: 30,
+  iv_injection: 14,
+  skincare: 14,
+  contour: 180,
+  regeneration: 90,
+};
 
 const categoryKeys = Object.keys(CATEGORY_LABELS) as TreatmentCategory[];
 const bodyAreaKeys = Object.keys(BODY_AREA_TREATMENT_LABELS) as TreatmentBodyArea[];
@@ -59,6 +113,29 @@ const Treatments = () => {
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
   const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
   const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
+  const { cycles, setCycles } = useCycles();
+
+  const registerCycle = (t: ClinicTreatment) => {
+    const exists = cycles.some(c => c.treatmentName === t.name && c.clinic === t.clinic);
+    if (exists) {
+      toast({ title: '이미 등록된 시술입니다', description: `${t.name}은(는) 이미 주기 관리에 등록되어 있습니다.` });
+      return;
+    }
+    const newCycle: TreatmentCycle = {
+      id: `cycle-${Date.now()}`,
+      treatmentName: t.name,
+      skinLayer: CATEGORY_TO_SKIN_LAYER[t.category] || 'epidermis',
+      bodyArea: BODY_AREA_MAP[t.bodyAreas[0]] || 'face',
+      cycleDays: DEFAULT_CYCLE_DAYS[t.category] || 30,
+      lastTreatmentDate: new Date().toISOString().split('T')[0],
+      isCustomCycle: false,
+      clinic: t.clinic,
+      notes: t.description,
+    };
+    setCycles([...cycles, newCycle]);
+    setSelectedTreatment(null);
+    toast({ title: '시술 주기 등록 완료', description: `${t.name}이(가) 주기 관리에 추가되었습니다.` });
+  };
 
   const toggleSection = (s: FilterSection) =>
     setExpandedSections(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
@@ -322,6 +399,15 @@ const Treatments = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Register Button */}
+                <Button
+                  className="w-full mt-2 gap-2"
+                  onClick={() => registerCycle(selectedTreatment)}
+                >
+                  <CalendarPlus className="h-4 w-4" />
+                  시술 주기 등록
+                </Button>
               </div>
             </>
           )}
