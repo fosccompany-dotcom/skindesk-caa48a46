@@ -124,7 +124,7 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="page-content space-y-5 -mt-3">
+      <div className="page-content space-y-5 pt-4">
         {/* Points summary */}
         <Card className="card-interactive" onClick={() => navigate('/points')}>
           <CardContent className="flex items-center gap-3 p-4">
