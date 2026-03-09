@@ -169,6 +169,7 @@ const Treatments = () => {
 
   const filtered = useMemo(() => {
     return CLINIC_TREATMENTS.filter(t => {
+      if (showFavoritesOnly && !favorites.has(t.id)) return false;
       if (search) {
         const q = search.toLowerCase();
         const match = t.name.toLowerCase().includes(q) ||
@@ -182,7 +183,7 @@ const Treatments = () => {
       if (selectedEffects.length && !selectedEffects.some(e => t.effects.includes(e))) return false;
       return true;
     });
-  }, [search, selectedCategories, selectedPrices, selectedAreas, selectedEffects]);
+  }, [search, selectedCategories, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
 
   const grouped = useMemo(() => {
     return filtered.reduce((acc, t) => {
