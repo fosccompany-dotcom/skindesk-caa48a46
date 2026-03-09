@@ -67,6 +67,8 @@ export interface TreatmentRecord {
   bodyArea: BodyArea;
   notes?: string;
   clinic: string;
+  satisfaction?: 1 | 2 | 3 | 4 | 5; // 만족도 1~5
+  memo?: string; // 상세 후기/메모
 }
 
 export interface CalendarEvent {

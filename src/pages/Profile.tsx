@@ -7,13 +7,13 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { mockProfile } from '@/data/mockData';
-import { SkinType, BodyArea, BODY_AREA_LABELS } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, Search as SearchIcon } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { mockProfile, mockRecords } from '@/data/mockData';
+import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
+import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, ClipboardList, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import TreatmentSearch from '@/components/TreatmentSearch';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
 const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여드름', '홍조', '건조', '다크서클', '제모', '셀룰라이트', '튼살'];
@@ -78,6 +78,27 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
   },
 };
 
+function StarRating({ value, onChange, readonly = false }: { value: number; onChange?: (v: 1|2|3|4|5) => void; readonly?: boolean }) {
+  return (
+    <div className="flex gap-0.5">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <button
+          key={star}
+          type="button"
+          disabled={readonly && !onChange}
+          className={cn('p-0.5 transition-colors', !readonly && 'cursor-pointer')}
+          onClick={() => onChange?.(star as 1|2|3|4|5)}
+        >
+          <Star className={cn(
+            'h-4 w-4 transition-colors',
+            star <= value ? 'fill-amber text-amber' : 'text-muted-foreground/30'
+          )} />
+        </button>
+      ))}
+    </div>
+  );
+}
+
 const Profile = () => {
   const [skinType, setSkinType] = useState<SkinType>(mockProfile.skinType);
   const [birthDate, setBirthDate] = useState<Date | undefined>(
@@ -90,6 +111,16 @@ const Profile = () => {
   const [regions, setRegions] = useState<string[]>([]);
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
+
+  // Treatment history state
+  const [records, setRecords] = useState<TreatmentRecord[]>(mockRecords);
+  const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
+  const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
+
+  const sortedRecords = useMemo(() =>
+    [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    [records]
+  );
 
   const age = useMemo(() => {
     if (!birthDate) return null;
@@ -116,6 +147,18 @@ const Profile = () => {
 
   const gugunOptions = selectedSido ? Object.keys(REGION_DATA[selectedSido] || {}) : [];
 
+  const updateSatisfaction = (id: string, satisfaction: 1|2|3|4|5) => {
+    setRecords(prev => prev.map(r => r.id === id ? { ...r, satisfaction } : r));
+  };
+
+  const updateMemo = (id: string) => {
+    const memo = editingMemo[id];
+    if (memo !== undefined) {
+      setRecords(prev => prev.map(r => r.id === id ? { ...r, memo } : r));
+      setEditingMemo(prev => { const next = { ...prev }; delete next[id]; return next; });
+    }
+  };
+
   const isFirstRender = useRef(true);
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [saved, setSaved] = useState(false);
@@ -134,6 +177,12 @@ const Profile = () => {
     return () => clearTimeout(saveTimeout.current);
   }, [skinType, birthDate, concerns, goals, targetAreas, regions]);
 
+  const avgSatisfaction = useMemo(() => {
+    const rated = records.filter(r => r.satisfaction);
+    if (rated.length === 0) return 0;
+    return rated.reduce((sum, r) => sum + (r.satisfaction || 0), 0) / rated.length;
+  }, [records]);
+
   return (
     <div className="min-h-screen bg-background">
       <div className="page-header safe-top">
@@ -147,9 +196,9 @@ const Profile = () => {
               <User className="h-3.5 w-3.5" />
               프로필
             </TabsTrigger>
-            <TabsTrigger value="treatments" className="flex-1 rounded-lg text-xs gap-1">
-              <SearchIcon className="h-3.5 w-3.5" />
-              시술 검색
+            <TabsTrigger value="history" className="flex-1 rounded-lg text-xs gap-1">
+              <ClipboardList className="h-3.5 w-3.5" />
+              시술 기록
             </TabsTrigger>
           </TabsList>
 
@@ -382,8 +431,123 @@ const Profile = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="treatments">
-            <TreatmentSearch />
+          {/* ===== 시술 기록 탭 ===== */}
+          <TabsContent value="history" className="space-y-3">
+            {/* 요약 */}
+            <Card className="glass-card">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] text-muted-foreground">총 시술 기록</p>
+                    <p className="text-2xl font-bold text-foreground">{records.length}<span className="text-sm font-normal text-muted-foreground">건</span></p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[11px] text-muted-foreground">평균 만족도</p>
+                    <div className="flex items-center gap-1.5">
+                      <Star className="h-4 w-4 fill-amber text-amber" />
+                      <span className="text-2xl font-bold text-foreground">{avgSatisfaction.toFixed(1)}</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* 기록 리스트 */}
+            <div className="space-y-2">
+              {sortedRecords.map((record) => {
+                const isExpanded = expandedRecord === record.id;
+                const memoValue = editingMemo[record.id] ?? record.memo ?? '';
+
+                return (
+                  <Card key={record.id} className="glass-card overflow-hidden">
+                    <button
+                      className="w-full text-left"
+                      onClick={() => setExpandedRecord(isExpanded ? null : record.id)}
+                    >
+                      <CardContent className="p-3.5">
+                        <div className="flex items-center justify-between">
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-sm font-semibold text-foreground">{record.treatmentName}</span>
+                              <Badge variant="outline" className="text-[9px] px-1.5 py-0">{BODY_AREA_LABELS[record.bodyArea]}</Badge>
+                            </div>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">
+                              {format(new Date(record.date), 'yyyy.M.d (EEE)', { locale: ko })} · {record.clinic}
+                            </p>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            {record.satisfaction && (
+                              <div className="flex items-center gap-0.5">
+                                <Star className="h-3 w-3 fill-amber text-amber" />
+                                <span className="text-xs font-semibold text-foreground">{record.satisfaction}</span>
+                              </div>
+                            )}
+                            {isExpanded ? (
+                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
+                            ) : (
+                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
+                            )}
+                          </div>
+                        </div>
+                        {record.notes && !isExpanded && (
+                          <p className="text-[10px] text-muted-foreground mt-1 truncate">{record.notes}</p>
+                        )}
+                      </CardContent>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="border-t border-border/50 px-3.5 pb-3.5 pt-3 space-y-3">
+                        {/* 상세 정보 */}
+                        <div className="flex flex-wrap gap-1.5">
+                          <Badge variant="secondary" className="text-[10px]">{SKIN_LAYER_LABELS[record.skinLayer]}</Badge>
+                          <Badge variant="secondary" className="text-[10px]">{BODY_AREA_LABELS[record.bodyArea]}</Badge>
+                          <Badge variant="outline" className="text-[10px]">{record.clinic}</Badge>
+                        </div>
+
+                        {record.notes && (
+                          <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">{record.notes}</p>
+                        )}
+
+                        {/* 만족도 */}
+                        <div>
+                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">만족도</Label>
+                          <StarRating
+                            value={record.satisfaction || 0}
+                            onChange={(v) => updateSatisfaction(record.id, v)}
+                          />
+                        </div>
+
+                        {/* 메모 */}
+                        <div>
+                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">시술 후기 / 메모</Label>
+                          <Textarea
+                            value={memoValue}
+                            onChange={(e) => setEditingMemo(prev => ({ ...prev, [record.id]: e.target.value }))}
+                            placeholder="시술 경험, 효과, 주의사항 등을 기록해보세요..."
+                            className="text-xs min-h-[80px] rounded-xl resize-none"
+                          />
+                          {editingMemo[record.id] !== undefined && editingMemo[record.id] !== (record.memo ?? '') && (
+                            <Button
+                              size="sm"
+                              className="mt-2 w-full rounded-xl text-xs"
+                              onClick={() => updateMemo(record.id)}
+                            >
+                              저장
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </Card>
+                );
+              })}
+            </div>
+
+            {sortedRecords.length === 0 && (
+              <div className="text-center py-12 text-muted-foreground text-sm">
+                아직 시술 기록이 없습니다
+              </div>
+            )}
           </TabsContent>
         </Tabs>
       </div>
