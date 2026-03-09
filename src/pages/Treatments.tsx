@@ -214,6 +214,7 @@ const Treatments = () => {
       if (showFavoritesOnly && !favorites.has(t.id)) return false;
       if (selectedClinic && t.clinic !== selectedClinic) return false;
       if (selectedBranches.length && !selectedBranches.some(b => t.branches.includes(b))) return false;
+      if (selectedPackage && CATEGORY_TO_PACKAGE[t.category] !== selectedPackage) return false;
       if (search) {
         const q = search.toLowerCase();
         const match = t.name.toLowerCase().includes(q) ||
@@ -227,7 +228,7 @@ const Treatments = () => {
       if (selectedEffects.length && !selectedEffects.some(e => t.effects.includes(e))) return false;
       return true;
     });
-  }, [search, selectedClinic, selectedBranches, selectedCategories, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
+  }, [search, selectedClinic, selectedBranches, selectedCategories, selectedPackage, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
 
   const grouped = useMemo(() => {
     return filtered.reduce((acc, t) => {
