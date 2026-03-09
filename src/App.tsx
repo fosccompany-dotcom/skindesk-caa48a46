@@ -27,6 +27,7 @@ const App = () => (
           <div className="app-container min-h-screen bg-background relative">
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/points" element={<Points />} />
               <Route path="/treatments" element={<Treatments />} />
               <Route path="/cycles" element={<Cycles />} />
               <Route path="/status" element={<StatusList />} />
