@@ -277,6 +277,34 @@ const Treatments = () => {
           )}
         </div>
 
+        <FilterRow label="병원/지점" section="clinic">
+          <Badge
+            variant={selectedClinic === '밴스의원' ? 'default' : 'outline'}
+            className="cursor-pointer text-[11px]"
+            onClick={() => { setSelectedClinic(prev => prev === '밴스의원' ? null : '밴스의원'); setSelectedBranches([]); }}
+          >밴스의원</Badge>
+          <Badge
+            variant={selectedClinic === '쁨클리닉' ? 'default' : 'outline'}
+            className="cursor-pointer text-[11px]"
+            onClick={() => { setSelectedClinic(prev => prev === '쁨클리닉' ? null : '쁨클리닉'); setSelectedBranches([]); }}
+          >쁨클리닉</Badge>
+          {selectedClinic && availableBranches.length > 0 && (
+            <>
+              <div className="w-full border-t border-border/20 my-1" />
+              {availableBranches.map(b => (
+                <Badge
+                  key={b}
+                  variant={selectedBranches.includes(b) ? 'default' : 'outline'}
+                  className="cursor-pointer text-[10px]"
+                  onClick={() => setSelectedBranches(prev => toggle(prev, b))}
+                >
+                  {b}
+                </Badge>
+              ))}
+            </>
+          )}
+        </FilterRow>
+
         <FilterRow label="시술 종류" section="category">
           {categoryKeys.map(cat => (
             <Badge
