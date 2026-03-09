@@ -113,6 +113,7 @@ const Treatments = () => {
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
   const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
   const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('treatment-favorites');
     return saved ? new Set(JSON.parse(saved)) : new Set<string>();
