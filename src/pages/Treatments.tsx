@@ -106,7 +106,7 @@ function matchesPrice(t: ClinicTreatment, range: PriceRange): boolean {
   }
 }
 
-type FilterSection = 'category' | 'price' | 'bodyArea' | 'effect';
+type FilterSection = 'clinic' | 'category' | 'price' | 'bodyArea' | 'effect';
 
 const Treatments = () => {
   const [search, setSearch] = useState('');
