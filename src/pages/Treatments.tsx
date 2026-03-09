@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Filter, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   CLINIC_TREATMENTS,
@@ -56,6 +57,7 @@ const Treatments = () => {
   const [selectedPrices, setSelectedPrices] = useState<PriceRange[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<TreatmentBodyArea[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
+  const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
   const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
 
   const toggleSection = (s: FilterSection) =>
@@ -222,7 +224,7 @@ const Treatments = () => {
             <h2 className="text-sm font-semibold text-foreground mb-2">{category} ({treatments.length})</h2>
             <div className="space-y-2">
               {treatments.map(t => (
-                <div key={t.id} className="glass-card p-3 rounded-xl">
+                <div key={t.id} className="glass-card p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform" onClick={() => setSelectedTreatment(t)}>
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-foreground truncate">{t.name}</p>
@@ -253,6 +255,78 @@ const Treatments = () => {
           </div>
         ))}
       </div>
+
+      {/* Detail Modal */}
+      <Dialog open={!!selectedTreatment} onOpenChange={(open) => !open && setSelectedTreatment(null)}>
+        <DialogContent className="max-w-[400px] rounded-2xl p-0 overflow-hidden">
+          {selectedTreatment && (
+            <>
+              <div className="bg-primary/5 px-5 pt-5 pb-4">
+                <DialogHeader>
+                  <DialogTitle className="text-lg font-bold text-foreground text-left">{selectedTreatment.name}</DialogTitle>
+                </DialogHeader>
+                <div className="flex items-center gap-2 mt-2">
+                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">{selectedTreatment.clinic}</span>
+                </div>
+              </div>
+
+              <div className="px-5 py-4 space-y-4">
+                {/* Category & Price */}
+                <div className="flex items-center justify-between">
+                  <Badge variant="default" className="text-xs">
+                    {CATEGORY_LABELS[selectedTreatment.category]}
+                  </Badge>
+                  {selectedTreatment.priceRange && (
+                    <div className="flex items-center gap-1.5 text-primary font-semibold text-sm">
+                      <Tag className="h-3.5 w-3.5" />
+                      {selectedTreatment.priceRange}
+                    </div>
+                  )}
+                </div>
+
+                {/* Description */}
+                {selectedTreatment.description && (
+                  <div>
+                    <p className="text-xs font-semibold text-foreground mb-1">설명</p>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{selectedTreatment.description}</p>
+                  </div>
+                )}
+
+                {/* Body Areas */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <MapPin className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-xs font-semibold text-foreground">시술 부위</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedTreatment.bodyAreas.map(a => (
+                      <Badge key={a} variant="outline" className="text-xs border-primary/30 text-primary">
+                        {BODY_AREA_TREATMENT_LABELS[a]}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Effects */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+                    <p className="text-xs font-semibold text-foreground">기대 효과</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {selectedTreatment.effects.map(e => (
+                      <Badge key={e} variant="secondary" className="text-xs">
+                        {EFFECT_LABELS[e]}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
