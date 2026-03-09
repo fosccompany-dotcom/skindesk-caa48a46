@@ -77,6 +77,34 @@ const categoryKeys = Object.keys(CATEGORY_LABELS) as TreatmentCategory[];
 const bodyAreaKeys = Object.keys(BODY_AREA_TREATMENT_LABELS) as TreatmentBodyArea[];
 const effectKeys = Object.keys(EFFECT_LABELS) as TreatmentEffect[];
 
+type PackageTier = 'basic' | 'premium' | 'special' | 'body' | 'medical';
+const PACKAGE_LABELS: Record<PackageTier, string> = {
+  basic: '베이직',
+  premium: '프리미엄',
+  special: '스페셜',
+  body: '바디/제모',
+  medical: '메디컬',
+};
+const packageKeys = Object.keys(PACKAGE_LABELS) as PackageTier[];
+
+const CATEGORY_TO_PACKAGE: Record<TreatmentCategory, PackageTier> = {
+  laser_toning: 'basic',
+  peeling: 'basic',
+  skincare: 'basic',
+  acne: 'basic',
+  botox: 'premium',
+  filler: 'premium',
+  skin_booster: 'premium',
+  pigment: 'premium',
+  lifting: 'special',
+  thread_lifting: 'special',
+  contour: 'special',
+  regeneration: 'special',
+  hair_removal: 'body',
+  body_contouring: 'body',
+  iv_injection: 'medical',
+};
+
 type PriceRange = 'under10' | '10to30' | '30to50' | '50to100' | 'over100';
 const PRICE_LABELS: Record<PriceRange, string> = {
   under10: '10만 미만',
