@@ -14,19 +14,28 @@ export type ClinicBrand = '밴스의원' | '쁨클리닉';
 
 export interface ClinicBranch {
   brand: ClinicBrand;
-  branch: string; // e.g. '강남점'
+  branch: string;
+}
+
+export interface BranchPrice {
+  branch: string;
+  price: string;       // 할인가
+  originalPrice?: string; // 정가
+  discount?: string;    // 할인율
+  note?: string;        // 체험가, 조건 등
 }
 
 export interface ClinicTreatment {
   id: string;
   name: string;
   clinic: ClinicBrand;
-  branches: string[]; // 해당 시술 가능 지점
+  branches: string[];
   category: TreatmentCategory;
   bodyAreas: TreatmentBodyArea[];
   effects: TreatmentEffect[];
   description?: string;
   priceRange?: string;
+  branchPrices?: BranchPrice[]; // 지점별 가격
 }
 
 export const CATEGORY_LABELS: Record<TreatmentCategory, string> = {
@@ -76,17 +85,80 @@ export const EFFECT_LABELS: Record<TreatmentEffect, string> = {
   tightening: '타이트닝',
 };
 
-// ============ 지점 목록 ============
+// ============ 밴스의원 지점 목록 (전체) ============
 
-export const VANDS_BRANCHES = [
-  '강남점', '강서화곡점', '구로점', '동대문점', '마포공덕점', '명동점', '명동2호점',
-  '삼성점', '성수점', '신사점', '신촌점', '여의도점', '영등포점', '용산점',
-  '천호점', '청담점', '홍대점', '잠실점',
-  '과천점', '광명점', '김포점', '동탄점', '부천점', '분당점', '수원점',
-  '안양점', '일산점', '평촌점',
-  '송도점', '부평점', '인천점',
-  '대전점', '천안점', '전주점', '부산점', '창원점',
-];
+export const VANDS_BRANCH_URLS: Record<string, string> = {
+  // 성형외과/모발이식
+  '밴스성형외과(신논현)': 'https://vandsps.com/',
+  '모자이너의원(신논현)': 'https://vandsmosigner.com/',
+  // 서울
+  '강남점': 'http://gangnam.vandsclinic.co.kr',
+  '강서화곡점': 'http://hwagok.vandsclinic.co.kr',
+  '구로점': 'http://guro.vandsclinic.co.kr',
+  '동대문점': 'http://dongdaemun.vandsclinic.co.kr',
+  '마포공덕점': 'http://mapo.vandsclinic.co.kr',
+  '명동점': 'http://myeongdong.vandsclinic.co.kr',
+  '명동2호점': 'http://myeongdong2.vandsclinic.co.kr',
+  '삼성점': 'http://samseong.vandsclinic.co.kr',
+  '성수점': 'https://seongsu.vandsclinic.co.kr/',
+  '신사점': 'http://sinsa.vandsclinic.co.kr',
+  '신촌점': 'https://sinchon.vandsclinic.co.kr/',
+  '여의도점': 'http://yeouido.vandsclinic.co.kr',
+  '영등포점': 'http://yeongdeungpo.vandsclinic.co.kr',
+  '왕십리점': 'https://wangsimni.vandsclinic.co.kr/',
+  '용산점': 'http://yongsan.vandsclinic.co.kr',
+  '역삼점': 'https://yeoksam.vandsclinic.co.kr/',
+  '잠실점': 'https://jamsil.vandsclinic.co.kr/',
+  '천호점': 'https://cheonho.vandsclinic.co.kr/',
+  '청담점': 'http://cheongdam.vandsclinic.co.kr',
+  '홍대점': 'http://hongdae.vandsclinic.co.kr',
+  // 경기
+  '과천점': 'http://gwacheon.vandsclinic.co.kr',
+  '광교점': 'http://gwanggyo.vandsclinic.co.kr',
+  '구월점': 'http://guwol.vandsclinic.co.kr',
+  '다산점': 'http://dasan.vandsclinic.co.kr',
+  '동탄점': 'http://dongtanderma.vandsclinic.co.kr',
+  '미금점': 'http://migeum.vandsclinic.co.kr',
+  '부천점': 'http://bucheon.vandsclinic.co.kr',
+  '송도점': 'https://songdo.vandsclinic.co.kr/',
+  '수원점': 'http://suwon.vandsclinic.co.kr',
+  '수원망포점': 'https://mangpo.vandsclinic.co.kr/',
+  '수지점': 'https://suji.vandsclinic.co.kr/',
+  '시흥점': 'https://siheung.vandsclinic.co.kr/',
+  '야탑점': 'http://yatap.vandsclinic.co.kr',
+  '위례점': 'https://wirye.vandsclinic.co.kr/',
+  '의정부점': 'https://uijeongbu.vandsclinic.co.kr/',
+  '일산점': 'http://ilsan.vandsclinic.co.kr',
+  '판교점': 'http://pangyo.vandsclinic.co.kr',
+  // 전국
+  '광주점': 'http://gwangju.vandsclinic.co.kr',
+  '광주주월점': 'http://gwangjujuwol.vandsclinic.co.kr',
+  '김해점': 'https://gimhae.vandsclinic.co.kr/',
+  '대구동성로점': 'https://daegu.vandsclinic.co.kr/',
+  '대전점': 'http://daejeon.vandsclinic.co.kr',
+  '부산점': 'http://busan.vandsclinic.co.kr',
+  '부산센텀점': 'https://centum.vandsclinic.co.kr/',
+  '부산해운대점': 'https://haeundae.vandsclinic.co.kr/',
+  '순천점': 'https://suncheon.vandsclinic.co.kr/',
+  '울산점': 'https://ulsan.vandsclinic.co.kr/',
+  '원주점': 'https://wonju.vandsclinic.co.kr/',
+  '양산점': 'https://yangsan.vandsclinic.co.kr/',
+  '전주점': 'https://jeonju.vandsclinic.co.kr/',
+  '제주점': 'http://jeju.vandsclinic.co.kr',
+  '진주점': 'http://jinju.vandsclinic.co.kr',
+  '창원점': 'https://changwon.vandsclinic.co.kr/',
+  '청주점': 'http://cheongju.vandsclinic.co.kr',
+  '충주점': 'http://chungju.vandsclinic.co.kr',
+};
+
+export const VANDS_BRANCHES = Object.keys(VANDS_BRANCH_URLS);
+
+export const VANDS_REGIONS: Record<string, string[]> = {
+  '성형/모발': ['밴스성형외과(신논현)', '모자이너의원(신논현)'],
+  '서울': ['강남점','강서화곡점','구로점','동대문점','마포공덕점','명동점','명동2호점','삼성점','성수점','신사점','신촌점','여의도점','영등포점','왕십리점','용산점','역삼점','잠실점','천호점','청담점','홍대점'],
+  '경기': ['과천점','광교점','구월점','다산점','동탄점','미금점','부천점','송도점','수원점','수원망포점','수지점','시흥점','야탑점','위례점','의정부점','일산점','판교점'],
+  '전국': ['광주점','광주주월점','김해점','대구동성로점','대전점','부산점','부산센텀점','부산해운대점','순천점','울산점','원주점','양산점','전주점','제주점','진주점','창원점','청주점','충주점'],
+};
 
 export const PPEUM_BRANCHES = [
   '신논현 메가스토어점', '강남 스탠다드점', '명동점', '홍대점', '천호점',
@@ -101,82 +173,374 @@ export const ALL_BRANCHES: ClinicBranch[] = [
   ...PPEUM_BRANCHES.map(b => ({ brand: '쁨클리닉' as ClinicBrand, branch: b })),
 ];
 
-// ============ 시술 데이터 (실제 가격 기반) ============
+// ============ 시술 데이터 (크롤링 기반 실제 가격) ============
 
-const allVands = VANDS_BRANCHES;
+const allVands = VANDS_BRANCHES.filter(b => !['밴스성형외과(신논현)', '모자이너의원(신논현)'].includes(b));
 const allPpeum = PPEUM_BRANCHES;
+
+// 서울 주요지점 (크롤링 완료)
+const seoulMain = ['강남점','신사점','성수점','명동점','청담점','홍대점','잠실점'];
+// 경기 주요지점
+const gyeonggiMain = ['판교점','일산점','수원점','부천점','동탄점'];
+// 전국 주요지점
+const nationMain = ['부산점','대전점','대구동성로점','광주점','제주점'];
 
 export const CLINIC_TREATMENTS: ClinicTreatment[] = [
   // =============================================
-  //  밴스의원 — 보톡스
+  //  밴스의원 — 보톡스 (크롤링 데이터 기반)
   // =============================================
-  { id: 'v1', name: '주름보톡스 (국산)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['face'], effects: ['wrinkle'], priceRange: '1,000~29,000원', description: '미간/눈가/이마/콧등 등 부위별' },
-  { id: 'v2', name: '주름보톡스 (수입)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['face'], effects: ['wrinkle'], priceRange: '19,000~190,000원', description: '제오민/엘러간 수입 보톡스' },
-  { id: 'v3', name: '사각턱보톡스 50유닛 (국산)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['face'], effects: ['contour_effect', 'slimming'], priceRange: '6,900~59,000원' },
-  { id: 'v4', name: '사각턱보톡스 50유닛 (수입)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['face'], effects: ['contour_effect', 'slimming'], priceRange: '99,000~149,000원' },
-  { id: 'v5', name: '바디보톡스 100유닛 (국산)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['body'], effects: ['slimming', 'contour_effect'], priceRange: '29,000~99,000원', description: '승모근/종아리/허벅지' },
-  { id: 'v6', name: '바디보톡스 100유닛 (수입)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['body'], effects: ['slimming', 'contour_effect'], priceRange: '199,000~499,000원' },
-  { id: 'v7', name: '다한증보톡스 50유닛 (국산)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['body'], effects: ['slimming'], priceRange: '49,000~149,000원', description: '겨드랑이/손/발' },
-  { id: 'v8', name: '다한증보톡스 50유닛 (수입)', clinic: '밴스의원', branches: allVands, category: 'botox', bodyAreas: ['body'], effects: ['slimming'], priceRange: '149,000~290,000원' },
+  { 
+    id: 'v1', name: '주름보톡스 1부위 (국산)', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['face'], effects: ['wrinkle'], 
+    priceRange: '900~9,900원', description: '미간/눈가/이마/콧등 등 부위별',
+    branchPrices: [
+      { branch: '강남점', price: '900원', originalPrice: '1,500원', discount: '40%', note: '1회 체험가' },
+      { branch: '강남점', price: '9,900원', originalPrice: '18,000원', discount: '45%', note: '4부위 이상 1부위당' },
+      { branch: '신사점', price: '900원', originalPrice: '1,500원', discount: '40%', note: '1회 체험가' },
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%', note: '4부위 이상시 1부위당' },
+      { branch: '성수점', price: '900원', originalPrice: '1,500원', discount: '40%', note: '1회 체험가' },
+    ],
+  },
+  { 
+    id: 'v2', name: '사각턱보톡스 (국산)', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['face'], effects: ['contour_effect', 'slimming'], 
+    priceRange: '9,900~19,000원',
+    branchPrices: [
+      { branch: '강남점', price: '9,900원', originalPrice: '18,000원', discount: '45%', note: '1회 체험가' },
+      { branch: '강남점', price: '19,000원', originalPrice: '35,000원', discount: '46%' },
+      { branch: '신사점', price: '1,000원', originalPrice: '1,900원', discount: '47%', note: '얼굴제로팻 시술시' },
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%', note: '1회 체험가' },
+    ],
+  },
+  { 
+    id: 'v3', name: '제오민 주름보톡스 1부위', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['face'], effects: ['wrinkle'], 
+    priceRange: '29,000~99,000원', description: '내성 적은 독일 보톡스',
+    branchPrices: [
+      { branch: '강남점', price: '29,000원', originalPrice: '55,000원', discount: '47%', note: '1회 체험가' },
+      { branch: '강남점', price: '99,000원', originalPrice: '180,000원', discount: '45%', note: '4부위' },
+      { branch: '신사점', price: '29,000원', originalPrice: '55,000원', discount: '47%', note: '1회 체험가' },
+      { branch: '신사점', price: '99,000원', originalPrice: '180,000원', discount: '45%', note: '3+1 (4부위)' },
+    ],
+  },
+  { 
+    id: 'v4', name: '제오민 사각턱보톡스', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['face'], effects: ['contour_effect', 'slimming'], 
+    priceRange: '79,000원',
+    branchPrices: [
+      { branch: '강남점', price: '79,000원', originalPrice: '140,000원', discount: '44%', note: '1회 체험가' },
+      { branch: '신사점', price: '79,000원', originalPrice: '140,000원', discount: '44%', note: '1회 체험가' },
+    ],
+  },
+  { 
+    id: 'v5', name: '엘러간 주름보톡스 1부위', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['face'], effects: ['wrinkle'], 
+    priceRange: '59,000~199,000원', description: '미국 프리미엄 보톡스',
+    branchPrices: [
+      { branch: '강남점', price: '59,000원', originalPrice: '100,000원', discount: '41%', note: '1회 체험가' },
+      { branch: '강남점', price: '149,000원', originalPrice: '250,000원', discount: '40%', note: '사각턱' },
+      { branch: '강남점', price: '199,000원', originalPrice: '350,000원', discount: '43%', note: '3부위' },
+    ],
+  },
+  { 
+    id: 'v6', name: '모공톡신 (국산)', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['face'], effects: ['pore', 'elasticity'], 
+    priceRange: '29,000~99,000원',
+    branchPrices: [
+      { branch: '강남점', price: '29,000원', originalPrice: '50,000원', discount: '42%', note: '1cc' },
+      { branch: '강남점', price: '49,000원', originalPrice: '90,000원', discount: '46%', note: '2cc' },
+      { branch: '강남점', price: '69,000원', originalPrice: '130,000원', discount: '47%', note: '3cc' },
+      { branch: '강남점', price: '89,000원', originalPrice: '150,000원', discount: '41%', note: '4cc' },
+      { branch: '강남점', price: '99,000원', originalPrice: '180,000원', discount: '45%', note: '5cc' },
+      { branch: '신사점', price: '29,000원', originalPrice: '50,000원', discount: '42%', note: '국산' },
+      { branch: '신사점', price: '99,000원', originalPrice: '190,000원', discount: '48%', note: '제오민 3cc' },
+    ],
+  },
+  { 
+    id: 'v7', name: '침샘보톡스', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['face'], effects: ['slimming', 'contour_effect'], 
+    priceRange: '39,000~69,000원',
+    branchPrices: [
+      { branch: '강남점', price: '39,000원', originalPrice: '75,000원', discount: '48%', note: '1회 체험가' },
+      { branch: '강남점', price: '69,000원', originalPrice: '130,000원', discount: '47%', note: '노메스턱 (턱+침샘)' },
+    ],
+  },
+  { 
+    id: 'v8', name: '승모근/종아리보톡스 100unit', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['body'], effects: ['slimming', 'contour_effect'], 
+    priceRange: '29,000원',
+    branchPrices: [
+      { branch: '강남점', price: '29,000원', originalPrice: '50,000원', discount: '42%' },
+    ],
+  },
+  { 
+    id: 'v9', name: '밴스슬림넥', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['neck'], effects: ['slimming', 'contour_effect'], 
+    priceRange: '99,000원', description: '두꺼운 목을 가늘게',
+    branchPrices: [
+      { branch: '강남점', price: '99,000원', originalPrice: '180,000원', discount: '45%' },
+      { branch: '신사점', price: '99,000원', originalPrice: '180,000원', discount: '45%' },
+    ],
+  },
+  { 
+    id: 'v10', name: '다한증보톡스 (겨드랑이)', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['body'], effects: ['slimming'], 
+    priceRange: '49,000원',
+    branchPrices: [
+      { branch: '강남점', price: '49,000원', originalPrice: '90,000원', discount: '46%' },
+    ],
+  },
+  { 
+    id: 'v11', name: '다한증보톡스 (손/발바닥)', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['body'], effects: ['slimming'], 
+    priceRange: '90,000원',
+    branchPrices: [
+      { branch: '강남점', price: '90,000원', originalPrice: '170,000원', discount: '47%' },
+    ],
+  },
+  { 
+    id: 'v12', name: '목주름 보톡스 1+1', clinic: '밴스의원', branches: allVands, 
+    category: 'botox', bodyAreas: ['neck'], effects: ['wrinkle'], 
+    priceRange: '69,000원',
+    branchPrices: [
+      { branch: '강남점', price: '69,000원', originalPrice: '130,000원', discount: '47%' },
+    ],
+  },
 
-  // 밴스의원 — 필러
-  { id: 'v9', name: '볼륨필러 아띠에르 (국산) 1cc', clinic: '밴스의원', branches: allVands, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '49,000원' },
-  { id: 'v10', name: '볼륨필러 벨로테로 (수입) 1cc', clinic: '밴스의원', branches: allVands, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '290,000~390,000원' },
-  { id: 'v11', name: '볼륨필러 레스틸렌 (수입) 1cc', clinic: '밴스의원', branches: allVands, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '330,000~390,000원' },
-  { id: 'v12', name: '주름필러 벨로테로 (수입) 1cc', clinic: '밴스의원', branches: allVands, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '150,000~190,000원' },
+  // =============================================
+  //  밴스의원 — 레이저 리프팅 (크롤링 데이터 기반)
+  // =============================================
+  { 
+    id: 'v24', name: '울쎄라피프라임 100샷', clinic: '밴스의원', branches: allVands, 
+    category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], 
+    priceRange: '299,000~890,000원',
+    branchPrices: [
+      { branch: '강남점', price: '299,000원', originalPrice: '550,000원', discount: '46%', note: '100샷 1회체험가' },
+      { branch: '강남점', price: '890,000원', originalPrice: '1,500,000원', discount: '41%', note: '300샷 1회체험가' },
+    ],
+  },
+  { 
+    id: 'v25', name: '인모드 FX모드 1부위', clinic: '밴스의원', branches: allVands, 
+    category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], 
+    priceRange: '19,000~149,000원',
+    branchPrices: [
+      { branch: '강남점', price: '19,000원', originalPrice: '35,000원', discount: '46%', note: 'FX 1부위' },
+      { branch: '강남점', price: '69,000원', originalPrice: '100,000원', discount: '31%', note: 'FX 얼굴전체' },
+      { branch: '강남점', price: '59,000원', originalPrice: '100,000원', discount: '41%', note: 'Forma 1부위' },
+      { branch: '강남점', price: '119,000원', originalPrice: '190,000원', discount: '37%', note: 'Forma 얼굴전체' },
+      { branch: '강남점', price: '149,000원', originalPrice: '250,000원', discount: '40%', note: 'FX+Forma 얼굴전체' },
+    ],
+  },
+  { 
+    id: 'v26', name: '슈링크유니버스 울트라', clinic: '밴스의원', branches: allVands, 
+    category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], 
+    priceRange: '9,900~89,000원',
+    branchPrices: [
+      { branch: '강남점', price: '9,900원', originalPrice: '19,000원', discount: '48%', note: '100샷 1회 체험가' },
+      { branch: '강남점', price: '89,000원', originalPrice: '160,000원', discount: '44%', note: '300샷 1회 체험가' },
+    ],
+  },
+  { 
+    id: 'v27', name: '아이슈링크 100샷+더마톡신 1cc', clinic: '밴스의원', branches: allVands, 
+    category: 'lifting', bodyAreas: ['eye'], effects: ['elasticity', 'tightening', 'wrinkle'], 
+    priceRange: '69,000원',
+    branchPrices: [
+      { branch: '강남점', price: '69,000원', originalPrice: '135,000원', discount: '49%' },
+    ],
+  },
 
-  // 밴스의원 — 실리프팅
-  { id: 'v13', name: '하이코/바비코 (수입) 1줄', clinic: '밴스의원', branches: allVands, category: 'thread_lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '99,000원' },
+  // =============================================
+  //  밴스의원 — 스킨부스터 (크롤링 데이터 기반)
+  // =============================================
+  { 
+    id: 'v30', name: '셀르디엠 얼굴전체 6cc', clinic: '밴스의원', branches: allVands, 
+    category: 'skin_booster', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity'], 
+    priceRange: '590,000원', description: '차세대 ECM 스킨부스터',
+    branchPrices: [
+      { branch: '강남점', price: '590,000원', originalPrice: '1,000,000원', discount: '41%', note: '1회 체험가' },
+    ],
+  },
+  { 
+    id: 'v31', name: '스컬트라 1cc', clinic: '밴스의원', branches: allVands, 
+    category: 'skin_booster', bodyAreas: ['face'], effects: ['volume', 'elasticity'], 
+    priceRange: '49,000원', description: 'PLLA 콜라겐생성유도물질',
+    branchPrices: [
+      { branch: '강남점', price: '49,000원', originalPrice: '80,000원', discount: '39%', note: '10cc 이상시' },
+    ],
+  },
+  { 
+    id: 'v32', name: '엘라비에 리투오 6cc', clinic: '밴스의원', branches: allVands, 
+    category: 'skin_booster', bodyAreas: ['face'], effects: ['elasticity', 'regeneration_effect'], 
+    priceRange: '600,000원', description: '안티에이징 스킨부스터',
+    branchPrices: [
+      { branch: '강남점', price: '600,000원', originalPrice: '1,000,000원', discount: '40%' },
+    ],
+  },
+  { 
+    id: 'v33', name: '리바이브 1cc', clinic: '밴스의원', branches: allVands, 
+    category: 'skin_booster', bodyAreas: ['face'], effects: ['hydration', 'elasticity'], 
+    priceRange: '290,000원', description: '글리세롤+히알루론산 명품 부스터',
+    branchPrices: [
+      { branch: '강남점', price: '290,000원', originalPrice: '550,000원', discount: '47%', note: '1회 체험가' },
+    ],
+  },
+  { 
+    id: 'v34', name: '미라콜 (볼륨) 3cc', clinic: '밴스의원', branches: allVands, 
+    category: 'skin_booster', bodyAreas: ['face'], effects: ['volume', 'elasticity', 'regeneration_effect'], 
+    priceRange: '149,000~390,000원', description: '콜라겐 리모델링',
+    branchPrices: [
+      { branch: '강남점', price: '290,000원', originalPrice: '550,000원', discount: '47%', note: '볼륨 3cc' },
+      { branch: '강남점', price: '149,000원', originalPrice: '250,000원', discount: '40%', note: '눈밑 1회' },
+      { branch: '강남점', price: '390,000원', originalPrice: '750,000원', discount: '48%', note: '스킨 6cc' },
+    ],
+  },
+  { 
+    id: 'v35', name: '스킨바이브 2cc', clinic: '밴스의원', branches: allVands, 
+    category: 'skin_booster', bodyAreas: ['face'], effects: ['hydration', 'elasticity'], 
+    priceRange: '249,000원', description: '엠보 없이 지속 길게, 명품 스킨부스터',
+    branchPrices: [
+      { branch: '강남점', price: '249,000원', originalPrice: '450,000원', discount: '45%' },
+    ],
+  },
+  { 
+    id: 'v36', name: 'THE 미희주사', clinic: '밴스의원', branches: allVands, 
+    category: 'skin_booster', bodyAreas: ['face', 'eye'], effects: ['volume', 'regeneration_effect'], 
+    priceRange: '290,000원', description: '꺼진 눈밑 볼륨 콜라겐주사',
+    branchPrices: [
+      { branch: '강남점', price: '290,000원', originalPrice: '550,000원', discount: '47%', note: '눈밑 1회' },
+      { branch: '강남점', price: '290,000원', originalPrice: '550,000원', discount: '47%', note: '목주름 1+1' },
+    ],
+  },
 
-  // 밴스의원 — 콜라겐재생
-  { id: 'v14', name: '쥬베룩볼륨 1부위(3cc)', clinic: '밴스의원', branches: allVands, category: 'regeneration', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity', 'volume'], priceRange: '249,000~690,000원' },
-  { id: 'v15', name: '미희주사 1회', clinic: '밴스의원', branches: allVands, category: 'regeneration', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity'], priceRange: '290,000~390,000원', description: '부위에 따라 금액 다름' },
+  // =============================================
+  //  밴스의원 — 레이저토닝/미백 (크롤링: 신사점)
+  // =============================================
+  { 
+    id: 'v40', name: '피코토닝', clinic: '밴스의원', branches: allVands, 
+    category: 'laser_toning', bodyAreas: ['face'], effects: ['brightening', 'whitening', 'pore'], 
+    priceRange: '9,900~490,000원',
+    branchPrices: [
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%', note: '1회 체험가' },
+      { branch: '신사점', price: '39,000원', originalPrice: '60,000원', discount: '35%', note: '+비타민관리 1회 체험가' },
+      { branch: '신사점', price: '99,000원', originalPrice: '180,000원', discount: '45%', note: '+피코지우개 1회 체험가' },
+      { branch: '신사점', price: '490,000원', originalPrice: '800,000원', discount: '39%', note: '10회' },
+    ],
+  },
+  { 
+    id: 'v41', name: '기미주사', clinic: '밴스의원', branches: allVands, 
+    category: 'pigment', bodyAreas: ['face'], effects: ['whitening', 'brightening'], 
+    priceRange: '39,000원',
+    branchPrices: [
+      { branch: '신사점', price: '39,000원', originalPrice: '40,000원', discount: '2%' },
+    ],
+  },
+  { 
+    id: 'v42', name: '엑셀V플러스', clinic: '밴스의원', branches: allVands, 
+    category: 'pigment', bodyAreas: ['face'], effects: ['redness', 'brightening', 'whitening'], 
+    priceRange: '99,000~299,000원',
+    branchPrices: [
+      { branch: '신사점', price: '99,000원', originalPrice: '180,000원', discount: '45%', note: '싱글모드 1회 체험가' },
+      { branch: '신사점', price: '199,000원', originalPrice: '380,000원', discount: '48%', note: '듀얼모드 1회 체험가' },
+      { branch: '신사점', price: '299,000원', originalPrice: '580,000원', discount: '48%', note: '트리플모드 1회 체험가' },
+    ],
+  },
 
-  // 밴스의원 — 스킨케어/스킨부스터
-  { id: 'v16', name: '리쥬란힐러 2cc', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity', 'hydration'], priceRange: '99,000~149,000원' },
-  { id: 'v17', name: '밴스란힐러 1cc', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['face'], effects: ['regeneration_effect', 'hydration'], priceRange: '49,000~99,000원', description: '2cc 이상 진행' },
-  { id: 'v18', name: '리쥬란 프리미엄 3cc', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity'], priceRange: '129,000~169,000원' },
-  { id: 'v19', name: '아이리쥬란 1cc', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['eye'], effects: ['regeneration_effect', 'wrinkle'], priceRange: '199,000원' },
-  { id: 'v20', name: '아이리쥬란 프리미엄 3cc', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['eye'], effects: ['regeneration_effect', 'wrinkle'], priceRange: '290,000원' },
-  { id: 'v21', name: '물광주사 2cc', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['face'], effects: ['hydration', 'brightening'], priceRange: '89,000원' },
-  { id: 'v22', name: '쥬베룩스킨 1cc', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity'], priceRange: '49,000~99,000원' },
-  { id: 'v23', name: '레디어스 1회', clinic: '밴스의원', branches: allVands, category: 'skin_booster', bodyAreas: ['face'], effects: ['volume', 'elasticity', 'tightening'], priceRange: '890,000원' },
+  // =============================================
+  //  밴스의원 — 스킨케어 체험가 (크롤링: 신사점)
+  // =============================================
+  { 
+    id: 'v50', name: '아쿠아필 2단계', clinic: '밴스의원', branches: allVands, 
+    category: 'skincare', bodyAreas: ['face'], effects: ['hydration', 'pore'], 
+    priceRange: '9,900원',
+    branchPrices: [
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%' },
+    ],
+  },
+  { 
+    id: 'v51', name: '비타민관리', clinic: '밴스의원', branches: allVands, 
+    category: 'skincare', bodyAreas: ['face'], effects: ['brightening', 'hydration'], 
+    priceRange: '9,900원',
+    branchPrices: [
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%' },
+    ],
+  },
+  { 
+    id: 'v52', name: 'LED재생레이저', clinic: '밴스의원', branches: allVands, 
+    category: 'skincare', bodyAreas: ['face'], effects: ['regeneration_effect'], 
+    priceRange: '9,900원',
+    branchPrices: [
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%' },
+    ],
+  },
+  { 
+    id: 'v53', name: '크라이오 진정관리', clinic: '밴스의원', branches: allVands, 
+    category: 'skincare', bodyAreas: ['face'], effects: ['hydration', 'redness'], 
+    priceRange: '9,900원',
+    branchPrices: [
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%' },
+    ],
+  },
+  { 
+    id: 'v54', name: '피부스케일링', clinic: '밴스의원', branches: allVands, 
+    category: 'peeling', bodyAreas: ['face'], effects: ['brightening', 'pore'], 
+    priceRange: '9,900원',
+    branchPrices: [
+      { branch: '신사점', price: '9,900원', originalPrice: '18,000원', discount: '45%' },
+    ],
+  },
 
-  // 밴스의원 — 리프팅
-  { id: 'v24', name: '인모드리프팅 1회', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '6,900~199,000원', description: '부위별 추가 금액' },
-  { id: 'v25', name: '슈링크 유니버스 100샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '9,900~49,000원' },
-  { id: 'v26', name: '아이슈링크 100샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['eye'], effects: ['elasticity', 'tightening', 'wrinkle'], priceRange: '69,000원' },
-  { id: 'v27', name: '리니어지 100샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '49,000~90,000원' },
-  { id: 'v28', name: '울쎄라리프팅 100샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening', 'wrinkle'], priceRange: '199,000~400,000원' },
-  { id: 'v29', name: '티타늄리프팅 100KJ', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '590,000원' },
-  { id: 'v30', name: '써마지 FLX 300샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening', 'wrinkle'], priceRange: '899,000~1,290,000원' },
-  { id: 'v31', name: '온다리프팅 10KJ', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '59,000~99,000원' },
-  { id: 'v32', name: '볼뉴머리프팅 100샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '99,000원' },
-  { id: 'v33', name: '브이로리프팅 100샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '59,000원' },
-  { id: 'v34', name: '올리지오리프팅 100샷', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '99,000원' },
-  { id: 'v35', name: '포텐자콜라스터 1회', clinic: '밴스의원', branches: allVands, category: 'lifting', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity', 'pore'], priceRange: '49,000~299,000원', description: '팁값 별도' },
+  // =============================================
+  //  밴스의원 — 콜라스터 (크롤링: 신사점)
+  // =============================================
+  { 
+    id: 'v60', name: '콜라스터 오리지널 4cc (3회)', clinic: '밴스의원', branches: allVands, 
+    category: 'regeneration', bodyAreas: ['face'], effects: ['regeneration_effect', 'elasticity'], 
+    priceRange: '297,000원', description: '6가지 앰플 맞춤 피부재생 콜라겐 부스터',
+    branchPrices: [
+      { branch: '신사점', price: '297,000원', originalPrice: '550,000원', discount: '46%' },
+    ],
+  },
+  { 
+    id: 'v61', name: '콜라스터 브라이트닝 6cc (3회)', clinic: '밴스의원', branches: allVands, 
+    category: 'regeneration', bodyAreas: ['face'], effects: ['brightening', 'regeneration_effect'], 
+    priceRange: '447,000원',
+    branchPrices: [
+      { branch: '신사점', price: '447,000원', originalPrice: '800,000원', discount: '44%' },
+    ],
+  },
+  { 
+    id: 'v62', name: '콜라스터 아크네 6cc (3회)', clinic: '밴스의원', branches: allVands, 
+    category: 'regeneration', bodyAreas: ['face'], effects: ['acne_care', 'regeneration_effect'], 
+    priceRange: '597,000원',
+    branchPrices: [
+      { branch: '신사점', price: '597,000원', originalPrice: '1,000,000원', discount: '40%' },
+    ],
+  },
+  { 
+    id: 'v63', name: '콜라스터 넥소좀 6cc (3회)', clinic: '밴스의원', branches: allVands, 
+    category: 'regeneration', bodyAreas: ['face', 'neck'], effects: ['regeneration_effect', 'elasticity'], 
+    priceRange: '747,000원',
+    branchPrices: [
+      { branch: '신사점', price: '747,000원', originalPrice: '1,400,000원', discount: '47%' },
+    ],
+  },
 
-  // 밴스의원 — 레이저 토닝/미백/색소
-  { id: 'v36', name: '미인토닝 1회', clinic: '밴스의원', branches: allVands, category: 'laser_toning', bodyAreas: ['face'], effects: ['brightening', 'whitening'], priceRange: '39,000~79,000원' },
-  { id: 'v37', name: '피코토닝 1+1회', clinic: '밴스의원', branches: allVands, category: 'laser_toning', bodyAreas: ['face'], effects: ['brightening', 'whitening', 'pore'], priceRange: '9,900~59,000원' },
-  { id: 'v38', name: '피코토닝+피코지우개 1회', clinic: '밴스의원', branches: allVands, category: 'laser_toning', bodyAreas: ['face'], effects: ['brightening', 'whitening'], priceRange: '99,000원' },
-  { id: 'v39', name: '엑셀V레이저 1파장', clinic: '밴스의원', branches: allVands, category: 'pigment', bodyAreas: ['face'], effects: ['redness', 'brightening', 'whitening'], priceRange: '129,000~199,000원' },
-  { id: 'v40', name: '피코프락셀 1회', clinic: '밴스의원', branches: allVands, category: 'pigment', bodyAreas: ['face'], effects: ['scar', 'pore', 'brightening'], priceRange: '69,000~99,000원' },
-  { id: 'v41', name: '얼굴점제거 (2mm이하)', clinic: '밴스의원', branches: allVands, category: 'pigment', bodyAreas: ['face'], effects: ['brightening'], priceRange: '9,900원' },
-  { id: 'v42', name: '비립종/한관종/편평사마귀 제거', clinic: '밴스의원', branches: allVands, category: 'pigment', bodyAreas: ['face'], effects: ['brightening'], priceRange: '9,900원/개' },
+  // =============================================
+  //  밴스의원 — 제모 (기존 데이터 유지)
+  // =============================================
+  { id: 'v70', name: '여성 겨드랑이/인중 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['body'], effects: ['hair_removal_effect'], priceRange: '1,000~19,000원' },
+  { id: 'v71', name: '여성 헤어라인/눈썹 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['face'], effects: ['hair_removal_effect'], priceRange: '60,000원' },
+  { id: 'v72', name: '여성 팔하완 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['arm'], effects: ['hair_removal_effect'], priceRange: '10,000~80,000원' },
+  { id: 'v73', name: '여성 다리전체 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['leg'], effects: ['hair_removal_effect'], priceRange: '80,000~150,000원' },
+  { id: 'v74', name: '남성 인중+콧수염 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['face'], effects: ['hair_removal_effect'], priceRange: '1,000~29,000원' },
 
-  // 밴스의원 — 여드름
-  { id: 'v43', name: '아그네스 레이저 1회', clinic: '밴스의원', branches: allVands, category: 'acne', bodyAreas: ['face'], effects: ['acne_care', 'pore'], priceRange: '10,000~150,000원', description: '팁값 별도' },
-
-  // 밴스의원 — 제모
-  { id: 'v44', name: '여성 겨드랑이/인중 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['body'], effects: ['hair_removal_effect'], priceRange: '1,000~19,000원' },
-  { id: 'v45', name: '여성 헤어라인/눈썹 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['face'], effects: ['hair_removal_effect'], priceRange: '60,000원' },
-  { id: 'v46', name: '여성 팔하완 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['arm'], effects: ['hair_removal_effect'], priceRange: '10,000~80,000원' },
-  { id: 'v47', name: '여성 다리전체 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['leg'], effects: ['hair_removal_effect'], priceRange: '80,000~150,000원' },
-  { id: 'v48', name: '남성 인중+콧수염 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['face'], effects: ['hair_removal_effect'], priceRange: '1,000~29,000원' },
-  { id: 'v49', name: '남성 팔하완 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['arm'], effects: ['hair_removal_effect'], priceRange: '90,000원' },
-  { id: 'v50', name: '남성 종아리 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['leg'], effects: ['hair_removal_effect'], priceRange: '100,000원', description: '무릎 포함' },
-  { id: 'v51', name: '남성 브라질리언 제모 1회', clinic: '밴스의원', branches: allVands, category: 'hair_removal', bodyAreas: ['bikini'], effects: ['hair_removal_effect'], priceRange: '199,000원', description: '항문 포함' },
+  // =============================================
+  //  밴스의원 — 필러 (기존 + 크롤링)
+  // =============================================
+  { id: 'v80', name: '볼륨필러 아띠에르 (국산) 1cc', clinic: '밴스의원', branches: allVands, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '49,000원' },
+  { id: 'v81', name: '볼륨필러 벨로테로 (수입) 1cc', clinic: '밴스의원', branches: allVands, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '290,000~390,000원' },
+  { id: 'v82', name: '볼륨필러 레스틸렌 (수입) 1cc', clinic: '밴스의원', branches: allVands, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '330,000~390,000원' },
+  { id: 'v83', name: '하이코/바비코 (수입) 1줄', clinic: '밴스의원', branches: allVands, category: 'thread_lifting', bodyAreas: ['face'], effects: ['elasticity', 'tightening'], priceRange: '99,000원' },
 
   // =============================================
   //  쁨클리닉 — 보톡스
@@ -206,12 +570,10 @@ export const CLINIC_TREATMENTS: ClinicTreatment[] = [
   { id: 'p21', name: '쥬비덤 필러 (수입)', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '300,000원' },
   { id: 'p22', name: '레스틸렌 필러 (수입)', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '300,000원' },
   { id: 'p23', name: '벨로테로 필러 (수입)', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '300,000원' },
-  { id: 'p24', name: '스타일에이지 필러 (수입)', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '250,000원', description: '정가 30만 → 이벤트가' },
+  { id: 'p24', name: '스타일에이지 필러 (수입)', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'wrinkle'], priceRange: '250,000원' },
   { id: 'p25', name: '수입 눈밑재배치 필러', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['eye'], effects: ['volume', 'wrinkle'], priceRange: '500,000원' },
   { id: 'p26', name: '입술필러 1부위 (국산)', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume'], priceRange: '80,000원', description: '위/아래/꼬리 중 택1' },
   { id: 'p27', name: '큐오필 플러스 1cc', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'elasticity'], priceRange: '60,000원', description: '3cc 이상 시술 시 적용' },
-
-  // 쁨클리닉 — 목주름 필러 패키지
   { id: 'p28', name: '목주름필러+보톡스', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['neck'], effects: ['wrinkle', 'elasticity'], priceRange: '300,000원' },
   { id: 'p29', name: '목주름필러+보톡스+슈링크300샷', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['neck'], effects: ['wrinkle', 'elasticity', 'tightening'], priceRange: '500,000원' },
   { id: 'p30', name: '목주름 풀패키지 (필러+보톡스+슈링크+물광)', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['neck'], effects: ['wrinkle', 'elasticity', 'tightening', 'hydration'], priceRange: '700,000원' },
@@ -249,10 +611,8 @@ export const CLINIC_TREATMENTS: ClinicTreatment[] = [
   { id: 'p56', name: '아기주사 1회', clinic: '쁨클리닉', branches: allPpeum, category: 'skin_booster', bodyAreas: ['face'], effects: ['hydration', 'brightening', 'regeneration_effect'], priceRange: '100,000원' },
   { id: 'p57', name: '아기주사 3회', clinic: '쁨클리닉', branches: allPpeum, category: 'skin_booster', bodyAreas: ['face'], effects: ['hydration', 'brightening', 'regeneration_effect'], priceRange: '250,000원' },
 
-  // 쁨클리닉 — 잇몸/자갈턱 보톡스
+  // 쁨클리닉 — 기타
   { id: 'p58', name: '잇몸노출 보톡스', clinic: '쁨클리닉', branches: allPpeum, category: 'botox', bodyAreas: ['face'], effects: ['contour_effect'], priceRange: '50,000원' },
   { id: 'p59', name: '자갈턱/콧볼/콧등 보톡스', clinic: '쁨클리닉', branches: allPpeum, category: 'botox', bodyAreas: ['face'], effects: ['contour_effect'], priceRange: '30,000원' },
-
-  // 쁨클리닉 — 심술보 삭제 필러
   { id: 'p60', name: '심술보 삭제 필러', clinic: '쁨클리닉', branches: allPpeum, category: 'filler', bodyAreas: ['face'], effects: ['volume', 'contour_effect'], priceRange: '400,000원' },
 ];

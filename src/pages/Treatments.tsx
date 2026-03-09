@@ -14,11 +14,13 @@ import {
   EFFECT_LABELS,
   VANDS_BRANCHES,
   PPEUM_BRANCHES,
+  VANDS_REGIONS,
   TreatmentCategory,
   TreatmentBodyArea,
   TreatmentEffect,
   ClinicTreatment,
   ClinicBrand,
+  BranchPrice,
 } from '@/data/treatmentCatalog';
 
 // Map catalog category → skin layer
@@ -458,6 +460,44 @@ const Treatments = () => {
                     </div>
                   )}
                 </div>
+
+                {/* Branch Prices */}
+                {selectedTreatment.branchPrices && selectedTreatment.branchPrices.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Tag className="h-3.5 w-3.5 text-primary" />
+                      <p className="text-xs font-semibold text-foreground">지점별 가격</p>
+                    </div>
+                    <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                      {(() => {
+                        const grouped = selectedTreatment.branchPrices!.reduce<Record<string, BranchPrice[]>>((acc, bp) => {
+                          if (!acc[bp.branch]) acc[bp.branch] = [];
+                          acc[bp.branch].push(bp);
+                          return acc;
+                        }, {});
+                        return Object.entries(grouped).map(([branch, prices]) => (
+                          <div key={branch} className="bg-muted/50 rounded-lg p-2.5">
+                            <p className="text-[11px] font-semibold text-foreground mb-1">{branch}</p>
+                            {prices.map((bp, i) => (
+                              <div key={i} className="flex items-center justify-between text-[11px] mt-0.5">
+                                <span className="text-muted-foreground">{bp.note || '기본'}</span>
+                                <div className="flex items-center gap-2">
+                                  {bp.originalPrice && (
+                                    <span className="text-muted-foreground/60 line-through text-[10px]">{bp.originalPrice}</span>
+                                  )}
+                                  <span className="text-primary font-semibold">{bp.price}</span>
+                                  {bp.discount && (
+                                    <Badge variant="destructive" className="text-[9px] px-1 py-0 h-4">{bp.discount}</Badge>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ));
+                      })()}
+                    </div>
+                  </div>
+                )}
 
                 {/* Branches */}
                 <div>
