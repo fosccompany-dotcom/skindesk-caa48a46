@@ -100,6 +100,47 @@ export interface CyclePreset {
   product?: string;
 }
 
+// 관리 패키지 메뉴 항목
+export type PackageTier = 'basic' | 'premium';
+
+export interface PackageMenuItem {
+  name: string;
+  tier: PackageTier;
+  skinLayer: SkinLayer;
+  defaultCycleDays?: number;
+}
+
+export const PACKAGE_TIER_LABELS: Record<PackageTier, string> = {
+  basic: '베이직 관리',
+  premium: '프리미엄 관리',
+};
+
+export const PACKAGE_MENU_ITEMS: PackageMenuItem[] = [
+  // 베이직 관리
+  { name: '스케일링', tier: 'basic', skinLayer: 'epidermis', defaultCycleDays: 180 },
+  { name: '아쿠아필', tier: 'basic', skinLayer: 'epidermis', defaultCycleDays: 28 },
+  { name: '비타민관리', tier: 'basic', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '크라이오관리', tier: 'basic', skinLayer: 'epidermis', defaultCycleDays: 14 },
+  { name: 'LED재생레이저(+모델링팩)', tier: 'basic', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '이온자임', tier: 'basic', skinLayer: 'epidermis', defaultCycleDays: 14 },
+  { name: '신데렐라주사', tier: 'basic', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '백옥주사', tier: 'basic', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '태반주사', tier: 'basic', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '비타민주사', tier: 'basic', skinLayer: 'dermis', defaultCycleDays: 14 },
+  // 프리미엄 관리
+  { name: '라라필', tier: 'premium', skinLayer: 'epidermis', defaultCycleDays: 28 },
+  { name: '플라센타관리', tier: 'premium', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '블랙헤드관리', tier: 'premium', skinLayer: 'epidermis', defaultCycleDays: 14 },
+  { name: '블랙필', tier: 'premium', skinLayer: 'epidermis', defaultCycleDays: 28 },
+  { name: '예스필', tier: 'premium', skinLayer: 'epidermis', defaultCycleDays: 28 },
+  { name: '슈퍼신데렐라주사', tier: 'premium', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '슈퍼백옥주사', tier: 'premium', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '아르기닌주사', tier: 'premium', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '물방울관리 6분', tier: 'premium', skinLayer: 'dermis', defaultCycleDays: 14 },
+  { name: '압출', tier: 'premium', skinLayer: 'epidermis', defaultCycleDays: 14 },
+  { name: '핑크필', tier: 'premium', skinLayer: 'epidermis', defaultCycleDays: 28 },
+];
+
 export const CYCLE_PRESETS: CyclePreset[] = [
   // 표피층
   { treatmentName: '레이저 토닝', skinLayer: 'epidermis', defaultCycleDays: 14, description: '2주 간격 권장' },
