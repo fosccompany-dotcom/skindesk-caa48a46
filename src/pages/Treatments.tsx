@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { Filter, X, ChevronDown, ChevronUp, Search } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
   CLINIC_TREATMENTS,
