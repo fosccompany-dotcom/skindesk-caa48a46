@@ -163,9 +163,13 @@ const Treatments = () => {
   const toggle = <T,>(arr: T[], val: T) =>
     arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
 
-  const activeFilterCount = selectedCategories.length + selectedPrices.length + selectedAreas.length + selectedEffects.length;
+  const activeFilterCount = selectedCategories.length + selectedPrices.length + selectedAreas.length + selectedEffects.length + (selectedClinic ? 1 : 0) + selectedBranches.length;
+
+  const availableBranches = selectedClinic === '밴스의원' ? VANDS_BRANCHES : selectedClinic === '쁨클리닉' ? PPEUM_BRANCHES : [];
 
   const clearAll = () => {
+    setSelectedClinic(null);
+    setSelectedBranches([]);
     setSelectedCategories([]);
     setSelectedPrices([]);
     setSelectedAreas([]);
