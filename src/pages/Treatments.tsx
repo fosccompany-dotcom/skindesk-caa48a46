@@ -180,6 +180,8 @@ const Treatments = () => {
   const filtered = useMemo(() => {
     return CLINIC_TREATMENTS.filter(t => {
       if (showFavoritesOnly && !favorites.has(t.id)) return false;
+      if (selectedClinic && t.clinic !== selectedClinic) return false;
+      if (selectedBranches.length && !selectedBranches.some(b => t.branches.includes(b))) return false;
       if (search) {
         const q = search.toLowerCase();
         const match = t.name.toLowerCase().includes(q) ||
