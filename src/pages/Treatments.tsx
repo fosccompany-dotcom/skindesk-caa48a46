@@ -399,6 +399,15 @@ const Treatments = () => {
                     ))}
                   </div>
                 </div>
+
+                {/* Register Button */}
+                <Button
+                  className="w-full mt-2 gap-2"
+                  onClick={() => registerCycle(selectedTreatment)}
+                >
+                  <CalendarPlus className="h-4 w-4" />
+                  시술 주기 등록
+                </Button>
               </div>
             </>
           )}
