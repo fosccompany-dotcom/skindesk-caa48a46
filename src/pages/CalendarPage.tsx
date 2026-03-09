@@ -142,7 +142,7 @@ const CalendarPage = () => {
         </div>
       </div>
 
-      <div className="page-content space-y-5 -mt-3">
+      <div className="page-content space-y-5 pt-4">
         {/* 캘린더 카드 */}
         <Card className="glass-card overflow-hidden">
           {/* 요일 헤더 */}
