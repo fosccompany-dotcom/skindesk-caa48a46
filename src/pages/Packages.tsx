@@ -56,12 +56,40 @@ const Packages = () => {
           </button>
         </div>
 
+        {/* Clinic Filter */}
+        <ScrollArea className="w-full mb-4">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedClinic(null)}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                !selectedClinic ? 'bg-accent text-accent-foreground shadow-sm' : 'bg-muted text-muted-foreground'
+              }`}
+            >
+              <Building2 className="h-3 w-3" />
+              전체 병원
+            </button>
+            {clinics.map((clinic) => (
+              <button
+                key={clinic}
+                onClick={() => setSelectedClinic(clinic)}
+                className={`flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                  selectedClinic === clinic ? 'bg-accent text-accent-foreground shadow-sm' : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                <Building2 className="h-3 w-3" />
+                {clinic}
+              </button>
+            ))}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+
         {filterType === 'body' ? (
           <Tabs defaultValue="all" className="w-full">
             <ScrollArea className="w-full mb-4">
               <TabsList className="inline-flex w-auto gap-1 h-auto bg-transparent p-0">
                 <TabsTrigger value="all" className="text-xs rounded-full px-3 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">전체</TabsTrigger>
-                {bodyAreas.filter(a => mockPackages.some(p => p.bodyArea === a)).map((a) => (
+                {bodyAreas.filter(a => filteredPackages.some(p => p.bodyArea === a)).map((a) => (
                   <TabsTrigger key={a} value={a} className="text-xs rounded-full px-3 py-1.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">{BODY_AREA_LABELS[a]}</TabsTrigger>
                 ))}
               </TabsList>
@@ -69,7 +97,7 @@ const Packages = () => {
             </ScrollArea>
 
             <TabsContent value="all" className="space-y-2.5 mt-0">
-              {mockPackages.map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />)}
+              {filteredPackages.map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />)}
             </TabsContent>
 
             {bodyAreas.map((area) => (
