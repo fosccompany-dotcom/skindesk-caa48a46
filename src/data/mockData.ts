@@ -32,14 +32,14 @@ export const mockPackages: TreatmentPackage[] = [
 ];
 
 export const mockRecords: TreatmentRecord[] = [
-  { id: 'r1', date: '2026-03-03', packageId: 'p1', treatmentName: '레이저 토닝', skinLayer: 'epidermis', bodyArea: 'face', notes: '시술 후 약간의 홍조', clinic: '글로우 피부과' },
-  { id: 'r2', date: '2026-02-25', packageId: 'p2', treatmentName: '프리미엄 리프팅', skinLayer: 'dermis', bodyArea: 'face', clinic: '글로우 피부과' },
-  { id: 'r3', date: '2026-02-18', packageId: 'p1', treatmentName: '아쿠아필링', skinLayer: 'epidermis', bodyArea: 'face', clinic: '글로우 피부과' },
-  { id: 'r4', date: '2026-02-10', packageId: 'p3', treatmentName: '울쎄라 리프팅', skinLayer: 'subcutaneous', bodyArea: 'face', notes: '첫 회차 완료', clinic: '에스테틱 피부과' },
-  { id: 'r5', date: '2026-03-08', packageId: 'p4', treatmentName: '알렉산드라이트 제모', skinLayer: 'epidermis', bodyArea: 'arm', clinic: '글로우 피부과' },
-  { id: 'r6', date: '2026-03-08', packageId: 'p5', treatmentName: '알렉산드라이트 제모', skinLayer: 'epidermis', bodyArea: 'leg', clinic: '글로우 피부과' },
-  { id: 'r7', date: '2026-03-01', packageId: 'p6', treatmentName: '바디 타이트닝', skinLayer: 'subcutaneous', bodyArea: 'abdomen', notes: '복부 중심 시술', clinic: '에스테틱 피부과' },
-  { id: 'r8', date: '2026-02-28', packageId: 'p7', treatmentName: '등 여드름 필링', skinLayer: 'dermis', bodyArea: 'back', clinic: '글로우 피부과' },
+  { id: 'r1', date: '2026-03-03', packageId: 'p1', treatmentName: '레이저 토닝', skinLayer: 'epidermis', bodyArea: 'face', notes: '시술 후 약간의 홍조', clinic: '글로우 피부과', satisfaction: 4, memo: '홍조가 조금 있었지만 다음날 바로 가라앉음. 피부톤 밝아진 느낌' },
+  { id: 'r2', date: '2026-02-25', packageId: 'p2', treatmentName: '프리미엄 리프팅', skinLayer: 'dermis', bodyArea: 'face', clinic: '글로우 피부과', satisfaction: 5, memo: '턱라인이 확실히 올라감. 만족도 높음' },
+  { id: 'r3', date: '2026-02-18', packageId: 'p1', treatmentName: '아쿠아필링', skinLayer: 'epidermis', bodyArea: 'face', clinic: '글로우 피부과', satisfaction: 3 },
+  { id: 'r4', date: '2026-02-10', packageId: 'p3', treatmentName: '울쎄라 리프팅', skinLayer: 'subcutaneous', bodyArea: 'face', notes: '첫 회차 완료', clinic: '에스테틱 피부과', satisfaction: 4, memo: '통증이 있었지만 효과는 확실. 2주 후부터 효과 체감' },
+  { id: 'r5', date: '2026-03-08', packageId: 'p4', treatmentName: '알렉산드라이트 제모', skinLayer: 'epidermis', bodyArea: 'arm', clinic: '글로우 피부과', satisfaction: 4 },
+  { id: 'r6', date: '2026-03-08', packageId: 'p5', treatmentName: '알렉산드라이트 제모', skinLayer: 'epidermis', bodyArea: 'leg', clinic: '글로우 피부과', satisfaction: 4 },
+  { id: 'r7', date: '2026-03-01', packageId: 'p6', treatmentName: '바디 타이트닝', skinLayer: 'subcutaneous', bodyArea: 'abdomen', notes: '복부 중심 시술', clinic: '에스테틱 피부과', satisfaction: 3, memo: '아직 효과 체감 안됨. 3회 이상 해봐야 할 듯' },
+  { id: 'r8', date: '2026-02-28', packageId: 'p7', treatmentName: '등 여드름 필링', skinLayer: 'dermis', bodyArea: 'back', clinic: '글로우 피부과', satisfaction: 5, memo: '등 여드름이 확실히 줄었음. 각질도 정리됨' },
 ];
 
 export const mockCycles: TreatmentCycle[] = [
