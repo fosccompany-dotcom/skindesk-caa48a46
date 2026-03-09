@@ -4,8 +4,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { mockPackages, mockRecords } from '@/data/mockData';
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea } from '@/types/skin';
-import { Sparkles } from 'lucide-react';
-import { useState } from 'react';
+import { Sparkles, Building2 } from 'lucide-react';
+import { useState, useMemo } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const layers: SkinLayer[] = ['epidermis', 'dermis', 'subcutaneous'];
@@ -13,6 +13,24 @@ const bodyAreas: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 
 
 const Packages = () => {
   const [filterType, setFilterType] = useState<'layer' | 'body'>('body');
+  const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
+
+  const clinics = useMemo(() => {
+    const clinicSet = new Set<string>();
+    mockPackages.forEach(p => clinicSet.add(p.clinic));
+    mockRecords.forEach(r => clinicSet.add(r.clinic));
+    return Array.from(clinicSet);
+  }, []);
+
+  const filteredPackages = useMemo(() =>
+    selectedClinic ? mockPackages.filter(p => p.clinic === selectedClinic) : mockPackages,
+    [selectedClinic]
+  );
+
+  const filteredRecords = useMemo(() =>
+    selectedClinic ? mockRecords.filter(r => r.clinic === selectedClinic) : mockRecords,
+    [selectedClinic]
+  );
 
   return (
     <div className="min-h-screen bg-background">
