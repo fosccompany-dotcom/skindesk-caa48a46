@@ -326,49 +326,64 @@ const Treatments = () => {
             조건에 맞는 시술이 없습니다
           </div>
         )}
-        {Object.entries(grouped).map(([category, treatments]) => (
-          <div key={category}>
-            <h2 className="text-sm font-semibold text-foreground mb-2">{category} ({treatments.length})</h2>
-            <div className="space-y-2">
-              {treatments.map(t => (
-                <div key={t.id} className="glass-card p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform" onClick={() => setSelectedTreatment(t)}>
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1" >
-                      <p className="text-sm font-medium text-foreground truncate">{t.name}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{t.clinic}</p>
-                      {t.description && (
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{t.description}</p>
-                      )}
+        {Object.entries(grouped).map(([category, treatments]) => {
+          const isOpen = expandedCategories.has(category);
+          return (
+            <div key={category} className="glass-card rounded-xl overflow-hidden">
+              <button
+                onClick={() => setExpandedCategories(prev => {
+                  const next = new Set(prev);
+                  if (next.has(category)) next.delete(category); else next.add(category);
+                  return next;
+                })}
+                className="w-full flex items-center justify-between px-3 py-3"
+              >
+                <h2 className="text-sm font-semibold text-foreground">{category} ({treatments.length})</h2>
+                {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
+              </button>
+              {isOpen && (
+                <div className="space-y-2 px-3 pb-3">
+                  {treatments.map(t => (
+                    <div key={t.id} className="bg-background/50 border border-border/30 p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform" onClick={() => setSelectedTreatment(t)}>
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-foreground truncate">{t.name}</p>
+                          <p className="text-xs text-muted-foreground mt-0.5">{t.clinic}</p>
+                          {t.description && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{t.description}</p>
+                          )}
+                        </div>
+                        <div className="flex flex-col items-end gap-1.5 shrink-0">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); toggleFavorite(t.id); }}
+                            className="p-1 rounded-full transition-colors"
+                          >
+                            <Heart className={cn('h-4 w-4 transition-colors', favorites.has(t.id) ? 'fill-destructive text-destructive' : 'text-muted-foreground')} />
+                          </button>
+                          {t.priceRange && (
+                            <span className="text-xs text-primary font-medium whitespace-nowrap">{t.priceRange}</span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {t.bodyAreas.map(a => (
+                          <Badge key={a} variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary">
+                            {BODY_AREA_TREATMENT_LABELS[a]}
+                          </Badge>
+                        ))}
+                        {t.effects.slice(0, 3).map(e => (
+                          <Badge key={e} variant="secondary" className="text-[10px] px-1.5 py-0">
+                            {EFFECT_LABELS[e]}
+                          </Badge>
+                        ))}
+                      </div>
                     </div>
-                    <div className="flex flex-col items-end gap-1.5 shrink-0">
-                      <button
-                        onClick={(e) => { e.stopPropagation(); toggleFavorite(t.id); }}
-                        className="p-1 rounded-full transition-colors"
-                      >
-                        <Heart className={cn('h-4 w-4 transition-colors', favorites.has(t.id) ? 'fill-destructive text-destructive' : 'text-muted-foreground')} />
-                      </button>
-                      {t.priceRange && (
-                        <span className="text-xs text-primary font-medium whitespace-nowrap">{t.priceRange}</span>
-                      )}
-                    </div>
-                  </div>
-                  <div className="flex flex-wrap gap-1 mt-2">
-                    {t.bodyAreas.map(a => (
-                      <Badge key={a} variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary">
-                        {BODY_AREA_TREATMENT_LABELS[a]}
-                      </Badge>
-                    ))}
-                    {t.effects.slice(0, 3).map(e => (
-                      <Badge key={e} variant="secondary" className="text-[10px] px-1.5 py-0">
-                        {EFFECT_LABELS[e]}
-                      </Badge>
-                    ))}
-                  </div>
+                  ))}
                 </div>
-              ))}
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Detail Modal */}
