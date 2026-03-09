@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
+import { Card, CardContent } from '@/components/ui/card';
 import { mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
 import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -114,146 +115,156 @@ const CalendarPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* 헤더 */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border safe-top">
-        <div className="flex items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <h1 className="text-lg font-bold">{format(currentMonth, 'yyyy년 M월', { locale: ko })}</h1>
-          </div>
-          <div className="flex items-center gap-1">
-            <button
-              onClick={goToToday}
-              className="px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-full"
-            >
-              오늘
-            </button>
-            <button onClick={goToPrevMonth} className="p-2 hover:bg-muted rounded-full">
-              <ChevronLeft className="h-5 w-5 text-muted-foreground" />
-            </button>
-            <button onClick={goToNextMonth} className="p-2 hover:bg-muted rounded-full">
-              <ChevronRight className="h-5 w-5 text-muted-foreground" />
-            </button>
-          </div>
-        </div>
-
-        {/* 요일 헤더 */}
-        <div className="grid grid-cols-7 border-t border-border">
-          {WEEKDAYS.map((day, idx) => (
-            <div
-              key={day}
-              className={cn(
-                'text-center text-xs font-medium py-2',
-                idx === 0 && 'text-rose',
-                idx === 6 && 'text-info',
-                idx !== 0 && idx !== 6 && 'text-muted-foreground'
-              )}
-            >
-              {day}
+    <div className="min-h-screen bg-background">
+      {/* 그라디언트 헤더 */}
+      <div className="gradient-sage safe-top">
+        <div className="page-header-gradient">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm opacity-70 font-light">나의 일정 📅</p>
+              <h1 className="mt-0.5 text-xl font-bold">{format(currentMonth, 'yyyy년 M월', { locale: ko })}</h1>
             </div>
-          ))}
-        </div>
-
-        {/* 캘린더 그리드 */}
-        <div className="grid grid-cols-7 border-t border-border">
-          {calendarDays.map((day, idx) => {
-            const dateStr = format(day, 'yyyy-MM-dd');
-            const dayEvents = eventsByDate[dateStr] || [];
-            const isCurrentMonth = isSameMonth(day, currentMonth);
-            const isSelected = isSameDay(day, selectedDate);
-            const isTodayDate = isToday(day) || isSameDay(day, today);
-            const dayOfWeek = day.getDay();
-
-            return (
+            <div className="flex items-center gap-1">
               <button
-                key={idx}
-                onClick={() => setSelectedDate(day)}
-                className={cn(
-                  'relative flex flex-col items-center py-2 min-h-[52px] border-b border-r border-border/50',
-                  !isCurrentMonth && 'opacity-30',
-                  isSelected && 'bg-primary/5'
-                )}
+                onClick={goToToday}
+                className="px-3 py-1.5 text-xs font-medium text-primary-foreground bg-white/15 rounded-full backdrop-blur-sm tap-target"
               >
-                <span
-                  className={cn(
-                    'w-7 h-7 flex items-center justify-center text-sm rounded-full',
-                    isTodayDate && 'bg-primary text-primary-foreground font-semibold',
-                    !isTodayDate && isSelected && 'bg-muted font-medium',
-                    !isTodayDate && !isSelected && dayOfWeek === 0 && 'text-rose',
-                    !isTodayDate && !isSelected && dayOfWeek === 6 && 'text-info',
-                    !isTodayDate && !isSelected && dayOfWeek !== 0 && dayOfWeek !== 6 && 'text-foreground'
-                  )}
-                >
-                  {format(day, 'd')}
-                </span>
-                {/* 이벤트 도트 */}
-                {dayEvents.length > 0 && (
-                  <div className="flex gap-0.5 mt-0.5">
-                    {dayEvents.slice(0, 3).map((event, i) => {
-                      const isCycleEvent = event.id.startsWith('auto_');
-                      const configKey = isCycleEvent ? 'cycle' : event.type;
-                      const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
-                      return (
-                        <div
-                          key={i}
-                          className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)}
-                        />
-                      );
-                    })}
-                  </div>
-                )}
+                오늘
               </button>
-            );
-          })}
+              <button onClick={goToPrevMonth} className="p-2 hover:bg-white/10 rounded-full tap-target">
+                <ChevronLeft className="h-5 w-5 text-primary-foreground/70" />
+              </button>
+              <button onClick={goToNextMonth} className="p-2 hover:bg-white/10 rounded-full tap-target">
+                <ChevronRight className="h-5 w-5 text-primary-foreground/70" />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* 선택된 날짜 일정 */}
-      <div className="flex-1 overflow-auto pb-24">
-        <div className="px-4 py-3 bg-muted/50 border-b border-border sticky top-0">
-          <h2 className="text-sm font-semibold text-foreground">
-            {format(selectedDate, 'M월 d일 EEEE', { locale: ko })}
-          </h2>
-        </div>
-
-        {selectedEvents.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-            <CalendarDays className="h-12 w-12 mb-3 opacity-30" />
-            <p className="text-sm">일정이 없습니다</p>
+      <div className="page-content space-y-5 -mt-3">
+        {/* 캘린더 카드 */}
+        <Card className="glass-card overflow-hidden">
+          {/* 요일 헤더 */}
+          <div className="grid grid-cols-7 border-b border-border">
+            {WEEKDAYS.map((day, idx) => (
+              <div
+                key={day}
+                className={cn(
+                  'text-center text-xs font-medium py-2.5',
+                  idx === 0 && 'text-rose',
+                  idx === 6 && 'text-info',
+                  idx !== 0 && idx !== 6 && 'text-muted-foreground'
+                )}
+              >
+                {day}
+              </div>
+            ))}
           </div>
-        ) : (
-          <div className="divide-y divide-border">
-            {selectedEvents.map((event) => {
-              const isCycleEvent = event.id.startsWith('auto_');
-              const configKey = isCycleEvent ? 'cycle' : event.type;
-              const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
-              const Icon = config.icon;
-              const cycleInfo = (event as any).cycleInfo;
+
+          {/* 캘린더 그리드 */}
+          <div className="grid grid-cols-7">
+            {calendarDays.map((day, idx) => {
+              const dateStr = format(day, 'yyyy-MM-dd');
+              const dayEvents = eventsByDate[dateStr] || [];
+              const isCurrentMonth = isSameMonth(day, currentMonth);
+              const isSelected = isSameDay(day, selectedDate);
+              const isTodayDate = isToday(day) || isSameDay(day, today);
+              const dayOfWeek = day.getDay();
 
               return (
-                <div key={event.id} className="flex items-start gap-3 px-4 py-3 bg-card">
-                  <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl mt-0.5', config.bg)}>
-                    <Icon className={cn('h-4 w-4', config.color)} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground">{event.title}</p>
-                    {cycleInfo ? (
-                      <p className="text-xs text-muted-foreground mt-0.5">{cycleInfo}</p>
-                    ) : (
-                      <p className="text-xs text-muted-foreground mt-0.5">
-                        {configKey === 'treatment' ? '예약된 시술' : configKey === 'reminder' ? '알림' : '추천'}
-                      </p>
+                <button
+                  key={idx}
+                  onClick={() => setSelectedDate(day)}
+                  className={cn(
+                    'relative flex flex-col items-center py-2 min-h-[48px] tap-target',
+                    !isCurrentMonth && 'opacity-30',
+                    isSelected && 'bg-primary/5'
+                  )}
+                >
+                  <span
+                    className={cn(
+                      'w-7 h-7 flex items-center justify-center text-sm rounded-full transition-colors',
+                      isTodayDate && 'bg-primary text-primary-foreground font-semibold',
+                      !isTodayDate && isSelected && 'bg-muted font-medium',
+                      !isTodayDate && !isSelected && dayOfWeek === 0 && 'text-rose',
+                      !isTodayDate && !isSelected && dayOfWeek === 6 && 'text-info',
+                      !isTodayDate && !isSelected && dayOfWeek !== 0 && dayOfWeek !== 6 && 'text-foreground'
                     )}
-                  </div>
-                  <div className="flex flex-col gap-1 items-end shrink-0">
-                    {event.bodyArea && <BodyAreaBadge area={event.bodyArea} />}
-                    {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
-                  </div>
-                </div>
+                  >
+                    {format(day, 'd')}
+                  </span>
+                  {dayEvents.length > 0 && (
+                    <div className="flex gap-0.5 mt-0.5">
+                      {dayEvents.slice(0, 3).map((event, i) => {
+                        const isCycleEvent = event.id.startsWith('auto_');
+                        const configKey = isCycleEvent ? 'cycle' : event.type;
+                        const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
+                        return (
+                          <div
+                            key={i}
+                            className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+                </button>
               );
             })}
           </div>
-        )}
+        </Card>
+
+        {/* 선택된 날짜 일정 */}
+        <div>
+          <h2 className="section-title flex items-center gap-1.5">
+            <CalendarDays className="h-3.5 w-3.5 text-info" />
+            {format(selectedDate, 'M월 d일 EEEE', { locale: ko })}
+          </h2>
+
+          {selectedEvents.length === 0 ? (
+            <Card className="glass-card">
+              <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
+                <CalendarDays className="h-10 w-10 mb-3 opacity-20" />
+                <p className="text-sm">일정이 없습니다</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-2">
+              {selectedEvents.map((event) => {
+                const isCycleEvent = event.id.startsWith('auto_');
+                const configKey = isCycleEvent ? 'cycle' : event.type;
+                const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
+                const Icon = config.icon;
+                const cycleInfo = (event as any).cycleInfo;
+
+                return (
+                  <Card key={event.id} className="glass-card">
+                    <CardContent className="flex items-center gap-3 p-3.5">
+                      <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', config.bg)}>
+                        <Icon className={cn('h-4 w-4', config.color)} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-semibold">{event.title}</p>
+                        {cycleInfo ? (
+                          <p className="text-[11px] text-muted-foreground mt-0.5">{cycleInfo}</p>
+                        ) : (
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                            {configKey === 'treatment' ? '예약된 시술' : configKey === 'reminder' ? '알림' : '추천'}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1 items-end shrink-0">
+                        {event.bodyArea && <BodyAreaBadge area={event.bodyArea} />}
+                        {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
