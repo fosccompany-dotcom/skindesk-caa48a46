@@ -9,11 +9,11 @@ import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { mockProfile } from '@/data/mockData';
 import { SkinType, BodyArea, BODY_AREA_LABELS } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, Wallet } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, Search as SearchIcon } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import PaymentHistory from '@/components/PaymentHistory';
+import TreatmentSearch from '@/components/TreatmentSearch';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
 const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여드름', '홍조', '건조', '다크서클', '제모', '셀룰라이트', '튼살'];
