@@ -10,11 +10,15 @@ export const mockProfile: UserProfile = {
 };
 
 export const mockPoints: PointTransaction[] = [
-  { id: '1', date: '2026-03-01', type: 'charge', amount: 2500000, description: '200만원 결제 → 250만원 충전', balance: 2500000 },
-  { id: '2', date: '2026-03-03', type: 'use', amount: -150000, description: '레이저 토닝 (얼굴)', balance: 2350000 },
-  { id: '3', date: '2026-03-05', type: 'referral', amount: 50000, description: '지인 소개 포인트 적립', balance: 2400000 },
-  { id: '4', date: '2026-03-07', type: 'use', amount: -200000, description: '프리미엄 리프팅 (얼굴)', balance: 2200000 },
-  { id: '5', date: '2026-03-08', type: 'use', amount: -300000, description: '제모 레이저 (팔+다리)', balance: 1900000 },
+  { id: '1', date: '2026-03-01', type: 'charge', amount: 2500000, description: '200만원 결제 → 250만원 충전', balance: 2500000, clinic: '글로우 피부과' },
+  { id: '2', date: '2026-03-03', type: 'use', amount: -150000, description: '레이저 토닝 (얼굴)', balance: 2350000, clinic: '글로우 피부과' },
+  { id: '3', date: '2026-03-05', type: 'referral', amount: 50000, description: '지인 소개 포인트 적립', balance: 2400000, clinic: '글로우 피부과' },
+  { id: '4', date: '2026-03-07', type: 'use', amount: -200000, description: '프리미엄 리프팅 (얼굴)', balance: 2200000, clinic: '에스테틱 피부과' },
+  { id: '5', date: '2026-03-08', type: 'use', amount: -300000, description: '제모 레이저 (팔+다리)', balance: 1900000, clinic: '글로우 피부과' },
+  { id: '6', date: '2026-02-15', type: 'charge', amount: 1000000, description: '100만원 결제 → 110만원 충전', balance: 1100000, clinic: '에스테틱 피부과' },
+  { id: '7', date: '2026-02-20', type: 'use', amount: -80000, description: '아쿠아필링 (얼굴)', balance: 1020000, clinic: '글로우 피부과' },
+  { id: '8', date: '2026-01-10', type: 'use', amount: -500000, description: '울쎄라 리프팅 (얼굴)', balance: 500000, clinic: '에스테틱 피부과' },
+  { id: '9', date: '2026-01-05', type: 'charge', amount: 1000000, description: '100만원 결제 → 110만원 충전', balance: 1000000, clinic: '글로우 피부과' },
 ];
 
 export const mockPackages: TreatmentPackage[] = [

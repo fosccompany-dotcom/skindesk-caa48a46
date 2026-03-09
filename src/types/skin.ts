@@ -43,6 +43,7 @@ export interface PointTransaction {
   amount: number;
   description: string;
   balance: number;
+  clinic?: string;
 }
 
 export interface TreatmentPackage {
