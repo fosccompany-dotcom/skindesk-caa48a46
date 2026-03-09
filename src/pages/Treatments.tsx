@@ -9,15 +9,15 @@ const Treatments = () => {
   const [selectedCategory, setSelectedCategory] = useState<TreatmentCategory | null>(null);
 
   const filtered = selectedCategory
-    ? treatmentCatalog.filter(t => t.category === selectedCategory)
-    : treatmentCatalog;
+    ? CLINIC_TREATMENTS.filter(t => t.category === selectedCategory)
+    : CLINIC_TREATMENTS;
 
   const grouped = filtered.reduce((acc, t) => {
     const key = CATEGORY_LABELS[t.category];
     if (!acc[key]) acc[key] = [];
     acc[key].push(t);
     return acc;
-  }, {} as Record<string, typeof treatmentCatalog>);
+  }, {} as Record<string, typeof CLINIC_TREATMENTS>);
 
   return (
     <div className="page-container pb-24">
