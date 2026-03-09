@@ -113,7 +113,21 @@ const Treatments = () => {
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
   const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
   const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('treatment-favorites');
+    return saved ? new Set(JSON.parse(saved)) : new Set<string>();
+  });
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const { cycles, setCycles } = useCycles();
+
+  const toggleFavorite = (id: string) => {
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      localStorage.setItem('treatment-favorites', JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const registerCycle = (t: ClinicTreatment) => {
     const exists = cycles.some(c => c.treatmentName === t.name && c.clinic === t.clinic);
