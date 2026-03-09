@@ -110,12 +110,14 @@ type FilterSection = 'clinic' | 'category' | 'price' | 'bodyArea' | 'effect';
 
 const Treatments = () => {
   const [search, setSearch] = useState('');
+  const [selectedClinic, setSelectedClinic] = useState<ClinicBrand | null>(null);
+  const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<TreatmentCategory[]>([]);
   const [selectedPrices, setSelectedPrices] = useState<PriceRange[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<TreatmentBodyArea[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
   const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
-  const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
+  const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['clinic']);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('treatment-favorites');
