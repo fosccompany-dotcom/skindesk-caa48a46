@@ -143,6 +143,7 @@ const Treatments = () => {
   const [selectedClinic, setSelectedClinic] = useState<ClinicBrand | null>(null);
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<TreatmentCategory[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<PackageTier | null>(null);
   const [selectedPrices, setSelectedPrices] = useState<PriceRange[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<TreatmentBodyArea[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
