@@ -459,6 +459,22 @@ const Treatments = () => {
                   )}
                 </div>
 
+                {/* Branches */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Building2 className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-xs font-semibold text-foreground">이용 가능 지점 ({selectedTreatment.branches.length})</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedTreatment.branches.slice(0, 10).map(b => (
+                      <Badge key={b} variant="outline" className="text-[10px] px-1.5 py-0">{b}</Badge>
+                    ))}
+                    {selectedTreatment.branches.length > 10 && (
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">+{selectedTreatment.branches.length - 10}개</Badge>
+                    )}
+                  </div>
+                </div>
+
                 {/* Description */}
                 {selectedTreatment.description && (
                   <div>
