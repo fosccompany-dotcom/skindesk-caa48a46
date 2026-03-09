@@ -300,6 +300,45 @@ const Treatments = () => {
         </div>
       </div>
 
+      {/* Package Tier Filter */}
+      <div className="px-1 mb-3">
+        <ScrollArea className="w-full">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedPackage(null)}
+              className={cn(
+                'flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border',
+                !selectedPackage
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-card border-border/50 text-muted-foreground'
+              )}
+            >
+              <Tag className="h-3 w-3" />
+              전체 패키지
+            </button>
+            {packageKeys.map((tier) => {
+              const count = CLINIC_TREATMENTS.filter(t => CATEGORY_TO_PACKAGE[t.category] === tier).length;
+              return (
+                <button
+                  key={tier}
+                  onClick={() => setSelectedPackage(prev => prev === tier ? null : tier)}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border',
+                    selectedPackage === tier
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'bg-card border-border/50 text-muted-foreground'
+                  )}
+                >
+                  {PACKAGE_LABELS[tier]}
+                  <span className="text-[10px] opacity-70">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+      </div>
+
       {/* Layered Filters */}
       <div className="mx-1 mb-4 glass-card rounded-xl px-3 py-1">
         <div className="flex items-center gap-2 py-2 border-b border-border/30">
