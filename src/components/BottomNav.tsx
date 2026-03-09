@@ -1,9 +1,10 @@
-import { Home, Package, Calendar, User } from 'lucide-react';
+import { Home, List, Package, Calendar, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { path: '/', icon: Home, label: '홈' },
+  { path: '/treatments', icon: List, label: '리스트' },
   { path: '/packages', icon: Package, label: '시술권' },
   { path: '/calendar', icon: Calendar, label: '캘린더' },
   { path: '/profile', icon: User, label: '마이' },
