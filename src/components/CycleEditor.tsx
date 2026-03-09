@@ -138,27 +138,69 @@ export function CycleEditorSheet({ cycles, onUpdate }: CycleEditorProps) {
             {/* Preset selector */}
             {showPresets && (
               <div className="mb-4 space-y-3">
-                <h3 className="text-sm font-bold">프리셋에서 선택</h3>
-                {presetsByLayer.map(({ layer, presets }) => (
-                  <div key={layer}>
-                    <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">{SKIN_LAYER_LABELS[layer]}</p>
-                    <div className="grid grid-cols-2 gap-1.5">
-                      {presets.map((preset, i) => (
-                        <Card
-                          key={i}
-                          className="card-interactive"
-                          onClick={() => handleSelectPreset(preset)}
-                        >
-                          <CardContent className="p-3">
-                            <p className="text-xs font-semibold">{preset.treatmentName}</p>
-                            {preset.product && <p className="text-[10px] text-muted-foreground">{preset.product}</p>}
-                            <p className="text-[10px] text-muted-foreground mt-0.5">{preset.description}</p>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
+                {/* Tab toggle */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setPresetTab('package')}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold transition-all tap-target ${presetTab === 'package' ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-muted text-muted-foreground'}`}
+                  >
+                    관리 메뉴
+                  </button>
+                  <button
+                    onClick={() => setPresetTab('cycle')}
+                    className={`px-4 py-2 rounded-full text-xs font-semibold transition-all tap-target ${presetTab === 'cycle' ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-muted text-muted-foreground'}`}
+                  >
+                    시술 프리셋
+                  </button>
+                </div>
+
+                {presetTab === 'package' ? (
+                  <div className="space-y-3">
+                    {(['basic', 'premium'] as PackageTier[]).map(tier => {
+                      const items = PACKAGE_MENU_ITEMS.filter(i => i.tier === tier);
+                      return (
+                        <div key={tier}>
+                          <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">{PACKAGE_TIER_LABELS[tier]}</p>
+                          <div className="flex flex-wrap gap-1.5">
+                            {items.map((item, i) => (
+                              <button
+                                key={i}
+                                onClick={() => handleSelectPackageItem(item)}
+                                className="px-3 py-2 rounded-xl text-xs font-medium bg-muted hover:bg-accent transition-colors tap-target text-left"
+                              >
+                                {item.name}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
-                ))}
+                ) : (
+                  <div className="space-y-3">
+                    {presetsByLayer.map(({ layer, presets }) => (
+                      <div key={layer}>
+                        <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">{SKIN_LAYER_LABELS[layer]}</p>
+                        <div className="grid grid-cols-2 gap-1.5">
+                          {presets.map((preset, i) => (
+                            <Card
+                              key={i}
+                              className="card-interactive"
+                              onClick={() => handleSelectPreset(preset)}
+                            >
+                              <CardContent className="p-3">
+                                <p className="text-xs font-semibold">{preset.treatmentName}</p>
+                                {preset.product && <p className="text-[10px] text-muted-foreground">{preset.product}</p>}
+                                <p className="text-[10px] text-muted-foreground mt-0.5">{preset.description}</p>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <Button variant="outline" size="sm" className="w-full rounded-xl text-xs" onClick={handleAddCustom}>
                   직접 입력하기
                 </Button>
