@@ -119,15 +119,15 @@ const Packages = () => {
             </TabsList>
 
             <TabsContent value="all" className="space-y-2.5 mt-0">
-              {mockPackages.map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />)}
+              {filteredPackages.map((pkg) => <PackageCard key={pkg.id} pkg={pkg} />)}
             </TabsContent>
 
             {layers.map((layer) => (
               <TabsContent key={layer} value={layer} className="space-y-2.5 mt-0">
-                {mockPackages.filter(p => p.skinLayer === layer).map((pkg) => (
+                {filteredPackages.filter(p => p.skinLayer === layer).map((pkg) => (
                   <PackageCard key={pkg.id} pkg={pkg} />
                 ))}
-                <RecordsList records={mockRecords.filter(r => r.skinLayer === layer)} />
+                <RecordsList records={filteredRecords.filter(r => r.skinLayer === layer)} />
               </TabsContent>
             ))}
           </Tabs>
