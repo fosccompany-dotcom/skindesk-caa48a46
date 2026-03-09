@@ -1,44 +1,29 @@
-import { useState, useMemo, useRef, useCallback } from 'react';
-import { Calendar } from '@/components/ui/calendar';
-import { Card, CardContent } from '@/components/ui/card';
+import { useState, useMemo } from 'react';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { format, addDays, addMonths, differenceInDays } from 'date-fns';
+import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, BODY_AREA_LABELS } from '@/types/skin';
 
 const eventTypeConfig = {
-  treatment: { icon: CalendarDays, color: 'text-accent-foreground', bg: 'bg-accent', label: '예약' },
-  reminder: { icon: Bell, color: 'text-amber', bg: 'bg-amber-light', label: '알림' },
-  recommendation: { icon: Sparkles, color: 'text-info', bg: 'bg-info-light', label: '추천' },
-  cycle: { icon: RotateCcw, color: 'text-sage-dark', bg: 'bg-sage-light', label: '주기 도래' },
+  treatment: { icon: CalendarDays, color: 'text-primary', bg: 'bg-primary/10', dotColor: 'bg-primary' },
+  reminder: { icon: Bell, color: 'text-amber-600', bg: 'bg-amber-50', dotColor: 'bg-amber' },
+  recommendation: { icon: Sparkles, color: 'text-info', bg: 'bg-info-light', dotColor: 'bg-info' },
+  cycle: { icon: RotateCcw, color: 'text-sage-dark', bg: 'bg-sage-light', dotColor: 'bg-sage' },
 };
 
+const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
 const CalendarPage = () => {
-  const [selected, setSelected] = useState<Date | undefined>(new Date('2026-03-08'));
-  const { cycles } = useCycles();
   const today = new Date('2026-03-08');
-  const monthRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const [currentMonth, setCurrentMonth] = useState(today);
+  const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const { cycles } = useCycles();
 
-  // 3개월 배열
-  const months = [today, addMonths(today, 1), addMonths(today, 2)];
-
-  const handleSelect = useCallback((date: Date | undefined) => {
-    setSelected(date);
-    if (date) {
-      const monthIndex = months.findIndex(
-        (m) => m.getFullYear() === date.getFullYear() && m.getMonth() === date.getMonth()
-      );
-      if (monthIndex >= 0 && monthRefs.current[monthIndex]) {
-        monthRefs.current[monthIndex]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-  }, []);
-
-  // 주기 기반 자동 추천 이벤트 생성 (앞으로 90일)
+  // 주기 기반 자동 추천 이벤트 생성
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
 
@@ -92,31 +77,153 @@ const CalendarPage = () => {
     });
   }, [cycleEvents]);
 
-  const selectedStr = selected ? format(selected, 'yyyy-MM-dd') : '';
-  const dayEvents = allEvents.filter((e) => e.date === selectedStr);
-  const eventDates = [...new Set(allEvents.map(e => e.date))].map(d => new Date(d));
-  const recommendationDates = [...new Set(cycleEvents.map(e => e.date))].map(d => new Date(d));
+  // 달력 날짜 배열 생성
+  const calendarDays = useMemo(() => {
+    const monthStart = startOfMonth(currentMonth);
+    const monthEnd = endOfMonth(currentMonth);
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 });
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
+
+    const days: Date[] = [];
+    let day = startDate;
+    while (day <= endDate) {
+      days.push(day);
+      day = addDays(day, 1);
+    }
+    return days;
+  }, [currentMonth]);
+
+  // 날짜별 이벤트 맵
+  const eventsByDate = useMemo(() => {
+    const map: Record<string, typeof allEvents> = {};
+    allEvents.forEach(event => {
+      if (!map[event.date]) map[event.date] = [];
+      map[event.date].push(event);
+    });
+    return map;
+  }, [allEvents]);
+
+  const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
+  const selectedEvents = eventsByDate[selectedDateStr] || [];
+
+  const goToPrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
+  const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
+  const goToToday = () => {
+    setCurrentMonth(today);
+    setSelectedDate(today);
+  };
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="page-header safe-top">
-        <h1 className="text-lg font-bold">캘린더</h1>
-        <p className="text-xs text-muted-foreground mt-1">시술 일정과 자동 추천 주기</p>
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* 헤더 */}
+      <div className="sticky top-0 z-10 bg-card border-b border-border safe-top">
+        <div className="flex items-center justify-between px-4 py-3">
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-bold">{format(currentMonth, 'yyyy년 M월', { locale: ko })}</h1>
+          </div>
+          <div className="flex items-center gap-1">
+            <button
+              onClick={goToToday}
+              className="px-3 py-1.5 text-xs font-medium text-primary bg-primary/10 rounded-full"
+            >
+              오늘
+            </button>
+            <button onClick={goToPrevMonth} className="p-2 hover:bg-muted rounded-full">
+              <ChevronLeft className="h-5 w-5 text-muted-foreground" />
+            </button>
+            <button onClick={goToNextMonth} className="p-2 hover:bg-muted rounded-full">
+              <ChevronRight className="h-5 w-5 text-muted-foreground" />
+            </button>
+          </div>
+        </div>
+
+        {/* 요일 헤더 */}
+        <div className="grid grid-cols-7 border-t border-border">
+          {WEEKDAYS.map((day, idx) => (
+            <div
+              key={day}
+              className={cn(
+                'text-center text-xs font-medium py-2',
+                idx === 0 && 'text-rose',
+                idx === 6 && 'text-info',
+                idx !== 0 && idx !== 6 && 'text-muted-foreground'
+              )}
+            >
+              {day}
+            </div>
+          ))}
+        </div>
+
+        {/* 캘린더 그리드 */}
+        <div className="grid grid-cols-7 border-t border-border">
+          {calendarDays.map((day, idx) => {
+            const dateStr = format(day, 'yyyy-MM-dd');
+            const dayEvents = eventsByDate[dateStr] || [];
+            const isCurrentMonth = isSameMonth(day, currentMonth);
+            const isSelected = isSameDay(day, selectedDate);
+            const isTodayDate = isToday(day) || isSameDay(day, today);
+            const dayOfWeek = day.getDay();
+
+            return (
+              <button
+                key={idx}
+                onClick={() => setSelectedDate(day)}
+                className={cn(
+                  'relative flex flex-col items-center py-2 min-h-[52px] border-b border-r border-border/50',
+                  !isCurrentMonth && 'opacity-30',
+                  isSelected && 'bg-primary/5'
+                )}
+              >
+                <span
+                  className={cn(
+                    'w-7 h-7 flex items-center justify-center text-sm rounded-full',
+                    isTodayDate && 'bg-primary text-primary-foreground font-semibold',
+                    !isTodayDate && isSelected && 'bg-muted font-medium',
+                    !isTodayDate && !isSelected && dayOfWeek === 0 && 'text-rose',
+                    !isTodayDate && !isSelected && dayOfWeek === 6 && 'text-info',
+                    !isTodayDate && !isSelected && dayOfWeek !== 0 && dayOfWeek !== 6 && 'text-foreground'
+                  )}
+                >
+                  {format(day, 'd')}
+                </span>
+                {/* 이벤트 도트 */}
+                {dayEvents.length > 0 && (
+                  <div className="flex gap-0.5 mt-0.5">
+                    {dayEvents.slice(0, 3).map((event, i) => {
+                      const isCycleEvent = event.id.startsWith('auto_');
+                      const configKey = isCycleEvent ? 'cycle' : event.type;
+                      const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
+                      return (
+                        <div
+                          key={i}
+                          className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="page-content space-y-4">
-        {/* 선택된 날짜 일정 */}
-        <div className="space-y-2">
-          <h2 className="section-title">
-            {selected ? format(selected, 'M월 d일 (EEEE)', { locale: ko }) : '날짜를 선택하세요'}
+      {/* 선택된 날짜 일정 */}
+      <div className="flex-1 overflow-auto pb-24">
+        <div className="px-4 py-3 bg-muted/50 border-b border-border sticky top-0">
+          <h2 className="text-sm font-semibold text-foreground">
+            {format(selectedDate, 'M월 d일 EEEE', { locale: ko })}
           </h2>
+        </div>
 
-          {dayEvents.length === 0 ? (
-            <div className="text-center py-4">
-              <p className="text-sm text-muted-foreground">예정된 일정이 없습니다</p>
-            </div>
-          ) : (
-            dayEvents.map((event) => {
+        {selectedEvents.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+            <CalendarDays className="h-12 w-12 mb-3 opacity-30" />
+            <p className="text-sm">일정이 없습니다</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-border">
+            {selectedEvents.map((event) => {
               const isCycleEvent = event.id.startsWith('auto_');
               const configKey = isCycleEvent ? 'cycle' : event.type;
               const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
@@ -124,70 +231,29 @@ const CalendarPage = () => {
               const cycleInfo = (event as any).cycleInfo;
 
               return (
-                <Card key={event.id} className={cn('glass-card', isCycleEvent && 'border-info/20')}>
-                  <CardContent className="flex items-center gap-3 p-4">
-                    <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', config.bg)}>
-                      <Icon className={cn('h-4 w-4', config.color)} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold">{event.title}</p>
-                      {cycleInfo ? (
-                        <p className="text-[11px] text-muted-foreground">{cycleInfo}</p>
-                      ) : (
-                        <p className="text-[11px] text-muted-foreground">{config.label}</p>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1 items-end shrink-0">
-                      {event.bodyArea && <BodyAreaBadge area={event.bodyArea} />}
-                      {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
-                    </div>
-                  </CardContent>
-                </Card>
+                <div key={event.id} className="flex items-start gap-3 px-4 py-3 bg-card">
+                  <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl mt-0.5', config.bg)}>
+                    <Icon className={cn('h-4 w-4', config.color)} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground">{event.title}</p>
+                    {cycleInfo ? (
+                      <p className="text-xs text-muted-foreground mt-0.5">{cycleInfo}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {configKey === 'treatment' ? '예약된 시술' : configKey === 'reminder' ? '알림' : '추천'}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-1 items-end shrink-0">
+                    {event.bodyArea && <BodyAreaBadge area={event.bodyArea} />}
+                    {event.skinLayer && <SkinLayerBadge layer={event.skinLayer} />}
+                  </div>
+                </div>
               );
-            })
-          )}
-        </div>
-
-        {/* 3개월 연속 캘린더 */}
-        {months.map((month, idx) => (
-          <Card key={idx} ref={(el) => { monthRefs.current[idx] = el; }} className="glass-card overflow-hidden">
-            <CardContent className="p-2">
-              <Calendar
-                mode="single"
-                selected={selected}
-                onSelect={handleSelect}
-                locale={ko}
-                month={month}
-                className="pointer-events-auto"
-                disableNavigation
-                modifiers={{
-                  event: eventDates,
-                  recommendation: recommendationDates,
-                }}
-                modifiersClassNames={{
-                  event: 'bg-accent text-accent-foreground font-semibold rounded-full',
-                  recommendation: 'ring-2 ring-info/30 rounded-full',
-                }}
-              />
-            </CardContent>
-          </Card>
-        ))}
-
-        {/* 범례 */}
-        <div className="flex items-center gap-4 px-2">
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-accent border border-accent-foreground/20" />
-            <span className="text-[10px] text-muted-foreground">예약</span>
+            })}
           </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-background ring-2 ring-info/40" />
-            <span className="text-[10px] text-muted-foreground">추천일</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <div className="h-2.5 w-2.5 rounded-full bg-amber-light" />
-            <span className="text-[10px] text-muted-foreground">알림</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );
