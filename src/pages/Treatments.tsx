@@ -219,11 +219,25 @@ const Treatments = () => {
             <h1 className="text-xl font-bold text-foreground">시술 리스트</h1>
             <p className="text-xs text-muted-foreground mt-0.5">{filtered.length}개 시술</p>
           </div>
-          {activeFilterCount > 0 && (
-            <button onClick={clearAll} className="flex items-center gap-1 text-xs text-primary">
-              <X className="h-3 w-3" /> 필터 초기화
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowFavoritesOnly(prev => !prev)}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border',
+                showFavoritesOnly
+                  ? 'bg-destructive/10 border-destructive/30 text-destructive'
+                  : 'bg-card border-border/50 text-muted-foreground'
+              )}
+            >
+              <Heart className={cn('h-3.5 w-3.5', showFavoritesOnly && 'fill-current')} />
+              찜 {favorites.size > 0 && `(${favorites.size})`}
             </button>
-          )}
+            {activeFilterCount > 0 && (
+              <button onClick={clearAll} className="flex items-center gap-1 text-xs text-primary">
+                <X className="h-3 w-3" /> 초기화
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
