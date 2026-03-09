@@ -12,10 +12,13 @@ import {
   CATEGORY_LABELS,
   BODY_AREA_TREATMENT_LABELS,
   EFFECT_LABELS,
+  VANDS_BRANCHES,
+  PPEUM_BRANCHES,
   TreatmentCategory,
   TreatmentBodyArea,
   TreatmentEffect,
   ClinicTreatment,
+  ClinicBrand,
 } from '@/data/treatmentCatalog';
 
 // Map catalog category → skin layer
@@ -103,16 +106,18 @@ function matchesPrice(t: ClinicTreatment, range: PriceRange): boolean {
   }
 }
 
-type FilterSection = 'category' | 'price' | 'bodyArea' | 'effect';
+type FilterSection = 'clinic' | 'category' | 'price' | 'bodyArea' | 'effect';
 
 const Treatments = () => {
   const [search, setSearch] = useState('');
+  const [selectedClinic, setSelectedClinic] = useState<ClinicBrand | null>(null);
+  const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<TreatmentCategory[]>([]);
   const [selectedPrices, setSelectedPrices] = useState<PriceRange[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<TreatmentBodyArea[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
   const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
-  const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
+  const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['clinic']);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const [favorites, setFavorites] = useState<Set<string>>(() => {
     const saved = localStorage.getItem('treatment-favorites');
@@ -158,9 +163,13 @@ const Treatments = () => {
   const toggle = <T,>(arr: T[], val: T) =>
     arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
 
-  const activeFilterCount = selectedCategories.length + selectedPrices.length + selectedAreas.length + selectedEffects.length;
+  const activeFilterCount = selectedCategories.length + selectedPrices.length + selectedAreas.length + selectedEffects.length + (selectedClinic ? 1 : 0) + selectedBranches.length;
+
+  const availableBranches = selectedClinic === '밴스의원' ? VANDS_BRANCHES : selectedClinic === '쁨클리닉' ? PPEUM_BRANCHES : [];
 
   const clearAll = () => {
+    setSelectedClinic(null);
+    setSelectedBranches([]);
     setSelectedCategories([]);
     setSelectedPrices([]);
     setSelectedAreas([]);
@@ -171,6 +180,8 @@ const Treatments = () => {
   const filtered = useMemo(() => {
     return CLINIC_TREATMENTS.filter(t => {
       if (showFavoritesOnly && !favorites.has(t.id)) return false;
+      if (selectedClinic && t.clinic !== selectedClinic) return false;
+      if (selectedBranches.length && !selectedBranches.some(b => t.branches.includes(b))) return false;
       if (search) {
         const q = search.toLowerCase();
         const match = t.name.toLowerCase().includes(q) ||
@@ -184,7 +195,7 @@ const Treatments = () => {
       if (selectedEffects.length && !selectedEffects.some(e => t.effects.includes(e))) return false;
       return true;
     });
-  }, [search, selectedCategories, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
+  }, [search, selectedClinic, selectedBranches, selectedCategories, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
 
   const grouped = useMemo(() => {
     return filtered.reduce((acc, t) => {
@@ -265,6 +276,34 @@ const Treatments = () => {
             <Badge variant="default" className="text-[10px] px-1.5 py-0 ml-auto">{activeFilterCount}</Badge>
           )}
         </div>
+
+        <FilterRow label="병원/지점" section="clinic">
+          <Badge
+            variant={selectedClinic === '밴스의원' ? 'default' : 'outline'}
+            className="cursor-pointer text-[11px]"
+            onClick={() => { setSelectedClinic(prev => prev === '밴스의원' ? null : '밴스의원'); setSelectedBranches([]); }}
+          >밴스의원</Badge>
+          <Badge
+            variant={selectedClinic === '쁨클리닉' ? 'default' : 'outline'}
+            className="cursor-pointer text-[11px]"
+            onClick={() => { setSelectedClinic(prev => prev === '쁨클리닉' ? null : '쁨클리닉'); setSelectedBranches([]); }}
+          >쁨클리닉</Badge>
+          {selectedClinic && availableBranches.length > 0 && (
+            <>
+              <div className="w-full border-t border-border/20 my-1" />
+              {availableBranches.map(b => (
+                <Badge
+                  key={b}
+                  variant={selectedBranches.includes(b) ? 'default' : 'outline'}
+                  className="cursor-pointer text-[10px]"
+                  onClick={() => setSelectedBranches(prev => toggle(prev, b))}
+                >
+                  {b}
+                </Badge>
+              ))}
+            </>
+          )}
+        </FilterRow>
 
         <FilterRow label="시술 종류" section="category">
           {categoryKeys.map(cat => (
@@ -418,6 +457,22 @@ const Treatments = () => {
                       {selectedTreatment.priceRange}
                     </div>
                   )}
+                </div>
+
+                {/* Branches */}
+                <div>
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Building2 className="h-3.5 w-3.5 text-primary" />
+                    <p className="text-xs font-semibold text-foreground">이용 가능 지점 ({selectedTreatment.branches.length})</p>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedTreatment.branches.slice(0, 10).map(b => (
+                      <Badge key={b} variant="outline" className="text-[10px] px-1.5 py-0">{b}</Badge>
+                    ))}
+                    {selectedTreatment.branches.length > 10 && (
+                      <Badge variant="secondary" className="text-[10px] px-1.5 py-0">+{selectedTreatment.branches.length - 10}개</Badge>
+                    )}
+                  </div>
                 </div>
 
                 {/* Description */}
