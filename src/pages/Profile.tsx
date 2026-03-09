@@ -147,9 +147,9 @@ const Profile = () => {
               <User className="h-3.5 w-3.5" />
               프로필
             </TabsTrigger>
-            <TabsTrigger value="payments" className="flex-1 rounded-lg text-xs gap-1">
-              <Wallet className="h-3.5 w-3.5" />
-              결제현황
+            <TabsTrigger value="treatments" className="flex-1 rounded-lg text-xs gap-1">
+              <SearchIcon className="h-3.5 w-3.5" />
+              시술 검색
             </TabsTrigger>
           </TabsList>
 
