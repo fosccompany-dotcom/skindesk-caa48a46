@@ -16,6 +16,7 @@ import { CalendarIcon, Plus, Pencil, Trash2, Check } from 'lucide-react';
 import {
   TreatmentCycle, SkinLayer, BodyArea,
   SKIN_LAYER_LABELS, BODY_AREA_LABELS, CYCLE_PRESETS,
+  PACKAGE_MENU_ITEMS, PACKAGE_TIER_LABELS, PackageTier, PackageMenuItem,
 } from '@/types/skin';
 
 const skinLayers: SkinLayer[] = ['epidermis', 'dermis', 'subcutaneous'];
