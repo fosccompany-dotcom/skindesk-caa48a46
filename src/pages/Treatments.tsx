@@ -379,9 +379,14 @@ const Treatments = () => {
                 <DialogHeader>
                   <DialogTitle className="text-lg font-bold text-foreground text-left">{selectedTreatment.name}</DialogTitle>
                 </DialogHeader>
-                <div className="flex items-center gap-2 mt-2">
-                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{selectedTreatment.clinic}</span>
+                <div className="flex items-center justify-between mt-2">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{selectedTreatment.clinic}</span>
+                  </div>
+                  <button onClick={() => toggleFavorite(selectedTreatment.id)} className="p-1">
+                    <Heart className={cn('h-5 w-5 transition-colors', favorites.has(selectedTreatment.id) ? 'fill-destructive text-destructive' : 'text-muted-foreground')} />
+                  </button>
                 </div>
               </div>
 
