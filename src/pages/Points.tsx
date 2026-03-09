@@ -19,7 +19,7 @@ const Points = () => (
       </div>
     </div>
 
-    <div className="page-content space-y-2.5 -mt-3">
+    <div className="page-content space-y-2.5 pt-4">
       
       {mockPoints.map((tx) => {
         const config = typeConfig[tx.type];
