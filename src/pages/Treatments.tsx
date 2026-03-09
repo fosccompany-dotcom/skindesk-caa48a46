@@ -12,10 +12,13 @@ import {
   CATEGORY_LABELS,
   BODY_AREA_TREATMENT_LABELS,
   EFFECT_LABELS,
+  VANDS_BRANCHES,
+  PPEUM_BRANCHES,
   TreatmentCategory,
   TreatmentBodyArea,
   TreatmentEffect,
   ClinicTreatment,
+  ClinicBrand,
 } from '@/data/treatmentCatalog';
 
 // Map catalog category → skin layer
