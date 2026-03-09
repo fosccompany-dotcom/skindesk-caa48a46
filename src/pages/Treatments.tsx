@@ -113,6 +113,29 @@ const Treatments = () => {
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
   const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
   const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
+  const { cycles, setCycles } = useCycles();
+
+  const registerCycle = (t: ClinicTreatment) => {
+    const exists = cycles.some(c => c.treatmentName === t.name && c.clinic === t.clinic);
+    if (exists) {
+      toast({ title: '이미 등록된 시술입니다', description: `${t.name}은(는) 이미 주기 관리에 등록되어 있습니다.` });
+      return;
+    }
+    const newCycle: TreatmentCycle = {
+      id: `cycle-${Date.now()}`,
+      treatmentName: t.name,
+      skinLayer: CATEGORY_TO_SKIN_LAYER[t.category] || 'epidermis',
+      bodyArea: BODY_AREA_MAP[t.bodyAreas[0]] || 'face',
+      cycleDays: DEFAULT_CYCLE_DAYS[t.category] || 30,
+      lastTreatmentDate: new Date().toISOString().split('T')[0],
+      isCustomCycle: false,
+      clinic: t.clinic,
+      notes: t.description,
+    };
+    setCycles([...cycles, newCycle]);
+    setSelectedTreatment(null);
+    toast({ title: '시술 주기 등록 완료', description: `${t.name}이(가) 주기 관리에 추가되었습니다.` });
+  };
 
   const toggleSection = (s: FilterSection) =>
     setExpandedSections(prev => prev.includes(s) ? prev.filter(x => x !== s) : [...prev, s]);
