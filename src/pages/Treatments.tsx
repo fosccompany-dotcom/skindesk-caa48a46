@@ -57,6 +57,7 @@ const Treatments = () => {
   const [selectedPrices, setSelectedPrices] = useState<PriceRange[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<TreatmentBodyArea[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
+  const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
   const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
 
   const toggleSection = (s: FilterSection) =>
