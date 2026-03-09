@@ -9,6 +9,7 @@ import CalendarPage from "./pages/CalendarPage";
 import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
 import Cycles from "./pages/Cycles";
+import StatusList from "./pages/StatusList";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import { CyclesProvider } from "./context/CyclesContext";
@@ -27,6 +28,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/treatments" element={<Treatments />} />
               <Route path="/cycles" element={<Cycles />} />
+              <Route path="/status" element={<StatusList />} />
               <Route path="/packages" element={<Packages />} />
               <Route path="/calendar" element={<CalendarPage />} />
               <Route path="/profile" element={<Profile />} />

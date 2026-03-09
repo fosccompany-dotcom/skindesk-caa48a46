@@ -108,21 +108,21 @@ const Index = () => {
       <div className="page-content space-y-4 pt-4">
         {/* 상태 요약 카드 3개 */}
         <div className="grid grid-cols-3 gap-2">
-          <Card className="bg-rose-light border-none">
+          <Card className="bg-rose-light border-none card-interactive cursor-pointer" onClick={() => navigate('/status?filter=overdue')}>
             <CardContent className="p-3 text-center">
               <AlertTriangle className="h-4 w-4 text-rose mx-auto mb-1" />
               <p className="text-xl font-bold text-rose">{stats.overdue}</p>
               <p className="text-[10px] text-muted-foreground">시술 필요</p>
             </CardContent>
           </Card>
-          <Card className="bg-amber-light border-none">
+          <Card className="bg-amber-light border-none card-interactive cursor-pointer" onClick={() => navigate('/status?filter=upcoming')}>
             <CardContent className="p-3 text-center">
               <Timer className="h-4 w-4 text-amber mx-auto mb-1" />
               <p className="text-xl font-bold text-amber">{stats.upcoming}</p>
               <p className="text-[10px] text-muted-foreground">곧 시술</p>
             </CardContent>
           </Card>
-          <Card className="bg-sage-light border-none">
+          <Card className="bg-sage-light border-none card-interactive cursor-pointer" onClick={() => navigate('/status?filter=good')}>
             <CardContent className="p-3 text-center">
               <CheckCircle2 className="h-4 w-4 text-sage-dark mx-auto mb-1" />
               <p className="text-xl font-bold text-sage-dark">{stats.good}</p>
