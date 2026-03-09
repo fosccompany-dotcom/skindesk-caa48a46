@@ -332,17 +332,24 @@ const Treatments = () => {
               {treatments.map(t => (
                 <div key={t.id} className="glass-card p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform" onClick={() => setSelectedTreatment(t)}>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1" >
                       <p className="text-sm font-medium text-foreground truncate">{t.name}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{t.clinic}</p>
                       {t.description && (
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{t.description}</p>
                       )}
                     </div>
-                    {t.priceRange && (
-                      <span className="text-xs text-primary font-medium whitespace-nowrap">{t.priceRange}</span>
-                    )}
-                  </div>
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(t.id); }}
+                        className="p-1 rounded-full transition-colors"
+                      >
+                        <Heart className={cn('h-4 w-4 transition-colors', favorites.has(t.id) ? 'fill-destructive text-destructive' : 'text-muted-foreground')} />
+                      </button>
+                      {t.priceRange && (
+                        <span className="text-xs text-primary font-medium whitespace-nowrap">{t.priceRange}</span>
+                      )}
+                    </div>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {t.bodyAreas.map(a => (
                       <Badge key={a} variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary">
