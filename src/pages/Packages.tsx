@@ -102,10 +102,10 @@ const Packages = () => {
 
             {bodyAreas.map((area) => (
               <TabsContent key={area} value={area} className="space-y-2.5 mt-0">
-                {mockPackages.filter(p => p.bodyArea === area).map((pkg) => (
+                {filteredPackages.filter(p => p.bodyArea === area).map((pkg) => (
                   <PackageCard key={pkg.id} pkg={pkg} />
                 ))}
-                <RecordsList records={mockRecords.filter(r => r.bodyArea === area)} />
+                <RecordsList records={filteredRecords.filter(r => r.bodyArea === area)} />
               </TabsContent>
             ))}
           </Tabs>
