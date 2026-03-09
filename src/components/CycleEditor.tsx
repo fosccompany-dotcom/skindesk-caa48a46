@@ -56,6 +56,22 @@ export function CycleEditorSheet({ cycles, onUpdate }: CycleEditorProps) {
     setShowPresets(false);
   };
 
+  const handleSelectPackageItem = (item: PackageMenuItem) => {
+    const newCycle: TreatmentCycle = {
+      id: `c_${Date.now()}`,
+      treatmentName: item.name,
+      skinLayer: item.skinLayer,
+      bodyArea: 'face',
+      cycleDays: item.defaultCycleDays || 14,
+      lastTreatmentDate: format(new Date(), 'yyyy-MM-dd'),
+      isCustomCycle: false,
+      clinic: '',
+    };
+    setEditingCycle(newCycle);
+    setIsNew(true);
+    setShowPresets(false);
+  };
+
   const handleAddCustom = () => {
     const newCycle: TreatmentCycle = {
       id: `c_${Date.now()}`,
