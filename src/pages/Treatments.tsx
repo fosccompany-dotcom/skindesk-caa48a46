@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus } from 'lucide-react';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { useCycles } from '@/context/CyclesContext';
@@ -113,7 +113,21 @@ const Treatments = () => {
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
   const [selectedTreatment, setSelectedTreatment] = useState<ClinicTreatment | null>(null);
   const [expandedSections, setExpandedSections] = useState<FilterSection[]>(['category']);
+  const [favorites, setFavorites] = useState<Set<string>>(() => {
+    const saved = localStorage.getItem('treatment-favorites');
+    return saved ? new Set(JSON.parse(saved)) : new Set<string>();
+  });
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const { cycles, setCycles } = useCycles();
+
+  const toggleFavorite = (id: string) => {
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      localStorage.setItem('treatment-favorites', JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const registerCycle = (t: ClinicTreatment) => {
     const exists = cycles.some(c => c.treatmentName === t.name && c.clinic === t.clinic);
@@ -155,6 +169,7 @@ const Treatments = () => {
 
   const filtered = useMemo(() => {
     return CLINIC_TREATMENTS.filter(t => {
+      if (showFavoritesOnly && !favorites.has(t.id)) return false;
       if (search) {
         const q = search.toLowerCase();
         const match = t.name.toLowerCase().includes(q) ||
@@ -168,7 +183,7 @@ const Treatments = () => {
       if (selectedEffects.length && !selectedEffects.some(e => t.effects.includes(e))) return false;
       return true;
     });
-  }, [search, selectedCategories, selectedPrices, selectedAreas, selectedEffects]);
+  }, [search, selectedCategories, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
 
   const grouped = useMemo(() => {
     return filtered.reduce((acc, t) => {
@@ -204,11 +219,25 @@ const Treatments = () => {
             <h1 className="text-xl font-bold text-foreground">시술 리스트</h1>
             <p className="text-xs text-muted-foreground mt-0.5">{filtered.length}개 시술</p>
           </div>
-          {activeFilterCount > 0 && (
-            <button onClick={clearAll} className="flex items-center gap-1 text-xs text-primary">
-              <X className="h-3 w-3" /> 필터 초기화
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowFavoritesOnly(prev => !prev)}
+              className={cn(
+                'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border',
+                showFavoritesOnly
+                  ? 'bg-destructive/10 border-destructive/30 text-destructive'
+                  : 'bg-card border-border/50 text-muted-foreground'
+              )}
+            >
+              <Heart className={cn('h-3.5 w-3.5', showFavoritesOnly && 'fill-current')} />
+              찜 {favorites.size > 0 && `(${favorites.size})`}
             </button>
-          )}
+            {activeFilterCount > 0 && (
+              <button onClick={clearAll} className="flex items-center gap-1 text-xs text-primary">
+                <X className="h-3 w-3" /> 초기화
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
@@ -303,16 +332,24 @@ const Treatments = () => {
               {treatments.map(t => (
                 <div key={t.id} className="glass-card p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform" onClick={() => setSelectedTreatment(t)}>
                   <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
+                    <div className="min-w-0 flex-1" >
                       <p className="text-sm font-medium text-foreground truncate">{t.name}</p>
                       <p className="text-xs text-muted-foreground mt-0.5">{t.clinic}</p>
                       {t.description && (
                         <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{t.description}</p>
                       )}
                     </div>
-                    {t.priceRange && (
-                      <span className="text-xs text-primary font-medium whitespace-nowrap">{t.priceRange}</span>
-                    )}
+                    <div className="flex flex-col items-end gap-1.5 shrink-0">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); toggleFavorite(t.id); }}
+                        className="p-1 rounded-full transition-colors"
+                      >
+                        <Heart className={cn('h-4 w-4 transition-colors', favorites.has(t.id) ? 'fill-destructive text-destructive' : 'text-muted-foreground')} />
+                      </button>
+                      {t.priceRange && (
+                        <span className="text-xs text-primary font-medium whitespace-nowrap">{t.priceRange}</span>
+                      )}
+                    </div>
                   </div>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {t.bodyAreas.map(a => (
@@ -342,9 +379,14 @@ const Treatments = () => {
                 <DialogHeader>
                   <DialogTitle className="text-lg font-bold text-foreground text-left">{selectedTreatment.name}</DialogTitle>
                 </DialogHeader>
-                <div className="flex items-center gap-2 mt-2">
-                  <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{selectedTreatment.clinic}</span>
+                <div className="flex items-center justify-between mt-2">
+                  <div className="flex items-center gap-2">
+                    <Building2 className="h-3.5 w-3.5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{selectedTreatment.clinic}</span>
+                  </div>
+                  <button onClick={() => toggleFavorite(selectedTreatment.id)} className="p-1">
+                    <Heart className={cn('h-5 w-5 transition-colors', favorites.has(selectedTreatment.id) ? 'fill-destructive text-destructive' : 'text-muted-foreground')} />
+                  </button>
                 </div>
               </div>
 
