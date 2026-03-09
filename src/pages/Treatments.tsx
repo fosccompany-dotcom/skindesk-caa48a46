@@ -350,6 +350,7 @@ const Treatments = () => {
                         <span className="text-xs text-primary font-medium whitespace-nowrap">{t.priceRange}</span>
                       )}
                     </div>
+                  </div>
                   <div className="flex flex-wrap gap-1 mt-2">
                     {t.bodyAreas.map(a => (
                       <Badge key={a} variant="outline" className="text-[10px] px-1.5 py-0 border-primary/30 text-primary">
