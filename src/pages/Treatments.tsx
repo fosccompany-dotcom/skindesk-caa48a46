@@ -202,6 +202,7 @@ const Treatments = () => {
     setSelectedClinic(null);
     setSelectedBranches([]);
     setSelectedCategories([]);
+    setSelectedPackage(null);
     setSelectedPrices([]);
     setSelectedAreas([]);
     setSelectedEffects([]);
