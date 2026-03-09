@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart } from 'lucide-react';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
 import { useCycles } from '@/context/CyclesContext';
@@ -77,6 +78,34 @@ const categoryKeys = Object.keys(CATEGORY_LABELS) as TreatmentCategory[];
 const bodyAreaKeys = Object.keys(BODY_AREA_TREATMENT_LABELS) as TreatmentBodyArea[];
 const effectKeys = Object.keys(EFFECT_LABELS) as TreatmentEffect[];
 
+type PackageTier = 'basic' | 'premium' | 'special' | 'body' | 'medical';
+const PACKAGE_LABELS: Record<PackageTier, string> = {
+  basic: '베이직',
+  premium: '프리미엄',
+  special: '스페셜',
+  body: '바디/제모',
+  medical: '메디컬',
+};
+const packageKeys = Object.keys(PACKAGE_LABELS) as PackageTier[];
+
+const CATEGORY_TO_PACKAGE: Record<TreatmentCategory, PackageTier> = {
+  laser_toning: 'basic',
+  peeling: 'basic',
+  skincare: 'basic',
+  acne: 'basic',
+  botox: 'premium',
+  filler: 'premium',
+  skin_booster: 'premium',
+  pigment: 'premium',
+  lifting: 'special',
+  thread_lifting: 'special',
+  contour: 'special',
+  regeneration: 'special',
+  hair_removal: 'body',
+  body_contouring: 'body',
+  iv_injection: 'medical',
+};
+
 type PriceRange = 'under10' | '10to30' | '30to50' | '50to100' | 'over100';
 const PRICE_LABELS: Record<PriceRange, string> = {
   under10: '10만 미만',
@@ -115,6 +144,7 @@ const Treatments = () => {
   const [selectedClinic, setSelectedClinic] = useState<ClinicBrand | null>(null);
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<TreatmentCategory[]>([]);
+  const [selectedPackage, setSelectedPackage] = useState<PackageTier | null>(null);
   const [selectedPrices, setSelectedPrices] = useState<PriceRange[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<TreatmentBodyArea[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<TreatmentEffect[]>([]);
@@ -165,7 +195,7 @@ const Treatments = () => {
   const toggle = <T,>(arr: T[], val: T) =>
     arr.includes(val) ? arr.filter(x => x !== val) : [...arr, val];
 
-  const activeFilterCount = selectedCategories.length + selectedPrices.length + selectedAreas.length + selectedEffects.length + (selectedClinic ? 1 : 0) + selectedBranches.length;
+  const activeFilterCount = selectedCategories.length + selectedPrices.length + selectedAreas.length + selectedEffects.length + (selectedClinic ? 1 : 0) + selectedBranches.length + (selectedPackage ? 1 : 0);
 
   const availableBranches = selectedClinic === '밴스의원' ? VANDS_BRANCHES : selectedClinic === '쁨클리닉' ? PPEUM_BRANCHES : [];
 
@@ -173,6 +203,7 @@ const Treatments = () => {
     setSelectedClinic(null);
     setSelectedBranches([]);
     setSelectedCategories([]);
+    setSelectedPackage(null);
     setSelectedPrices([]);
     setSelectedAreas([]);
     setSelectedEffects([]);
@@ -184,6 +215,7 @@ const Treatments = () => {
       if (showFavoritesOnly && !favorites.has(t.id)) return false;
       if (selectedClinic && t.clinic !== selectedClinic) return false;
       if (selectedBranches.length && !selectedBranches.some(b => t.branches.includes(b))) return false;
+      if (selectedPackage && CATEGORY_TO_PACKAGE[t.category] !== selectedPackage) return false;
       if (search) {
         const q = search.toLowerCase();
         const match = t.name.toLowerCase().includes(q) ||
@@ -197,7 +229,7 @@ const Treatments = () => {
       if (selectedEffects.length && !selectedEffects.some(e => t.effects.includes(e))) return false;
       return true;
     });
-  }, [search, selectedClinic, selectedBranches, selectedCategories, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
+  }, [search, selectedClinic, selectedBranches, selectedCategories, selectedPackage, selectedPrices, selectedAreas, selectedEffects, showFavoritesOnly, favorites]);
 
   const grouped = useMemo(() => {
     return filtered.reduce((acc, t) => {
@@ -267,6 +299,45 @@ const Treatments = () => {
             className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-card border border-border/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-1 focus:ring-primary/30"
           />
         </div>
+      </div>
+
+      {/* Package Tier Filter */}
+      <div className="px-1 mb-3">
+        <ScrollArea className="w-full">
+          <div className="flex gap-2">
+            <button
+              onClick={() => setSelectedPackage(null)}
+              className={cn(
+                'flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border',
+                !selectedPackage
+                  ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                  : 'bg-card border-border/50 text-muted-foreground'
+              )}
+            >
+              <Tag className="h-3 w-3" />
+              전체 패키지
+            </button>
+            {packageKeys.map((tier) => {
+              const count = CLINIC_TREATMENTS.filter(t => CATEGORY_TO_PACKAGE[t.category] === tier).length;
+              return (
+                <button
+                  key={tier}
+                  onClick={() => setSelectedPackage(prev => prev === tier ? null : tier)}
+                  className={cn(
+                    'flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border',
+                    selectedPackage === tier
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'bg-card border-border/50 text-muted-foreground'
+                  )}
+                >
+                  {PACKAGE_LABELS[tier]}
+                  <span className="text-[10px] opacity-70">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
       </div>
 
       {/* Layered Filters */}
