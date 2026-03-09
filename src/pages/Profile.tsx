@@ -382,8 +382,8 @@ const Profile = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="payments">
-            <PaymentHistory />
+          <TabsContent value="treatments">
+            <TreatmentSearch />
           </TabsContent>
         </Tabs>
       </div>
