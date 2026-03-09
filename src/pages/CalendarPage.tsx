@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
+import { Card, CardContent } from '@/components/ui/card';
 import { mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
 import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight } from 'lucide-react';
