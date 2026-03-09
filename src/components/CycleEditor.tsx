@@ -32,6 +32,7 @@ export function CycleEditorSheet({ cycles, onUpdate }: CycleEditorProps) {
   const [editingCycle, setEditingCycle] = useState<TreatmentCycle | null>(null);
   const [isNew, setIsNew] = useState(false);
   const [showPresets, setShowPresets] = useState(false);
+  const [presetTab, setPresetTab] = useState<'package' | 'cycle'>('package');
 
   const handleAdd = () => {
     setShowPresets(true);
