@@ -1,8 +1,12 @@
 import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2 } from 'lucide-react';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from '@/hooks/use-toast';
+import { useCycles } from '@/context/CyclesContext';
+import { SkinLayer, BodyArea, TreatmentCycle } from '@/types/skin';
 import {
   CLINIC_TREATMENTS,
   CATEGORY_LABELS,
@@ -13,6 +17,56 @@ import {
   TreatmentEffect,
   ClinicTreatment,
 } from '@/data/treatmentCatalog';
+
+// Map catalog category → skin layer
+const CATEGORY_TO_SKIN_LAYER: Partial<Record<TreatmentCategory, SkinLayer>> = {
+  botox: 'dermis',
+  filler: 'dermis',
+  lifting: 'subcutaneous',
+  thread_lifting: 'subcutaneous',
+  skin_booster: 'dermis',
+  laser_toning: 'epidermis',
+  peeling: 'epidermis',
+  pigment: 'epidermis',
+  acne: 'epidermis',
+  hair_removal: 'epidermis',
+  body_contouring: 'subcutaneous',
+  iv_injection: 'dermis',
+  skincare: 'epidermis',
+  contour: 'subcutaneous',
+  regeneration: 'dermis',
+};
+
+// Map catalog body area → cycle body area
+const BODY_AREA_MAP: Partial<Record<TreatmentBodyArea, BodyArea>> = {
+  face: 'face',
+  neck: 'neck',
+  body: 'chest',
+  arm: 'arm',
+  leg: 'leg',
+  eye: 'face',
+  bikini: 'hip',
+  full_body: 'face',
+};
+
+// Default cycle days by category
+const DEFAULT_CYCLE_DAYS: Partial<Record<TreatmentCategory, number>> = {
+  botox: 120,
+  filler: 365,
+  lifting: 180,
+  thread_lifting: 365,
+  skin_booster: 90,
+  laser_toning: 14,
+  peeling: 28,
+  pigment: 14,
+  acne: 14,
+  hair_removal: 42,
+  body_contouring: 30,
+  iv_injection: 14,
+  skincare: 14,
+  contour: 180,
+  regeneration: 90,
+};
 
 const categoryKeys = Object.keys(CATEGORY_LABELS) as TreatmentCategory[];
 const bodyAreaKeys = Object.keys(BODY_AREA_TREATMENT_LABELS) as TreatmentBodyArea[];
