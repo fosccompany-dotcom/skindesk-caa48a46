@@ -106,14 +106,14 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
 const Profile = () => {
   const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
-  const [skinType, setSkinType] = useState<SkinType>(mockProfile.skinType);
+  const [skinType, setSkinType] = useState<SkinType>('normal');
   const [birthDate, setBirthDate] = useState<Date | undefined>(
-    mockProfile.birthDate ? new Date(mockProfile.birthDate) : undefined
+    undefined
   );
   const [dateOpen, setDateOpen] = useState(false);
-  const [concerns, setConcerns] = useState<string[]>(mockProfile.concerns);
-  const [goals, setGoals] = useState<string[]>(mockProfile.goals);
-  const [targetAreas, setTargetAreas] = useState<BodyArea[]>(mockProfile.targetAreas);
+  const [concerns, setConcerns] = useState<string[]>([]);
+  const [goals, setGoals] = useState<string[]>([]);
+  const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
