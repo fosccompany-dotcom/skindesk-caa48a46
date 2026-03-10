@@ -1,131 +1,70 @@
 import { useState } from 'react';
-import { ArrowUpCircle, ArrowDownCircle, Users, Gift, CreditCard, TrendingDown, Plus, ChevronDown, Building2 } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockPoints, currentBalance, clinicBalances } from '@/data/mockData';
+import { ArrowUpCircle, ArrowDownCircle, Users, Gift, TrendingDown, ChevronDown, Building2, CreditCard, Banknote, Coins, Star } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { mockPoints, currentBalance, clinicBalances, mockPaymentRecords, VANCE_CLINICS } from '@/data/mockData';
+import type { PaymentMethod, ClinicType } from '@/data/mockData';
 
-// ── 타입 ──────────────────────────────────────────────────
+// ── 포인트 타입 설정 ──────────────────────────────────────────────────
 type PointType = 'charge' | 'use' | 'referral' | 'bonus';
-type PaymentMethod = '카드' | '현금' | '포인트' | '혼합';
 
-interface PaymentRecord {
-  id: string;
-  date: string;
-  clinic: string;
-  treatmentName: string;
-  amount: number;
-  method: PaymentMethod;
-  pointsUsed?: number;
-  memo?: string;
-}
-
-// ── Mock 결제 데이터 (실제로는 mockData.ts로 이동) ────────
-const mockPayments: PaymentRecord[] = [
-  { id: 'p1', date: '2026.03.08', clinic: '글로우 피부과', treatmentName: '알렉산드라이트 제모 (팔)', amount: 150000, method: '카드', pointsUsed: 10000 },
-  { id: 'p2', date: '2026.03.08', clinic: '글로우 피부과', treatmentName: '알렉산드라이트 제모 (다리)', amount: 200000, method: '카드' },
-  { id: 'p3', date: '2026.03.03', clinic: '글로우 피부과', treatmentName: '레이저 토닝', amount: 80000, method: '포인트', pointsUsed: 80000 },
-  { id: 'p4', date: '2026.03.01', clinic: '에스테틱 피부과', treatmentName: '바디 타이트닝', amount: 320000, method: '혼합', pointsUsed: 50000 },
-  { id: 'p5', date: '2026.02.28', clinic: '글로우 피부과', treatmentName: '등 여드름 필링', amount: 60000, method: '카드' },
-  { id: 'p6', date: '2026.02.25', clinic: '글로우 피부과', treatmentName: '프리미엄 리프팅', amount: 450000, method: '카드', pointsUsed: 30000 },
-  { id: 'p7', date: '2026.02.18', clinic: '글로우 피부과', treatmentName: '아쿠아필링', amount: 90000, method: '현금' },
-];
-
-// ── 설정 ──────────────────────────────────────────────────
-const typeConfig: Record<PointType, { icon: React.ElementType; label: string; color: string }> = {
-  charge: { icon: ArrowUpCircle, label: '충전', color: 'text-emerald-500' },
-  use:    { icon: ArrowDownCircle, label: '사용', color: 'text-rose-400' },
-  referral: { icon: Users, label: '소개', color: 'text-blue-400' },
-  bonus:  { icon: Gift, label: '보너스', color: 'text-amber-400' },
+const pointTypeConfig: Record<PointType, { icon: React.ElementType; label: string; color: string }> = {
+  charge:   { icon: ArrowUpCircle,   label: '충전',   color: 'text-emerald-500' },
+  use:      { icon: ArrowDownCircle, label: '사용',   color: 'text-rose-400' },
+  referral: { icon: Users,           label: '소개',   color: 'text-blue-400' },
+  bonus:    { icon: Gift,            label: '보너스', color: 'text-amber-400' },
 };
 
-const methodColors: Record<PaymentMethod, string> = {
-  '카드': 'bg-blue-50 text-blue-600',
-  '현금': 'bg-green-50 text-green-600',
-  '포인트': 'bg-amber-50 text-amber-600',
-  '혼합': 'bg-purple-50 text-purple-600',
+// ── 결제수단 배지 색상 ────────────────────────────────────────────────
+const methodStyle: Record<PaymentMethod, { bg: string; text: string; label: string }> = {
+  '포인트충전': { bg: 'bg-amber-50',  text: 'text-amber-600',  label: '포인트충전' },
+  '시술결제':   { bg: 'bg-blue-50',   text: 'text-blue-600',   label: '시술결제' },
+  '카드':       { bg: 'bg-sky-50',    text: 'text-sky-600',    label: '카드' },
+  '현금':       { bg: 'bg-green-50',  text: 'text-green-600',  label: '현금' },
+  '서비스':     { bg: 'bg-gray-100',  text: 'text-gray-500',   label: '서비스' },
 };
 
-// ── 통계 계산 ─────────────────────────────────────────────
-const totalSpent = mockPayments.reduce((sum, p) => sum + p.amount, 0);
-const totalPointsUsed = mockPayments.reduce((sum, p) => sum + (p.pointsUsed || 0), 0);
+// ── 클리닉 타입 배지 ─────────────────────────────────────────────────
+const clinicTypeStyle: Record<ClinicType, { bg: string; text: string }> = {
+  '밴스':   { bg: 'bg-[#C9A96E]/10', text: 'text-[#C9A96E]' },
+  '타의원': { bg: 'bg-purple-50',    text: 'text-purple-500' },
+};
 
-const clinicStats = mockPayments.reduce((acc, p) => {
-  acc[p.clinic] = (acc[p.clinic] || 0) + p.amount;
+// ── 통계 계산 ─────────────────────────────────────────────────────────
+const vanceTotal = mockPaymentRecords
+  .filter(p => p.clinicType === '밴스')
+  .reduce((s, p) => s + p.amount, 0);
+
+const otherTotal = mockPaymentRecords
+  .filter(p => p.clinicType === '타의원' && p.amount > 0)
+  .reduce((s, p) => s + p.amount, 0);
+
+const totalSpent = vanceTotal + otherTotal;
+
+const clinicStats = mockPaymentRecords.reduce((acc, p) => {
+  if (p.amount > 0) acc[p.clinic] = (acc[p.clinic] || 0) + p.amount;
   return acc;
 }, {} as Record<string, number>);
 
 const clinicList = Object.entries(clinicStats)
   .sort((a, b) => b[1] - a[1])
-  .map(([name, amount]) => ({ name, amount, pct: Math.round((amount / totalSpent) * 100) }));
+  .map(([name, amount]) => ({
+    name,
+    amount,
+    pct: totalSpent > 0 ? Math.round((amount / totalSpent) * 100) : 0,
+    isVance: VANCE_CLINICS.some(v => name.includes('밴스')),
+  }));
 
-// ── 등록 모달 ─────────────────────────────────────────────
-const AddPaymentModal = ({ onClose }: { onClose: () => void }) => {
-  const [form, setForm] = useState({ clinic: '', treatment: '', amount: '', method: '카드' as PaymentMethod, points: '', memo: '' });
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40" onClick={onClose}>
-      <div className="w-full max-w-md bg-white rounded-t-2xl p-5 pb-8 space-y-4" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between">
-          <h2 className="font-bold text-base">결제 내역 등록</h2>
-          <button onClick={onClose} className="text-gray-400 text-xl leading-none">✕</button>
-        </div>
-
-        {[
-          { label: '병원명', key: 'clinic', placeholder: '글로우 피부과' },
-          { label: '시술명', key: 'treatment', placeholder: '레이저 토닝' },
-          { label: '결제 금액 (원)', key: 'amount', placeholder: '80000', type: 'number' },
-          { label: '포인트 사용 (원)', key: 'points', placeholder: '0', type: 'number' },
-          { label: '메모', key: 'memo', placeholder: '특이사항 입력' },
-        ].map(({ label, key, placeholder, type }) => (
-          <div key={key}>
-            <label className="text-xs text-gray-500 mb-1 block">{label}</label>
-            <input
-              type={type || 'text'}
-              placeholder={placeholder}
-              value={(form as any)[key]}
-              onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-              className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-300"
-            />
-          </div>
-        ))}
-
-        <div>
-          <label className="text-xs text-gray-500 mb-1 block">결제 수단</label>
-          <div className="flex gap-2">
-            {(['카드', '현금', '포인트', '혼합'] as PaymentMethod[]).map(m => (
-              <button
-                key={m}
-                onClick={() => setForm(f => ({ ...f, method: m }))}
-                className={`flex-1 py-2 rounded-xl text-xs font-medium border transition-all ${
-                  form.method === m ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200'
-                }`}
-              >
-                {m}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <button
-          onClick={onClose}
-          className="w-full bg-gray-900 text-white py-3 rounded-xl font-semibold text-sm mt-2"
-        >
-          등록하기
-        </button>
-      </div>
-    </div>
-  );
-};
-
-// ── 메인 컴포넌트 ─────────────────────────────────────────
+// ── 메인 컴포넌트 ─────────────────────────────────────────────────────
 const Points = () => {
   const [tab, setTab] = useState<'points' | 'payments'>('payments');
-  const [filterMethod, setFilterMethod] = useState<PaymentMethod | '전체'>('전체');
-  const [showAdd, setShowAdd] = useState(false);
+  const [filterType, setFilterType] = useState<ClinicType | '전체'>('전체');
   const [showStats, setShowStats] = useState(true);
 
-  const filtered = filterMethod === '전체'
-    ? mockPayments
-    : mockPayments.filter(p => p.method === filterMethod);
+  const filtered = filterType === '전체'
+    ? mockPaymentRecords
+    : mockPaymentRecords.filter(p => p.clinicType === filterType);
+
+  const sorted = [...filtered].sort((a, b) => b.date.localeCompare(a.date));
 
   return (
     <div className="min-h-screen bg-background">
@@ -178,6 +117,13 @@ const Points = () => {
         {/* ── 결제 탭 ── */}
         {tab === 'payments' && (
           <>
+            {/* 안내 배너 */}
+            <div className="mx-0 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-700 space-y-0.5">
+              <p className="font-semibold">💡 결제 내역 구조</p>
+              <p>밴스 계열: 포인트 신규충전 = 실제 카드/현금 결제</p>
+              <p>타의원: 시술 직접 결제 내역</p>
+            </div>
+
             {/* 통계 토글 */}
             <button
               onClick={() => setShowStats(s => !s)}
@@ -193,10 +139,10 @@ const Points = () => {
                   {/* 요약 */}
                   <div className="grid grid-cols-3 gap-2">
                     {[
-                      { label: '총 지출', value: `${(totalSpent / 10000).toFixed(0)}만원` },
-                      { label: '포인트 절약', value: `${(totalPointsUsed / 10000).toFixed(0)}만원` },
-                      { label: '시술 횟수', value: `${mockPayments.length}건` },
-                    ].map(({ label, value }) => (
+                      { label: '총 지출', value: `${(totalSpent / 10000).toFixed(0)}만원`, icon: CreditCard },
+                      { label: '밴스 충전', value: `${(vanceTotal / 10000).toFixed(0)}만원`, icon: Coins },
+                      { label: '타의원', value: `${(otherTotal / 10000).toFixed(0)}만원`, icon: Banknote },
+                    ].map(({ label, value, icon: Icon }) => (
                       <div key={label} className="bg-gray-50 rounded-xl p-2.5 text-center">
                         <p className="text-xs text-gray-400 mb-0.5">{label}</p>
                         <p className="text-sm font-bold text-gray-800">{value}</p>
@@ -205,78 +151,90 @@ const Points = () => {
                   </div>
 
                   {/* 병원별 */}
-                  <div>
-                    <p className="text-xs text-gray-400 mb-2 flex items-center gap-1">
-                      <Building2 className="w-3 h-3" /> 병원별 지출
-                    </p>
-                    {clinicList.map(({ name, amount, pct }) => (
-                      <div key={name} className="mb-2">
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-gray-600 font-medium">{name}</span>
-                          <span className="text-gray-800 font-semibold">{amount.toLocaleString()}원</span>
+                  {clinicList.length > 0 && (
+                    <div>
+                      <p className="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                        <Building2 className="w-3 h-3" /> 병원별 지출
+                      </p>
+                      {clinicList.map(({ name, amount, pct, isVance }) => (
+                        <div key={name} className="mb-2">
+                          <div className="flex justify-between text-xs mb-1">
+                            <span className="text-gray-600 font-medium flex items-center gap-1">
+                              {name}
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${isVance ? 'bg-amber-100 text-amber-600' : 'bg-purple-100 text-purple-500'}`}>
+                                {isVance ? '밴스' : '타의원'}
+                              </span>
+                            </span>
+                            <span className="text-gray-800 font-semibold">{amount.toLocaleString()}원</span>
+                          </div>
+                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className={`h-full rounded-full transition-all ${isVance ? 'bg-amber-400' : 'bg-purple-400'}`}
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
                         </div>
-                        <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                          <div
-                            className="h-full bg-gray-800 rounded-full transition-all"
-                            style={{ width: `${pct}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
 
             {/* 필터 */}
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide px-0">
-              {(['전체', '카드', '현금', '포인트', '혼합'] as const).map(m => (
+            <div className="flex gap-2 pb-1">
+              {(['전체', '밴스', '타의원'] as const).map(f => (
                 <button
-                  key={m}
-                  onClick={() => setFilterMethod(m)}
+                  key={f}
+                  onClick={() => setFilterType(f)}
                   className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                    filterMethod === m
+                    filterType === f
                       ? 'bg-gray-900 text-white border-gray-900'
                       : 'bg-white text-gray-500 border-gray-200'
                   }`}
                 >
-                  {m}
+                  {f}
                 </button>
               ))}
             </div>
 
             {/* 결제 목록 */}
-            {filtered.map(p => (
-              <Card key={p.id} className="glass-card">
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-0.5">
-                        <p className="text-sm font-semibold truncate">{p.treatmentName}</p>
-                        <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${methodColors[p.method]}`}>
-                          {p.method}
-                        </span>
+            {sorted.map(p => {
+              const ms = methodStyle[p.method];
+              const cs = clinicTypeStyle[p.clinicType];
+              return (
+                <Card key={p.id} className="glass-card">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                          <p className="text-sm font-semibold truncate">{p.treatmentName}</p>
+                          <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${ms.bg} ${ms.text}`}>
+                            {ms.label}
+                          </span>
+                          <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${cs.bg} ${cs.text}`}>
+                            {p.clinicType}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400">{p.date.replace(/-/g, '.')} · {p.clinic}</p>
+                        {p.memo && <p className="text-[11px] text-gray-400 mt-0.5">{p.memo}</p>}
                       </div>
-                      <p className="text-xs text-gray-400">{p.date} · {p.clinic}</p>
-                      {p.pointsUsed && (
-                        <p className="text-[11px] text-amber-500 mt-0.5">포인트 {p.pointsUsed.toLocaleString()}원 사용</p>
-                      )}
-                      {p.memo && <p className="text-[11px] text-gray-400 mt-0.5">{p.memo}</p>}
+                      <div className="text-right shrink-0">
+                        {p.amount > 0 ? (
+                          <p className="font-bold text-sm text-gray-900">{p.amount.toLocaleString()}원</p>
+                        ) : (
+                          <p className="font-bold text-sm text-gray-400">서비스</p>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-right shrink-0">
-                      <p className="font-bold text-sm text-gray-900">
-                        {p.amount.toLocaleString()}원
-                      </p>
-                      {p.pointsUsed && (
-                        <p className="text-[10px] text-gray-400">
-                          실결제 {(p.amount - p.pointsUsed).toLocaleString()}원
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
+
+            {sorted.length === 0 && (
+              <div className="text-center py-12 text-gray-400 text-sm">결제 내역이 없습니다</div>
+            )}
           </>
         )}
 
@@ -303,7 +261,7 @@ const Points = () => {
             </Card>
 
             {mockPoints.map((tx: any) => {
-              const config = typeConfig[tx.type as PointType];
+              const config = pointTypeConfig[tx.type as PointType];
               const Icon = config.icon;
               return (
                 <Card key={tx.id} className="glass-card">
@@ -330,19 +288,6 @@ const Points = () => {
 
         <div className="h-24" />
       </div>
-
-      {/* ── FAB 등록 버튼 ── */}
-      {tab === 'payments' && (
-        <button
-          onClick={() => setShowAdd(true)}
-          className="fixed bottom-24 right-5 z-40 flex items-center gap-2 bg-gray-900 text-white px-4 py-3 rounded-2xl shadow-lg font-medium text-sm"
-        >
-          <Plus className="w-4 h-4" />
-          결제 등록
-        </button>
-      )}
-
-      {showAdd && <AddPaymentModal onClose={() => setShowAdd(false)} />}
     </div>
   );
 };
