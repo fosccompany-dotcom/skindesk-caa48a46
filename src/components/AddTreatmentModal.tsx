@@ -211,7 +211,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord }:
   const [shots, setShots] = useState<number | null>(null);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [clinic, setClinic] = useState('밴스 미금');
-  const [satisfaction, setSatisfaction] = useState(4);
+  const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
 
   const reset = () => {
