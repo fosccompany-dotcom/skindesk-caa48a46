@@ -92,7 +92,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
       if (fnError) throw new Error(fnError.message);
       if (!data?.records?.length) {
-        setError('시술 정보를 찾지 못했습니다. 다시 시도해주세요.');
+        if (data?.hint) {
+          setTab('text');
+          setError('이미지 인식 실패. 텍스트 탭에서 문자 내용을 복사해서 시도해보세요.');
+        } else {
+          setError(data?.error || '시술 정보를 찾지 못했습니다. 다시 시도해주세요.');
+        }
         setLoading(false);
         return;
       }
