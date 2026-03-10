@@ -15,6 +15,7 @@ import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import { CyclesProvider } from "./context/CyclesContext";
 import { RecordsProvider } from "./context/RecordsContext";
+import { ManagementSettingsProvider } from "./context/ManagementSettingsContext";
 
 const queryClient = new QueryClient();
 
@@ -23,26 +24,28 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <CyclesProvider>
-        <RecordsProvider>
-          <BrowserRouter>
-            <div className="app-container min-h-screen bg-background relative">
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/points" element={<Points />} />
-                <Route path="/treatments" element={<Treatments />} />
-                <Route path="/cycles" element={<Cycles />} />
-                <Route path="/status" element={<StatusList />} />
-                <Route path="/packages" element={<Packages />} />
-                <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/profile" element={<Profile />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-              <BottomNav />
-            </div>
-          </BrowserRouter>
-        </RecordsProvider>
-      </CyclesProvider>
+      <ManagementSettingsProvider>
+        <CyclesProvider>
+          <RecordsProvider>
+            <BrowserRouter>
+              <div className="app-container min-h-screen bg-background relative">
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/points" element={<Points />} />
+                  <Route path="/treatments" element={<Treatments />} />
+                  <Route path="/cycles" element={<Cycles />} />
+                  <Route path="/status" element={<StatusList />} />
+                  <Route path="/packages" element={<Packages />} />
+                  <Route path="/calendar" element={<CalendarPage />} />
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+                <BottomNav />
+              </div>
+            </BrowserRouter>
+          </RecordsProvider>
+        </CyclesProvider>
+      </ManagementSettingsProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
