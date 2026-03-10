@@ -432,12 +432,11 @@ const Profile = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                    {age !== null && (
-                      <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
-                        <span className="text-sm font-bold">{t('age_prefix')}{age}{t('age_suffix')}</span>
-                      </div>
-                    )}
+                {age !== null && (
+                  <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
+                    <span className="text-sm font-bold">{t('age_prefix')}{age}{t('age_suffix')}</span>
                   </div>
+                )}
                 </div>
               </CardContent>
             </Card>
