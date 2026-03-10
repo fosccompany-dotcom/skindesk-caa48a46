@@ -62,7 +62,9 @@ export interface TreatmentRecord {
   id: string;
   date: string;
   packageId: string;
+  treatmentId?: string;   // 시술 카탈로그 ID (주기 계산용)
   treatmentName: string;
+  shots?: number;          // 샷수 (리프팅 시술용)
   skinLayer: SkinLayer;
   bodyArea: BodyArea;
   notes?: string;
