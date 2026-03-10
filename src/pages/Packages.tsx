@@ -3,6 +3,11 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { useRecords } from '@/context/RecordsContext';
+
+interface Package {
+  id: string; name: string; clinic: string; totalSessions: number;
+  usedSessions: number; expiryDate: string; skinLayer?: string; bodyArea?: string;
+}
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea } from '@/types/skin';
 import { Sparkles, Building2 } from 'lucide-react';
 import { useState, useMemo } from 'react';
@@ -13,7 +18,7 @@ const bodyAreas: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 
 
 const Packages = () => {
   const { records } = useRecords();
-  const packages: never[] = [];
+  const packages: Package[] = [];
   const [filterType, setFilterType] = useState<'layer' | 'body'>('body');
   const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
 
