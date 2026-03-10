@@ -43,6 +43,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [parsed, setParsed] = useState<ParsedRecord[] | null>(null);
   const [saving, setSaving] = useState(false);
+  const [parseSource, setParseSource] = useState<string|null>(null);
   const [saved, setSaved] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -103,9 +104,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           skinLayer: r.skinLayer || 'dermis',
           bodyArea: r.bodyArea || 'face',
           selected: true,
-          expanded: false,
+          expanded: true,
         }))
       );
+      setParseSource(data.source || null);
     } catch (e: any) {
       setError(e.message || '파싱 중 오류가 발생했습니다.');
     } finally {
@@ -254,7 +256,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
             <div className="p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-white/60">{parsed.length}개 시술 감지 · {selectedCount}개 선택됨</p>
-                <button onClick={() => setParsed(null)} className="text-xs text-[#C9A96E]">다시 입력</button>
+                <div className="flex items-center gap-2">
+                  {parseSource === 'keyword_fallback' && (
+                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">키워드 파싱 — 내용 확인 후 저장</span>
+                  )}
+                  <button onClick={() => setParsed(null)} className="text-xs text-[#C9A96E]">다시 입력</button>
+                </div>
               </div>
 
               <div className="space-y-2">
