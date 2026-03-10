@@ -1,18 +1,19 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Wallet, ChevronRight, AlertTriangle, CheckCircle2, Timer, CalendarDays, Layers, Package, TrendingUp, Plus, Star, Trash2, Pencil } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { mockPackages, currentBalance, mockProfile, mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
+import { useLanguage } from '@/i18n/LanguageContext';
 import { SkinLayer, SKIN_LAYER_LABELS, BODY_AREA_LABELS, TreatmentCycle, TreatmentRecord } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import OnboardingFlow from '@/components/OnboardingFlow';
 
 const TODAY = new Date('2026-03-10');
 
@@ -37,21 +38,32 @@ function getCycleStatus(cycle: TreatmentCycle) {
   return { daysElapsed, daysRemaining, progress, nextDate, status };
 }
 
-const statusConfig = {
-  good: { color: 'text-sage-dark', bg: 'bg-sage-light', label: '유지 중' },
-  upcoming: { color: 'text-amber', bg: 'bg-amber-light', label: '곧 시술' },
-  overdue: { color: 'text-rose', bg: 'bg-rose-light', label: '시술 필요' },
-};
-
 const layerOrder: SkinLayer[] = ['epidermis', 'dermis', 'subcutaneous'];
 
 const Index = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { cycles } = useCycles();
   const { records, addRecord, updateRecord, deleteRecord } = useRecords();
+  const { t } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [showAllRecords, setShowAllRecords] = useState(false);
+
+  // Onboarding
+  const [onboardingOpen, setOnboardingOpen] = useState(() => searchParams.get('onboarding') === 'true');
+
+  const handleCloseOnboarding = () => {
+    setOnboardingOpen(false);
+    searchParams.delete('onboarding');
+    setSearchParams(searchParams, { replace: true });
+  };
+
+  const statusConfig = {
+    good: { color: 'text-sage-dark', bg: 'bg-sage-light', label: t('maintaining') },
+    upcoming: { color: 'text-amber', bg: 'bg-amber-light', label: t('upcoming_treatment') },
+    overdue: { color: 'text-rose', bg: 'bg-rose-light', label: t('treatment_needed') },
+  };
 
   const stats = useMemo(() => {
     const allStatuses = cycles.map(c => ({ cycle: c, ...getCycleStatus(c) }));
@@ -109,7 +121,7 @@ const Index = () => {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm('이 시술 기록을 삭제할까요?')) deleteRecord(id);
+    if (confirm(t('delete_confirm'))) deleteRecord(id);
   };
 
   return (
@@ -119,8 +131,8 @@ const Index = () => {
         <div className="page-header-gradient pt-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-70 font-light">안녕하세요 👋</p>
-              <h1 className="mt-0.5 text-xl font-bold">나의 피부 관리</h1>
+              <p className="text-sm opacity-70 font-light">{t('hello')}</p>
+              <h1 className="mt-0.5 text-xl font-bold">{t('my_skin_care')}</h1>
             </div>
             <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer" onClick={() => navigate('/profile')}>
               <span className="text-base">👤</span>
@@ -128,7 +140,7 @@ const Index = () => {
           </div>
           <div className="flex gap-2 mt-3">
             <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              {mockProfile.skinType} · 만 {Math.floor((TODAY.getTime() - new Date(mockProfile.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))}세
+              {mockProfile.skinType} · {t('age_prefix')}{Math.floor((TODAY.getTime() - new Date(mockProfile.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))}{t('age_suffix')}
             </span>
             <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
               {mockProfile.concerns[0]} 집중 관리
@@ -138,53 +150,53 @@ const Index = () => {
       </div>
 
       <div className="page-content space-y-4 pt-4 pb-28">
-        {/* 상태 요약 카드 3개 */}
+        {/* Status summary */}
         <div className="grid grid-cols-3 gap-2">
           <Card className="bg-rose-light border-none card-interactive cursor-pointer" onClick={() => navigate('/status?filter=overdue')}>
             <CardContent className="p-3 text-center">
               <AlertTriangle className="h-4 w-4 text-rose mx-auto mb-1" />
               <p className="text-xl font-bold text-rose">{stats.overdue}</p>
-              <p className="text-[10px] text-muted-foreground">시술 필요</p>
+              <p className="text-[10px] text-muted-foreground">{t('treatment_needed')}</p>
             </CardContent>
           </Card>
           <Card className="bg-amber-light border-none card-interactive cursor-pointer" onClick={() => navigate('/status?filter=upcoming')}>
             <CardContent className="p-3 text-center">
               <Timer className="h-4 w-4 text-amber mx-auto mb-1" />
               <p className="text-xl font-bold text-amber">{stats.upcoming}</p>
-              <p className="text-[10px] text-muted-foreground">곧 시술</p>
+              <p className="text-[10px] text-muted-foreground">{t('upcoming_treatment')}</p>
             </CardContent>
           </Card>
           <Card className="bg-sage-light border-none card-interactive cursor-pointer" onClick={() => navigate('/status?filter=good')}>
             <CardContent className="p-3 text-center">
               <CheckCircle2 className="h-4 w-4 text-sage-dark mx-auto mb-1" />
               <p className="text-xl font-bold text-sage-dark">{stats.good}</p>
-              <p className="text-[10px] text-muted-foreground">유지 중</p>
+              <p className="text-[10px] text-muted-foreground">{t('maintaining')}</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* 포인트 */}
+        {/* Points */}
         <Card className="card-interactive" onClick={() => navigate('/points')}>
           <CardContent className="flex items-center gap-3 p-4">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-accent">
               <Wallet className="h-4.5 w-4.5 text-accent-foreground" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-muted-foreground">보유 포인트</p>
+              <p className="text-[11px] text-muted-foreground">{t('held_points')}</p>
               <p className="text-lg font-bold tracking-tight">{currentBalance.toLocaleString()}원</p>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardContent>
         </Card>
 
-        {/* 가장 급한 시술 */}
+        {/* Urgent treatments */}
         {stats.mostUrgent.length > 0 && (
           <Card className="card-interactive" onClick={() => navigate('/cycles')}>
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-bold flex items-center gap-1.5">
                   <TrendingUp className="h-3.5 w-3.5 text-rose" />
-                  급한 시술
+                  {t('urgent_treatments')}
                 </h2>
                 <ChevronRight className="h-4 w-4 text-muted-foreground" />
               </div>
@@ -209,27 +221,27 @@ const Index = () => {
           </Card>
         )}
 
-        {/* 2주 내 일정 */}
+        {/* 2-week schedule */}
         <Card className="card-interactive" onClick={() => navigate('/calendar')}>
           <CardContent className="flex items-center gap-3 p-4">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info-light">
               <CalendarDays className="h-4.5 w-4.5 text-info" />
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-muted-foreground">2주 내 예정 일정</p>
+              <p className="text-[11px] text-muted-foreground">{t('schedule_in_2weeks')}</p>
               <p className="text-lg font-bold tracking-tight">{stats.scheduleCount}건</p>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardContent>
         </Card>
 
-        {/* 피부층별 관리 현황 */}
+        {/* Skin layer status */}
         <Card className="card-interactive" onClick={() => navigate('/cycles')}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold flex items-center gap-1.5">
                 <Layers className="h-3.5 w-3.5 text-info" />
-                피부층별 관리 현황
+                {t('skin_layer_status')}
               </h2>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
@@ -255,13 +267,13 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* 시술권 잔여 */}
+        {/* Remaining vouchers */}
         <Card className="card-interactive" onClick={() => navigate('/packages')}>
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-bold flex items-center gap-1.5">
                 <Package className="h-3.5 w-3.5 text-accent-foreground" />
-                시술권 잔여 현황
+                {t('remaining_vouchers')}
               </h2>
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
@@ -284,18 +296,15 @@ const Index = () => {
           </CardContent>
         </Card>
 
-        {/* ─ 시술 기록 ─ */}
+        {/* Treatment records */}
         <div>
           <div className="flex items-center justify-between px-1 mb-2.5">
             <h2 className="text-sm font-bold flex items-center gap-1.5">
               <Star className="h-3.5 w-3.5 text-[#C9A96E]" />
-              시술 기록 ({records.length})
+              {t('treatment_records')} ({records.length})
             </h2>
-            <button
-              onClick={() => setShowAllRecords(v => !v)}
-              className="text-xs text-muted-foreground"
-            >
-              {showAllRecords ? '접기' : '전체보기'}
+            <button onClick={() => setShowAllRecords(v => !v)} className="text-xs text-muted-foreground">
+              {showAllRecords ? t('fold') : t('view_all')}
             </button>
           </div>
 
@@ -345,7 +354,7 @@ const Index = () => {
         </div>
       </div>
 
-      {/* FAB — 시술 등록 */}
+      {/* FAB */}
       <button
         onClick={() => { setEditRecord(null); setModalOpen(true); }}
         className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform"
@@ -353,13 +362,14 @@ const Index = () => {
         <Plus size={24} className="text-black" strokeWidth={2.5} />
       </button>
 
-      {/* 등록/수정 모달 */}
       <AddTreatmentModal
         open={modalOpen}
         onClose={() => { setModalOpen(false); setEditRecord(null); }}
         onSave={handleSave}
         editRecord={editRecord}
       />
+
+      <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
     </div>
   );
 };
