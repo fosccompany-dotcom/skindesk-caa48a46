@@ -434,3 +434,60 @@ export const clinicBalances: Record<string, number> = {
   '밴스 미금':    137610,
   '필로의원 분당': 387820,
 };
+
+// ─── 결제 내역 타입 ──────────────────────────────────────────────────
+export type PaymentMethod = '카드' | '현금' | '포인트충전' | '시술결제' | '서비스';
+export type ClinicType = '밴스' | '타의원';
+
+export interface PaymentRecord {
+  id: string;
+  date: string;
+  clinic: string;
+  treatmentName: string;
+  amount: number;
+  method: PaymentMethod;
+  clinicType: ClinicType;
+  memo?: string;
+}
+
+// 밴스 계열 클리닉 목록
+export const VANCE_CLINICS = ['밴스 미금', '밴스 구로', '밴스 판교', '밴스 용산', '밴스 마포'];
+
+// ─── 결제 내역 (실 데이터 기반) ──────────────────────────────────────
+// 밴스 계열: 포인트 신규충전 = 실제 카드/현금 결제
+// 타의원: 시술 기록 = 직접 시술 결제
+export const mockPaymentRecords: PaymentRecord[] = [
+  // ── 밴스 미금 — 신규충전 (포인트 적립 = 실제 결제) ──
+  {
+    id: 'pay-1',
+    date: '2026-01-07',
+    clinic: '밴스 미금',
+    treatmentName: '포인트 신규충전',
+    amount: 2860000,
+    method: '포인트충전',
+    clinicType: '밴스',
+    memo: '카드/현금 결제 → 포인트로 전환',
+  },
+  // ── 필로의원 정자 — 시술 직접 결제 ──
+  {
+    id: 'pay-2',
+    date: '2025-08-22',
+    clinic: '필로의원 정자',
+    treatmentName: '티타늄 60kj + 슈링크 유니버스',
+    amount: 0,
+    method: '서비스',
+    clinicType: '타의원',
+    memo: '소개 적립금 사용 (서비스 시술)',
+  },
+  // ── 뷰티라운지 판교 — 시술 직접 결제 ──
+  {
+    id: 'pay-3',
+    date: '2025-04-20',
+    clinic: '뷰티라운지 판교',
+    treatmentName: '슈링크 유니버스 300샷 + 인모드 FX 앞볼',
+    amount: 0,
+    method: '시술결제',
+    clinicType: '타의원',
+    memo: '금액 미입력 — 직접 추가 필요',
+  },
+];
