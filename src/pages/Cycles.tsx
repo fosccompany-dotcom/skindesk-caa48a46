@@ -49,8 +49,6 @@ const Cycles = () => {
   const upcomingEvents = useMemo(() => {
     const events: { id: string; date: string; title: string; daysFromNow: number; cycleInfo?: string; skinLayer?: SkinLayer }[] = [];
 
-      }
-    });
 
     cycles.forEach(cycle => {
       const lastDate = new Date(cycle.lastTreatmentDate);
