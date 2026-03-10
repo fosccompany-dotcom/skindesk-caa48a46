@@ -221,7 +221,7 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
 const Profile = () => {
   const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
-  const [skinType, setSkinType] = useState<SkinType>('normal');
+  const [skinType, setSkinType] = useState<SkinType>('중성');
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     undefined
   );
