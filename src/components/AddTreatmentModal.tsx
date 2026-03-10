@@ -1,90 +1,199 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft, Package, Syringe, Zap, Check } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TreatmentRecord } from '@/types/skin';
 
-// ─── 데이터 ────────────────────────────────────────────────────────────
+// ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
 
-const BASIC_ITEMS = [
-  { id: 'basic_scaling', name: '스케일링', skinLayer: 'epidermis' as const },
-  { id: 'basic_aquapeel', name: '아쿠아필', skinLayer: 'epidermis' as const },
-  { id: 'basic_vitamin', name: '비타민관리', skinLayer: 'epidermis' as const },
-  { id: 'basic_cryo', name: '크라이오관리', skinLayer: 'epidermis' as const },
-  { id: 'basic_led', name: 'LED재생레이저 (+모델링팩)', skinLayer: 'epidermis' as const },
-  { id: 'basic_ionzyme', name: '이온자임', skinLayer: 'epidermis' as const },
-  { id: 'basic_cinderella', name: '신데렐라주사', skinLayer: 'dermis' as const },
-  { id: 'basic_whitening', name: '백옥주사', skinLayer: 'dermis' as const },
-  { id: 'basic_placenta', name: '태반주사', skinLayer: 'dermis' as const },
-  { id: 'basic_vitaminiv', name: '비타민주사', skinLayer: 'dermis' as const },
-];
+type SL = 'epidermis' | 'dermis' | 'subcutaneous';
 
-const PREMIUM_ITEMS = [
-  { id: 'premium_larafil', name: '라라필', skinLayer: 'epidermis' as const },
-  { id: 'premium_placenta_care', name: '플라센타관리', skinLayer: 'epidermis' as const },
-  { id: 'premium_blackhead', name: '블랙헤드관리', skinLayer: 'epidermis' as const },
-  { id: 'premium_blackpeel', name: '블랙필', skinLayer: 'epidermis' as const },
-  { id: 'premium_yespeel', name: '예스필', skinLayer: 'epidermis' as const },
-  { id: 'premium_super_cinderella', name: '슈퍼신데렐라주사', skinLayer: 'dermis' as const },
-  { id: 'premium_super_whitening', name: '슈퍼백옥주사', skinLayer: 'dermis' as const },
-  { id: 'premium_arginine', name: '아르기닌주사', skinLayer: 'dermis' as const },
-  { id: 'premium_waterdrop', name: '물방울관리 6분', skinLayer: 'epidermis' as const },
-  { id: 'premium_extraction', name: '압출', skinLayer: 'epidermis' as const },
-  { id: 'premium_pinkpeel', name: '핑크필', skinLayer: 'epidermis' as const },
-];
-
-const STANDALONE_TREATMENTS = [
-  // 피하조직
-  { id: 'shrink', name: '슈링크 유니버스', skinLayer: 'subcutaneous' as const, hasShots: true, shotOptions: [100, 200, 300, 600] },
-  { id: 'serf', name: '세르프', skinLayer: 'subcutaneous' as const, hasShots: true, shotOptions: [100, 200, 300, 600] },
-  { id: 'ulthera', name: '울쎄라', skinLayer: 'subcutaneous' as const, hasShots: true, shotOptions: [100, 200, 300, 600] },
-  { id: 'doublo', name: '더블로', skinLayer: 'subcutaneous' as const, hasShots: true, shotOptions: [100, 200, 300, 600] },
-  { id: 'titanium', name: '티타늄', skinLayer: 'subcutaneous' as const, hasShots: true, shotOptions: [30, 60, 100] },
-  { id: 'inmode_fx', name: '인모드 FX', skinLayer: 'subcutaneous' as const, hasShots: false, shotOptions: [] },
-  { id: 'botox_jaw', name: '보톡스 — 사각턱 (제오민)', skinLayer: 'subcutaneous' as const, hasShots: false, shotOptions: [] },
-  { id: 'botox_forehead', name: '보톡스 — 이마', skinLayer: 'subcutaneous' as const, hasShots: false, shotOptions: [] },
-  { id: 'botox_glabella', name: '보톡스 — 미간', skinLayer: 'subcutaneous' as const, hasShots: false, shotOptions: [] },
-  { id: 'filler_nasolabial', name: '필러 — 팔자 (뉴라미스)', skinLayer: 'subcutaneous' as const, hasShots: false, shotOptions: [] },
-  // 진피층
-  { id: 'rejuran', name: '리쥬란 힐러 2cc', skinLayer: 'dermis' as const, hasShots: false, shotOptions: [] },
-  { id: 'rejuran_all', name: '리쥬란 올인원 (힐러2cc+아이1cc)', skinLayer: 'dermis' as const, hasShots: false, shotOptions: [] },
-  { id: 'vanslan', name: '밴스란힐러 2cc', skinLayer: 'dermis' as const, hasShots: false, shotOptions: [] },
-  { id: 'mihee', name: '미희주사', skinLayer: 'dermis' as const, hasShots: false, shotOptions: [] },
-  // 표피층
-  { id: 'picotoning', name: '피코토닝', skinLayer: 'epidermis' as const, hasShots: false, shotOptions: [] },
-  { id: 'excelv', name: '엑셀V레이저 + 피코토닝 콤보', skinLayer: 'epidermis' as const, hasShots: false, shotOptions: [] },
-  { id: 'aquapeel_solo', name: '아쿠아필 (단독)', skinLayer: 'epidermis' as const, hasShots: false, shotOptions: [] },
-  { id: 'larafil_solo', name: '라라필 (단독)', skinLayer: 'epidermis' as const, hasShots: false, shotOptions: [] },
-];
-
-const SKIN_LAYER_LABEL = {
-  epidermis: '표피층',
-  dermis: '진피층',
-  subcutaneous: '피하조직',
-};
-
-const SKIN_LAYER_COLOR = {
-  epidermis: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-  dermis: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
-  subcutaneous: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
-};
-
-// ─── 타입 ──────────────────────────────────────────────────────────────
-
-type TreatmentType = 'basic_pkg' | 'premium_pkg' | 'standalone';
-
-interface FormData {
-  treatmentType: TreatmentType | null;
-  packageItem: typeof BASIC_ITEMS[number] | null;
-  standaloneItem: typeof STANDALONE_TREATMENTS[number] | null;
-  shots: number | null;
-  date: string;
-  clinic: string;
-  notes: string;
-  satisfaction: number;
-  memo: string;
+interface TreatmentItem {
+  id: string;
+  name: string;
+  desc?: string;
+  skinLayer: SL;
+  shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
 }
+
+interface Category {
+  id: string;
+  label: string;
+  emoji: string;
+  color: string;          // tailwind border/bg 색상
+  items: TreatmentItem[];
+}
+
+const CATEGORIES: Category[] = [
+  {
+    id: 'lifting',
+    label: '레이저 리프팅',
+    emoji: '✨',
+    color: 'border-purple-500/40 bg-purple-500/5',
+    items: [
+      { id: 'shrink',     name: '슈링크 유니버스',   desc: '효과UP 통증DOWN 밀착 리프팅',     skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
+      { id: 'ulthera_fp', name: '울쎄라 피프라임',   desc: '프리미엄 초음파 리프팅',           skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
+      { id: 'ulthera',    name: '울쎄라 리프팅',      desc: '보이는 초음파 리프팅',             skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
+      { id: 'serf',       name: '세르프 리프팅',      desc: '프리미엄 고주파 리프팅',           skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
+      { id: 'thermage',   name: '써마지 FLX',         desc: '고주파 에너지 리프팅',             skinLayer: 'subcutaneous' },
+      { id: 'density',    name: '덴서티',              desc: '프리미엄 연예인 리프팅',           skinLayer: 'subcutaneous' },
+      { id: 'onda',       name: '온다 리프팅',         desc: '차세대 극초단파 레이저',           skinLayer: 'subcutaneous' },
+      { id: 'inmode',     name: '인모드',              desc: '토탈 안티에이징 리프팅',           skinLayer: 'subcutaneous' },
+      { id: 'oligio',     name: '올리지오',            desc: '콜라겐 활성화 리프팅',             skinLayer: 'subcutaneous' },
+    ],
+  },
+  {
+    id: 'botox',
+    label: '보톡스/윤곽주사',
+    emoji: '💉',
+    color: 'border-blue-500/40 bg-blue-500/5',
+    items: [
+      { id: 'botox_kr',    name: '국산 보톡스',           desc: '부담없는 가격의 국산 보톡스',    skinLayer: 'subcutaneous' },
+      { id: 'botox_core',  name: '코어톡스 보톡스',       desc: '내성 적은 국산 보톡스',          skinLayer: 'subcutaneous' },
+      { id: 'botox_xeomin',name: '제오민 보톡스',         desc: '내성 적은 독일 보톡스',          skinLayer: 'subcutaneous' },
+      { id: 'botox_alg',   name: '엘러간 보톡스',         desc: '미국 프리미엄 보톡스',           skinLayer: 'subcutaneous' },
+      { id: 'contour',     name: '윤곽주사',              desc: '갸름한 얼굴라인을 위한 주사',    skinLayer: 'subcutaneous' },
+    ],
+  },
+  {
+    id: 'filler',
+    label: '필러/실리프팅',
+    emoji: '🌙',
+    color: 'border-indigo-500/40 bg-indigo-500/5',
+    items: [
+      { id: 'filler_kr',   name: '국산 필러 (아띠에르/뉴라미스)', desc: '자연스러운 볼륨 UP', skinLayer: 'dermis' },
+      { id: 'filler_imp',  name: '수입 필러 (레스틸렌/쥬비덤)',   desc: '자연스러운 볼륨 UP', skinLayer: 'dermis' },
+      { id: 'filler_chin', name: '턱끝 필러',     desc: '자연스러운 볼륨 UP',   skinLayer: 'dermis' },
+      { id: 'filler_lip',  name: '입술 필러',     desc: '황금비율 입술 디자인', skinLayer: 'dermis' },
+      { id: 'filler_sp',   name: '특수부위 필러', desc: '자연스러운 볼륨 UP',   skinLayer: 'dermis' },
+      { id: 'thread',      name: '실리프팅',      desc: '자연스럽고 강력한 효과', skinLayer: 'subcutaneous' },
+    ],
+  },
+  {
+    id: 'booster',
+    label: '스킨부스터',
+    emoji: '💧',
+    color: 'border-cyan-500/40 bg-cyan-500/5',
+    items: [
+      { id: 'skinvive',   name: '스킨바이브',       desc: '프리미엄 히알루론산 스킨부스터',        skinLayer: 'dermis' },
+      { id: 'rejuran',    name: '리쥬란 힐러',      desc: 'PN 성분 잔주름 탄력 개선',             skinLayer: 'dermis' },
+      { id: 'juvelook',   name: '쥬베룩 스킨/볼륨', desc: '자가조직재생 콜라겐 부스터',           skinLayer: 'dermis' },
+      { id: 'mihee',      name: '미희주사',          desc: '꺼진 눈밑 볼륨에 특화된 콜라겐주사',  skinLayer: 'dermis' },
+      { id: 'radiesse',   name: '레디어스',          desc: '스킨·코어부터 채우는 볼륨 부스터',    skinLayer: 'dermis' },
+      { id: 'revive',     name: '리바이브',          desc: '글리세롤+HA 결합 오래가는 촉촉함',     skinLayer: 'dermis' },
+      { id: 'oneday_b',   name: '원데이 스킨부스터', desc: '내 피부 맞춤 스킨부스터',             skinLayer: 'dermis' },
+      { id: 'vanslan',    name: '밴스란힐러',        desc: '통증 낮춘 밴스의원 전용 PN 부스터',   skinLayer: 'dermis' },
+      { id: 'lilied',     name: '릴리이드',          desc: '수분·콜라겐 충전',                    skinLayer: 'dermis' },
+      { id: 'potenza',    name: '포텐자',            desc: '모공·흉터·홍조 맞춤형 고주파',        skinLayer: 'dermis' },
+      { id: 'mulgwang',   name: '물광주사',          desc: 'HA로 피부 속부터 채우는 수분감',      skinLayer: 'dermis' },
+      { id: 'colaster',   name: '콜라스터',          desc: '6가지 앰플 맞춤 콜라겐 부스터',       skinLayer: 'dermis' },
+    ],
+  },
+  {
+    id: 'skincare',
+    label: '피부관리/패키지',
+    emoji: '🌿',
+    color: 'border-green-500/40 bg-green-500/5',
+    items: [
+      // Basic 패키지 아이템
+      { id: 'b_scaling',   name: '[Basic] 스케일링',              skinLayer: 'epidermis' },
+      { id: 'b_aquapeel',  name: '[Basic] 아쿠아필',              skinLayer: 'epidermis' },
+      { id: 'b_vitamin',   name: '[Basic] 비타민관리',            skinLayer: 'epidermis' },
+      { id: 'b_cryo',      name: '[Basic] 크라이오관리',          skinLayer: 'epidermis' },
+      { id: 'b_led',       name: '[Basic] LED재생레이저 (+모델링팩)', skinLayer: 'epidermis' },
+      { id: 'b_ionzyme',   name: '[Basic] 이온자임',              skinLayer: 'epidermis' },
+      { id: 'b_cinder',    name: '[Basic] 신데렐라주사',          skinLayer: 'dermis' },
+      { id: 'b_white',     name: '[Basic] 백옥주사',              skinLayer: 'dermis' },
+      { id: 'b_placenta',  name: '[Basic] 태반주사',              skinLayer: 'dermis' },
+      { id: 'b_vitiv',     name: '[Basic] 비타민주사',            skinLayer: 'dermis' },
+      // Premium 패키지 아이템
+      { id: 'p_larafil',   name: '[Premium] 라라필',              skinLayer: 'epidermis' },
+      { id: 'p_placenta',  name: '[Premium] 플라센타관리',        skinLayer: 'epidermis' },
+      { id: 'p_blackhead', name: '[Premium] 블랙헤드관리',        skinLayer: 'epidermis' },
+      { id: 'p_blackpeel', name: '[Premium] 블랙필',              skinLayer: 'epidermis' },
+      { id: 'p_yespeel',   name: '[Premium] 예스필',              skinLayer: 'epidermis' },
+      { id: 'p_scinder',   name: '[Premium] 슈퍼신데렐라주사',    skinLayer: 'dermis' },
+      { id: 'p_swhite',    name: '[Premium] 슈퍼백옥주사',        skinLayer: 'dermis' },
+      { id: 'p_arginine',  name: '[Premium] 아르기닌주사',        skinLayer: 'dermis' },
+      { id: 'p_water',     name: '[Premium] 물방울관리 6분',      skinLayer: 'epidermis' },
+      { id: 'p_extract',   name: '[Premium] 압출',                skinLayer: 'epidermis' },
+      { id: 'p_pinkpeel',  name: '[Premium] 핑크필',              skinLayer: 'epidermis' },
+      // 단독 스킨케어
+      { id: 'peeling',     name: '필링 (단독)',                   skinLayer: 'epidermis' },
+    ],
+  },
+  {
+    id: 'whitening',
+    label: '미백/기미/색소',
+    emoji: '⚡',
+    color: 'border-amber-500/40 bg-amber-500/5',
+    items: [
+      { id: 'excelv',    name: '엑셀V',      desc: '색소·기미·잡티 제거 레이저',  skinLayer: 'epidermis' },
+      { id: 'picotoning',name: '피코토닝',   desc: '피부를 맑고 깨끗하게',       skinLayer: 'epidermis' },
+      { id: 'whitetone', name: '미백토닝',   desc: '피부를 맑고 깨끗하게',       skinLayer: 'epidermis' },
+      { id: 'lipat',     name: '리팟레이저', desc: '단 한번으로 흑자 제거',      skinLayer: 'epidermis' },
+    ],
+  },
+  {
+    id: 'acne',
+    label: '여드름/점제거',
+    emoji: '🔬',
+    color: 'border-rose-500/40 bg-rose-500/5',
+    items: [
+      { id: 'mole',    name: '점/쥐젖/사마귀/검버섯 제거', desc: '피부 손상 최소화 제거', skinLayer: 'epidermis' },
+      { id: 'acne_tx', name: '여드름 치료',                desc: '아그네스/여드름진정주사', skinLayer: 'epidermis' },
+      { id: 'potenza_face', name: '포텐자 얼굴전체',       desc: '모공·흉터·홍조 고주파',  skinLayer: 'epidermis' },
+      { id: 'kapri',   name: '카프리레이저',               desc: '피지샘억제 여드름 레이저',skinLayer: 'epidermis' },
+    ],
+  },
+  {
+    id: 'fat',
+    label: '지방분해주사',
+    emoji: '🔥',
+    color: 'border-orange-500/40 bg-orange-500/5',
+    items: [
+      { id: 'fat1',   name: '밴스 지방분해주사',        desc: '스테로이드 없는 고농도 지방분해',  skinLayer: 'subcutaneous' },
+      { id: 'fat2',   name: '밴스 지방분해2주사',       desc: '통증↓ 효과↑ 강력한 고농도 주사',  skinLayer: 'subcutaneous' },
+      { id: 'fat_f',  name: '밴스 얼굴지방분해주사',   desc: '얼굴 전용 고농도 지방분해주사',    skinLayer: 'subcutaneous' },
+    ],
+  },
+  {
+    id: 'hair_removal',
+    label: '제모',
+    emoji: '🪄',
+    color: 'border-slate-400/40 bg-slate-400/5',
+    items: [
+      { id: 'gentle_m',  name: '젠틀맥스프로플러스 남성제모', skinLayer: 'epidermis' },
+      { id: 'gentle_f',  name: '젠틀맥스프로플러스 여성제모', skinLayer: 'epidermis' },
+      { id: 'apogee_m',  name: '아포지엘리트플러스 남성제모', skinLayer: 'epidermis' },
+      { id: 'apogee_f',  name: '아포지엘리트플러스 여성제모', skinLayer: 'epidermis' },
+    ],
+  },
+  {
+    id: 'iv',
+    label: '수액/줄기세포',
+    emoji: '🌱',
+    color: 'border-teal-500/40 bg-teal-500/5',
+    items: [
+      { id: 'iv_drip',  name: '수액주사',  desc: '숙취·피로해소 수액',  skinLayer: 'dermis' },
+      { id: 'stemcell', name: '줄기세포',  desc: '피부재생 줄기세포 시술', skinLayer: 'dermis' },
+    ],
+  },
+];
+
+// ─── 헬퍼 ──────────────────────────────────────────────────────────
+
+const SKIN_LAYER_LABEL: Record<SL, string> = {
+  epidermis: '표피층', dermis: '진피층', subcutaneous: '피하조직',
+};
+const SKIN_LAYER_COLOR: Record<SL, string> = {
+  epidermis: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
+  dermis: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
+  subcutaneous: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
+};
+
+// ─── Props ──────────────────────────────────────────────────────────
 
 interface Props {
   open: boolean;
@@ -93,194 +202,140 @@ interface Props {
   editRecord?: TreatmentRecord | null;
 }
 
-// ─── 컴포넌트 ──────────────────────────────────────────────────────────
+// ─── 컴포넌트 ──────────────────────────────────────────────────────
 
 export default function AddTreatmentModal({ open, onClose, onSave, editRecord }: Props) {
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState<FormData>({
-    treatmentType: null,
-    packageItem: null,
-    standaloneItem: null,
-    shots: null,
-    date: new Date().toISOString().split('T')[0],
-    clinic: '밴스 미금',
-    notes: '',
-    satisfaction: 4,
-    memo: '',
-  });
+  const [catId, setCatId] = useState<string | null>(null);
+  const [itemId, setItemId] = useState<string | null>(null);
+  const [shots, setShots] = useState<number | null>(null);
+  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [clinic, setClinic] = useState('밴스 미금');
+  const [satisfaction, setSatisfaction] = useState(4);
+  const [memo, setMemo] = useState('');
 
   const reset = () => {
-    setStep(1);
-    setForm({
-      treatmentType: null,
-      packageItem: null,
-      standaloneItem: null,
-      shots: null,
-      date: new Date().toISOString().split('T')[0],
-      clinic: '밴스 미금',
-      notes: '',
-      satisfaction: 4,
-      memo: '',
-    });
+    setStep(1); setCatId(null); setItemId(null); setShots(null);
+    setDate(new Date().toISOString().split('T')[0]);
+    setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
   };
-
   const handleClose = () => { reset(); onClose(); };
 
-  // 단계 계산
-  const maxStep = (() => {
-    if (!form.treatmentType) return 1;
-    if (form.treatmentType === 'standalone') {
-      const item = form.standaloneItem;
-      if (item?.hasShots) return 4; // 1:타입 → 2:시술 → 3:샷수 → 4:상세
-      return 3; // 1:타입 → 2:시술 → 3:상세
-    }
-    return 3; // 1:타입 → 2:패키지시술 → 3:상세
-  })();
+  const selectedCat = CATEGORIES.find(c => c.id === catId);
+  const selectedItem = selectedCat?.items.find(i => i.id === itemId);
+  const needsShots = !!(selectedItem?.shotOptions?.length);
 
-  const handleNext = () => {
-    if (step < maxStep) setStep(s => s + 1);
-  };
-
-  const handleBack = () => {
-    if (step > 1) setStep(s => s - 1);
-  };
+  // 총 단계: 1(카테고리) → 2(시술) → 3(샷수, 해당시) → 마지막(상세)
+  const totalSteps = needsShots ? 4 : 3;
+  const isDetailStep = needsShots ? step === 4 : step === 3;
 
   const canNext = () => {
-    if (step === 1) return !!form.treatmentType;
-    if (step === 2) {
-      if (form.treatmentType === 'standalone') return !!form.standaloneItem;
-      return !!(form.packageItem);
-    }
-    if (step === 3 && form.treatmentType === 'standalone' && form.standaloneItem?.hasShots) {
-      return !!form.shots;
-    }
+    if (step === 1) return !!catId;
+    if (step === 2) return !!itemId;
+    if (step === 3 && needsShots) return !!shots;
     return true;
   };
 
   const getTreatmentName = () => {
-    if (form.treatmentType === 'basic_pkg' && form.packageItem) {
-      return `Basic — ${form.packageItem.name}`;
-    }
-    if (form.treatmentType === 'premium_pkg' && form.packageItem) {
-      return `Premium — ${form.packageItem.name}`;
-    }
-    if (form.treatmentType === 'standalone' && form.standaloneItem) {
-      const shots = form.shots ? ` ${form.shots}샷` : '';
-      return `${form.standaloneItem.name}${shots}`;
-    }
-    return '';
-  };
-
-  const getSkinLayer = (): 'epidermis' | 'dermis' | 'subcutaneous' => {
-    if (form.packageItem) return form.packageItem.skinLayer;
-    if (form.standaloneItem) return form.standaloneItem.skinLayer;
-    return 'epidermis';
+    if (!selectedItem) return '';
+    return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
   };
 
   const handleSave = () => {
-    const record: Omit<TreatmentRecord, 'id'> = {
-      date: form.date,
-      packageId: form.treatmentType === 'basic_pkg' ? 'p1' : form.treatmentType === 'premium_pkg' ? 'p2' : '',
+    if (!selectedItem) return;
+    onSave({
+      date,
+      packageId: catId === 'skincare' && itemId?.startsWith('b_') ? 'p1'
+               : catId === 'skincare' && itemId?.startsWith('p_') ? 'p2' : '',
       treatmentName: getTreatmentName(),
-      skinLayer: getSkinLayer(),
+      skinLayer: selectedItem.skinLayer,
       bodyArea: 'face',
-      notes: form.notes,
-      clinic: form.clinic,
-      satisfaction: form.satisfaction,
-      memo: form.memo,
-    };
-    onSave(record);
+      notes: '',
+      clinic,
+      satisfaction,
+      memo,
+    });
     handleClose();
-  };
-
-  const isDetailStep = () => {
-    if (form.treatmentType === 'standalone' && form.standaloneItem?.hasShots) return step === 4;
-    return step === 3 && !!form.treatmentType;
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-[#111] border border-white/10 text-white max-w-md w-[92vw] max-h-[85vh] overflow-y-auto p-0">
+      <DialogContent className="bg-[#111] border border-white/10 text-white max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0">
+
         {/* 헤더 */}
-        <DialogHeader className="px-5 pt-5 pb-3 border-b border-white/10">
+        <DialogHeader className="px-5 pt-5 pb-3 border-b border-white/10 sticky top-0 bg-[#111] z-10">
           <div className="flex items-center justify-between">
-            <DialogTitle className="text-base font-semibold text-white">
+            <DialogTitle className="text-base font-semibold">
               {editRecord ? '시술 수정' : '시술 등록'}
             </DialogTitle>
-            <span className="text-xs text-white/40">{step} / {maxStep}</span>
+            <span className="text-xs text-white/30">{step} / {totalSteps}</span>
           </div>
-          {/* 진행바 */}
-          <div className="flex gap-1 mt-3">
-            {Array.from({ length: maxStep }).map((_, i) => (
-              <div
-                key={i}
-                className={cn(
-                  'h-0.5 flex-1 rounded-full transition-all duration-300',
-                  i < step ? 'bg-[#C9A96E]' : 'bg-white/10'
-                )}
-              />
+          <div className="flex gap-1 mt-2.5">
+            {Array.from({ length: totalSteps }).map((_, i) => (
+              <div key={i} className={cn('h-0.5 flex-1 rounded-full transition-all',
+                i < step ? 'bg-[#C9A96E]' : 'bg-white/10')} />
             ))}
           </div>
         </DialogHeader>
 
         <div className="px-5 py-4">
-          {/* ─ STEP 1: 시술 타입 선택 ─ */}
+
+          {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
-            <div className="space-y-3">
-              <p className="text-xs text-white/50 mb-4">어떤 시술을 등록할까요?</p>
-              {[
-                { id: 'basic_pkg' as TreatmentType, icon: <Package size={16} />, label: 'Basic 패키지', sub: '스케일링, 아쿠아필, LED 등 10종', color: 'border-amber-500/40 bg-amber-500/5' },
-                { id: 'premium_pkg' as TreatmentType, icon: <Package size={16} />, label: 'Premium 패키지', sub: '라라필, 물방울관리, 핑크필 등 11종', color: 'border-blue-500/40 bg-blue-500/5' },
-                { id: 'standalone' as TreatmentType, icon: <Syringe size={16} />, label: '단독 시술', sub: '리프팅, 주사, 레이저 등 단건 등록', color: 'border-white/20 bg-white/5' },
-              ].map(opt => (
-                <button
-                  key={opt.id}
-                  onClick={() => setForm(f => ({ ...f, treatmentType: opt.id, packageItem: null, standaloneItem: null, shots: null }))}
-                  className={cn(
-                    'w-full flex items-center gap-3 p-4 rounded-xl border transition-all text-left',
-                    opt.color,
-                    form.treatmentType === opt.id
-                      ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40'
-                      : 'hover:border-white/30'
-                  )}
-                >
-                  <div className="text-[#C9A96E]">{opt.icon}</div>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium text-white">{opt.label}</div>
-                    <div className="text-xs text-white/40 mt-0.5">{opt.sub}</div>
-                  </div>
-                  {form.treatmentType === opt.id && (
-                    <Check size={14} className="text-[#C9A96E]" />
-                  )}
-                </button>
-              ))}
+            <div>
+              <p className="text-xs text-white/40 mb-3">시술 카테고리를 선택하세요</p>
+              <div className="grid grid-cols-2 gap-2">
+                {CATEGORIES.map(cat => (
+                  <button key={cat.id}
+                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); }}
+                    className={cn(
+                      'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
+                      cat.color,
+                      catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-white/25'
+                    )}>
+                    <span className="text-lg">{cat.emoji}</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-white leading-tight">{cat.label}</div>
+                      <div className="text-[10px] text-white/35 mt-0.5">{cat.items.length}종</div>
+                    </div>
+                    {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
 
-          {/* ─ STEP 2a: 패키지 내 시술 선택 ─ */}
-          {step === 2 && (form.treatmentType === 'basic_pkg' || form.treatmentType === 'premium_pkg') && (
-            <div className="space-y-2">
-              <p className="text-xs text-white/50 mb-3">
-                {form.treatmentType === 'basic_pkg' ? 'Basic' : 'Premium'} 패키지에서 시술을 선택하세요
-              </p>
-              <div className="grid gap-2">
-                {(form.treatmentType === 'basic_pkg' ? BASIC_ITEMS : PREMIUM_ITEMS).map(item => (
-                  <button
-                    key={item.id}
-                    onClick={() => setForm(f => ({ ...f, packageItem: item }))}
+          {/* ── STEP 2: 시술 선택 ── */}
+          {step === 2 && selectedCat && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">{selectedCat.emoji}</span>
+                <p className="text-sm font-semibold text-white">{selectedCat.label}</p>
+              </div>
+              <div className="space-y-1.5">
+                {selectedCat.items.map(item => (
+                  <button key={item.id}
+                    onClick={() => { setItemId(item.id); setShots(null); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
-                      form.packageItem?.id === item.id
+                      itemId === item.id
                         ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
                         : 'border-white/10 bg-white/3 hover:border-white/25'
-                    )}
-                  >
-                    <span className="text-sm text-white">{item.name}</span>
-                    <div className="flex items-center gap-2">
-                      <span className={cn('text-xs px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[item.skinLayer])}>
-                        {SKIN_LAYER_LABEL[item.skinLayer]}
+                    )}>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-white font-medium">{item.name}</div>
+                      {item.desc && <div className="text-[11px] text-white/35 mt-0.5 truncate">{item.desc}</div>}
+                    </div>
+                    <div className="flex items-center gap-1.5 ml-2 shrink-0">
+                      <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[item.skinLayer])}>
+                        {SKIN_LAYER_LABEL[item.skinLayer].replace('조직','').replace('층','')}
                       </span>
-                      {form.packageItem?.id === item.id && <Check size={13} className="text-[#C9A96E]" />}
+                      {item.shotOptions?.length && (
+                        <span className="text-[10px] text-white/30 flex items-center gap-0.5">
+                          <Zap size={9} />샷
+                        </span>
+                      )}
+                      {itemId === item.id && <Check size={12} className="text-[#C9A96E]" />}
                     </div>
                   </button>
                 ))}
@@ -288,145 +343,86 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord }:
             </div>
           )}
 
-          {/* ─ STEP 2b: 단독 시술 선택 ─ */}
-          {step === 2 && form.treatmentType === 'standalone' && (
-            <div className="space-y-2">
-              <p className="text-xs text-white/50 mb-3">시술을 선택하세요</p>
-              {(['subcutaneous', 'dermis', 'epidermis'] as const).map(layer => {
-                const items = STANDALONE_TREATMENTS.filter(t => t.skinLayer === layer);
-                return (
-                  <div key={layer} className="mb-4">
-                    <div className={cn('text-xs font-medium px-2 py-1 rounded-md inline-block mb-2 border', SKIN_LAYER_COLOR[layer])}>
-                      {SKIN_LAYER_LABEL[layer]}
-                    </div>
-                    <div className="space-y-1.5">
-                      {items.map(item => (
-                        <button
-                          key={item.id}
-                          onClick={() => setForm(f => ({ ...f, standaloneItem: item, shots: null }))}
-                          className={cn(
-                            'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
-                            form.standaloneItem?.id === item.id
-                              ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
-                              : 'border-white/10 bg-white/3 hover:border-white/25'
-                          )}
-                        >
-                          <span className="text-sm text-white">{item.name}</span>
-                          <div className="flex items-center gap-2">
-                            {item.hasShots && (
-                              <span className="text-xs text-white/30 flex items-center gap-1">
-                                <Zap size={11} />샷수 선택
-                              </span>
-                            )}
-                            {form.standaloneItem?.id === item.id && <Check size={13} className="text-[#C9A96E]" />}
-                          </div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-
-          {/* ─ STEP 3 (샷수): 샷수 선택 ─ */}
-          {step === 3 && form.treatmentType === 'standalone' && form.standaloneItem?.hasShots && (
+          {/* ── STEP 3: 샷수 선택 ── */}
+          {step === 3 && needsShots && selectedItem && (
             <div>
-              <p className="text-xs text-white/50 mb-4">
-                <span className="text-white font-medium">{form.standaloneItem.name}</span> — 샷수를 선택하세요
-              </p>
+              <p className="text-xs text-white/40 mb-1">샷수를 선택하세요</p>
+              <p className="text-sm font-semibold text-white mb-4">{selectedItem.name}</p>
               <div className="grid grid-cols-2 gap-3">
-                {form.standaloneItem.shotOptions.map(shot => (
-                  <button
-                    key={shot}
-                    onClick={() => setForm(f => ({ ...f, shots: shot }))}
+                {selectedItem.shotOptions!.map(s => (
+                  <button key={s}
+                    onClick={() => setShots(s)}
                     className={cn(
-                      'flex flex-col items-center justify-center py-5 rounded-xl border transition-all',
-                      form.shots === shot
+                      'flex flex-col items-center justify-center py-6 rounded-xl border transition-all',
+                      shots === s
                         ? 'border-[#C9A96E] bg-[#C9A96E]/10 ring-1 ring-[#C9A96E]/40'
                         : 'border-white/15 bg-white/3 hover:border-white/30'
-                    )}
-                  >
-                    <span className={cn('text-2xl font-bold', form.shots === shot ? 'text-[#C9A96E]' : 'text-white')}>
-                      {shot}
-                    </span>
-                    <span className="text-xs text-white/40 mt-0.5">샷</span>
+                    )}>
+                    <span className={cn('text-3xl font-bold', shots === s ? 'text-[#C9A96E]' : 'text-white')}>{s}</span>
+                    <span className="text-xs text-white/35 mt-1">샷</span>
                   </button>
                 ))}
               </div>
             </div>
           )}
 
-          {/* ─ 상세 입력 (마지막 단계) ─ */}
-          {isDetailStep() && (
+          {/* ── 상세 입력 (마지막 단계) ── */}
+          {isDetailStep && selectedItem && (
             <div className="space-y-4">
               {/* 선택 요약 */}
               <div className="bg-white/5 rounded-xl px-4 py-3 border border-white/10">
-                <div className="text-xs text-white/40 mb-1">등록할 시술</div>
-                <div className="text-sm font-medium text-[#C9A96E]">{getTreatmentName()}</div>
-                <div className="mt-1">
-                  <span className={cn('text-xs px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[getSkinLayer()])}>
-                    {SKIN_LAYER_LABEL[getSkinLayer()]}
+                <div className="text-[11px] text-white/35 mb-1">등록할 시술</div>
+                <div className="text-sm font-semibold text-[#C9A96E]">{getTreatmentName()}</div>
+                <div className="mt-1.5">
+                  <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[selectedItem.skinLayer])}>
+                    {SKIN_LAYER_LABEL[selectedItem.skinLayer]}
                   </span>
                 </div>
               </div>
 
               {/* 날짜 */}
               <div>
-                <label className="text-xs text-white/50 block mb-1.5">시술일</label>
-                <input
-                  type="date"
-                  value={form.date}
-                  onChange={e => setForm(f => ({ ...f, date: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#C9A96E]/50 [color-scheme:dark]"
-                />
+                <label className="text-xs text-white/40 block mb-1.5">시술일</label>
+                <input type="date" value={date}
+                  onChange={e => setDate(e.target.value)}
+                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#C9A96E]/50 [color-scheme:dark]" />
               </div>
 
               {/* 병원 */}
               <div>
-                <label className="text-xs text-white/50 block mb-1.5">병원</label>
+                <label className="text-xs text-white/40 block mb-1.5">병원</label>
                 <div className="grid grid-cols-2 gap-2">
-                  {['밴스 미금', '밴스 구로', '밴스 판교', '뷰티라운지 판교', '필로의원 정자', '직접 입력'].map(c => (
-                    <button
-                      key={c}
-                      onClick={() => setForm(f => ({ ...f, clinic: c === '직접 입력' ? '' : c }))}
+                  {['밴스 미금', '밴스 구로', '밴스 판교', '뷰티라운지 판교', '필로의원 정자', '기타'].map(c => (
+                    <button key={c}
+                      onClick={() => setClinic(c === '기타' ? '' : c)}
                       className={cn(
                         'px-3 py-2 rounded-lg border text-xs transition-all',
-                        form.clinic === c
-                          ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
-                          : 'border-white/10 text-white/60 hover:border-white/25'
-                      )}
-                    >
+                        clinic === c ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                                     : 'border-white/10 text-white/50 hover:border-white/25 hover:text-white'
+                      )}>
                       {c}
                     </button>
                   ))}
                 </div>
-                {!['밴스 미금', '밴스 구로', '밴스 판교', '뷰티라운지 판교', '필로의원 정자'].includes(form.clinic) && (
-                  <input
-                    type="text"
-                    placeholder="병원명 입력"
-                    value={form.clinic}
-                    onChange={e => setForm(f => ({ ...f, clinic: e.target.value }))}
-                    className="mt-2 w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#C9A96E]/50"
-                  />
+                {!['밴스 미금','밴스 구로','밴스 판교','뷰티라운지 판교','필로의원 정자'].includes(clinic) && (
+                  <input type="text" placeholder="병원명 직접 입력"
+                    value={clinic} onChange={e => setClinic(e.target.value)}
+                    className="mt-2 w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C9A96E]/50" />
                 )}
               </div>
 
               {/* 만족도 */}
               <div>
-                <label className="text-xs text-white/50 block mb-1.5">만족도</label>
+                <label className="text-xs text-white/40 block mb-1.5">만족도</label>
                 <div className="flex gap-2">
-                  {[1, 2, 3, 4, 5].map(s => (
-                    <button
-                      key={s}
-                      onClick={() => setForm(f => ({ ...f, satisfaction: s }))}
+                  {[1,2,3,4,5].map(s => (
+                    <button key={s} onClick={() => setSatisfaction(s)}
                       className={cn(
-                        'flex-1 py-2 rounded-lg border text-sm font-medium transition-all',
-                        form.satisfaction === s
+                        'flex-1 py-2 rounded-lg border text-sm font-bold transition-all',
+                        satisfaction === s
                           ? 'border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E]'
-                          : 'border-white/10 text-white/40 hover:border-white/25'
-                      )}
-                    >
+                          : 'border-white/10 text-white/30 hover:border-white/25'
+                      )}>
                       {'★'.repeat(s)}
                     </button>
                   ))}
@@ -435,44 +431,31 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord }:
 
               {/* 메모 */}
               <div>
-                <label className="text-xs text-white/50 block mb-1.5">메모 (선택)</label>
-                <textarea
-                  rows={3}
-                  placeholder="시술 후 느낌, 효과, 다음 방문 시 참고 사항 등"
-                  value={form.memo}
-                  onChange={e => setForm(f => ({ ...f, memo: e.target.value }))}
-                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[#C9A96E]/50 resize-none"
-                />
+                <label className="text-xs text-white/40 block mb-1.5">메모 (선택)</label>
+                <textarea rows={3} value={memo} onChange={e => setMemo(e.target.value)}
+                  placeholder="시술 후 느낌, 효과, 다음 방문 시 참고사항..."
+                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C9A96E]/50 resize-none" />
               </div>
             </div>
           )}
         </div>
 
         {/* 하단 버튼 */}
-        <div className="px-5 pb-5 flex gap-3">
+        <div className="px-5 pb-5 flex gap-3 sticky bottom-0 bg-[#111] pt-3 border-t border-white/5">
           {step > 1 && (
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              className="flex-1 border-white/15 bg-transparent text-white/70 hover:bg-white/5 hover:text-white"
-            >
+            <Button variant="outline" onClick={() => setStep(s => s - 1)}
+              className="flex-1 border-white/15 bg-transparent text-white/60 hover:bg-white/5 hover:text-white">
               <ChevronLeft size={15} className="mr-1" /> 이전
             </Button>
           )}
-          {!isDetailStep() ? (
-            <Button
-              onClick={handleNext}
-              disabled={!canNext()}
-              className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-30 disabled:cursor-not-allowed"
-            >
+          {!isDetailStep ? (
+            <Button onClick={() => setStep(s => s + 1)} disabled={!canNext()}
+              className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-25">
               다음 <ChevronRight size={15} className="ml-1" />
             </Button>
           ) : (
-            <Button
-              onClick={handleSave}
-              disabled={!form.date || !form.clinic}
-              className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-30"
-            >
+            <Button onClick={handleSave} disabled={!date || !clinic}
+              className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-25">
               <Check size={15} className="mr-1.5" /> 저장
             </Button>
           )}
