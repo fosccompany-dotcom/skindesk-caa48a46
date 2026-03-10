@@ -18,6 +18,8 @@ import BottomNav from "./components/BottomNav";
 import { CyclesProvider } from "./context/CyclesContext";
 import { RecordsProvider } from "./context/RecordsContext";
 import { LanguageProvider } from "./i18n/LanguageContext";
+import { AuthProvider } from "./context/AuthContext";
+import { PrivateRoute } from "./components/PrivateRoute";
 
 const queryClient = new QueryClient();
 
@@ -27,28 +29,34 @@ const App = () => (
       <LanguageProvider>
         <Toaster />
         <Sonner />
-        <CyclesProvider>
-          <RecordsProvider>
-            <BrowserRouter>
-              <div className="app-container min-h-screen bg-background relative">
-                <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/signup" element={<Signup />} />
-                  <Route path="/points" element={<Points />} />
-                  <Route path="/treatments" element={<Treatments />} />
-                  <Route path="/cycles" element={<Cycles />} />
-                  <Route path="/status" element={<StatusList />} />
-                  <Route path="/packages" element={<Packages />} />
-                  <Route path="/calendar" element={<CalendarPage />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-                <BottomNav />
-              </div>
-            </BrowserRouter>
-          </RecordsProvider>
-        </CyclesProvider>
+        <BrowserRouter>
+          <AuthProvider>
+            <CyclesProvider>
+              <RecordsProvider>
+                <div className="app-container min-h-screen bg-background relative">
+                  <Routes>
+                    {/* 공개 라우트 */}
+                    <Route path="/login"  element={<Login />} />
+                    <Route path="/signup" element={<Signup />} />
+
+                    {/* 보호된 라우트 — 로그인 필요 */}
+                    <Route path="/"         element={<PrivateRoute><Index /></PrivateRoute>} />
+                    <Route path="/points"   element={<PrivateRoute><Points /></PrivateRoute>} />
+                    <Route path="/treatments" element={<PrivateRoute><Treatments /></PrivateRoute>} />
+                    <Route path="/cycles"   element={<PrivateRoute><Cycles /></PrivateRoute>} />
+                    <Route path="/status"   element={<PrivateRoute><StatusList /></PrivateRoute>} />
+                    <Route path="/packages" element={<PrivateRoute><Packages /></PrivateRoute>} />
+                    <Route path="/calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
+                    <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
+
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                  <BottomNav />
+                </div>
+              </RecordsProvider>
+            </CyclesProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
