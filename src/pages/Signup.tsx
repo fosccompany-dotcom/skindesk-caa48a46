@@ -6,11 +6,12 @@ import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, Loader2 } from 'lucide-react';
 
 const Signup = () => {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -18,25 +19,32 @@ const Signup = () => {
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password.length < 6) {
+      toast({ title: '비밀번호는 6자리 이상이어야 합니다', variant: 'destructive' });
+      return;
+    }
     if (password !== confirmPassword) {
-      toast({ title: password.length < 6 ? 'Password too short' : 'Passwords do not match', variant: 'destructive' });
+      toast({ title: '비밀번호가 일치하지 않습니다', variant: 'destructive' });
       return;
     }
     setLoading(true);
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { emailRedirectTo: window.location.origin },
+      options: {
+        data: { name },
+        emailRedirectTo: `${window.location.origin}?onboarding=true`,
+      },
     });
     setLoading(false);
     if (error) {
       toast({ title: error.message, variant: 'destructive' });
     } else if (data.user) {
-      // If auto-confirmed, go to onboarding; otherwise show email confirmation
       if (data.session) {
+        // 이메일 확인 없이 바로 로그인
         navigate('/?onboarding=true');
       } else {
-        toast({ title: t('auth_signup_success') });
+        toast({ title: '가입 확인 이메일을 보냈습니다. 이메일을 확인해주세요.' });
         navigate('/login');
       }
     }
@@ -58,6 +66,7 @@ const Signup = () => {
             <span className="text-2xl">✨</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight">{t('auth_signup_title')}</h1>
+          <p className="text-sm text-muted-foreground">나만의 피부 기록을 시작해보세요</p>
         </div>
 
         {/* Social */}
@@ -86,6 +95,22 @@ const Signup = () => {
         </div>
 
         <form onSubmit={handleSignup} className="space-y-3">
+          {/* 이름 */}
+          <div className="space-y-1.5">
+            <Label className="text-xs">이름 (닉네임)</Label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="text"
+                value={name}
+                onChange={e => setName(e.target.value)}
+                className="pl-10 h-11 rounded-xl"
+                placeholder="홍길동"
+                required
+              />
+            </div>
+          </div>
+          {/* 이메일 */}
           <div className="space-y-1.5">
             <Label className="text-xs">{t('auth_email')}</Label>
             <div className="relative">
@@ -93,6 +118,7 @@ const Signup = () => {
               <Input type="email" value={email} onChange={e => setEmail(e.target.value)} className="pl-10 h-11 rounded-xl" placeholder="email@example.com" required />
             </div>
           </div>
+          {/* 비밀번호 */}
           <div className="space-y-1.5">
             <Label className="text-xs">{t('auth_password')}</Label>
             <div className="relative">
@@ -100,6 +126,7 @@ const Signup = () => {
               <Input type="password" value={password} onChange={e => setPassword(e.target.value)} className="pl-10 h-11 rounded-xl" placeholder="••••••••" required minLength={6} />
             </div>
           </div>
+          {/* 비밀번호 확인 */}
           <div className="space-y-1.5">
             <Label className="text-xs">{t('auth_password_confirm')}</Label>
             <div className="relative">
@@ -107,8 +134,8 @@ const Signup = () => {
               <Input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="pl-10 h-11 rounded-xl" placeholder="••••••••" required minLength={6} />
             </div>
           </div>
-          <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold" disabled={loading}>
-            {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+          <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold bg-[#C9A96E] hover:bg-[#B8955A] text-black" disabled={loading}>
+            {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {t('signup')}
           </Button>
         </form>
@@ -116,7 +143,7 @@ const Signup = () => {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             {t('auth_has_account')}{' '}
-            <button className="text-primary font-semibold" onClick={() => navigate('/login')}>
+            <button className="text-[#C9A96E] font-semibold" onClick={() => navigate('/login')}>
               {t('login')}
             </button>
           </p>
