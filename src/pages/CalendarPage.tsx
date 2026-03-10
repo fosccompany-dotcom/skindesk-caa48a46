@@ -135,8 +135,6 @@ const CalendarPage = () => {
     const combined = [...cycleEvents];
         return combined.filter(e => {
       const key = `${e.date}_${e.title}`;
-      if (seen.has(key) && e.id.startsWith('auto_')) return false;
-      seen.add(key);
       return true;
     });
   }, [cycleEvents]);
