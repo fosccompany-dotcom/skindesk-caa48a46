@@ -5,12 +5,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useRecords } from '@/context/RecordsContext';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, ClipboardList, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -39,46 +38,163 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '영등포구': ['여의도동', '영등포동'],
     '관악구': ['신림동', '봉천동'],
     '강서구': ['마곡동', '화곡동'],
+    '은평구': ['불광동', '녹번동'],
+    '노원구': ['상계동', '중계동'],
+    '도봉구': ['창동', '방학동'],
   },
   '경기도': {
     '성남시 분당구': ['서현동', '정자동', '판교동'],
     '성남시 수정구': ['태평동', '수진동'],
+    '성남시 중원구': ['성남동', '금광동'],
     '수원시 팔달구': ['인계동', '매산동'],
     '수원시 영통구': ['영통동', '광교'],
+    '수원시 권선구': ['권선동', '세류동'],
+    '수원시 장안구': ['정자동', '연무동'],
     '고양시 일산동구': ['정발산동', '마두동'],
     '고양시 일산서구': ['주엽동', '대화동'],
+    '고양시 덕양구': ['화정동', '행신동'],
     '용인시 수지구': ['동천동', '성복동'],
-    '하남시': ['미사동', '풍산동'],
+    '용인시 기흥구': ['구성동', '신갈동'],
+    '안양시 동안구': ['평촌동', '비산동'],
+    '안양시 만안구': ['안양동', '박달동'],
+    '부천시': ['상동', '중동', '소사동'],
+    '광명시': ['철산동', '하안동'],
+    '시흥시': ['정왕동', '배곧동'],
+    '안산시 단원구': ['고잔동', '선부동'],
+    '안산시 상록구': ['사동', '본오동'],
+    '남양주시': ['다산동', '별내동'],
+    '하남시': ['미사동', '풍산동', '위례'],
     '화성시': ['동탄', '병점'],
+    '오산시': ['원동', '세마동'],
+    '평택시': ['비전동', '모곡동'],
+    '파주시': ['운정동', '금촌동'],
+    '김포시': ['장기동', '구래동'],
+    '의정부시': ['의정부동', '가능동'],
+    '포천시': ['신읍동', '소흘읍'],
+    '이천시': ['중리동', '관고동'],
+    '광주시': ['경안동', '오포읍'],
+  },
+  '인천광역시': {
+    '연수구': ['송도동', '동춘동', '연수동'],
+    '남동구': ['구월동', '간석동', '논현동'],
+    '부평구': ['부평동', '십정동'],
+    '서구': ['청라동', '검단동'],
+    '미추홀구': ['주안동', '숭의동'],
+    '계양구': ['계산동', '작전동'],
+    '중구': ['운서동', '신포동'],
   },
   '부산광역시': {
-    '해운대구': ['우동', '중동', '좌동'],
+    '해운대구': ['우동', '중동', '좌동', '반여동'],
     '부산진구': ['서면', '부전동', '전포동'],
-    '수영구': ['광안동', '남천동'],
+    '수영구': ['광안동', '남천동', '민락동'],
     '남구': ['대연동', '용호동'],
     '사하구': ['하단동', '괴정동'],
+    '동래구': ['명륜동', '온천동'],
+    '북구': ['화명동', '덕천동'],
+    '강서구': ['명지동', '대저동'],
+    '연제구': ['연산동', '거제동'],
+    '기장군': ['기장읍', '정관읍'],
   },
   '대구광역시': {
     '수성구': ['범어동', '만촌동', '수성동'],
     '중구': ['동성로', '삼덕동'],
-    '달서구': ['월성동', '상인동'],
+    '달서구': ['월성동', '상인동', '성당동'],
+    '동구': ['신암동', '신천동'],
+    '북구': ['칠성동', '침산동'],
+    '달성군': ['다사읍', '화원읍'],
   },
-  '인천광역시': {
-    '연수구': ['송도동', '동춘동'],
-    '남동구': ['구월동', '간석동'],
-    '부평구': ['부평동', '십정동'],
+  '울산광역시': {
+    '남구': ['삼산동', '달동', '옥동'],
+    '북구': ['진장동', '명촌동'],
+    '중구': ['성남동', '학성동'],
+    '동구': ['일산동', '방어동'],
+    '울주군': ['언양읍', '온산읍'],
   },
   '대전광역시': {
     '서구': ['둔산동', '월평동', '갈마동'],
-    '유성구': ['봉명동', '궁동'],
+    '유성구': ['봉명동', '궁동', '노은동'],
+    '중구': ['대흥동', '은행동'],
+    '동구': ['용전동', '판암동'],
+    '대덕구': ['법동', '중리동'],
   },
   '광주광역시': {
-    '서구': ['치평동', '농성동'],
+    '서구': ['치평동', '농성동', '상무동'],
     '동구': ['충장로', '금남로'],
+    '남구': ['봉선동', '주월동'],
+    '북구': ['용봉동', '운암동'],
+    '광산구': ['수완동', '첨단동'],
+  },
+  '세종특별자치시': {
+    '세종시': ['어진동', '도담동', '새롬동', '아름동'],
+  },
+  '강원도': {
+    '춘천시': ['효자동', '퇴계동', '석사동'],
+    '원주시': ['단계동', '무실동', '혁신도시'],
+    '강릉시': ['교동', '포남동', '내곡동'],
+    '동해시': ['천곡동', '송정동'],
+    '속초시': ['조양동', '교동'],
+    '삼척시': ['남양동', '교동'],
+  },
+  '충청북도': {
+    '청주시 흥덕구': ['가경동', '복대동'],
+    '청주시 청원구': ['내덕동', '율량동'],
+    '청주시 상당구': ['용암동', '방서동'],
+    '충주시': ['호암동', '연수동'],
+    '제천시': ['의림동', '화산동'],
+    '음성군': ['음성읍', '금왕읍'],
+    '진천군': ['진천읍', '덕산읍'],
+  },
+  '충청남도': {
+    '천안시 서북구': ['불당동', '두정동', '성정동'],
+    '천안시 동남구': ['신부동', '청룡동'],
+    '아산시': ['온양동', '배방읍', '탕정면'],
+    '서산시': ['동문동', '읍내동'],
+    '당진시': ['당진동', '합덕읍'],
+    '홍성군': ['홍성읍', '광천읍'],
+    '논산시': ['논산동', '강경읍'],
+    '공주시': ['반죽동', '웅진동'],
+  },
+  '전라북도': {
+    '전주시 완산구': ['효자동', '서신동', '삼천동'],
+    '전주시 덕진구': ['금암동', '송천동'],
+    '익산시': ['영등동', '모현동'],
+    '군산시': ['나운동', '수송동'],
+    '완주군': ['삼례읍', '이서면'],
+    '정읍시': ['시기동', '연지동'],
+    '남원시': ['도통동', '향교동'],
+  },
+  '전라남도': {
+    '순천시': ['조례동', '풍덕동', '신대동'],
+    '여수시': ['돌산읍', '문수동'],
+    '광양시': ['중마동', '광영동'],
+    '목포시': ['상동', '옥암동', '하당동'],
+    '나주시': ['빛가람동', '남평읍'],
+    '화순군': ['화순읍', '능주면'],
+  },
+  '경상북도': {
+    '포항시 남구': ['대잠동', '오천읍'],
+    '포항시 북구': ['흥해읍', '죽도동'],
+    '경주시': ['황성동', '안강읍'],
+    '구미시': ['원평동', '형곡동'],
+    '안동시': ['명륜동', '옥동'],
+    '경산시': ['중방동', '진량읍'],
+    '칠곡군': ['왜관읍', '북삼읍'],
+  },
+  '경상남도': {
+    '창원시 성산구': ['상남동', '중앙동'],
+    '창원시 의창구': ['팔용동', '봉림동'],
+    '창원시 마산합포구': ['월포동', '신포동'],
+    '창원시 마산회원구': ['합성동', '양덕동'],
+    '창원시 진해구': ['석동', '태백동'],
+    '김해시': ['부원동', '장유동'],
+    '진주시': ['초전동', '상대동'],
+    '양산시': ['물금읍', '호계동'],
+    '거제시': ['옥포동', '고현동'],
+    '통영시': ['무전동', '도남동'],
   },
   '제주특별자치도': {
-    '제주시': ['연동', '노형동', '이도동'],
-    '서귀포시': ['중문동', '대정읍'],
+    '제주시': ['연동', '노형동', '이도동', '아라동'],
+    '서귀포시': ['중문동', '대정읍', '성산읍'],
   },
 };
 
@@ -110,7 +226,6 @@ const Profile = () => {
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     undefined
   );
-  const [dateOpen, setDateOpen] = useState(false);
   const [concerns, setConcerns] = useState<string[]>([]);
   const [goals, setGoals] = useState<string[]>([]);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
@@ -257,35 +372,64 @@ const Profile = () => {
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">{t('birth_date')}</Label>
-                  <div className="flex items-center gap-3">
-                    <Popover open={dateOpen} onOpenChange={setDateOpen}>
-                      <PopoverTrigger asChild>
-                        <Button
-                          variant="outline"
-                          className={cn(
-                            "flex-1 justify-start text-left font-normal rounded-xl",
-                            !birthDate && "text-muted-foreground"
-                          )}
-                        >
-                          <CalendarIcon className="h-4 w-4 mr-2" />
-                          {birthDate ? format(birthDate, 'yyyy년 M월 d일', { locale: ko }) : t('select_birth_date')}
-                        </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={birthDate}
-                          onSelect={(date) => { setBirthDate(date); setDateOpen(false); }}
-                          locale={ko}
-                          defaultMonth={birthDate || new Date(1994, 0)}
-                          fromYear={1950}
-                          toYear={2010}
-                          captionLayout="dropdown-buttons"
-                          initialFocus
-                          className={cn("p-3 pointer-events-auto")}
-                        />
-                      </PopoverContent>
-                    </Popover>
+                  <div className="flex gap-2">
+                    <Select
+                      value={birthDate ? String(birthDate.getFullYear()) : ''}
+                      onValueChange={(y) => {
+                        const prev = birthDate || new Date(1994, 0, 1);
+                        const maxDay = new Date(Number(y), prev.getMonth() + 1, 0).getDate();
+                        setBirthDate(new Date(Number(y), prev.getMonth(), Math.min(prev.getDate(), maxDay)));
+                      }}
+                    >
+                      <SelectTrigger className="rounded-xl text-xs h-10 flex-1">
+                        <SelectValue placeholder="년도 선택" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-60">
+                        {Array.from({ length: new Date().getFullYear() - 1939 }, (_, i) => new Date().getFullYear() - i).map(y => (
+                          <SelectItem key={y} value={String(y)} className="text-xs">{y}년</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={birthDate ? String(birthDate.getMonth() + 1) : ''}
+                      onValueChange={(m) => {
+                        const prev = birthDate || new Date(new Date().getFullYear() - 30, 0, 1);
+                        const month = Number(m) - 1;
+                        const maxDay = new Date(prev.getFullYear(), month + 1, 0).getDate();
+                        setBirthDate(new Date(prev.getFullYear(), month, Math.min(prev.getDate(), maxDay)));
+                      }}
+                      disabled={!birthDate}
+                    >
+                      <SelectTrigger className="rounded-xl text-xs h-10 w-20">
+                        <SelectValue placeholder="월" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
+                          <SelectItem key={m} value={String(m)} className="text-xs">{m}월</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <Select
+                      value={birthDate ? String(birthDate.getDate()) : ''}
+                      onValueChange={(d) => {
+                        const prev = birthDate || new Date(new Date().getFullYear() - 30, 0, 1);
+                        setBirthDate(new Date(prev.getFullYear(), prev.getMonth(), Number(d)));
+                      }}
+                      disabled={!birthDate}
+                    >
+                      <SelectTrigger className="rounded-xl text-xs h-10 w-20">
+                        <SelectValue placeholder="일" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-52">
+                        {Array.from(
+                          { length: birthDate ? new Date(birthDate.getFullYear(), birthDate.getMonth() + 1, 0).getDate() : 31 },
+                          (_, i) => i + 1
+                        ).map(d => (
+                          <SelectItem key={d} value={String(d)} className="text-xs">{d}일</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                     {age !== null && (
                       <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
                         <span className="text-sm font-bold">{t('age_prefix')}{age}{t('age_suffix')}</span>
@@ -595,3 +739,4 @@ const Profile = () => {
 };
 
 export default Profile;
+
