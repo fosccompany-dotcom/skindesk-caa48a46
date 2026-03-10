@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
-import { mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
 import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
@@ -50,10 +49,6 @@ const Cycles = () => {
   const upcomingEvents = useMemo(() => {
     const events: { id: string; date: string; title: string; daysFromNow: number; cycleInfo?: string; skinLayer?: SkinLayer }[] = [];
 
-    mockEvents.forEach(e => {
-      const diff = differenceInDays(new Date(e.date), TODAY);
-      if (diff >= 0 && diff <= 14) {
-        events.push({ id: e.id, date: e.date, title: e.title, daysFromNow: diff, skinLayer: e.skinLayer });
       }
     });
 
