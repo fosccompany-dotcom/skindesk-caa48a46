@@ -4,7 +4,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
-import { mockPackages, currentBalance, mockProfile, mockEvents } from '@/data/mockData';
+
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -75,7 +75,7 @@ const Index = () => {
     const good = allStatuses.filter(s => s.status === 'good').length;
 
     let scheduleCount = 0;
-    mockEvents.forEach(e => {
+    ([] as any[]).forEach((e: any) => {
       const diff = differenceInDays(new Date(e.date), TODAY);
       if (diff >= 0 && diff <= 14) scheduleCount++;
     });
@@ -87,7 +87,7 @@ const Index = () => {
       if (diff >= 0 && diff <= 14) scheduleCount++;
     });
 
-    const totalRemaining = mockPackages.reduce((sum, pkg) => sum + (pkg.totalSessions - pkg.usedSessions), 0);
+    const totalRemaining = 0;
 
     const mostUrgent = allStatuses
       .sort((a, b) => a.daysRemaining - b.daysRemaining)
@@ -143,10 +143,10 @@ const Index = () => {
           </div>
           <div className="flex gap-2 mt-3">
             <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              {mockProfile.skinType} · {t('age_prefix')}{Math.floor((TODAY.getTime() - new Date(mockProfile.birthDate).getTime()) / (365.25 * 24 * 60 * 60 * 1000))}{t('age_suffix')}
+              {t('my_skin')}
             </span>
             <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              {mockProfile.concerns[0]} 집중 관리
+              내 시술 기록 관리
             </span>
           </div>
         </div>
@@ -186,7 +186,7 @@ const Index = () => {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-[11px] text-muted-foreground">{t('held_points')}</p>
-              <p className="text-lg font-bold tracking-tight">{currentBalance.toLocaleString()}원</p>
+              <p className="text-lg font-bold tracking-tight">잔액 확인 중...</p>
             </div>
             <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
           </CardContent>
@@ -281,7 +281,7 @@ const Index = () => {
               <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
             <div className="grid grid-cols-2 gap-2">
-              {mockPackages.slice(0, 4).map((pkg) => {
+              {([] as any[]).map((pkg) => {
                 const remaining = pkg.totalSessions - pkg.usedSessions;
                 const progress = (pkg.usedSessions / pkg.totalSessions) * 100;
                 return (
