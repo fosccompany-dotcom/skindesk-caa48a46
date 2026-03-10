@@ -28,6 +28,7 @@ const rowToRecord = (row: any): TreatmentRecord => ({
   satisfaction: row.satisfaction,
   notes: row.notes,
   memo: row.memo,
+  amount_paid: row.amount_paid,
 });
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
@@ -82,6 +83,7 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
       satisfaction:   record.satisfaction,
       notes:          record.notes,
       memo:           record.memo,
+      amount_paid:    record.amount_paid,
     }).select().single();
 
     if (!error && data) {
@@ -109,6 +111,7 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
         satisfaction:   record.satisfaction,
         notes:          record.notes,
         memo:           record.memo,
+        amount_paid:    record.amount_paid,
       })
       .eq('id', id)
       .select().single();
