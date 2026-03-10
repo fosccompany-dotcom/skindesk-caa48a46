@@ -1,6 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { TreatmentCycle } from '@/types/skin';
-import { mockCycles } from '@/data/mockData';
 
 interface CyclesContextType {
   cycles: TreatmentCycle[];
@@ -10,7 +9,7 @@ interface CyclesContextType {
 const CyclesContext = createContext<CyclesContextType | undefined>(undefined);
 
 export function CyclesProvider({ children }: { children: ReactNode }) {
-  const [cycles, setCycles] = useState<TreatmentCycle[]>(mockCycles);
+  const [cycles, setCycles] = useState<TreatmentCycle[]>([]);
   return (
     <CyclesContext.Provider value={{ cycles, setCycles }}>
       {children}
