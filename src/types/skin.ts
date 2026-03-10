@@ -71,6 +71,7 @@ export interface TreatmentRecord {
   clinic: string;
   satisfaction?: 1 | 2 | 3 | 4 | 5; // 만족도 1~5
   memo?: string; // 상세 후기/메모
+  amount_paid?: number;   // 실결제 금액 (VAT 포함). 서비스=0, 미확인=undefined
 }
 
 export interface CalendarEvent {
