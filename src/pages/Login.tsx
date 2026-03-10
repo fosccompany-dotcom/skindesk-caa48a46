@@ -32,7 +32,7 @@ const Login = () => {
   const handleOAuth = async (provider: 'google' | 'kakao') => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin },
+      options: { redirectTo: 'https://gaharylmkilooukxnipk.supabase.co/auth/v1/callback' },
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
   };
