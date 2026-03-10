@@ -1,18 +1,23 @@
 import { Home, List, Package, Calendar, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { path: '/', icon: Home, label: '홈' },
-  { path: '/treatments', icon: List, label: '리스트' },
-  { path: '/packages', icon: Package, label: '시술권' },
-  { path: '/calendar', icon: Calendar, label: '캘린더' },
-  { path: '/profile', icon: User, label: '마이' },
-];
+import { useLanguage } from '@/i18n/LanguageContext';
 
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  // Hide on auth pages
+  if (['/login', '/signup'].includes(location.pathname)) return null;
+
+  const navItems = [
+    { path: '/', icon: Home, label: t('nav_home') },
+    { path: '/treatments', icon: List, label: t('nav_list') },
+    { path: '/packages', icon: Package, label: t('nav_packages') },
+    { path: '/calendar', icon: Calendar, label: t('nav_calendar') },
+    { path: '/profile', icon: User, label: t('nav_my') },
+  ];
 
   return (
     <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-card/95 backdrop-blur-xl border-t border-border/50 safe-bottom">

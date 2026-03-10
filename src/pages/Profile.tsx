@@ -10,10 +10,14 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { mockProfile, mockRecords } from '@/data/mockData';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, ClipboardList, Star, ChevronDown, ChevronUp } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, ClipboardList, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
 const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여드름', '홍조', '건조', '다크서클', '제모', '셀룰라이트', '튼살'];
@@ -100,6 +104,8 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
 }
 
 const Profile = () => {
+  const { t, language, setLanguage } = useLanguage();
+  const navigate = useNavigate();
   const [skinType, setSkinType] = useState<SkinType>(mockProfile.skinType);
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     mockProfile.birthDate ? new Date(mockProfile.birthDate) : undefined
@@ -112,7 +118,6 @@ const Profile = () => {
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
 
-  // Treatment history state
   const [records, setRecords] = useState<TreatmentRecord[]>(mockRecords);
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
@@ -183,10 +188,15 @@ const Profile = () => {
     return rated.reduce((sum, r) => sum + (r.satisfaction || 0), 0) / rated.length;
   }, [records]);
 
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate('/login');
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="page-header safe-top">
-        <h1 className="text-lg font-bold">마이페이지</h1>
+        <h1 className="text-lg font-bold">{t('my_page')}</h1>
       </div>
 
       <div className="page-content pt-2">
@@ -194,15 +204,39 @@ const Profile = () => {
           <TabsList className="w-full mb-4 rounded-xl">
             <TabsTrigger value="profile" className="flex-1 rounded-lg text-xs gap-1">
               <User className="h-3.5 w-3.5" />
-              프로필
+              {t('profile_tab')}
             </TabsTrigger>
             <TabsTrigger value="history" className="flex-1 rounded-lg text-xs gap-1">
               <ClipboardList className="h-3.5 w-3.5" />
-              시술 기록
+              {t('treatment_history_tab')}
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-3">
+            {/* Language Setting */}
+            <Card className="glass-card">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="h-8 w-8 rounded-xl bg-info-light flex items-center justify-center">
+                    <Globe className="h-4 w-4 text-info" />
+                  </div>
+                  <h2 className="font-bold text-sm">{t('language_setting')}</h2>
+                </div>
+                <div className="flex gap-2">
+                  {(['ko', 'en', 'zh'] as Language[]).map(lang => (
+                    <Badge
+                      key={lang}
+                      variant={language === lang ? 'default' : 'outline'}
+                      className="cursor-pointer rounded-full px-4 py-2 text-xs font-medium"
+                      onClick={() => setLanguage(lang)}
+                    >
+                      {LANGUAGE_LABELS[lang]}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
             {/* 기본 정보 */}
             <Card className="glass-card">
               <CardContent className="p-4 space-y-4">
@@ -210,19 +244,19 @@ const Profile = () => {
                   <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
                     <User className="h-4 w-4 text-accent-foreground" />
                   </div>
-                  <h2 className="font-bold text-sm">기본 정보</h2>
+                  <h2 className="font-bold text-sm">{t('basic_info')}</h2>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs">피부 타입</Label>
+                  <Label className="text-xs">{t('skin_type')}</Label>
                   <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
                     <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      {skinTypes.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                      {skinTypes.map((st) => <SelectItem key={st} value={st}>{st}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs">생년월일</Label>
+                  <Label className="text-xs">{t('birth_date')}</Label>
                   <div className="flex items-center gap-3">
                     <Popover open={dateOpen} onOpenChange={setDateOpen}>
                       <PopoverTrigger asChild>
@@ -234,7 +268,7 @@ const Profile = () => {
                           )}
                         >
                           <CalendarIcon className="h-4 w-4 mr-2" />
-                          {birthDate ? format(birthDate, 'yyyy년 M월 d일', { locale: ko }) : '생년월일 선택'}
+                          {birthDate ? format(birthDate, 'yyyy년 M월 d일', { locale: ko }) : t('select_birth_date')}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -254,7 +288,7 @@ const Profile = () => {
                     </Popover>
                     {age !== null && (
                       <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
-                        <span className="text-sm font-bold">만 {age}세</span>
+                        <span className="text-sm font-bold">{t('age_prefix')}{age}{t('age_suffix')}</span>
                       </div>
                     )}
                   </div>
@@ -270,8 +304,8 @@ const Profile = () => {
                     <Navigation className="h-4 w-4 text-sage-dark" />
                   </div>
                   <div>
-                    <h2 className="font-bold text-sm">주요 활동 지역</h2>
-                    <p className="text-[10px] text-muted-foreground">병원 추천 시 활용됩니다 · 최대 7개</p>
+                    <h2 className="font-bold text-sm">{t('active_regions')}</h2>
+                    <p className="text-[10px] text-muted-foreground">{t('region_desc')}</p>
                   </div>
                 </div>
 
@@ -288,7 +322,7 @@ const Profile = () => {
 
                 {regions.length < 7 && (
                   <>
-                    <p className="text-[10px] text-muted-foreground mb-1.5 px-0.5">피부과 밀집 지역</p>
+                    <p className="text-[10px] text-muted-foreground mb-1.5 px-0.5">{t('dense_areas')}</p>
                     <div className="flex flex-wrap gap-1.5 mb-3">
                       {[
                         '서울특별시 강남구',
@@ -310,9 +344,9 @@ const Profile = () => {
 
                     <div className="grid grid-cols-2 gap-2 mb-3">
                       <div className="space-y-1">
-                        <Label className="text-[10px] text-muted-foreground">시/도</Label>
+                        <Label className="text-[10px] text-muted-foreground">{t('sido')}</Label>
                         <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
-                          <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="시/도 선택" /></SelectTrigger>
+                          <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('sido')} /></SelectTrigger>
                           <SelectContent>
                             {Object.keys(REGION_DATA).map(sido => (
                               <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
@@ -321,9 +355,9 @@ const Profile = () => {
                         </Select>
                       </div>
                       <div className="space-y-1">
-                        <Label className="text-[10px] text-muted-foreground">시/군/구</Label>
+                        <Label className="text-[10px] text-muted-foreground">{t('gugun')}</Label>
                         <Select value={selectedGugun} onValueChange={setSelectedGugun} disabled={!selectedSido}>
-                          <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder="구/군 선택" /></SelectTrigger>
+                          <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('gugun')} /></SelectTrigger>
                           <SelectContent>
                             {gugunOptions.map(gu => (
                               <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
@@ -339,13 +373,13 @@ const Profile = () => {
                       onClick={addRegion}
                       disabled={!selectedSido || !selectedGugun}
                     >
-                      + 지역 추가 ({regions.length}/7)
+                      + {t('add_region')} ({regions.length}/7)
                     </Button>
                   </>
                 )}
 
                 {regions.length >= 7 && (
-                  <p className="text-[11px] text-muted-foreground text-center py-1">최대 7개 지역까지 등록할 수 있습니다</p>
+                  <p className="text-[11px] text-muted-foreground text-center py-1">{t('max_region')}</p>
                 )}
               </CardContent>
             </Card>
@@ -357,7 +391,7 @@ const Profile = () => {
                   <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
                     <MapPin className="h-4 w-4 text-accent-foreground" />
                   </div>
-                  <h2 className="font-bold text-sm">관리 부위</h2>
+                  <h2 className="font-bold text-sm">{t('care_areas')}</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {bodyAreaOptions.map((area) => (
@@ -381,7 +415,7 @@ const Profile = () => {
                   <div className="h-8 w-8 rounded-xl bg-rose-light flex items-center justify-center">
                     <AlertCircle className="h-4 w-4 text-rose" />
                   </div>
-                  <h2 className="font-bold text-sm">주요 고민</h2>
+                  <h2 className="font-bold text-sm">{t('main_concerns')}</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {concernOptions.map((c) => (
@@ -405,7 +439,7 @@ const Profile = () => {
                   <div className="h-8 w-8 rounded-xl bg-info-light flex items-center justify-center">
                     <Target className="h-4 w-4 text-info" />
                   </div>
-                  <h2 className="font-bold text-sm">관리 목표</h2>
+                  <h2 className="font-bold text-sm">{t('care_goals')}</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {goalOptions.map((g) => (
@@ -422,27 +456,36 @@ const Profile = () => {
               </CardContent>
             </Card>
 
+            {/* Logout */}
+            <Button
+              variant="ghost"
+              className="w-full rounded-xl text-sm text-muted-foreground gap-2"
+              onClick={handleLogout}
+            >
+              <LogOut className="h-4 w-4" />
+              {t('logout')}
+            </Button>
+
             {/* Auto-save indicator */}
             <div className={cn(
               "text-center text-xs py-2 transition-opacity duration-300",
               saved ? "opacity-100 text-sage-dark" : "opacity-0"
             )}>
-              ✓ 자동 저장됨
+              {t('auto_saved')}
             </div>
           </TabsContent>
 
           {/* ===== 시술 기록 탭 ===== */}
           <TabsContent value="history" className="space-y-3">
-            {/* 요약 */}
             <Card className="glass-card">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-[11px] text-muted-foreground">총 시술 기록</p>
+                    <p className="text-[11px] text-muted-foreground">{t('total_records')}</p>
                     <p className="text-2xl font-bold text-foreground">{records.length}<span className="text-sm font-normal text-muted-foreground">건</span></p>
                   </div>
                   <div className="text-right">
-                    <p className="text-[11px] text-muted-foreground">평균 만족도</p>
+                    <p className="text-[11px] text-muted-foreground">{t('avg_satisfaction')}</p>
                     <div className="flex items-center gap-1.5">
                       <Star className="h-4 w-4 fill-amber text-amber" />
                       <span className="text-2xl font-bold text-foreground">{avgSatisfaction.toFixed(1)}</span>
@@ -452,7 +495,6 @@ const Profile = () => {
               </CardContent>
             </Card>
 
-            {/* 기록 리스트 */}
             <div className="space-y-2">
               {sortedRecords.map((record) => {
                 const isExpanded = expandedRecord === record.id;
@@ -497,7 +539,6 @@ const Profile = () => {
 
                     {isExpanded && (
                       <div className="border-t border-border/50 px-3.5 pb-3.5 pt-3 space-y-3">
-                        {/* 상세 정보 */}
                         <div className="flex flex-wrap gap-1.5">
                           <Badge variant="secondary" className="text-[10px]">{SKIN_LAYER_LABELS[record.skinLayer]}</Badge>
                           <Badge variant="secondary" className="text-[10px]">{BODY_AREA_LABELS[record.bodyArea]}</Badge>
@@ -508,22 +549,20 @@ const Profile = () => {
                           <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">{record.notes}</p>
                         )}
 
-                        {/* 만족도 */}
                         <div>
-                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">만족도</Label>
+                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">{t('satisfaction')}</Label>
                           <StarRating
                             value={record.satisfaction || 0}
                             onChange={(v) => updateSatisfaction(record.id, v)}
                           />
                         </div>
 
-                        {/* 메모 */}
                         <div>
-                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">시술 후기 / 메모</Label>
+                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">메모</Label>
                           <Textarea
                             value={memoValue}
                             onChange={(e) => setEditingMemo(prev => ({ ...prev, [record.id]: e.target.value }))}
-                            placeholder="시술 경험, 효과, 주의사항 등을 기록해보세요..."
+                            placeholder={t('memo_placeholder')}
                             className="text-xs min-h-[80px] rounded-xl resize-none"
                           />
                           {editingMemo[record.id] !== undefined && editingMemo[record.id] !== (record.memo ?? '') && (
@@ -532,7 +571,7 @@ const Profile = () => {
                               className="mt-2 w-full rounded-xl text-xs"
                               onClick={() => updateMemo(record.id)}
                             >
-                              저장
+                              {t('save')}
                             </Button>
                           )}
                         </div>
@@ -545,7 +584,7 @@ const Profile = () => {
 
             {sortedRecords.length === 0 && (
               <div className="text-center py-12 text-muted-foreground text-sm">
-                아직 시술 기록이 없습니다
+                {t('no_records')}
               </div>
             )}
           </TabsContent>
