@@ -463,10 +463,10 @@ export const mockPaymentRecords: PaymentRecord[] = [
     date: '2026-01-07',
     clinic: '밴스 미금',
     treatmentName: '포인트 신규충전',
-    amount: 2860000,
+    amount: 2000000,
     method: '포인트충전',
     clinicType: '밴스',
-    memo: '카드/현금 결제 → 포인트로 전환',
+    memo: '실결제 ₩2,000,000 | 증정 포인트 ₩860,000 포함 (총 ₩2,860,000 적립)',
   },
   // ── 필로의원 정자 — 시술 직접 결제 ──
   {
