@@ -285,6 +285,28 @@ const Profile = () => {
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [saved, setSaved] = useState(false);
 
+  // ── Supabase 프로필 로드 ─────────────────────────────────────────────
+  useEffect(() => {
+    const loadProfile = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+      if (error || !data) return;
+      if (data.skin_type) setSkinType(data.skin_type as SkinType);
+      if (data.birth_date) setBirthDate(new Date(data.birth_date));
+      if (data.concerns) setConcerns(data.concerns as string[]);
+      if (data.goals) setGoals(data.goals as string[]);
+      if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
+      if (data.regions) setRegions(data.regions as string[]);
+    };
+    loadProfile();
+  }, []);
+
+  // ── Supabase 프로필 자동저장 ─────────────────────────────────────────
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -292,7 +314,19 @@ const Profile = () => {
     }
     setSaved(false);
     clearTimeout(saveTimeout.current);
-    saveTimeout.current = setTimeout(() => {
+    saveTimeout.current = setTimeout(async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      await supabase.from('user_profiles').upsert({
+        id: user.id,
+        skin_type: skinType,
+        birth_date: birthDate ? birthDate.toISOString().split('T')[0] : null,
+        concerns,
+        goals,
+        target_areas: targetAreas,
+        regions,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'id' });
       setSaved(true);
       setTimeout(() => setSaved(false), 1500);
     }, 600);
