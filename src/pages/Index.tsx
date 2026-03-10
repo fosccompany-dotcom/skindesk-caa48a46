@@ -383,7 +383,7 @@ const Index = () => {
         onClick={() => setFabOpen(v => !v)}
         className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform"
       >
-        <Plus size={24} className={} strokeWidth={2.5} />
+        <Plus size={24} className={`text-black transition-transform duration-200 ${fabOpen ? "rotate-45" : ""}`} strokeWidth={2.5} />
       </button>
 
       {parseModalOpen && (
