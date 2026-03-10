@@ -2,7 +2,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
-import { mockPackages, mockRecords } from '@/data/mockData';
+import { useRecords } from '@/context/RecordsContext';
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea } from '@/types/skin';
 import { Sparkles, Building2 } from 'lucide-react';
 import { useState, useMemo } from 'react';
@@ -12,23 +12,25 @@ const layers: SkinLayer[] = ['epidermis', 'dermis', 'subcutaneous'];
 const bodyAreas: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
 
 const Packages = () => {
+  const { records } = useRecords();
+  const packages: never[] = [];
   const [filterType, setFilterType] = useState<'layer' | 'body'>('body');
   const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
 
   const clinics = useMemo(() => {
     const clinicSet = new Set<string>();
-    mockPackages.forEach(p => clinicSet.add(p.clinic));
-    mockRecords.forEach(r => clinicSet.add(r.clinic));
+    packages.forEach(p => clinicSet.add(p.clinic));
+    records.forEach(r => clinicSet.add(r.clinic));
     return Array.from(clinicSet);
   }, []);
 
   const filteredPackages = useMemo(() =>
-    selectedClinic ? mockPackages.filter(p => p.clinic === selectedClinic) : mockPackages,
+    selectedClinic ? packages.filter(p => p.clinic === selectedClinic) : packages,
     [selectedClinic]
   );
 
   const filteredRecords = useMemo(() =>
-    selectedClinic ? mockRecords.filter(r => r.clinic === selectedClinic) : mockRecords,
+    selectedClinic ? records.filter(r => r.clinic === selectedClinic) : records,
     [selectedClinic]
   );
 
@@ -137,7 +139,7 @@ const Packages = () => {
   );
 };
 
-function RecordsList({ records }: { records: typeof mockRecords }) {
+function RecordsList({ records }: { records: typeof records }) {
   if (records.length === 0) return null;
   return (
     <div className="space-y-2 mt-4">
@@ -161,7 +163,7 @@ function RecordsList({ records }: { records: typeof mockRecords }) {
   );
 }
 
-function PackageCard({ pkg }: { pkg: typeof mockPackages[0] }) {
+function PackageCard({ pkg }: { pkg: typeof packages[0] }) {
   const progress = (pkg.usedSessions / pkg.totalSessions) * 100;
   const remaining = pkg.totalSessions - pkg.usedSessions;
 
