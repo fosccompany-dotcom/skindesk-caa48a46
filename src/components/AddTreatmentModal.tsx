@@ -416,7 +416,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord }:
                 <label className="text-xs text-white/40 block mb-1.5">만족도</label>
                 <div className="flex gap-2">
                   {[1,2,3,4,5].map(s => (
-                    <button key={s} onClick={() => setSatisfaction(s)}
+                    <button key={s} onClick={() => setSatisfaction(s as 1 | 2 | 3 | 4 | 5)}
                       className={cn(
                         'flex-1 py-2 rounded-lg border text-sm font-bold transition-all',
                         satisfaction === s
