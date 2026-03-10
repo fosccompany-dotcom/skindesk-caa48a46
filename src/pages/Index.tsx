@@ -1,16 +1,26 @@
-import { Wallet, ChevronRight, AlertTriangle, CheckCircle2, Timer, CalendarDays, Layers, Package, TrendingUp } from 'lucide-react';
+import { useState } from 'react';
+import { Wallet, ChevronRight, AlertTriangle, CheckCircle2, Timer, CalendarDays, Layers, Package, TrendingUp, Plus, Star, Trash2, Pencil } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { mockPackages, currentBalance, mockProfile, mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
-import { SkinLayer, SKIN_LAYER_LABELS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
+import { useRecords } from '@/context/RecordsContext';
+import { SkinLayer, SKIN_LAYER_LABELS, BODY_AREA_LABELS, TreatmentCycle, TreatmentRecord } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useMemo } from 'react';
+import { cn } from '@/lib/utils';
+import AddTreatmentModal from '@/components/AddTreatmentModal';
 
-const TODAY = new Date('2026-03-08');
+const TODAY = new Date('2026-03-10');
+
+const SKIN_LAYER_COLOR = {
+  epidermis: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
+  dermis: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
+  subcutaneous: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
+};
 
 function getCycleStatus(cycle: TreatmentCycle) {
   const lastDate = new Date(cycle.lastTreatmentDate);
@@ -38,16 +48,17 @@ const layerOrder: SkinLayer[] = ['epidermis', 'dermis', 'subcutaneous'];
 const Index = () => {
   const navigate = useNavigate();
   const { cycles } = useCycles();
+  const { records, addRecord, updateRecord, deleteRecord } = useRecords();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
+  const [showAllRecords, setShowAllRecords] = useState(false);
 
-  // 통계 계산
   const stats = useMemo(() => {
     const allStatuses = cycles.map(c => ({ cycle: c, ...getCycleStatus(c) }));
     const overdue = allStatuses.filter(s => s.status === 'overdue').length;
     const upcoming = allStatuses.filter(s => s.status === 'upcoming').length;
     const good = allStatuses.filter(s => s.status === 'good').length;
 
-    // 2주 이내 일정 수
-    const twoWeeksLater = addDays(TODAY, 14);
     let scheduleCount = 0;
     mockEvents.forEach(e => {
       const diff = differenceInDays(new Date(e.date), TODAY);
@@ -61,15 +72,12 @@ const Index = () => {
       if (diff >= 0 && diff <= 14) scheduleCount++;
     });
 
-    // 패키지 잔여
     const totalRemaining = mockPackages.reduce((sum, pkg) => sum + (pkg.totalSessions - pkg.usedSessions), 0);
 
-    // 가장 급한 시술
     const mostUrgent = allStatuses
       .sort((a, b) => a.daysRemaining - b.daysRemaining)
       .slice(0, 2);
 
-    // 층별 상태 요약
     const layerSummary = layerOrder.map(layer => {
       const layerStatuses = allStatuses.filter(s => s.cycle.skinLayer === layer);
       const worstStatus = layerStatuses.some(s => s.status === 'overdue') ? 'overdue'
@@ -79,6 +87,30 @@ const Index = () => {
 
     return { overdue, upcoming, good, scheduleCount, totalRemaining, mostUrgent, layerSummary };
   }, [cycles]);
+
+  const sortedRecords = useMemo(() =>
+    [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+    [records]
+  );
+  const displayedRecords = showAllRecords ? sortedRecords : sortedRecords.slice(0, 3);
+
+  const handleSave = (record: Omit<TreatmentRecord, 'id'>) => {
+    if (editRecord) {
+      updateRecord(editRecord.id, record);
+    } else {
+      addRecord(record);
+    }
+    setEditRecord(null);
+  };
+
+  const handleEdit = (r: TreatmentRecord) => {
+    setEditRecord(r);
+    setModalOpen(true);
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm('이 시술 기록을 삭제할까요?')) deleteRecord(id);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -105,7 +137,7 @@ const Index = () => {
         </div>
       </div>
 
-      <div className="page-content space-y-4 pt-4">
+      <div className="page-content space-y-4 pt-4 pb-28">
         {/* 상태 요약 카드 3개 */}
         <div className="grid grid-cols-3 gap-2">
           <Card className="bg-rose-light border-none card-interactive cursor-pointer" onClick={() => navigate('/status?filter=overdue')}>
@@ -251,7 +283,83 @@ const Index = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* ─ 시술 기록 ─ */}
+        <div>
+          <div className="flex items-center justify-between px-1 mb-2.5">
+            <h2 className="text-sm font-bold flex items-center gap-1.5">
+              <Star className="h-3.5 w-3.5 text-[#C9A96E]" />
+              시술 기록 ({records.length})
+            </h2>
+            <button
+              onClick={() => setShowAllRecords(v => !v)}
+              className="text-xs text-muted-foreground"
+            >
+              {showAllRecords ? '접기' : '전체보기'}
+            </button>
+          </div>
+
+          <div className="space-y-2">
+            {displayedRecords.map((r) => (
+              <Card key={r.id} className="glass-card">
+                <CardContent className="p-3.5">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-semibold">{r.treatmentName}</span>
+                        <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[r.skinLayer])}>
+                          {r.skinLayer === 'epidermis' ? '표피' : r.skinLayer === 'dermis' ? '진피' : '피하'}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">
+                        {format(new Date(r.date), 'yyyy.MM.dd')} · {r.clinic}
+                      </p>
+                      {r.memo && (
+                        <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1 shrink-0">
+                      {r.satisfaction && (
+                        <span className="text-xs text-[#C9A96E] font-medium">
+                          {'★'.repeat(r.satisfaction)}
+                        </span>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleEdit(r); }}
+                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white/80 transition-colors"
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDelete(r.id); }}
+                        className="p-1.5 rounded-lg hover:bg-rose-500/15 text-white/40 hover:text-rose-400 transition-colors"
+                      >
+                        <Trash2 size={13} />
+                      </button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
       </div>
+
+      {/* FAB — 시술 등록 */}
+      <button
+        onClick={() => { setEditRecord(null); setModalOpen(true); }}
+        className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform"
+      >
+        <Plus size={24} className="text-black" strokeWidth={2.5} />
+      </button>
+
+      {/* 등록/수정 모달 */}
+      <AddTreatmentModal
+        open={modalOpen}
+        onClose={() => { setModalOpen(false); setEditRecord(null); }}
+        onSave={handleSave}
+        editRecord={editRecord}
+      />
     </div>
   );
 };
