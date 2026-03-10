@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { ElementType } from 'react';
 import { ArrowUpCircle, ArrowDownCircle, Users, Gift, TrendingDown, ChevronDown, Building2, CreditCard, Banknote, Coins } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 // ── 타입 정의 ─────────────────────────────────────────────────────────
@@ -28,7 +29,7 @@ const VANCE_CLINICS: string[] = [];
 // ── 포인트 타입 설정 ──────────────────────────────────────────────────
 type PointType = 'charge' | 'use' | 'referral' | 'bonus';
 
-const pointTypeConfig: Record<PointType, { icon: React.ElementType; label: string; color: string }> = {
+const pointTypeConfig: Record<PointType, { icon: ElementType; label: string; color: string }> = {
   charge:   { icon: ArrowUpCircle,   label: '충전',   color: 'text-emerald-500' },
   use:      { icon: ArrowDownCircle, label: '사용',   color: 'text-rose-400' },
   referral: { icon: Users,           label: '소개',   color: 'text-blue-400' },
@@ -358,12 +359,12 @@ const Points = () => {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
-                          <p className="text-sm font-semibold truncate">{p.treatmentName}</p>
+                          <p className="text-sm font-semibold truncate">{p.treatment}</p>
                           <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${ms.bg} ${ms.text}`}>{ms.label}</span>
                           <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${cs.bg} ${cs.text}`}>{p.clinicType}</span>
                         </div>
                         <p className="text-xs text-gray-400">{p.date.replace(/-/g, '.')} · {p.clinic}</p>
-                        {p.memo && <p className="text-[11px] text-gray-400 mt-0.5">{p.memo}</p>}
+                        {p.notes && <p className="text-[11px] text-gray-400 mt-0.5">{p.notes}</p>}
                       </div>
                       <div className="text-right shrink-0">
                         {p.amount > 0
