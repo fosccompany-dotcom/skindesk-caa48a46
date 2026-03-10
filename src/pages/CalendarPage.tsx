@@ -1,7 +1,6 @@
 import { useState, useMemo } from 'react';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
-import { mockEvents } from '@/data/mockData';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
 import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope } from 'lucide-react';
@@ -133,9 +132,8 @@ const CalendarPage = () => {
   }, [cycles]);
 
   const allEvents = useMemo(() => {
-    const combined = [...mockEvents, ...cycleEvents];
-    const seen = new Set(mockEvents.map(e => `${e.date}_${e.title}`));
-    return combined.filter(e => {
+    const combined = [...cycleEvents];
+        return combined.filter(e => {
       const key = `${e.date}_${e.title}`;
       if (seen.has(key) && e.id.startsWith('auto_')) return false;
       seen.add(key);
