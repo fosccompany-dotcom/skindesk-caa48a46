@@ -10,10 +10,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { mockProfile, mockRecords } from '@/data/mockData';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, ClipboardList, Star, ChevronDown, ChevronUp, Settings, Bell, CheckCircle2 } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, ClipboardList, Star, ChevronDown, ChevronUp } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
-import { useManagementSettings } from '@/context/ManagementSettingsContext';
-import { BODY_ZONES, MANAGEMENT_LEVEL_LABELS, MANAGEMENT_LEVEL_DESC, ManagementLevel, BodyZone, getNextDate, getDDay } from '@/data/treatmentCycles';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 
@@ -118,7 +116,6 @@ const Profile = () => {
   const [records, setRecords] = useState<TreatmentRecord[]>(mockRecords);
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
-  const { settings, setZone } = useManagementSettings();
 
   const sortedRecords = useMemo(() =>
     [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
@@ -202,10 +199,6 @@ const Profile = () => {
             <TabsTrigger value="history" className="flex-1 rounded-lg text-xs gap-1">
               <ClipboardList className="h-3.5 w-3.5" />
               시술 기록
-            </TabsTrigger>
-            <TabsTrigger value="mgmt" className="flex-1 rounded-lg text-xs gap-1">
-              <Settings className="h-3.5 w-3.5" />
-              관리 설정
             </TabsTrigger>
           </TabsList>
 
@@ -555,105 +548,6 @@ const Profile = () => {
                 아직 시술 기록이 없습니다
               </div>
             )}
-          </TabsContent>
-
-          {/* ── 관리 강도 설정 탭 ─────────────────────────────────── */}
-          <TabsContent value="mgmt" className="space-y-4 pb-4">
-
-            {/* 안내 헤더 */}
-            <Card className="glass-card border-[#C9A96E]/20 bg-[#C9A96E]/5">
-              <CardContent className="p-4">
-                <div className="flex items-start gap-3">
-                  <Bell className="h-4 w-4 text-[#C9A96E] mt-0.5 shrink-0" />
-                  <div>
-                    <p className="text-xs font-semibold text-[#C9A96E] mb-1">부위별 관리 강도</p>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed">
-                      시술 등록 시 선택한 강도에 따라 다음 시술 권장일이 자동 계산됩니다.
-                      알림은 D-7, D-0에 표시되며 캘린더 추가를 선택할 수 있습니다.
-                    </p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 부위별 설정 카드 */}
-            {BODY_ZONES.map((zone) => {
-              const current = settings[zone.id as BodyZone];
-              return (
-                <Card key={zone.id} className="glass-card">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-lg">{zone.emoji}</span>
-                      <div>
-                        <p className="text-sm font-semibold">{zone.label}</p>
-                        <p className="text-[10px] text-muted-foreground">{zone.desc}</p>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                      {(['tight', 'maintain', 'none'] as ManagementLevel[]).map((level) => {
-                        const isActive = current === level;
-                        return (
-                          <button
-                            key={level}
-                            onClick={() => setZone(zone.id as BodyZone, level)}
-                            className={[
-                              'rounded-xl p-2.5 text-left transition-all border',
-                              isActive
-                                ? 'bg-[#C9A96E]/15 border-[#C9A96E]/60'
-                                : 'bg-white/[0.03] border-white/10 hover:border-white/20',
-                            ].join(' ')}
-                          >
-                            <div className="flex items-start gap-1.5">
-                              {isActive
-                                ? <CheckCircle2 className="h-3 w-3 text-[#C9A96E] mt-0.5 shrink-0" />
-                                : <div className="h-3 w-3 rounded-full border border-white/20 mt-0.5 shrink-0" />
-                              }
-                              <div>
-                                <p className={['text-[10px] font-semibold leading-tight', isActive ? 'text-[#C9A96E]' : 'text-white/70'].join(' ')}>
-                                  {MANAGEMENT_LEVEL_LABELS[level].replace(/💪|🔵|⚫/, '').trim()}
-                                </p>
-                                <p className="text-[9px] text-white/40 mt-0.5 leading-tight">
-                                  {MANAGEMENT_LEVEL_DESC[level]}
-                                </p>
-                              </div>
-                            </div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
-
-            {/* 현재 설정 요약 */}
-            <Card className="glass-card">
-              <CardContent className="p-4">
-                <p className="text-xs font-semibold mb-3 text-muted-foreground">현재 설정 요약</p>
-                <div className="space-y-2">
-                  {BODY_ZONES.map((zone) => {
-                    const level = settings[zone.id as BodyZone];
-                    return (
-                      <div key={zone.id} className="flex items-center justify-between">
-                        <span className="text-xs text-white/70">{zone.emoji} {zone.label}</span>
-                        <Badge
-                          variant="outline"
-                          className={[
-                            'text-[10px] px-2',
-                            level === 'tight'    ? 'border-amber-500/50 text-amber-400' :
-                            level === 'maintain' ? 'border-blue-500/50 text-blue-400' :
-                                                   'border-white/20 text-white/30',
-                          ].join(' ')}
-                        >
-                          {MANAGEMENT_LEVEL_LABELS[level]}
-                        </Badge>
-                      </div>
-                    );
-                  })}
-                </div>
-              </CardContent>
-            </Card>
-
           </TabsContent>
         </Tabs>
       </div>

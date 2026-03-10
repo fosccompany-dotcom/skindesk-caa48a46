@@ -36,7 +36,7 @@ const CATEGORIES: Category[] = [
       { id: 'ulthera_fp', name: '울쎄라 피프라임',   desc: '프리미엄 초음파 리프팅',           skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
       { id: 'ulthera',    name: '울쎄라 리프팅',      desc: '보이는 초음파 리프팅',             skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
       { id: 'serf',       name: '세르프 리프팅',      desc: '프리미엄 고주파 리프팅',           skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
-      { id: 'thermage',   name: '써마지 FLX',         desc: '고주파 에너지 리프팅',             skinLayer: 'subcutaneous', shotOptions: [300, 600] },
+      { id: 'thermage',   name: '써마지 FLX',         desc: '고주파 에너지 리프팅',             skinLayer: 'subcutaneous' },
       { id: 'density',    name: '덴서티',              desc: '프리미엄 연예인 리프팅',           skinLayer: 'subcutaneous' },
       { id: 'onda',       name: '온다 리프팅',         desc: '차세대 극초단파 레이저',           skinLayer: 'subcutaneous' },
       { id: 'inmode',     name: '인모드',              desc: '토탈 안티에이징 리프팅',           skinLayer: 'subcutaneous' },
@@ -247,9 +247,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord }:
       date,
       packageId: catId === 'skincare' && itemId?.startsWith('b_') ? 'p1'
                : catId === 'skincare' && itemId?.startsWith('p_') ? 'p2' : '',
-      treatmentId: selectedItem.id,
       treatmentName: getTreatmentName(),
-      shots: shots ?? undefined,
       skinLayer: selectedItem.skinLayer,
       bodyArea: 'face',
       notes: '',

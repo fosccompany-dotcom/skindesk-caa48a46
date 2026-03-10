@@ -304,7 +304,7 @@ const Treatments = () => {
       {/* Package Tier Filter */}
       <div className="px-1 mb-3">
         <ScrollArea className="w-full">
-          <div className="flex gap-2">
+          <div className="flex gap-2 pb-3">
             <button
               onClick={() => setSelectedPackage(null)}
               className={cn(
