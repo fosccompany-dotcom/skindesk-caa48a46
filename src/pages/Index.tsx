@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { Wallet, ChevronRight, AlertTriangle, CheckCircle2, Timer, CalendarDays, Layers, Package, TrendingUp, Plus, Star, Trash2, Pencil } from 'lucide-react';
+import { Wallet, ChevronRight, AlertTriangle, CheckCircle2, Timer, CalendarDays, Layers, Package, TrendingUp, Plus, Star, Trash2, Pencil, Sparkles } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -13,6 +13,7 @@ import { differenceInDays, format, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 
 const TODAY = new Date('2026-03-10');
@@ -48,6 +49,8 @@ const Index = () => {
   const { t } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
+  const [parseModalOpen, setParseModalOpen] = useState(false);
+  const [fabOpen, setFabOpen] = useState(false);
   const [showAllRecords, setShowAllRecords] = useState(false);
 
   // Onboarding
@@ -355,13 +358,37 @@ const Index = () => {
       </div>
 
       {/* FAB */}
+      {fabOpen && (
+        <div className="fixed bottom-36 right-4 z-40 flex flex-col gap-2 items-end">
+          <button
+            onClick={() => { setFabOpen(false); setParseModalOpen(true); }}
+            className="flex items-center gap-2 bg-[#1a1a1a] border border-[#C9A96E]/40 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"
+          >
+            <Sparkles size={14} className="text-[#C9A96E]" />
+            문자/카톡으로 등록
+          </button>
+          <button
+            onClick={() => { setFabOpen(false); setEditRecord(null); setModalOpen(true); }}
+            className="flex items-center gap-2 bg-[#1a1a1a] border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"
+          >
+            <Plus size={14} />
+            직접 입력
+          </button>
+        </div>
+      )}
+      {fabOpen && (
+        <div className="fixed inset-0 z-30" onClick={() => setFabOpen(false)} />
+      )}
       <button
-        onClick={() => { setEditRecord(null); setModalOpen(true); }}
+        onClick={() => setFabOpen(v => !v)}
         className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform"
       >
-        <Plus size={24} className="text-black" strokeWidth={2.5} />
+        <Plus size={24} className={} strokeWidth={2.5} />
       </button>
 
+      {parseModalOpen && (
+        <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />
+      )}
       <AddTreatmentModal
         open={modalOpen}
         onClose={() => { setModalOpen(false); setEditRecord(null); }}
