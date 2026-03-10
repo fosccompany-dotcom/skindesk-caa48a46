@@ -8,7 +8,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
-import { mockProfile, mockRecords } from '@/data/mockData';
+import { useRecords } from '@/context/RecordsContext';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
 import { User, Target, AlertCircle, MapPin, Navigation, CalendarIcon, X, ClipboardList, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
@@ -118,7 +118,7 @@ const Profile = () => {
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
 
-  const [records, setRecords] = useState<TreatmentRecord[]>(mockRecords);
+  const { records } = useRecords();
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
 
