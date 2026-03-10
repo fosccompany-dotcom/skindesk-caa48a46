@@ -233,7 +233,7 @@ const Profile = () => {
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
 
-  const { records } = useRecords();
+  const { records, updateRecord } = useRecords();
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
 
@@ -267,14 +267,17 @@ const Profile = () => {
 
   const gugunOptions = selectedSido ? Object.keys(REGION_DATA[selectedSido] || {}) : [];
 
-  const updateSatisfaction = (id: string, satisfaction: 1|2|3|4|5) => {
-    setRecords(prev => prev.map(r => r.id === id ? { ...r, satisfaction } : r));
+  const updateSatisfaction = async (id: string, satisfaction: 1|2|3|4|5) => {
+    const rec = records.find(r => r.id === id);
+    if (!rec) return;
+    await updateRecord(id, { ...rec, satisfaction });
   };
 
-  const updateMemo = (id: string) => {
+  const updateMemo = async (id: string) => {
     const memo = editingMemo[id];
     if (memo !== undefined) {
-      setRecords(prev => prev.map(r => r.id === id ? { ...r, memo } : r));
+      const rec = records.find(r => r.id === id);
+      if (rec) await updateRecord(id, { ...rec, memo });
       setEditingMemo(prev => { const next = { ...prev }; delete next[id]; return next; });
     }
   };
