@@ -1,14 +1,28 @@
 import { useState } from 'react';
 import { ArrowUpCircle, ArrowDownCircle, Users, Gift, TrendingDown, ChevronDown, Building2, CreditCard, Banknote, Coins } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-// mockData 제거 — 향후 Supabase 연동 예정
-type PaymentMethod = 'card' | 'cash' | 'transfer';
-type ClinicType = string;
-const mockPoints: never[] = [];
+// ── 타입 정의 ─────────────────────────────────────────────────────────
+type PaymentMethod = '포인트충전' | '시술결제' | '카드' | '현금' | '서비스';
+type ClinicType = '밴스' | '타의원';
+
+interface PointTransaction {
+  id: string; date: string; type: 'charge' | 'use' | 'referral' | 'bonus';
+  amount: number; description: string; balance: number;
+}
+interface PaymentRecord {
+  id: string; date: string; treatment: string; clinic: string;
+  clinicType: ClinicType; amount: number; method: PaymentMethod; notes?: string;
+}
+interface Package {
+  id: string; name: string; clinic: string; totalSessions: number;
+  usedSessions: number; expiryDate: string; skinLayer?: string;
+}
+
+const mockPoints: PointTransaction[] = [];
 const currentBalance = 0;
 const clinicBalances: Record<string, number> = {};
-const mockPaymentRecords: never[] = [];
-const mockPackages: never[] = [];
+const mockPaymentRecords: PaymentRecord[] = [];
+const mockPackages: Package[] = [];
 const VANCE_CLINICS: string[] = [];
 
 // ── 포인트 타입 설정 ──────────────────────────────────────────────────
