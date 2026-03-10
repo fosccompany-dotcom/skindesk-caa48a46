@@ -2,7 +2,6 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { TreatmentRecord } from '@/types/skin';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
-import { mockRecords } from '@/data/mockData';
 
 interface RecordsContextType {
   records: TreatmentRecord[];
@@ -14,7 +13,6 @@ interface RecordsContextType {
 
 const RecordsContext = createContext<RecordsContextType | undefined>(undefined);
 
-// DB row → TreatmentRecord 변환
 const rowToRecord = (row: any): TreatmentRecord => ({
   id: row.id,
   date: row.date,
@@ -38,8 +36,7 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user) {
-      // 비로그인 상태 → mockData 사용
-      setRecords(mockRecords);
+      setRecords([]);
       setLoading(false);
       return;
     }
@@ -53,23 +50,14 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
       .select('*')
       .order('date', { ascending: false });
 
-    if (!error && data && data.length > 0) {
-      // Supabase에 실제 데이터가 있으면 사용
+    if (!error && data) {
       setRecords(data.map(rowToRecord));
-    } else {
-      // Supabase 비어있으면 mockData fallback
-      setRecords(mockRecords);
     }
     setLoading(false);
   };
 
   const addRecord = async (record: Omit<TreatmentRecord, 'id'>) => {
-    if (!user) {
-      // 비로그인: 로컬 상태에만 추가
-      const newRecord = { ...record, id: `local_${Date.now()}` };
-      setRecords(prev => [newRecord, ...prev]);
-      return;
-    }
+    if (!user) return;
     const { data, error } = await supabase.from('treatment_records').insert({
       user_id:        user.id,
       date:           record.date,
@@ -92,11 +80,6 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
   };
 
   const updateRecord = async (id: string, record: Omit<TreatmentRecord, 'id'>) => {
-    if (!user || id.startsWith('local_') || id.startsWith('r')) {
-      // 로컬 record (mock) 업데이트
-      setRecords(prev => prev.map(r => r.id === id ? { ...record, id } : r));
-      return;
-    }
     const { data, error } = await supabase
       .from('treatment_records')
       .update({
@@ -122,11 +105,6 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteRecord = async (id: string) => {
-    if (!user || id.startsWith('local_') || id.startsWith('r')) {
-      // 로컬 record (mock) 삭제
-      setRecords(prev => prev.filter(r => r.id !== id));
-      return;
-    }
     const { error } = await supabase
       .from('treatment_records')
       .delete()
