@@ -45,7 +45,7 @@ const Signup = () => {
   const handleOAuth = async (provider: 'google' | 'kakao') => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: window.location.origin + '?onboarding=true' },
+      options: { redirectTo: 'https://skindesk.lovable.app?onboarding=true' },
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
   };
