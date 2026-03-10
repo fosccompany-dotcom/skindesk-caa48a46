@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ArrowUpCircle, ArrowDownCircle, Users, Gift, CreditCard, TrendingDown, Plus, ChevronDown, Building2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { mockPoints, currentBalance } from '@/data/mockData';
+import { mockPoints, currentBalance, clinicBalances } from '@/data/mockData';
 
 // ── 타입 ──────────────────────────────────────────────────
 type PointType = 'charge' | 'use' | 'referral' | 'bonus';
@@ -137,12 +137,21 @@ const Points = () => {
           <div className="flex items-end gap-6 mt-3">
             <div>
               <p className="text-3xl font-bold tracking-tight">{currentBalance.toLocaleString()}원</p>
-              <p className="text-xs opacity-60 font-light mt-0.5">보유 포인트</p>
+              <p className="text-xs opacity-60 font-light mt-0.5">밴스 미금 잔액</p>
             </div>
             <div className="pb-0.5">
               <p className="text-lg font-semibold opacity-90">{totalSpent.toLocaleString()}원</p>
               <p className="text-xs opacity-60 font-light">누적 지출</p>
             </div>
+          </div>
+          {/* 병원별 잔액 */}
+          <div className="flex gap-2 flex-wrap mt-3 pb-1">
+            {Object.entries(clinicBalances).map(([clinic, bal]) => (
+              <div key={clinic} className="flex-1 min-w-[130px] rounded-xl bg-white/10 border border-white/20 px-3 py-2">
+                <p className="text-[10px] opacity-50 mb-0.5">{clinic}</p>
+                <p className="text-sm font-semibold text-[#C9A96E]">₩{bal.toLocaleString()}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
