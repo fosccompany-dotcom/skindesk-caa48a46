@@ -1,8 +1,15 @@
 import { useState } from 'react';
 import { ArrowUpCircle, ArrowDownCircle, Users, Gift, TrendingDown, ChevronDown, Building2, CreditCard, Banknote, Coins } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
-import { mockPoints, currentBalance, clinicBalances, mockPaymentRecords, mockPackages, VANCE_CLINICS } from '@/data/mockData';
-import type { PaymentMethod, ClinicType } from '@/data/mockData';
+// mockData 제거 — 향후 Supabase 연동 예정
+type PaymentMethod = 'card' | 'cash' | 'transfer';
+type ClinicType = string;
+const mockPoints: never[] = [];
+const currentBalance = 0;
+const clinicBalances: Record<string, number> = {};
+const mockPaymentRecords: never[] = [];
+const mockPackages: never[] = [];
+const VANCE_CLINICS: string[] = [];
 
 // ── 포인트 타입 설정 ──────────────────────────────────────────────────
 type PointType = 'charge' | 'use' | 'referral' | 'bonus';
