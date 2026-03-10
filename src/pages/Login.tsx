@@ -3,14 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { LANGUAGE_LABELS } from '@/i18n/translations';
+import type { Language } from '@/i18n/translations';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Lock, Loader2 } from 'lucide-react';
 
 const Login = () => {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -36,16 +37,32 @@ const Login = () => {
     if (error) toast({ title: error.message, variant: 'destructive' });
   };
 
+  const LANGUAGES: Language[] = ['ko', 'en', 'zh'];
+
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-5">
+    <div className="min-h-screen bg-background flex flex-col items-center justify-center px-5">
+      {/* Language Selector — top */}
+      <div className="flex gap-1 mb-8">
+        {LANGUAGES.map((lang) => (
+          <button
+            key={lang}
+            onClick={() => setLanguage(lang)}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+              language === lang
+                ? 'bg-[#C9A96E] text-white shadow-sm'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            {LANGUAGE_LABELS[lang]}
+          </button>
+        ))}
+      </div>
+
       <div className="w-full max-w-[380px] space-y-6">
-        {/* Logo / Title */}
-        <div className="text-center space-y-2">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-[#C9A96E] to-[#A88B55] mx-auto flex items-center justify-center shadow-lg">
-            <span className="text-2xl">✨</span>
-          </div>
+        {/* Title */}
+        <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">{t('auth_login_title')}</h1>
-          <p className="text-sm text-muted-foreground">{t('my_skin_care')}</p>
+          <p className="text-sm font-semibold tracking-[0.2em] text-[#C9A96E]">SKINDESK</p>
         </div>
 
         {/* Social Login */}
@@ -119,7 +136,7 @@ const Login = () => {
         </form>
 
         {/* Footer */}
-        <div className="text-center space-y-2">
+        <div className="text-center">
           <p className="text-sm text-muted-foreground">
             {t('auth_no_account')}{' '}
             <button className="text-primary font-semibold" onClick={() => navigate('/signup')}>
