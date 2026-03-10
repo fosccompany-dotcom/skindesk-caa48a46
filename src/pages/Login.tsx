@@ -29,10 +29,22 @@ const Login = () => {
     }
   };
 
-  const handleOAuth = async (provider: 'google' | 'kakao') => {
+  const handleGoogleLogin = async () => {
     const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: { redirectTo: 'https://gaharylmkilooukxnipk.supabase.co/auth/v1/callback' },
+      provider: 'google',
+      options: {
+        redirectTo: 'https://gaharylmkilooukxnipk.supabase.co/auth/v1/callback'
+      }
+    });
+    if (error) toast({ title: error.message, variant: 'destructive' });
+  };
+
+  const handleKakaoLogin = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'kakao',
+      options: {
+        redirectTo: 'https://gaharylmkilooukxnipk.supabase.co/auth/v1/callback'
+      }
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
   };
@@ -70,7 +82,7 @@ const Login = () => {
           <Button
             variant="outline"
             className="w-full h-12 rounded-xl text-sm font-medium gap-3"
-            onClick={() => handleOAuth('google')}
+            onClick={handleGoogleLogin}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24">
               <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
@@ -83,7 +95,7 @@ const Login = () => {
           <Button
             variant="outline"
             className="w-full h-12 rounded-xl text-sm font-medium gap-3 bg-[#FEE500] hover:bg-[#FEE500]/90 text-[#191919] border-[#FEE500]"
-            onClick={() => handleOAuth('kakao')}
+            onClick={handleKakaoLogin}
           >
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#191919">
               <path d="M12 3C6.48 3 2 6.36 2 10.5c0 2.67 1.74 5.02 4.37 6.37-.14.51-.89 3.29-.92 3.49 0 0-.02.17.09.23.11.07.24.01.24.01.32-.04 3.7-2.44 4.28-2.86.62.09 1.27.13 1.94.13 5.52 0 10-3.36 10-7.5S17.52 3 12 3z"/>
