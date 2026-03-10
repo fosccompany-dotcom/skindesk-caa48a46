@@ -164,6 +164,29 @@ export const mockPackages: TreatmentPackage[] = [
     expiryDate: '2026-04-20',
     clinic: '뷰티라운지 판교',
   },
+  // ── 필로의원 분당 ───────────────────────────────
+  {
+    id: 'p7',
+    name: '내맘대로 피부관리',
+    type: 'session',
+    totalSessions: 1,
+    usedSessions: 0,
+    skinLayer: 'epidermis',
+    bodyArea: 'face',
+    expiryDate: '2026-12-31',
+    clinic: '필로의원 분당',
+  },
+  {
+    id: 'p8',
+    name: '주름보톡스 코어 1부위',
+    type: 'session',
+    totalSessions: 1,
+    usedSessions: 0,
+    skinLayer: 'subcutaneous',
+    bodyArea: 'face',
+    expiryDate: '2026-12-31',
+    clinic: '필로의원 분당',
+  },
 ];
 
 // ─── 시술 기록 ────────────────────────────────────────────────────────
@@ -402,5 +425,12 @@ export const mockEvents: CalendarEvent[] = [
   { id: 'e8', date: '2026-08-17', title: '세르프 600샷 주기 도달 (180일)', type: 'recommendation', skinLayer: 'subcutaneous', bodyArea: 'face' },
 ];
 
-// ─── 현재 잔액 (밴스 미금 실계좌 기준 2026-02-17) ───────────────────
+// ─── 현재 잔액 ─────────────────────────────────────────────────────
+// 밴스 미금: ₩137,610 (2026-02-17 기준)
+// 필로의원 분당: ₩387,820
 export const currentBalance = 137610;
+
+export const clinicBalances: Record<string, number> = {
+  '밴스 미금':    137610,
+  '필로의원 분당': 387820,
+};
