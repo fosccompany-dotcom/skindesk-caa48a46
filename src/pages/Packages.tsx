@@ -3,11 +3,13 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { useRecords } from '@/context/RecordsContext';
+import { TreatmentRecord } from '@/types/skin';
 
 interface Package {
   id: string; name: string; clinic: string; totalSessions: number;
   usedSessions: number; expiryDate: string; skinLayer?: string; bodyArea?: string;
 }
+
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea } from '@/types/skin';
 import { Sparkles, Building2 } from 'lucide-react';
 import { useState, useMemo } from 'react';
@@ -144,7 +146,7 @@ const Packages = () => {
   );
 };
 
-function RecordsList({ records }: { records: typeof records }) {
+function RecordsList({ records }: { records: TreatmentRecord[] }) {
   if (records.length === 0) return null;
   return (
     <div className="space-y-2 mt-4">
@@ -168,7 +170,7 @@ function RecordsList({ records }: { records: typeof records }) {
   );
 }
 
-function PackageCard({ pkg }: { pkg: typeof packages[0] }) {
+function PackageCard({ pkg }: { pkg: Package }) {
   const progress = (pkg.usedSessions / pkg.totalSessions) * 100;
   const remaining = pkg.totalSessions - pkg.usedSessions;
 
