@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { X, Clipboard, ImagePlus, Loader2, CheckCircle, ChevronDown, ChevronUp, Sparkles, AlertCircle, CreditCard, Package } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, extractDistrict } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import ClinicSearchInput from './ClinicSearchInput';
 import { useRecords } from '@/context/RecordsContext';
