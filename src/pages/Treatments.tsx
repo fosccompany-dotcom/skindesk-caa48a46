@@ -264,23 +264,6 @@ const Treatments = () => {
         <p className="text-xs text-muted-foreground mt-0.5">클리닉별 시술 정보</p>
       </div>
 
-      <Tabs defaultValue="history" className="w-full">
-        <TabsList className="w-full grid grid-cols-2 mb-4">
-          <TabsTrigger value="history" className="gap-1.5 text-xs">
-            <ClipboardList className="h-3.5 w-3.5" />
-            나의 시술 내역관리
-          </TabsTrigger>
-          <TabsTrigger value="list" className="gap-1.5 text-xs">
-            <ListChecks className="h-3.5 w-3.5" />
-            시술 리스트
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="history" className="px-1">
-          <MyTreatmentHistory />
-        </TabsContent>
-
-        <TabsContent value="list">
       {/* Original list header */}
       <div className="pb-3 px-1">
         <div className="flex items-center justify-between">
