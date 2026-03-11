@@ -246,12 +246,11 @@ const Packages = () => {
         <Plus size={24} className="text-black" strokeWidth={2.5} />
       </button>
 
-      {showAddModal && (
-        <AddPaymentModal
-          onClose={() => setShowAddModal(false)}
-          onSaved={() => { setShowAddModal(false); loadPayments(); }}
-        />
-      )}
+      <AddPaymentModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSaved={() => { setShowAddModal(false); loadPayments(); }}
+      />
     </div>
   );
 };
