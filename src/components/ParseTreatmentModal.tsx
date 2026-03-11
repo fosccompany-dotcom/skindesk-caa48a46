@@ -496,9 +496,6 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             <span className="text-[10px] text-gray-400">잔여 {p.total_sessions}회</span>
                             {p.clinic && <span className="text-[10px] text-gray-400">{p.clinic}</span>}
                           </div>
-                          {p.amount_paid && (
-                            <p className="text-[10px] text-gray-400 mt-0.5">₩{p.amount_paid.toLocaleString()}</p>
-                          )}
                         </div>
                       </div>
                     </div>
