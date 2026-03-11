@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { X, Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import ClinicSearchInput from './ClinicSearchInput';
 
 type PayMethod = '포인트충전' | '카드' | '현금' | '서비스';
 type ClinicType = '밴스' | '타의원';
@@ -159,9 +160,11 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-2">
               <label className="text-[11px] text-white/40 mb-1.5 block">병원명</label>
-              <input type="text" value={clinic} onChange={e => setClinic(e.target.value)}
+              <ClinicSearchInput
+                value={clinic}
+                onChange={setClinic}
                 placeholder="미금 밴스의원"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A96E]/50" />
+                darkMode={true} />
             </div>
             <div>
               <label className="text-[11px] text-white/40 mb-1.5 block">구분</label>
