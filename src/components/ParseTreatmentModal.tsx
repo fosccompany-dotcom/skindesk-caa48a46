@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { X, Clipboard, ImagePlus, Loader2, CheckCircle, ChevronDown, ChevronUp, Sparkles, AlertCircle, CreditCard, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import ClinicSearchInput from './ClinicSearchInput';
 import { useRecords } from '@/context/RecordsContext';
 import { SkinLayer, BodyArea } from '@/types/skin';
 
@@ -611,9 +612,11 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           </div>
                           <div>
                             <label className="text-[10px] text-white/40 mb-1 block">병원명</label>
-                            <input type="text" value={b.clinic ?? ''} placeholder="병원명"
-                              onChange={e => updateBundle(i, 'clinic', e.target.value)}
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#C9A96E]/50" />
+                            <ClinicSearchInput
+                              value={b.clinic ?? ''}
+                              onChange={v => updateBundle(i, 'clinic', v)}
+                              placeholder="병원명"
+                              darkMode={true} />
                           </div>
                           {/* 개별 시술 목록 확인 */}
                           <div className="bg-white/3 rounded-lg p-2 space-y-1">
@@ -683,9 +686,11 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           </div>
                           <div>
                             <label className="text-[10px] text-white/40 mb-1 block">병원명</label>
-                            <input type="text" value={r.clinic ?? ''} placeholder="병원명"
-                              onChange={e => updateField(i, 'clinic', e.target.value)}
-                              className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#C9A96E]/50" />
+                            <ClinicSearchInput
+                              value={r.clinic ?? ''}
+                              onChange={v => updateField(i, 'clinic', v)}
+                              placeholder="병원명"
+                              darkMode={true} />
                           </div>
                           <div>
                             <label className="text-[10px] text-white/40 mb-1 block">시술명</label>
