@@ -522,6 +522,9 @@ const Treatments = () => {
         })}
       </div>
 
+        </TabsContent>
+      </Tabs>
+
       {/* Detail Modal */}
       <Dialog open={!!selectedTreatment} onOpenChange={(open) => !open && setSelectedTreatment(null)}>
         <DialogContent className="max-w-[400px] rounded-2xl p-0 overflow-hidden">
