@@ -232,6 +232,21 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           amount_paid: undefined,  // 번들이므로 개별 가격 없음
         });
       }
+
+      // 2c. 시술결제 → clinic_balances 차감
+      if ((b.amount_paid || 0) > 0 && b.clinic) {
+        const { data: bBal } = await supabase
+          .from('clinic_balances').select('balance')
+          .eq('user_id', user.id).eq('clinic', b.clinic).maybeSingle();
+        if (bBal && bBal.balance > 0) {
+          await supabase.from('clinic_balances').upsert({
+            user_id:    user.id,
+            clinic:     b.clinic,
+            balance:    Math.max(0, bBal.balance - (b.amount_paid || 0)),
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,clinic' });
+        }
+      }
     }
 
     // 3. 신규충전 → clinic_balances 업데이트 + payment_records 저장
@@ -311,6 +326,20 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           method:         '시술결제',
           memo:           p.memo || null,
         });
+        // 시술결제 → clinic_balances 차감
+        if (p.clinic) {
+          const { data: pkgBal } = await supabase
+            .from('clinic_balances').select('balance')
+            .eq('user_id', user.id).eq('clinic', p.clinic).maybeSingle();
+          if (pkgBal && pkgBal.balance > 0) {
+            await supabase.from('clinic_balances').upsert({
+              user_id:    user.id,
+              clinic:     p.clinic,
+              balance:    Math.max(0, pkgBal.balance - p.amount_paid),
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id,clinic' });
+          }
+        }
       }
     }
 
