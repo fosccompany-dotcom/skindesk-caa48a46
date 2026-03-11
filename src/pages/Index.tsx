@@ -65,7 +65,7 @@ const Index = () => {
   const [showAllRecords, setShowAllRecords] = useState(false);
   const [currentSeason, setCurrentSeason] = useState<SeasonKey | null>(null);
   const [goals, setGoals] = useState<string[]>([]);
-  const [clinicBalances, setClinicBalances] = useState<{ clinic: string; balance: number }[]>([]);
+  const [clinicPayments, setClinicPayments] = useState<{ amount: number; method: string }[]>([]);
   const [packages, setPackages] = useState<{ id: string; name: string; total_sessions: number; used_sessions: number; clinic: string }[]>([]);
 
   // 대시보드 데이터 로드
@@ -73,14 +73,14 @@ const Index = () => {
     const loadDashboard = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const [profileRes, balRes, pkgRes] = await Promise.all([
+      const [profileRes, payRes, pkgRes] = await Promise.all([
         supabase.from('user_profiles').select('current_season,goals' as any).eq('id', user.id).single(),
-        supabase.from('clinic_balances').select('clinic,balance').eq('user_id', user.id),
+        supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
         supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
       ]);
       if ((profileRes.data as any)?.current_season) setCurrentSeason((profileRes.data as any).current_season as SeasonKey);
       if ((profileRes.data as any)?.goals) setGoals((profileRes.data as any).goals as string[]);
-      if (balRes.data) setClinicBalances(balRes.data);
+      if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
     };
     loadDashboard();
