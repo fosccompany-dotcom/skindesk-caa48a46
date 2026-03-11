@@ -19,12 +19,12 @@ import { supabase } from '@/integrations/supabase/client';
 
 import { ALL_TREATMENT_SEASON_DATA } from '@/data/treatmentSeasonData';
 type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
-const SEASON_CONFIG: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string }> = {
-  reset:    { emoji: '🌿', title: 'Reset Season',    sub: '피부 리셋 시즌',  color: 'text-green-700',  bg: 'bg-green-50 border-green-200' },
-  recovery: { emoji: '💧', title: 'Recovery Season', sub: '회복 시즌',        color: 'text-sky-700',    bg: 'bg-sky-50 border-sky-200' },
-  maintain: { emoji: '✨', title: 'Maintain Season', sub: '유지 시즌',        color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
-  boost:    { emoji: '⚡', title: 'Boost Season',    sub: '관리 끌올 시즌',  color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200' },
-  special:  { emoji: '💫', title: 'Special Season',  sub: '스페셜 시즌',     color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
+const SEASON_CONFIG: Record<SeasonKey, {emoji: string;title: string;sub: string;color: string;bg: string;}> = {
+  reset: { emoji: '🌿', title: 'Reset Season', sub: '피부 리셋 시즌', color: 'text-green-700', bg: 'bg-green-50 border-green-200' },
+  recovery: { emoji: '💧', title: 'Recovery Season', sub: '회복 시즌', color: 'text-sky-700', bg: 'bg-sky-50 border-sky-200' },
+  maintain: { emoji: '✨', title: 'Maintain Season', sub: '유지 시즌', color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
+  boost: { emoji: '⚡', title: 'Boost Season', sub: '관리 끌올 시즌', color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+  special: { emoji: '💫', title: 'Special Season', sub: '스페셜 시즌', color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' }
 };
 
 const TODAY = new Date('2026-03-10');
@@ -32,7 +32,7 @@ const TODAY = new Date('2026-03-10');
 const SKIN_LAYER_COLOR = {
   epidermis: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
   dermis: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-  subcutaneous: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
+  subcutaneous: 'bg-purple-500/15 text-purple-400 border-purple-500/25'
 };
 
 function getCycleStatus(cycle: TreatmentCycle) {
@@ -40,12 +40,12 @@ function getCycleStatus(cycle: TreatmentCycle) {
   const nextDate = addDays(lastDate, cycle.cycleDays);
   const daysElapsed = differenceInDays(TODAY, lastDate);
   const daysRemaining = differenceInDays(nextDate, TODAY);
-  const progress = Math.min((daysElapsed / cycle.cycleDays) * 100, 100);
+  const progress = Math.min(daysElapsed / cycle.cycleDays * 100, 100);
 
   let status: 'good' | 'upcoming' | 'overdue';
-  if (daysRemaining > 14) status = 'good';
-  else if (daysRemaining > 0) status = 'upcoming';
-  else status = 'overdue';
+  if (daysRemaining > 14) status = 'good';else
+  if (daysRemaining > 0) status = 'upcoming';else
+  status = 'overdue';
 
   return { daysElapsed, daysRemaining, progress, nextDate, status };
 }
@@ -65,8 +65,8 @@ const Index = () => {
   const [showAllRecords, setShowAllRecords] = useState(false);
   const [currentSeason, setCurrentSeason] = useState<SeasonKey | null>(null);
   const [goals, setGoals] = useState<string[]>([]);
-  const [clinicBalances, setClinicBalances] = useState<{ clinic: string; balance: number }[]>([]);
-  const [packages, setPackages] = useState<{ id: string; name: string; total_sessions: number; used_sessions: number; clinic: string }[]>([]);
+  const [clinicBalances, setClinicBalances] = useState<{clinic: string;balance: number;}[]>([]);
+  const [packages, setPackages] = useState<{id: string;name: string;total_sessions: number;used_sessions: number;clinic: string;}[]>([]);
 
   // 대시보드 데이터 로드
   useEffect(() => {
@@ -74,10 +74,10 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [profileRes, balRes, pkgRes] = await Promise.all([
-        supabase.from('user_profiles').select('current_season,goals').eq('id', user.id).single(),
-        supabase.from('clinic_balances').select('clinic,balance').eq('user_id', user.id),
-        supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
-      ]);
+      supabase.from('user_profiles').select('current_season,goals').eq('id', user.id).single(),
+      supabase.from('clinic_balances').select('clinic,balance').eq('user_id', user.id),
+      supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id)]
+      );
       if (profileRes.data?.current_season) setCurrentSeason(profileRes.data.current_season as SeasonKey);
       if (profileRes.data?.goals) setGoals(profileRes.data.goals as string[]);
       if (balRes.data) setClinicBalances(balRes.data);
@@ -98,21 +98,21 @@ const Index = () => {
   const statusConfig = {
     good: { color: 'text-sage-dark', bg: 'bg-sage-light', label: t('maintaining') },
     upcoming: { color: 'text-amber', bg: 'bg-amber-light', label: t('upcoming_treatment') },
-    overdue: { color: 'text-rose', bg: 'bg-rose-light', label: t('treatment_needed') },
+    overdue: { color: 'text-rose', bg: 'bg-rose-light', label: t('treatment_needed') }
   };
 
   const stats = useMemo(() => {
-    const allStatuses = cycles.map(c => ({ cycle: c, ...getCycleStatus(c) }));
-    const overdue = allStatuses.filter(s => s.status === 'overdue').length;
-    const upcoming = allStatuses.filter(s => s.status === 'upcoming').length;
-    const good = allStatuses.filter(s => s.status === 'good').length;
+    const allStatuses = cycles.map((c) => ({ cycle: c, ...getCycleStatus(c) }));
+    const overdue = allStatuses.filter((s) => s.status === 'overdue').length;
+    const upcoming = allStatuses.filter((s) => s.status === 'upcoming').length;
+    const good = allStatuses.filter((s) => s.status === 'good').length;
 
     let scheduleCount = 0;
     ([] as any[]).forEach((e: any) => {
       const diff = differenceInDays(new Date(e.date), TODAY);
       if (diff >= 0 && diff <= 14) scheduleCount++;
     });
-    cycles.forEach(cycle => {
+    cycles.forEach((cycle) => {
       const lastDate = new Date(cycle.lastTreatmentDate);
       let nextDate = addDays(lastDate, cycle.cycleDays);
       if (nextDate < TODAY) nextDate = addDays(TODAY, 7);
@@ -122,23 +122,23 @@ const Index = () => {
 
     const totalRemaining = 0;
 
-    const mostUrgent = allStatuses
-      .sort((a, b) => a.daysRemaining - b.daysRemaining)
-      .slice(0, 2);
+    const mostUrgent = allStatuses.
+    sort((a, b) => a.daysRemaining - b.daysRemaining).
+    slice(0, 2);
 
-    const layerSummary = layerOrder.map(layer => {
-      const layerStatuses = allStatuses.filter(s => s.cycle.skinLayer === layer);
-      const worstStatus = layerStatuses.some(s => s.status === 'overdue') ? 'overdue'
-        : layerStatuses.some(s => s.status === 'upcoming') ? 'upcoming' : 'good';
+    const layerSummary = layerOrder.map((layer) => {
+      const layerStatuses = allStatuses.filter((s) => s.cycle.skinLayer === layer);
+      const worstStatus = layerStatuses.some((s) => s.status === 'overdue') ? 'overdue' :
+      layerStatuses.some((s) => s.status === 'upcoming') ? 'upcoming' : 'good';
       return { layer, count: layerStatuses.length, status: worstStatus as 'good' | 'upcoming' | 'overdue' };
-    }).filter(l => l.count > 0);
+    }).filter((l) => l.count > 0);
 
     return { overdue, upcoming, good, scheduleCount, totalRemaining, mostUrgent, layerSummary };
   }, [cycles]);
 
   const sortedRecords = useMemo(() =>
-    [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [records]
+  [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+  [records]
   );
   const displayedRecords = showAllRecords ? sortedRecords : sortedRecords.slice(0, 3);
 
@@ -165,14 +165,14 @@ const Index = () => {
 
       {/* ── Header ── */}
       <div className="gradient-sage safe-top">
-        <div className="page-header-gradient pt-4">
+        <div className="page-header-gradient pt-4 border-none border">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-70 font-light">{t('hello')}</p>
               <h1 className="mt-0.5 text-xl font-bold">{t('my_skin_care')}</h1>
             </div>
             <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer"
-              onClick={() => navigate('/profile')}>
+            onClick={() => navigate('/profile')}>
               <span className="text-base">👤</span>
             </div>
           </div>
@@ -181,38 +181,38 @@ const Index = () => {
 
       <div className="page-content space-y-4 pt-3 pb-28">
         {(() => {
-          const allCycleStatuses = cycles.map(c => ({ c, ...getCycleStatus(c) }));
-          const nextCycle = [...allCycleStatuses]
-            .filter(s => true)
-            .sort((a, b) => a.daysRemaining - b.daysRemaining)[0];
+          const allCycleStatuses = cycles.map((c) => ({ c, ...getCycleStatus(c) }));
+          const nextCycle = [...allCycleStatuses].
+          filter((s) => true).
+          sort((a, b) => a.daysRemaining - b.daysRemaining)[0];
 
-          const nextRecommended = currentSeason
-            ? [...ALL_TREATMENT_SEASON_DATA]
-                .filter(d => d.seasons[currentSeason!].timesPerYear > 0)
-                .sort((a, b) => b.seasons[currentSeason!].timesPerYear - a.seasons[currentSeason!].timesPerYear)[0]
-            : null;
+          const nextRecommended = currentSeason ?
+          [...ALL_TREATMENT_SEASON_DATA].
+          filter((d) => d.seasons[currentSeason!].timesPerYear > 0).
+          sort((a, b) => b.seasons[currentSeason!].timesPerYear - a.seasons[currentSeason!].timesPerYear)[0] :
+          null;
 
           const totalBalance = clinicBalances.reduce((s, b) => s + b.balance, 0);
-          const activePackages = packages.filter(p => p.total_sessions - p.used_sessions > 0);
-          const nextCyclePkg = nextCycle
-            ? activePackages.find(p => p.name.includes(nextCycle.c.name) || nextCycle.c.name.includes(p.name))
-            : null;
+          const activePackages = packages.filter((p) => p.total_sessions - p.used_sessions > 0);
+          const nextCyclePkg = nextCycle ?
+          activePackages.find((p) => p.name.includes(nextCycle.c.name) || nextCycle.c.name.includes(p.name)) :
+          null;
           const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
 
           // 2주 이내 예정 (cycles 기준)
-          const upcomingIn2w = allCycleStatuses.filter(s => s.daysRemaining >= 0 && s.daysRemaining <= 14);
+          const upcomingIn2w = allCycleStatuses.filter((s) => s.daysRemaining >= 0 && s.daysRemaining <= 14);
 
           return (
             <>
               {/* ════════════════════════════════════════════════════
-                  BLOCK 1 — 현재 관리 상태
-                  ════════════════════════════════════════════════════ */}
+                        BLOCK 1 — 현재 관리 상태
+                        ════════════════════════════════════════════════════ */}
 
                 {/* 현재 관리 시즌 — 풀 너비 카드 */}
                 <Card className="border-0 overflow-hidden cursor-pointer" onClick={() => navigate('/profile')}>
                   <CardContent className="p-4">
-                    {seasonMeta ? (
-                      <div className="flex items-center gap-3">
+                    {seasonMeta ?
+                  <div className="flex items-center gap-3">
                         <span className="text-3xl shrink-0">{seasonMeta.emoji}</span>
                         <div className="flex-1 min-w-0">
                           <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
@@ -220,55 +220,55 @@ const Index = () => {
                           <p className="text-[11px] text-gray-400 mt-0.5">{seasonMeta.sub}</p>
                         </div>
                         <button
-                          onClick={e => { e.stopPropagation(); navigate('/profile'); }}
-                          className="shrink-0 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-[11px] font-semibold text-gray-600"
-                        >
+                      onClick={(e) => {e.stopPropagation();navigate('/profile');}}
+                      className="shrink-0 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-[11px] font-semibold text-gray-600">
+                      
                           변경
                         </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
+                      </div> :
+
+                  <div className="flex items-center justify-between">
                         <div>
                           <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
                           <p className="text-sm font-semibold text-gray-500">시즌을 설정해보세요</p>
                         </div>
                         <button
-                          onClick={() => navigate('/profile')}
-                          className="shrink-0 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-[11px] font-semibold text-gray-600"
-                        >
+                      onClick={() => navigate('/profile')}
+                      className="shrink-0 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-[11px] font-semibold text-gray-600">
+                      
                           설정
                         </button>
                       </div>
-                    )}
+                  }
                   </CardContent>
                 </Card>
 
               {/* 주요 관리 타깃 */}
                 <Card
-                  className="card-interactive cursor-pointer border-0 overflow-hidden"
-                  onClick={() => navigate('/profile')}
-                >
+                className="card-interactive cursor-pointer border-0 overflow-hidden"
+                onClick={() => navigate('/profile')}>
+                
                   <CardContent className="px-4 py-3">
                     <p className="text-[10px] text-gray-400 mb-1.5">관리 타깃</p>
-                    {goals.length > 0 ? (
-                      <div className="flex flex-wrap gap-1.5">
-                        {goals.slice(0, 4).map(g => (
-                          <span key={g}
-                            className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 font-medium">
+                    {goals.length > 0 ?
+                  <div className="flex flex-wrap gap-1.5">
+                        {goals.slice(0, 4).map((g) =>
+                    <span key={g}
+                    className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 font-medium">
                             {g}
                           </span>
-                        ))}
-                        {goals.length > 4 && <span className="text-[10px] text-gray-400 self-center">+{goals.length - 4}</span>}
-                      </div>
-                    ) : (
-                      <p className="text-xs text-gray-500">목표 설정 →</p>
                     )}
+                        {goals.length > 4 && <span className="text-[10px] text-gray-400 self-center">+{goals.length - 4}</span>}
+                      </div> :
+
+                  <p className="text-xs text-gray-500">목표 설정 →</p>
+                  }
                   </CardContent>
                 </Card>
 
               {/* ════════════════════════════════════════════════════
-                  BLOCK 2 — 다음 해야 할 관리 (Next Skin Action)
-                  ════════════════════════════════════════════════════ */}
+                        BLOCK 2 — 다음 해야 할 관리 (Next Skin Action)
+                        ════════════════════════════════════════════════════ */}
               <div>
                 <p className="text-[11px] font-bold text-gray-500 mb-2 px-0.5">다음 해야 할 관리</p>
                 <div className="grid grid-cols-2 gap-2">
@@ -277,42 +277,42 @@ const Index = () => {
                   <Card className="card-interactive cursor-pointer border-0 overflow-hidden" onClick={() => navigate('/cycles')}>
                     <CardContent className="p-3 flex flex-col gap-2">
                       <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">다음 예정 시술</p>
-                      {nextCycle ? (
-                        <>
+                      {nextCycle ?
+                      <>
                           <div>
                             <p className="text-[12px] font-bold text-gray-800 leading-tight truncate">{nextCycle.c.name}</p>
                             <p className={`text-[13px] font-black mt-0.5 ${
-                              nextCycle.daysRemaining <= 0 ? 'text-rose-500' :
-                              nextCycle.daysRemaining <= 7 ? 'text-amber-500' : 'text-indigo-500'
-                            }`}>
-                              {nextCycle.daysRemaining < 0
-                                ? `${Math.abs(nextCycle.daysRemaining)}일 초과`
-                                : nextCycle.daysRemaining === 0 ? '오늘'
-                                : `${nextCycle.daysRemaining}일 후`}
+                          nextCycle.daysRemaining <= 0 ? 'text-rose-500' :
+                          nextCycle.daysRemaining <= 7 ? 'text-amber-500' : 'text-indigo-500'}`
+                          }>
+                              {nextCycle.daysRemaining < 0 ?
+                            `${Math.abs(nextCycle.daysRemaining)}일 초과` :
+                            nextCycle.daysRemaining === 0 ? '오늘' :
+                            `${nextCycle.daysRemaining}일 후`}
                             </p>
-                            {nextCyclePkg && (
-                              <span className="text-[9px] text-emerald-500 mt-0.5 block">🎫 시술권 보유</span>
-                            )}
+                            {nextCyclePkg &&
+                          <span className="text-[9px] text-emerald-500 mt-0.5 block">🎫 시술권 보유</span>
+                          }
                           </div>
                           <button
-                            onClick={e => { e.stopPropagation(); setEditRecord(null); setModalOpen(true); }}
-                            className="w-full py-1.5 rounded-lg bg-gray-100 text-[10px] font-semibold text-gray-600 active:bg-gray-200 transition-colors">
+                          onClick={(e) => {e.stopPropagation();setEditRecord(null);setModalOpen(true);}}
+                          className="w-full py-1.5 rounded-lg bg-gray-100 text-[10px] font-semibold text-gray-600 active:bg-gray-200 transition-colors">
                             시술 기록 추가
                           </button>
-                        </>
-                      ) : (
-                        <p className="text-[11px] text-gray-400 flex-1">등록된 주기 없음</p>
-                      )}
+                        </> :
+
+                      <p className="text-[11px] text-gray-400 flex-1">등록된 주기 없음</p>
+                      }
                     </CardContent>
                   </Card>
 
                   {/* 추천 관리 (Next Skin Action) */}
                   <Card className="card-interactive cursor-pointer border-0 overflow-hidden bg-gradient-to-br from-white to-indigo-50/30"
-                    onClick={() => navigate('/cycles')}>
+                  onClick={() => navigate('/cycles')}>
                     <CardContent className="p-3 flex flex-col gap-2">
                       <p className="text-[9px] font-semibold text-indigo-400 uppercase tracking-wide">추천 관리</p>
-                      {nextRecommended && currentSeason ? (
-                        <>
+                      {nextRecommended && currentSeason ?
+                      <>
                           <div>
                             <p className="text-[12px] font-bold text-gray-800 leading-tight">{nextRecommended.name}</p>
                             <p className="text-[10px] text-indigo-500 font-semibold mt-0.5">추천 시기 · 이번 주</p>
@@ -321,40 +321,40 @@ const Index = () => {
                             </p>
                           </div>
                           <button
-                            onClick={e => { e.stopPropagation(); setEditRecord(null); setModalOpen(true); }}
-                            className="w-full py-1.5 rounded-lg bg-indigo-500 text-[10px] font-semibold text-white active:bg-indigo-600 transition-colors">
+                          onClick={(e) => {e.stopPropagation();setEditRecord(null);setModalOpen(true);}}
+                          className="w-full py-1.5 rounded-lg bg-indigo-500 text-[10px] font-semibold text-white active:bg-indigo-600 transition-colors">
                             시술 기록 추가
                           </button>
-                        </>
-                      ) : (
-                        <p className="text-[11px] text-gray-400 flex-1">시즌 설정 필요</p>
-                      )}
+                        </> :
+
+                      <p className="text-[11px] text-gray-400 flex-1">시즌 설정 필요</p>
+                      }
                     </CardContent>
                   </Card>
                 </div>
               </div>
 
               {/* ════════════════════════════════════════════════════
-                  BLOCK 3 — 시술 자산 (시술권 + 잔액)
-                  ════════════════════════════════════════════════════ */}
+                        BLOCK 3 — 시술 자산 (시술권 + 잔액)
+                        ════════════════════════════════════════════════════ */}
               <div>
                 <div className="flex items-center justify-between mb-2 px-0.5">
                   <p className="text-[11px] font-bold text-gray-500">남은 시술권</p>
                   <button onClick={() => navigate('/packages')}
-                    className="text-[10px] text-gray-400 flex items-center gap-0.5">
+                  className="text-[10px] text-gray-400 flex items-center gap-0.5">
                     전체보기 <ChevronRight size={10} />
                   </button>
                 </div>
 
-                {activePackages.length > 0 ? (
-                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                    {activePackages.map(pkg => {
-                      const remaining = pkg.total_sessions - pkg.used_sessions;
-                      const pct = (pkg.used_sessions / pkg.total_sessions) * 100;
-                      return (
-                        <div key={pkg.id}
-                          className="shrink-0 bg-white border border-gray-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer active:bg-gray-50"
-                          onClick={() => navigate('/packages')}>
+                {activePackages.length > 0 ?
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                    {activePackages.map((pkg) => {
+                    const remaining = pkg.total_sessions - pkg.used_sessions;
+                    const pct = pkg.used_sessions / pkg.total_sessions * 100;
+                    return (
+                      <div key={pkg.id}
+                      className="shrink-0 bg-white border border-gray-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer active:bg-gray-50"
+                      onClick={() => navigate('/packages')}>
                           <p className="text-[11px] font-bold text-gray-800 truncate">{pkg.name}</p>
                           <p className="text-[10px] text-gray-400 mb-1.5">{pkg.clinic}</p>
                           <div className="flex items-center gap-1 mb-1">
@@ -364,49 +364,49 @@ const Index = () => {
                           <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
                             <div className="h-full bg-indigo-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
                           </div>
-                        </div>
-                      );
-                    })}
+                        </div>);
+
+                  })}
 
                     {/* 잔액 카드 — 시술권 가로 스크롤 맨 끝 */}
-                    {totalBalance > 0 && (
-                      <div className="shrink-0 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer"
-                        onClick={() => navigate('/points')}>
+                    {totalBalance > 0 &&
+                  <div className="shrink-0 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer"
+                  onClick={() => navigate('/points')}>
                         <p className="text-[10px] font-semibold text-emerald-600 mb-1">남은 잔액</p>
                         <p className="text-base font-black text-emerald-700">{totalBalance.toLocaleString()}원</p>
-                        {clinicBalances.map(b => (
-                          <p key={b.clinic} className="text-[9px] text-emerald-500 mt-0.5">{b.clinic} {b.balance.toLocaleString()}원</p>
-                        ))}
-                      </div>
+                        {clinicBalances.map((b) =>
+                    <p key={b.clinic} className="text-[9px] text-emerald-500 mt-0.5">{b.clinic} {b.balance.toLocaleString()}원</p>
                     )}
-                  </div>
-                ) : (
-                  /* 빈 상태 개선 */
-                  <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center">
+                      </div>
+                  }
+                  </div> : (
+
+                /* 빈 상태 개선 */
+                <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center">
                     <p className="text-sm font-semibold text-gray-500 mb-1">시술권을 등록하면</p>
                     <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
                       남은 횟수와 다음 관리 시점을<br />자동으로 알려드려요!
                     </p>
                     <button
-                      onClick={() => navigate('/packages')}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-800 text-white text-[11px] font-semibold">
+                    onClick={() => navigate('/packages')}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-800 text-white text-[11px] font-semibold">
                       <Plus size={12} /> 시술권 추가
                     </button>
-                  </div>
-                )}
+                  </div>)
+                }
               </div>
 
               {/* ════════════════════════════════════════════════════
-                  BLOCK 4 — 가까운 일정 (캘린더)
-                  ════════════════════════════════════════════════════ */}
+                        BLOCK 4 — 가까운 일정 (캘린더)
+                        ════════════════════════════════════════════════════ */}
               <div>
                 <p className="text-[11px] font-bold text-gray-500 mb-2 px-0.5">가까운 일정</p>
-                {upcomingIn2w.length > 0 ? (
-                  <Card className="card-interactive cursor-pointer border-0" onClick={() => navigate('/calendar')}>
+                {upcomingIn2w.length > 0 ?
+                <Card className="card-interactive cursor-pointer border-0" onClick={() => navigate('/calendar')}>
                     <CardContent className="p-3">
                       <div className="space-y-2">
-                        {upcomingIn2w.slice(0, 3).map(({ c, daysRemaining }) => (
-                          <div key={c.id} className="flex items-center justify-between">
+                        {upcomingIn2w.slice(0, 3).map(({ c, daysRemaining }) =>
+                      <div key={c.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-2 min-w-0">
                               <div className={`h-2 w-2 rounded-full shrink-0 ${daysRemaining <= 7 ? 'bg-amber-400' : 'bg-indigo-400'}`} />
                               <span className="text-sm font-medium truncate">{c.name}</span>
@@ -415,44 +415,44 @@ const Index = () => {
                               {daysRemaining === 0 ? '오늘' : `D-${daysRemaining}`}
                             </span>
                           </div>
-                        ))}
-                        {upcomingIn2w.length > 3 && (
-                          <p className="text-[10px] text-gray-400 text-right">+{upcomingIn2w.length - 3}건 더보기</p>
-                        )}
+                      )}
+                        {upcomingIn2w.length > 3 &&
+                      <p className="text-[10px] text-gray-400 text-right">+{upcomingIn2w.length - 3}건 더보기</p>
+                      }
                       </div>
                     </CardContent>
-                  </Card>
-                ) : (
-                  <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-5 text-center">
+                  </Card> :
+
+                <div className="border border-dashed border-gray-200 bg-gray-50 py-5 text-center px-[13px] rounded-xl">
                     <CalendarDays size={20} className="text-gray-300 mx-auto mb-2" />
                     <p className="text-xs font-semibold text-gray-500">등록된 관리 일정이 없어요</p>
                     <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">
                       시술을 기록하면 자동으로<br />일정이 생성되어요!
                     </p>
                   </div>
-                )}
+                }
               </div>
 
-            </>
-          );
+            </>);
+
         })()}
 
         {/* ════════════════════════════════════════════════════
-            시술 기록 (Records)
-            ════════════════════════════════════════════════════ */}
+                  시술 기록 (Records)
+                  ════════════════════════════════════════════════════ */}
         <div>
           <div className="flex items-center justify-between px-1 mb-2.5">
             <h2 className="text-sm font-bold flex items-center gap-1.5">
               <Star className="h-3.5 w-3.5 text-[#C9A96E]" />
               {t('treatment_records')} ({records.length})
             </h2>
-            <button onClick={() => setShowAllRecords(v => !v)} className="text-xs text-muted-foreground">
+            <button onClick={() => setShowAllRecords((v) => !v)} className="text-xs text-muted-foreground">
               {showAllRecords ? t('fold') : t('view_all')}
             </button>
           </div>
           <div className="space-y-2">
-            {displayedRecords.map((r) => (
-              <Card key={r.id} className="glass-card">
+            {displayedRecords.map((r) =>
+            <Card key={r.id} className="glass-card">
                 <CardContent className="p-3.5">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex-1 min-w-0">
@@ -465,80 +465,80 @@ const Index = () => {
                       <p className="text-[11px] text-muted-foreground mt-0.5">
                         {format(new Date(r.date), 'yyyy.MM.dd')} · {r.clinic}
                       </p>
-                      {r.memo && (
-                        <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>
-                      )}
+                      {r.memo &&
+                    <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>
+                    }
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      {r.satisfaction && (
-                        <span className="text-xs text-[#C9A96E] font-medium">
+                      {r.satisfaction &&
+                    <span className="text-xs text-[#C9A96E] font-medium">
                           {'★'.repeat(r.satisfaction)}
                         </span>
-                      )}
+                    }
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleEdit(r); }}
-                        className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white/80 transition-colors"
-                      >
+                      onClick={(e) => {e.stopPropagation();handleEdit(r);}}
+                      className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white/80 transition-colors">
+                      
                         <Pencil size={13} />
                       </button>
                       <button
-                        onClick={(e) => { e.stopPropagation(); handleDelete(r.id); }}
-                        className="p-1.5 rounded-lg hover:bg-rose-500/15 text-white/40 hover:text-rose-400 transition-colors"
-                      >
+                      onClick={(e) => {e.stopPropagation();handleDelete(r.id);}}
+                      className="p-1.5 rounded-lg hover:bg-rose-500/15 text-white/40 hover:text-rose-400 transition-colors">
+                      
                         <Trash2 size={13} />
                       </button>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
+            )}
           </div>
         </div>
 
       </div>
 
       {/* FAB */}
-      {fabOpen && (
-        <div className="fixed bottom-36 right-4 z-40 flex flex-col gap-2 items-end">
+      {fabOpen &&
+      <div className="fixed bottom-36 right-4 z-40 flex flex-col gap-2 items-end">
           <button
-            onClick={() => { setFabOpen(false); setParseModalOpen(true); }}
-            className="flex items-center gap-2 bg-[#1a1a1a] border border-[#C9A96E]/40 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"
-          >
+          onClick={() => {setFabOpen(false);setParseModalOpen(true);}}
+          className="flex items-center gap-2 bg-[#1a1a1a] border border-[#C9A96E]/40 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg">
+          
             <Sparkles size={14} className="text-[#C9A96E]" />
             문자/카톡으로 등록
           </button>
           <button
-            onClick={() => { setFabOpen(false); setEditRecord(null); setModalOpen(true); }}
-            className="flex items-center gap-2 bg-[#1a1a1a] border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"
-          >
+          onClick={() => {setFabOpen(false);setEditRecord(null);setModalOpen(true);}}
+          className="flex items-center gap-2 bg-[#1a1a1a] border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg">
+          
             <Plus size={14} />
             직접 입력
           </button>
         </div>
-      )}
-      {fabOpen && (
-        <div className="fixed inset-0 z-30" onClick={() => setFabOpen(false)} />
-      )}
+      }
+      {fabOpen &&
+      <div className="fixed inset-0 z-30" onClick={() => setFabOpen(false)} />
+      }
       <button
-        onClick={() => setFabOpen(v => !v)}
-        className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform"
-      >
+        onClick={() => setFabOpen((v) => !v)}
+        className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform">
+        
         <Plus size={24} className={`text-black transition-transform duration-200 ${fabOpen ? "rotate-45" : ""}`} strokeWidth={2.5} />
       </button>
 
-      {parseModalOpen && (
-        <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />
-      )}
+      {parseModalOpen &&
+      <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />
+      }
       <AddTreatmentModal
         open={modalOpen}
-        onClose={() => { setModalOpen(false); setEditRecord(null); }}
+        onClose={() => {setModalOpen(false);setEditRecord(null);}}
         onSave={handleSave}
-        editRecord={editRecord}
-      />
+        editRecord={editRecord} />
+      
 
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
-    </div>
-  );
+    </div>);
+
 };
 
 export default Index;
