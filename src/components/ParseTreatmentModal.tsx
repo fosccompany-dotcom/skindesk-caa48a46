@@ -324,7 +324,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-[#111] rounded-t-3xl max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-lg bg-[#111] rounded-t-3xl max-h-[calc(90vh-5rem)] flex flex-col">
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-white/20" />
         </div>
@@ -338,7 +338,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto pb-6">
           {!showResults ? (
             <div className="p-5 space-y-4">
               {/* 탭 */}
