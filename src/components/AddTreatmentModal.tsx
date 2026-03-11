@@ -3,6 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronLeft, Check, Zap, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import ClinicSearchInput from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
 
 // ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
@@ -392,24 +393,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               {/* 병원 */}
               <div>
                 <label className="text-xs text-white/40 block mb-1.5">병원</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {['밴스 미금', '밴스 구로', '밴스 판교', '뷰티라운지 판교', '필로의원 정자', '기타'].map(c => (
-                    <button key={c}
-                      onClick={() => setClinic(c === '기타' ? '' : c)}
-                      className={cn(
-                        'px-3 py-2 rounded-lg border text-xs transition-all',
-                        clinic === c ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
-                                     : 'border-white/10 text-white/50 hover:border-white/25 hover:text-white'
-                      )}>
-                      {c}
-                    </button>
-                  ))}
-                </div>
-                {!['밴스 미금','밴스 구로','밴스 판교','뷰티라운지 판교','필로의원 정자'].includes(clinic) && (
-                  <input type="text" placeholder="병원명 직접 입력"
-                    value={clinic} onChange={e => setClinic(e.target.value)}
-                    className="mt-2 w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C9A96E]/50" />
-                )}
+                <ClinicSearchInput
+                  value={clinic}
+                  onChange={setClinic}
+                  placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
+                  darkMode={true} />
               </div>
 
               {/* 만족도 */}
