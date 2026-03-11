@@ -744,21 +744,21 @@ interface PaymentRecord {
 function PaymentHistoryTab() {
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
-      const { data } = await supabase
-        .from('payment_records')
-        .select('id, date, clinic, treatment_name, amount, method, memo')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false });
-      setPayments(data ?? []);
-      setLoading(false);
-    };
-    load();
-  }, []);
+  const loadPayments = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
+    const { data } = await supabase
+      .from('payment_records')
+      .select('id, date, clinic, treatment_name, amount, method, memo')
+      .eq('user_id', user.id)
+      .order('date', { ascending: false });
+    setPayments(data ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => { loadPayments(); }, []);
 
   const totalSpent = payments
     .filter(p => p.method !== '포인트충전')
