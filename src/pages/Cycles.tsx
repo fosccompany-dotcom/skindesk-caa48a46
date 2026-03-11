@@ -1,7 +1,8 @@
-import { Clock, AlertTriangle, CheckCircle2, Timer, CalendarDays, ChevronDown, ChevronUp } from 'lucide-react';
+import { Clock, AlertTriangle, CheckCircle2, Timer, CalendarDays, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { useCycles } from '@/context/CyclesContext';
 import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
@@ -9,6 +10,7 @@ import { differenceInDays, format, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CycleEditorSheet } from '@/components/CycleEditor';
 import { useMemo, useState } from 'react';
+import SeasonRecommendation from '@/components/SeasonRecommendation';
 
 const TODAY = new Date('2026-03-08');
 
@@ -92,11 +94,23 @@ const Cycles = () => {
       <div className="gradient-sage safe-top">
         <div className="page-header-gradient pt-4">
           <h1 className="text-lg font-bold">피부 관리 현황</h1>
-          <p className="text-xs opacity-70 mt-1">시술 주기 및 예정 일정</p>
+          <p className="text-xs opacity-70 mt-1">시술 주기 및 시즌별 추천</p>
         </div>
       </div>
 
-      <div className="page-content space-y-5 pt-4">
+      <div className="page-content pt-4 pb-28">
+        <Tabs defaultValue="cycles" className="w-full">
+          <TabsList className="w-full rounded-xl mb-4">
+            <TabsTrigger value="cycles" className="flex-1 rounded-lg text-xs gap-1">
+              <CalendarDays size={13} /> 내 주기 관리
+            </TabsTrigger>
+            <TabsTrigger value="season" className="flex-1 rounded-lg text-xs gap-1">
+              <Sparkles size={13} /> 시즌별 추천
+            </TabsTrigger>
+          </TabsList>
+
+          {/* ── 탭 1: 기존 주기 관리 ─────────────────────────────────── */}
+          <TabsContent value="cycles" className="space-y-5">
         {/* 2주 이내 예정 일정 */}
         {upcomingEvents.length > 0 && (
           <div>
@@ -249,6 +263,14 @@ const Cycles = () => {
             </div>
           );
         })}
+          </TabsContent>
+
+          {/* ── 탭 2: 시즌별 추천 ─────────────────────────────────────── */}
+          <TabsContent value="season">
+            <SeasonRecommendation />
+          </TabsContent>
+
+        </Tabs>
       </div>
     </div>
   );
