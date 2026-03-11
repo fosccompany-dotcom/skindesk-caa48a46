@@ -51,7 +51,7 @@ export interface ChargePayload {
   clinicType?: string;
   paidAmount: number;     // 실제 낸 돈 (카드/현금)
   chargedAmount: number;  // 충전된 포인트 (보너스 포함 가능)
-  method: '카드' | '현금';
+  method: '카드' | '현금' | '서비스';
   description: string;    // "신규충전", "포인트 충전" 등
   memo?: string;
 }
