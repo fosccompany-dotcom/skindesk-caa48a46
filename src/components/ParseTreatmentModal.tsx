@@ -68,10 +68,13 @@ interface ParsedPackage {
   payMethod: PkgPayMethod;
 }
 
+type BalanceMethod = 'set' | 'add';
+
 interface BalanceInfo {
   amount: number;
   clinic: string;
   selected: boolean;
+  method: BalanceMethod;
 }
 
 interface Props { onClose: () => void; }
@@ -147,6 +150,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
             amount: balanceAmount,
             clinic: clinicFromData || clinicFromText,
             selected: true,
+            method: 'set',
           });
           hasBalance = true;
         }
@@ -330,14 +334,28 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
     }
 
-    // 잔여금액 → clinic_balances에 직접 세팅
+    // 잔여금액 → clinic_balances 반영
     if (balanceInfo?.selected && balanceInfo.clinic && balanceInfo.amount > 0) {
-      await supabase.from('clinic_balances').upsert({
-        user_id: user.id,
-        clinic: balanceInfo.clinic,
-        balance: balanceInfo.amount,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,clinic' });
+      if (balanceInfo.method === 'set') {
+        // 직접 세팅
+        await supabase.from('clinic_balances').upsert({
+          user_id: user.id,
+          clinic: balanceInfo.clinic,
+          balance: balanceInfo.amount,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,clinic' });
+      } else {
+        // 기존 잔액에 더하기
+        const { data: existing } = await supabase
+          .from('clinic_balances').select('balance')
+          .eq('user_id', user.id).eq('clinic', balanceInfo.clinic).maybeSingle();
+        await supabase.from('clinic_balances').upsert({
+          user_id: user.id,
+          clinic: balanceInfo.clinic,
+          balance: (existing?.balance || 0) + balanceInfo.amount,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,clinic' });
+      }
     }
 
     setSaving(false); setSaved(true);
@@ -544,7 +562,31 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           onChange={e => setBalanceInfo(prev => prev ? { ...prev, amount: Number(e.target.value) || 0 } : prev)}
                           className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-primary/50" />
                       </div>
-                      <p className="text-[10px] text-emerald-600">✓ 저장 시 해당 병원의 잔액이 이 금액으로 설정됩니다</p>
+                      <div>
+                        <label className="text-[10px] text-gray-400 mb-1.5 block">금액 추가 방식</label>
+                        <div className="flex gap-1.5">
+                          {([
+                            { key: 'set' as BalanceMethod, label: '잔액 직접 설정', desc: '이 금액으로 덮어쓰기' },
+                            { key: 'add' as BalanceMethod, label: '기존 잔액에 더하기', desc: '현재 잔액 + 이 금액' },
+                          ]).map(opt => (
+                            <button key={opt.key}
+                              onClick={() => setBalanceInfo(prev => prev ? { ...prev, method: opt.key } : prev)}
+                              className={cn('flex-1 py-2 px-2 rounded-lg border text-left transition-all',
+                                balanceInfo.method === opt.key
+                                  ? 'border-emerald-300 bg-emerald-50'
+                                  : 'border-gray-200 bg-gray-50'
+                              )}>
+                              <p className={cn('text-[11px] font-semibold', balanceInfo.method === opt.key ? 'text-emerald-600' : 'text-gray-500')}>{opt.label}</p>
+                              <p className="text-[9px] text-gray-400">{opt.desc}</p>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-emerald-600">
+                        {balanceInfo.method === 'set'
+                          ? '✓ 저장 시 해당 병원의 잔액이 이 금액으로 설정됩니다'
+                          : '✓ 저장 시 해당 병원의 기존 잔액에 이 금액이 추가됩니다'}
+                      </p>
                     </div>
                   )}
                 </div>
