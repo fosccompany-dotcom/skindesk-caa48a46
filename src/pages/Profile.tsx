@@ -405,6 +405,7 @@ const Profile = () => {
             </div>
           )}
         </div>
+        </div>
       </div>
 
       <div className="page-content pt-2">
