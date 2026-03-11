@@ -650,6 +650,7 @@ const Treatments = () => {
           )}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 };
