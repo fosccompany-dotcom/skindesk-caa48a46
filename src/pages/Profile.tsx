@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useRecords } from '@/context/RecordsContext';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, CreditCard, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -371,8 +371,8 @@ const Profile = () => {
               {t('profile_tab')}
             </TabsTrigger>
             <TabsTrigger value="history" className="flex-1 rounded-lg text-xs gap-1">
-              <ClipboardList className="h-3.5 w-3.5" />
-              {t('treatment_history_tab')}
+              <CreditCard className="h-3.5 w-3.5" />
+              결제기록
             </TabsTrigger>
           </TabsList>
 
@@ -707,124 +707,93 @@ const Profile = () => {
             </div>
           </TabsContent>
 
-          {/* ===== 시술 기록 탭 ===== */}
+          {/* ===== 결제 기록 탭 ===== */}
           <TabsContent value="history" className="space-y-3">
-            <Card className="glass-card">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">{t('total_records')}</p>
-                    <p className="text-2xl font-bold text-foreground">{records.length}<span className="text-sm font-normal text-muted-foreground">건</span></p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[11px] text-muted-foreground">{t('avg_satisfaction')}</p>
-                    <div className="flex items-center gap-1.5">
-                      <Star className="h-4 w-4 fill-amber text-amber" />
-                      <span className="text-2xl font-bold text-foreground">{avgSatisfaction.toFixed(1)}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="space-y-2">
-              {sortedRecords.map((record) => {
-                const isExpanded = expandedRecord === record.id;
-                const memoValue = editingMemo[record.id] ?? record.memo ?? '';
-
-                return (
-                  <Card key={record.id} className="glass-card overflow-hidden">
-                    <button
-                      className="w-full text-left"
-                      onClick={() => setExpandedRecord(isExpanded ? null : record.id)}
-                    >
-                      <CardContent className="p-3.5">
-                        <div className="flex items-center justify-between">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-semibold text-foreground">{record.treatmentName}</span>
-                              <Badge variant="outline" className="text-[9px] px-1.5 py-0">{BODY_AREA_LABELS[record.bodyArea]}</Badge>
-                            </div>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
-                              {format(new Date(record.date), 'yyyy.M.d (EEE)', { locale: ko })} · {record.clinic}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            {record.satisfaction && (
-                              <div className="flex items-center gap-0.5">
-                                <Star className="h-3 w-3 fill-amber text-amber" />
-                                <span className="text-xs font-semibold text-foreground">{record.satisfaction}</span>
-                              </div>
-                            )}
-                            {isExpanded ? (
-                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </div>
-                        </div>
-                        {record.notes && !isExpanded && (
-                          <p className="text-[10px] text-muted-foreground mt-1 truncate">{record.notes}</p>
-                        )}
-                      </CardContent>
-                    </button>
-
-                    {isExpanded && (
-                      <div className="border-t border-border/50 px-3.5 pb-3.5 pt-3 space-y-3">
-                        <div className="flex flex-wrap gap-1.5">
-                          <Badge variant="secondary" className="text-[10px]">{SKIN_LAYER_LABELS[record.skinLayer]}</Badge>
-                          <Badge variant="secondary" className="text-[10px]">{BODY_AREA_LABELS[record.bodyArea]}</Badge>
-                          <Badge variant="outline" className="text-[10px]">{record.clinic}</Badge>
-                        </div>
-
-                        {record.notes && (
-                          <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">{record.notes}</p>
-                        )}
-
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">{t('satisfaction')}</Label>
-                          <StarRating
-                            value={record.satisfaction || 0}
-                            onChange={(v) => updateSatisfaction(record.id, v)}
-                          />
-                        </div>
-
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">메모</Label>
-                          <Textarea
-                            value={memoValue}
-                            onChange={(e) => setEditingMemo(prev => ({ ...prev, [record.id]: e.target.value }))}
-                            placeholder={t('memo_placeholder')}
-                            className="text-xs min-h-[80px] rounded-xl resize-none"
-                          />
-                          {editingMemo[record.id] !== undefined && editingMemo[record.id] !== (record.memo ?? '') && (
-                            <Button
-                              size="sm"
-                              className="mt-2 w-full rounded-xl text-xs"
-                              onClick={() => updateMemo(record.id)}
-                            >
-                              {t('save')}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-
-            {sortedRecords.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground text-sm">
-                {t('no_records')}
-              </div>
-            )}
+            <PaymentHistoryTab />
           </TabsContent>
+
         </Tabs>
       </div>
     </div>
   );
 };
+
+// ─── 결제 기록 탭 컴포넌트 ────────────────────────────────────────────────
+interface PaymentRecord {
+  id: string; date: string; clinic: string;
+  treatment_name: string; amount: number; method: string; memo?: string;
+}
+
+function PaymentHistoryTab() {
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const load = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { setLoading(false); return; }
+      const { data } = await supabase
+        .from('payment_records')
+        .select('id, date, clinic, treatment_name, amount, method, memo')
+        .eq('user_id', user.id)
+        .order('date', { ascending: false });
+      setPayments(data ?? []);
+      setLoading(false);
+    };
+    load();
+  }, []);
+
+  const totalSpent = payments
+    .filter(p => p.method !== '포인트충전')
+    .reduce((s, p) => s + p.amount, 0);
+
+  if (loading) return <div className="text-center py-8 text-sm text-muted-foreground">불러오는 중...</div>;
+
+  return (
+    <div className="space-y-3">
+      {/* 합계 카드 */}
+      <Card className="glass-card">
+        <CardContent className="p-4 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
+            <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
+          </div>
+          <div className="text-right">
+            <p className="text-[11px] text-muted-foreground">결제 건수</p>
+            <p className="text-xl font-black text-foreground">{payments.filter(p => p.method !== '포인트충전').length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 결제 목록 */}
+      {payments.length === 0 ? (
+        <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없습니다</div>
+      ) : (
+        <div className="space-y-2">
+          {payments.map(p => (
+            <Card key={p.id} className="glass-card">
+              <CardContent className="p-3.5">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{p.treatment_name}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{p.date} · {p.clinic}</p>
+                    {p.memo && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{p.memo}</p>}
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : 'text-foreground'}`}>
+                      {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
+                    </p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 font-medium">{p.method}</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default Profile;
 
