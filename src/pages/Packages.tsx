@@ -139,6 +139,7 @@ const Packages = () => {
       date: editPayForm.date,
       amount: editPayForm.amount,
       memo: editPayForm.memo || null,
+      method: editPayForm.method,
     }).eq('id', editPay.id);
     if (error) { toast.error('수정 실패'); return; }
     toast.success('결제 내역이 수정되었습니다');
