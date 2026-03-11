@@ -104,7 +104,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
   const handleParse = async () => {
     setLoading(true); setError(null);
-    setParsed(null); setBundles([]); setCharges([]);
+    setParsed(null); setBundles([]); setCharges([]); setBalanceInfo(null);
 
     try {
       let body: Record<string, any> = {};
