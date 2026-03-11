@@ -70,13 +70,16 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
       skin_layer:     record.skinLayer,
       body_area:      record.bodyArea,
       clinic:         record.clinic,
-      // UUID이면 package_uuid(FK)에, 아니면 legacy package_id(text)에
       package_uuid:   isUUID ? record.packageId : null,
       package_id:     isUUID ? null : (record.packageId || null),
       satisfaction:   record.satisfaction,
       notes:          record.notes,
       memo:           record.memo,
       amount_paid:    record.amount_paid,
+      clinic_kakao_id:  record.clinic_kakao_id ?? null,
+      clinic_district:  record.clinic_district ?? null,
+      clinic_address:   record.clinic_address ?? null,
+      input_method:     record.input_method ?? 'manual',
     }).select().single();
 
     if (!error && data) {
