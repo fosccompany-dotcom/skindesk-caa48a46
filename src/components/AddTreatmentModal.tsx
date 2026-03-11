@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package } from 'lucide-react';
 import { cn, extractDistrict } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import ClinicSearchInput from './ClinicSearchInput';
+import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
 
 // ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
