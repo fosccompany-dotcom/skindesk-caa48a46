@@ -519,37 +519,47 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               </div>
             </div>
           )}
+          </>)}
         </div>
 
         {/* 하단 버튼 */}
         <div className="px-5 pb-5 sticky bottom-0 bg-white pt-3 border-t border-gray-100 space-y-2">
-          <div className="flex gap-3">
-          {step > 1 && (
-            <Button variant="outline" onClick={() => setStep(s => s - 1)}
-              className="flex-1 border-gray-200 bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-800">
-              <ChevronLeft size={15} className="mr-1" /> 이전
-            </Button>
-          )}
-          {!isDetailStep ? (
-            <Button onClick={() => setStep(s => s + 1)} disabled={!canNext()}
-              className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-25">
-              다음 <ChevronRight size={15} className="ml-1" />
+          {mode === 'package' ? (
+            <Button onClick={handleSavePackage} disabled={!pkgName || !pkgClinic || pkgSaving}
+              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
+              <Check size={15} className="mr-1.5" /> {pkgSaving ? '저장 중...' : '시술권 저장'}
             </Button>
           ) : (
-            <Button onClick={handleSave} disabled={!date || !clinic}
-              className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-25">
-              <Check size={15} className="mr-1.5" /> 저장
-            </Button>
-          )}
-          </div>
-          {onOpenParse && (
-            <button
-              onClick={() => { handleClose(); onOpenParse(); }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-xs font-medium hover:bg-gray-50 hover:text-gray-600 transition-colors"
-            >
-              <Sparkles size={13} />
-              텍스트 · 이미지로 한 번에 등록하기
-            </button>
+            <>
+              <div className="flex gap-3">
+                {step > 1 && (
+                  <Button variant="outline" onClick={() => setStep(s => s - 1)}
+                    className="flex-1 border-border bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground">
+                    <ChevronLeft size={15} className="mr-1" /> 이전
+                  </Button>
+                )}
+                {!isDetailStep ? (
+                  <Button onClick={() => setStep(s => s + 1)} disabled={!canNext()}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
+                    다음 <ChevronRight size={15} className="ml-1" />
+                  </Button>
+                ) : (
+                  <Button onClick={handleSave} disabled={!date || !clinic}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
+                    <Check size={15} className="mr-1.5" /> 저장
+                  </Button>
+                )}
+              </div>
+              {onOpenParse && (
+                <button
+                  onClick={() => { handleClose(); onOpenParse(); }}
+                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-muted-foreground text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <Sparkles size={13} />
+                  텍스트 · 이미지로 한 번에 등록하기
+                </button>
+              )}
+            </>
           )}
         </div>
       </DialogContent>
