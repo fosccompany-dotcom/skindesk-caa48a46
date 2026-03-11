@@ -392,6 +392,25 @@ const Packages = () => {
               <Label className="text-xs">병원</Label>
               <Input value={editPayForm.clinic} onChange={e => setEditPayForm(f => ({ ...f, clinic: e.target.value }))} className="mt-1" />
             </div>
+            <div>
+              <Label className="text-xs">결제 종류</Label>
+              <div className="grid grid-cols-5 gap-1.5 mt-1">
+                {(['포인트충전', '시술결제', '카드', '현금', '서비스'] as const).map(m => (
+                  <button
+                    key={m}
+                    type="button"
+                    onClick={() => setEditPayForm(f => ({ ...f, method: m }))}
+                    className={`py-1.5 rounded-lg text-[11px] font-medium border transition-all ${
+                      editPayForm.method === m
+                        ? 'bg-primary text-primary-foreground border-primary'
+                        : 'bg-muted text-muted-foreground border-transparent'
+                    }`}
+                  >
+                    {m}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <Label className="text-xs">날짜</Label>
