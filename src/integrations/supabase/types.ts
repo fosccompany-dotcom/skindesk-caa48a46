@@ -14,7 +14,288 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      clinic_balances: {
+        Row: {
+          balance: number
+          clinic: string
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          clinic: string
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          clinic?: string
+          id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      payment_records: {
+        Row: {
+          amount: number
+          clinic: string
+          clinic_type: string | null
+          created_at: string | null
+          date: string
+          id: string
+          memo: string | null
+          method: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          clinic: string
+          clinic_type?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          memo?: string | null
+          method?: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          clinic?: string
+          clinic_type?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          memo?: string | null
+          method?: string | null
+          treatment_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      point_transactions: {
+        Row: {
+          amount: number
+          balance: number
+          clinic: string | null
+          created_at: string | null
+          date: string
+          description: string
+          id: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          balance: number
+          clinic?: string | null
+          created_at?: string | null
+          date: string
+          description: string
+          id?: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          balance?: number
+          clinic?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string
+          id?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treatment_cycles: {
+        Row: {
+          body_area: string | null
+          clinic: string
+          created_at: string | null
+          cycle_days: number
+          id: string
+          is_custom_cycle: boolean | null
+          last_treatment_date: string
+          notes: string | null
+          product: string | null
+          skin_layer: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Insert: {
+          body_area?: string | null
+          clinic: string
+          created_at?: string | null
+          cycle_days: number
+          id?: string
+          is_custom_cycle?: boolean | null
+          last_treatment_date: string
+          notes?: string | null
+          product?: string | null
+          skin_layer?: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Update: {
+          body_area?: string | null
+          clinic?: string
+          created_at?: string | null
+          cycle_days?: number
+          id?: string
+          is_custom_cycle?: boolean | null
+          last_treatment_date?: string
+          notes?: string | null
+          product?: string | null
+          skin_layer?: string | null
+          treatment_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treatment_packages: {
+        Row: {
+          body_area: string | null
+          clinic: string
+          created_at: string | null
+          expiry_date: string | null
+          id: string
+          name: string
+          skin_layer: string | null
+          total_sessions: number | null
+          type: string | null
+          used_sessions: number | null
+          user_id: string
+        }
+        Insert: {
+          body_area?: string | null
+          clinic: string
+          created_at?: string | null
+          expiry_date?: string | null
+          id?: string
+          name: string
+          skin_layer?: string | null
+          total_sessions?: number | null
+          type?: string | null
+          used_sessions?: number | null
+          user_id: string
+        }
+        Update: {
+          body_area?: string | null
+          clinic?: string
+          created_at?: string | null
+          expiry_date?: string | null
+          id?: string
+          name?: string
+          skin_layer?: string | null
+          total_sessions?: number | null
+          type?: string | null
+          used_sessions?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      treatment_records: {
+        Row: {
+          amount_paid: number | null
+          body_area: string | null
+          clinic: string
+          created_at: string | null
+          date: string
+          id: string
+          memo: string | null
+          notes: string | null
+          package_id: string | null
+          satisfaction: number | null
+          shots: number | null
+          skin_layer: string | null
+          treatment_id: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Insert: {
+          amount_paid?: number | null
+          body_area?: string | null
+          clinic: string
+          created_at?: string | null
+          date: string
+          id?: string
+          memo?: string | null
+          notes?: string | null
+          package_id?: string | null
+          satisfaction?: number | null
+          shots?: number | null
+          skin_layer?: string | null
+          treatment_id?: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Update: {
+          amount_paid?: number | null
+          body_area?: string | null
+          clinic?: string
+          created_at?: string | null
+          date?: string
+          id?: string
+          memo?: string | null
+          notes?: string | null
+          package_id?: string | null
+          satisfaction?: number | null
+          shots?: number | null
+          skin_layer?: string | null
+          treatment_id?: string | null
+          treatment_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          birth_date: string | null
+          concerns: string[] | null
+          created_at: string | null
+          email: string | null
+          goals: string[] | null
+          id: string
+          name: string | null
+          regions: string[] | null
+          skin_type: string | null
+          target_areas: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          birth_date?: string | null
+          concerns?: string[] | null
+          created_at?: string | null
+          email?: string | null
+          goals?: string[] | null
+          id: string
+          name?: string | null
+          regions?: string[] | null
+          skin_type?: string | null
+          target_areas?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          birth_date?: string | null
+          concerns?: string[] | null
+          created_at?: string | null
+          email?: string | null
+          goals?: string[] | null
+          id?: string
+          name?: string | null
+          regions?: string[] | null
+          skin_type?: string | null
+          target_areas?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
