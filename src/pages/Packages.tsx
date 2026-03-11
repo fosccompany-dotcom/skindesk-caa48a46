@@ -215,11 +215,11 @@ const Packages = () => {
 
       <div className="page-content pb-28">
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-2 mb-4 rounded-xl h-auto bg-muted p-1">
+          <TabsList className="w-full relative mb-4 rounded-xl h-auto bg-muted p-1 grid grid-cols-[1fr_auto_1fr]">
             {tabOrder.map((tabKey, idx) => {
               const cfg = tabConfig[tabKey];
               const Icon = cfg.icon;
-              return (
+              const trigger = (
                 <TabsTrigger
                   key={tabKey}
                   value={tabKey}
@@ -232,6 +232,25 @@ const Packages = () => {
                   <Icon className="h-3.5 w-3.5" /> {cfg.label}
                 </TabsTrigger>
               );
+              if (idx === 0) {
+                return (
+                  <React.Fragment key={tabKey}>
+                    {trigger}
+                    <button
+                      onClick={() => {
+                        const swapped = [...tabOrder].reverse() as ('packages' | 'points')[];
+                        setTabOrder(swapped);
+                        localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(swapped));
+                      }}
+                      className="flex items-center justify-center w-7 h-7 rounded-full bg-muted-foreground/10 hover:bg-muted-foreground/20 transition-colors self-center mx-0.5"
+                      title="탭 순서 변경"
+                    >
+                      <ArrowLeftRight className="h-3 w-3 text-muted-foreground" />
+                    </button>
+                  </React.Fragment>
+                );
+              }
+              return trigger;
             })}
           </TabsList>
 
