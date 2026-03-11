@@ -193,7 +193,7 @@ export default function SeasonRecommendation() {
         .select('current_season' as any)
         .eq('id', user.id)
         .single();
-      if (data?.current_season) setSeason(data.current_season as SeasonKey);
+      if ((data as any)?.current_season) setSeason((data as any).current_season as SeasonKey);
       setLoading(false);
     };
     load();

@@ -159,7 +159,7 @@ export async function processPackagePurchase(p: PackagePurchasePayload): Promise
   // 3. treatment_packages ← point_transaction_id 역참조 연결
   await supabase
     .from('treatment_packages')
-    .update({ point_transaction_id: pt.id })
+    .update({ point_transaction_id: pt.id } as any)
     .eq('id', packageId);
 
   // 4. clinic_balances — 잔액 차감

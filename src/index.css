@@ -141,11 +141,11 @@
   }
 
   .gradient-sage {
-    background: linear-gradient(160deg, hsl(220 16% 24%), hsl(220 18% 34%));
+    background: linear-gradient(160deg, hsl(4 65% 62%), hsl(4 55% 72%));
   }
 
   .gradient-warm {
-    background: linear-gradient(135deg, hsl(28 35% 93%), hsl(36 30% 89%));
+    background: linear-gradient(135deg, hsl(4 45% 94%), hsl(45 40% 92%));
   }
 
   .safe-top {

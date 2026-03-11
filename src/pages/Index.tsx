@@ -437,7 +437,7 @@ const Index = () => {
                           <div key={c.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-2 min-w-0">
                               <div className={`h-2 w-2 rounded-full shrink-0 ${daysRemaining <= 7 ? 'bg-amber-400' : 'bg-indigo-400'}`} />
-                              <span className="text-sm font-medium truncate">{c.name}</span>
+                              <span className="text-sm font-medium truncate">{c.treatmentName}</span>
                             </div>
                             <span className={`text-sm font-bold shrink-0 ${daysRemaining <= 7 ? 'text-amber-500' : 'text-indigo-500'}`}>
                               {daysRemaining === 0 ? '오늘' : `D-${daysRemaining}`}

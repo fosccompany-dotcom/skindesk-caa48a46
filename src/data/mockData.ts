@@ -338,7 +338,7 @@ export const mockRecords: TreatmentRecord[] = [
     packageId: '',
     treatmentName: '라리티 겨드랑이 + 인중',
     skinLayer: 'epidermis',
-    bodyArea: 'body',
+    bodyArea: 'face',
     notes: '레이저 제모 — 겨드랑이 + 인중 1회',
     clinic: '뷰티라운지 판교',
     satisfaction: undefined,
