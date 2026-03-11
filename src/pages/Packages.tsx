@@ -395,7 +395,7 @@ const Packages = () => {
             </div>
             <div>
               <Label className="text-xs">결제 종류</Label>
-              <div className="grid grid-cols-5 gap-1.5 mt-1">
+              <div className="grid grid-cols-3 gap-1.5 mt-1">
                 {(['포인트충전', '포인트', '시술결제', '카드', '현금', '서비스'] as const).map(m => (
                   <button
                     key={m}
