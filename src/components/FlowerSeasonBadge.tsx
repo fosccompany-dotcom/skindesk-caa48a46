@@ -2,45 +2,130 @@ import { useEffect, useState } from "react";
 
 type SeasonType = "reset" | "recovery" | "maintain" | "boost" | "special";
 
-const SEASON_FLOWERS: Record<SeasonType, { emoji: string; name: string; latin: string; color: string; glow: string }> = {
-  reset:    { emoji: "🌵", name: "Cactus",   latin: "Cactaceae",   color: "#7EC8A0", glow: "rgba(126,200,160,0.35)" },
-  recovery: { emoji: "🌿", name: "Aloe",     latin: "Aloe Vera",   color: "#A8D5A2", glow: "rgba(168,213,162,0.35)" },
-  maintain: { emoji: "💜", name: "Lavender", latin: "Lavandula",   color: "#C9A8E0", glow: "rgba(201,168,224,0.35)" },
-  boost:    { emoji: "🌹", name: "Rose",     latin: "Rosa",        color: "#E8A0A0", glow: "rgba(232,160,160,0.4)"  },
-  special:  { emoji: "🌸", name: "Orchid",   latin: "Orchidaceae", color: "#F0B8D8", glow: "rgba(240,184,216,0.4)"  },
-};
+const SEASON_FLOWERS: Record<SeasonType, { emoji: string; name: string; latin: string; color: string }> = {
+  reset:    { emoji: "🌵", name: "Cactus",   latin: "Cactaceae",   color: "#7EC8A0" },
+    recovery: { emoji: "🌿", name: "Aloe",     latin: "Aloe Vera",   color: "#A8D5A2" },
+      maintain: { emoji: "💜", name: "Lavender", latin: "Lavandula",   color: "#C9A8E0" },
+        boost:    { emoji: "🌹", name: "Rose",     latin: "Rosa",        color: "#E8A0A0" },
+          special:  { emoji: "🌸", name: "Orchid",   latin: "Orchidaceae", color: "#F0B8D8" },
+          };
 
-export const FlowerSeasonBadge = ({ season }: { season: string | null }) => {
-  const [visible, setVisible] = useState(false);
-  const f = season ? SEASON_FLOWERS[season as SeasonType] : null;
+          export const FlowerSeasonBadge = ({ season }: { season: string | null }) => {
+            const [visible, setVisible] = useState(false);
+              const f = season ? SEASON_FLOWERS[season as SeasonType] : null;
 
-  useEffect(() => {
-    setVisible(false);
-    const t = setTimeout(() => setVisible(true), 300);
-    return () => clearTimeout(t);
-  }, [season]);
+                useEffect(() => {
+                    setVisible(false);
+                        const t = setTimeout(() => setVisible(true), 300);
+                            return () => clearTimeout(t);
+                              }, [season]);
 
-  if (!f) return null;
+                                if (!f) return null;
 
-  return (
-    <>
-      <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300&display=swap');
-        .fb{display:flex;flex-direction:column;align-items:flex-end;gap:3px;opacity:0;transform:translateY(-8px);transition:opacity .7s ease,transform .7s ease}
-        .fb.fb-in{opacity:1;transform:translateY(0)}
-        .fb-ring{position:relative;width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;animation:fbFloat 4s ease-in-out infinite}
-        .fb-ring::before{content:'';position:absolute;inset:-4px;border-radius:50%;background:radial-gradient(circle,var(--fg) 0%,transparent 70%);opacity:.5;animation:fbGlow 4s ease-in-out infinite}
-        .fb-emoji{font-size:22px;position:relative;z-index:1}
-        .fb-name{font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:300;letter-spacing:.14em;color:var(--fc);text-align:right;line-height:1.2}
-        .fb-latin{font-family:'Cormorant Garamond',serif;font-size:9px;font-style:italic;letter-spacing:.08em;color:rgba(255,255,255,.3);text-align:right}
-        @keyframes fbFloat{0%,100%{transform:translateY(0) rotate(0deg)}33%{transform:translateY(-4px) rotate(2deg)}66%{transform:translateY(-2px) rotate(-1deg)}}
-        @keyframes fbGlow{0%,100%{opacity:.35;transform:scale(1)}50%{opacity:.65;transform:scale(1.2)}}
-      `}</style>
-      <div className={`fb ${visible ? "fb-in" : ""}`} style={{ "--fc": f.color, "--fg": f.glow } as React.CSSProperties}>
-        <div className="fb-ring"><span className="fb-emoji">{f.emoji}</span></div>
-        <span className="fb-name">{f.name}</span>
-        <span className="fb-latin">{f.latin}</span>
-      </div>
-    </>
-  );
-};
+                                  return (
+                                      <div style={{
+                                            display: "flex",
+                                                  flexDirection: "column",
+                                                        alignItems: "flex-end",
+                                                              gap: "2px",
+                                                                    opacity: visible ? 1 : 0,
+                                                                          transform: visible ? "translateY(0)" : "translateY(-8px)",
+                                                                                transition: "opacity 0.7s ease, transform 0.7s ease",
+                                                                                    }}>
+                                                                                          <div style={{
+                                                                                                  width: "40px",
+                                                                                                          height: "40px",
+                                                                                                                  borderRadius: "50%",
+                                                                                                                          background: "rgba(255,255,255,0.08)",
+                                                                                                                                  border: "1px solid rgba(255,255,255,0.15)",
+                                                                                                                                          display: "flex",
+                                                                                                                                                  alignItems: "center",
+                                                                                                                                                          justifyContent: "center",
+                                                                                                                                                                  fontSize: "20px",
+                                                                                                                                                                          boxShadow: `0 0 12px ${f.color}55`,
+                                                                                                                                                                                }}>
+                                                                                                                                                                                        {f.emoji}
+                                                                                                                                                                                              </div>
+                                                                                                                                                                                                    <span style={{
+                                                                                                                                                                                                            fontSize: "12px",
+                                                                                                                                                                                                                    fontWeight: 300,
+                                                                                                                                                                                                                            letterSpacing: "0.12em",
+                                                                                                                                                                                                                            i m p o r t   {  cuosleoErf:f efc.tc,o luosre,S
+                                                                                                                                                                                                                            t a t e   }   f rtoemx t"Arleiagcnt:" ;"
+                                                                                                                                                                                                                            r
+                                                                                                                                                                                                                            itgyhpte" ,S
+                                                                                                                                                                                                                            e a s o n T y p el i=n e"Hreeisgehtt":  |1 ."2r,e
+                                                                                                                                                                                                                            c o v e r y "} }|> 
+                                                                                                                                                                                                                            " m a i n t a i n{"f .|n a"mbeo}o
+                                                                                                                                                                                                                            s t "   |   "<s/psepcaina>l
+                                                                                                                                                                                                                            " ; 
+                                                                                                                                                                                                                             
+                                                                                                                                                                                                                              c o n<sstp aSnE AsStOyNl_eF=L{O{W
+                                                                                                                                                                                                                              E R S :   R e c ofrodn<tSSeiazseo:n T"y9ppex," ,{
+                                                                                                                                                                                                                                e m o j i :   sftornitnSgt;y lnea:m e":i tsatlriicn"g,;
+                                                                                                                                                                                                                                  l a t i n :   sltertitnegr;S pcaoclionrg::  s"t0r.i0n8ge m}">, 
+                                                                                                                                                                                                                                  =   { 
+                                                                                                                                                                                                                                       r e sceotl:o r :   "{r gebmao(j2i5:5 ,"2🌵"5,5 ,n2a5m5e,:0 ."3C5a)c"t,u
+                                                                                                                                                                                                                                       s " ,       l a ttienx:t A"lCiagcnt:a c"eraieg"h,t " , 
+                                                                                                                                                                                                                                       c o l o r :  }"}#>7
+                                                                                                                                                                                                                                       E C 8 A 0 "   } ,{
+                                                                                                                                                                                                                                       f . lraetcionv}e
+                                                                                                                                                                                                                                       r y :   {   e<m/osjpia:n >"
+                                                                                                                                                                                                                                       🌿 " ,   n<a/mdei:v >"
+                                                                                                                                                                                                                                       A l o)e;"
+                                                                                                                                                                                                                                       ,} ; 
+                                                                                                                                                                                                                                          latin: "Aloe Vera",   color: "#A8D5A2" },
+                                                                                                                                                                                                                                            maintain: { emoji: "💜", name: "Lavender", latin: "Lavandula",   color: "#C9A8E0" },
+                                                                                                                                                                                                                                              boost:    { emoji: "🌹", name: "Rose",     latin: "Rosa",        color: "#E8A0A0" },
+                                                                                                                                                                                                                                                special:  { emoji: "🌸", name: "Orchid",   latin: "Orchidaceae", color: "#F0B8D8" },
+                                                                                                                                                                                                                                                };
+
+                                                                                                                                                                                                                                                export const FlowerSeasonBadge = ({ season }: { season: string | null }) => {
+                                                                                                                                                                                                                                                  const [visible, setVisible] = useState(false);
+                                                                                                                                                                                                                                                    const f = season ? SEASON_FLOWERS[season as SeasonType] : null;
+
+                                                                                                                                                                                                                                                      useEffect(() => {
+                                                                                                                                                                                                                                                          setVisible(false);
+                                                                                                                                                                                                                                                              const t = setTimeout(() => setVisible(true), 300);
+                                                                                                                                                                                                                                                                  return () => clearTimeout(t);
+                                                                                                                                                                                                                                                                    }, [season]);
+
+                                                                                                                                                                                                                                                                      if (!f) return null;
+
+                                                                                                                                                                                                                                                                        return (
+                                                                                                                                                                                                                                                                            <div style={{
+                                                                                                                                                                                                                                                                                  display: "flex",
+                                                                                                                                                                                                                                                                                        flexDirection: "column",
+                                                                                                                                                                                                                                                                                              alignItems: "flex-end",
+                                                                                                                                                                                                                                                                                                    gap: "2px",
+                                                                                                                                                                                                                                                                                                          opacity: visible ? 1 : 0,
+                                                                                                                                                                                                                                                                                                                transform: visible ? "translateY(0)" : "translateY(-8px)",
+                                                                                                                                                                                                                                                                                                                      transition: "opacity 0.7s ease, transform 0.7s ease",
+                                                                                                                                                                                                                                                                                                                          }}>
+                                                                                                                                                                                                                                                                                                                                <div style={{
+                                                                                                                                                                                                                                                                                                                                        width: "40px",
+                                                                                                                                                                                                                                                                                                                                                height: "40px",
+                                                                                                                                                                                                                                                                                                                                                        borderRadius: "50%",
+                                                                                                                                                                                                                                                                                                                                                                background: "rgba(255,255,255,0.08)",
+                                                                                                                                                                                                                                                                                                                                                                        border: "1px solid rgba(255,255,255,0.15)",
+                                                                                                                                                                                                                                                                                                                                                                                display: "flex",
+                                                                                                                                                                                                                                                                                                                                                                                        alignItems: "center",
+                                                                                                                                                                                                                                                                                                                                                                                                justifyContent: "center",
+                                                                                                                                                                                                                                                                                                                                                                                                        fontSize: "20px",
+                                                                                                                                                                                                                                                                                                                                                                                                                boxShadow: `0 0 12px ${f.color}55`,
+                                                                                                                                                                                                                                                                                                                                                                                                                      }}>
+                                                                                                                                                                                                                                                                                                                                                                                                                              {f.emoji}
+                                                                                                                                                                                                                                                                                                                                                                                                                                    </div>
+                                                                                                                                                                                                                                                                                                                                                                                                                                          <span style={{
+                                                                                                                                                                                                                                                                                                                                                                                                                                                  fontSize: "12px",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                          fontWeight: 300,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                  letterSpacing: "0.12em",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                          color: f.color,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  textAlign: "right",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          lineHeight: 1.2,
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                }}>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        {f.name}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              </span>
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    <span style={{
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            fontSize: "9px",
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    font
