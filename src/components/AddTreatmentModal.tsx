@@ -429,8 +429,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             <div className="space-y-4">
               {/* 선택 요약 */}
               <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
-                <div className="text-[11px] text-gray-400 mb-1">등록할 시술</div>
-                <div className="text-sm font-semibold text-[#C9A96E]">{getTreatmentName()}</div>
+                <div className="text-[11px] text-gray-400 mb-1">
+                  {mode === 'package' ? '등록할 시술권' : '등록할 시술'}
+                </div>
+                <div className="text-sm font-semibold text-primary">{getTreatmentName()}</div>
                 <div className="mt-1.5">
                   <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[selectedItem.skinLayer])}>
                     {SKIN_LAYER_LABEL[selectedItem.skinLayer]}
@@ -438,15 +440,40 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 </div>
               </div>
 
-              {/* 날짜 */}
-              <div>
-                <label className="text-xs text-gray-400 block mb-1.5">시술일</label>
-                <input type="date" value={date}
-                  onChange={e => setDate(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50" />
-              </div>
+              {/* 시술권 모드: 횟수/만료일 */}
+              {mode === 'package' && (
+                <>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">총 횟수</label>
+                      <input type="number" min={1} value={pkgTotal} onChange={e => setPkgTotal(Number(e.target.value))}
+                        className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">사용 횟수</label>
+                      <input type="number" min={0} value={pkgUsed} onChange={e => setPkgUsed(Number(e.target.value))}
+                        className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
+                    </div>
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1.5">만료일 (선택)</label>
+                    <input type="date" value={pkgExpiry} onChange={e => setPkgExpiry(e.target.value)}
+                      className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
+                  </div>
+                </>
+              )}
 
-              {/* 병원 */}
+              {/* 시술내역 모드: 날짜 */}
+              {mode === 'record' && (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1.5">시술일</label>
+                  <input type="date" value={date}
+                    onChange={e => setDate(e.target.value)}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/50" />
+                </div>
+              )}
+
+              {/* 병원 (공통) */}
               <div>
                 <label className="text-xs text-gray-400 block mb-1.5">병원</label>
                 <ClinicSearchInput
@@ -456,30 +483,32 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   darkMode={false} />
               </div>
 
-              {/* 만족도 */}
-              <div>
-                <label className="text-xs text-gray-400 block mb-1.5">만족도</label>
-                <div className="flex gap-2">
-                  {[1,2,3,4,5].map(s => (
-                    <button key={s} onClick={() => setSatisfaction(s as 1 | 2 | 3 | 4 | 5)}
-                      className={cn(
-                        'flex-1 py-2 rounded-lg border text-sm font-bold transition-all',
-                        satisfaction === s
-                          ? 'border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E]'
-                          : 'border-gray-200 text-gray-300 hover:border-gray-400'
-                      )}>
-                      {'★'.repeat(s)}
-                    </button>
-                  ))}
+              {/* 만족도 (시술내역만) */}
+              {mode === 'record' && (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1.5">만족도</label>
+                  <div className="flex gap-2">
+                    {[1,2,3,4,5].map(s => (
+                      <button key={s} onClick={() => setSatisfaction(s as 1 | 2 | 3 | 4 | 5)}
+                        className={cn(
+                          'flex-1 py-2 rounded-lg border text-sm font-bold transition-all',
+                          satisfaction === s
+                            ? 'border-primary bg-primary/15 text-primary'
+                            : 'border-gray-200 text-gray-300 hover:border-gray-400'
+                        )}>
+                        {'★'.repeat(s)}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
-              {/* 메모 */}
+              {/* 메모 (공통) */}
               <div>
                 <label className="text-xs text-gray-400 block mb-1.5">메모 (선택)</label>
                 <textarea rows={3} value={memo} onChange={e => setMemo(e.target.value)}
-                  placeholder="시술 후 느낌, 효과, 다음 방문 시 참고사항..."
-                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:border-[#C9A96E]/50 resize-none" />
+                  placeholder={mode === 'package' ? '시술권 관련 메모...' : '시술 후 느낌, 효과, 다음 방문 시 참고사항...'}
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:border-primary/50 resize-none" />
               </div>
             </div>
           )}
@@ -488,42 +517,36 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
         {/* 하단 버튼 */}
         <div className="px-5 pb-5 sticky bottom-0 bg-white pt-3 border-t border-gray-100 space-y-2">
-          {mode === 'package' ? (
-            <Button onClick={handleSavePackage} disabled={!pkgName || !pkgClinic || pkgSaving}
-              className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
-              <Check size={15} className="mr-1.5" /> {pkgSaving ? '저장 중...' : '시술권 저장'}
-            </Button>
-          ) : (
-            <>
-              <div className="flex gap-3">
-                {step > 1 && (
-                  <Button variant="outline" onClick={() => setStep(s => s - 1)}
-                    className="flex-1 border-border bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground">
-                    <ChevronLeft size={15} className="mr-1" /> 이전
-                  </Button>
-                )}
-                {!isDetailStep ? (
-                  <Button onClick={() => setStep(s => s + 1)} disabled={!canNext()}
-                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
-                    다음 <ChevronRight size={15} className="ml-1" />
-                  </Button>
-                ) : (
-                  <Button onClick={handleSave} disabled={!date || !clinic}
-                    className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
-                    <Check size={15} className="mr-1.5" /> 저장
-                  </Button>
-                )}
-              </div>
-              {onOpenParse && (
-                <button
-                  onClick={() => { handleClose(); onOpenParse(); }}
-                  className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-muted-foreground text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
-                >
-                  <Sparkles size={13} />
-                  텍스트 · 이미지로 한 번에 등록하기
-                </button>
-              )}
-            </>
+          <div className="flex gap-3">
+            {step > 1 && (
+              <Button variant="outline" onClick={() => setStep(s => s - 1)}
+                className="flex-1 border-border bg-transparent text-muted-foreground hover:bg-muted hover:text-foreground">
+                <ChevronLeft size={15} className="mr-1" /> 이전
+              </Button>
+            )}
+            {!isDetailStep ? (
+              <Button onClick={() => setStep(s => s + 1)} disabled={!canNext()}
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
+                다음 <ChevronRight size={15} className="ml-1" />
+              </Button>
+            ) : (
+              <Button
+                onClick={mode === 'package' ? handleSavePackage : handleSave}
+                disabled={mode === 'package' ? (!selectedItem || !clinic || pkgSaving) : (!date || !clinic)}
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
+                <Check size={15} className="mr-1.5" />
+                {mode === 'package' ? (pkgSaving ? '저장 중...' : '시술권 저장') : '저장'}
+              </Button>
+            )}
+          </div>
+          {mode === 'record' && onOpenParse && (
+            <button
+              onClick={() => { handleClose(); onOpenParse(); }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-muted-foreground text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
+            >
+              <Sparkles size={13} />
+              텍스트 · 이미지로 한 번에 등록하기
+            </button>
           )}
         </div>
       </DialogContent>
