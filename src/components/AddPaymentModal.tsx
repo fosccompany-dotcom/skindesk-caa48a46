@@ -41,7 +41,7 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
   const [paidAmt, setPaidAmt]       = useState('');    // 실결제금액
   const [chargedAmt, setChargedAmt] = useState('');   // 충전금액 (포인트충전만)
   const [sessions, setSessions]     = useState('');    // 회수 (시술권구매만)
-  const [chargeMethod, setChargeMethod] = useState<'카드' | '현금'>('카드');
+  const [chargeMethod, setChargeMethod] = useState<'카드' | '현금' | '서비스'>('카드');
   const [memo, setMemo]             = useState('');
   const [saving, setSaving]         = useState(false);
   const [saved, setSaved]           = useState(false);
@@ -185,8 +185,8 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
                 <div>
                   <label className="text-[11px] text-white/40 mb-1.5 block">결제 수단</label>
                   <div className="flex gap-2">
-                    {(['카드', '현금'] as const).map(m => (
-                      <button key={m} onClick={() => setChargeMethod(m)}
+                    {(['카드', '현금', '서비스'] as const).map(m => (
+                      <button key={m} onClick={() => setChargeMethod(m as '카드' | '현금' | '서비스')}
                         className={cn('flex-1 py-2 rounded-xl border text-xs font-semibold transition-all',
                           chargeMethod === m ? 'border-[#C9A96E]/50 bg-[#C9A96E]/10 text-[#C9A96E]' : 'border-white/10 text-white/30')}>
                         {m}
