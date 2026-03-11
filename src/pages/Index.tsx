@@ -16,6 +16,7 @@ import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 import { supabase } from '@/integrations/supabase/client';
+import logoImg from '@/assets/logo.png';
 
 import { ALL_TREATMENT_SEASON_DATA } from '@/data/treatmentSeasonData';
 type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
