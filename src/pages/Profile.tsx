@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useRecords } from '@/context/RecordsContext';
+import AddPaymentModal from '@/components/AddPaymentModal';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
 import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, CreditCard, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
