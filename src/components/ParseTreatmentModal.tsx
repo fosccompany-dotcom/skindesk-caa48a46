@@ -208,6 +208,41 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
     }
 
+    // 3. 신규충전 → clinic_balances 업데이트 + payment_records 저장
+    for (const c of charges) {
+      if (!c.clinic || c.amount <= 0) continue;
+
+      // 기존 잔액 조회
+      const { data: existing } = await supabase
+        .from('clinic_balances')
+        .select('balance')
+        .eq('user_id', user.id)
+        .eq('clinic', c.clinic)
+        .maybeSingle();
+
+      const newBalance = (existing?.balance || 0) + c.amount;
+
+      // 잔액 upsert
+      await supabase.from('clinic_balances').upsert({
+        user_id:    user.id,
+        clinic:     c.clinic,
+        balance:    newBalance,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,clinic' });
+
+      // payment_records에도 충전 기록 저장
+      await supabase.from('payment_records').insert({
+        user_id:        user.id,
+        date:           c.date,
+        clinic:         c.clinic,
+        clinic_type:    '밴스',
+        treatment_name: c.label,
+        amount:         c.amount,
+        method:         '포인트충전',
+        memo:           null,
+      });
+    }
+
     setSaving(false); setSaved(true);
     setTimeout(onClose, 1200);
   };
@@ -313,10 +348,11 @@ export default function ParseTreatmentModal({ onClose }: Props) {
               {charges.map((c, i) => (
                 <div key={i} className="flex items-center gap-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3.5 py-2.5">
                   <CreditCard size={14} className="text-emerald-400 shrink-0" />
-                  <div>
+                  <div className="flex-1">
                     <p className="text-xs font-semibold text-emerald-400">{c.label} +{c.amount.toLocaleString()}원</p>
-                    <p className="text-[10px] text-white/40">{c.date}{c.clinic && ` · ${c.clinic}`} · 시술 기록 미포함</p>
+                    <p className="text-[10px] text-white/40">{c.date}{c.clinic && ` · ${c.clinic}`} · 잔액에 자동 반영됩니다</p>
                   </div>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">저장됨</span>
                 </div>
               ))}
 
@@ -483,7 +519,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
             ) : (
               <button onClick={handleSave} disabled={saving || selectedCount === 0}
                 className="w-full py-3.5 bg-[#C9A96E] text-black font-bold text-sm rounded-xl disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
-                {saving ? <><Loader2 size={16} className="animate-spin" /> 저장 중...</> : <><CheckCircle size={16} /> {selectedCount}건 저장</>}
+                {saving ? <><Loader2 size={16} className="animate-spin" /> 저장 중...</> : (
+                  <><CheckCircle size={16} /> {selectedCount}건 저장{charges.length > 0 ? ` + 충전 ${charges.length}건` : ''}</>
+                )}
               </button>
             )}
           </div>
