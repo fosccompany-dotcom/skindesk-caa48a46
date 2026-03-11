@@ -77,8 +77,8 @@ const Index = () => {
         supabase.from('clinic_balances').select('clinic,balance').eq('user_id', user.id),
         supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
       ]);
-      if (profileRes.data?.current_season) setCurrentSeason(profileRes.data.current_season as SeasonKey);
-      if (profileRes.data?.goals) setGoals(profileRes.data.goals as string[]);
+      if ((profileRes.data as any)?.current_season) setCurrentSeason((profileRes.data as any).current_season as SeasonKey);
+      if ((profileRes.data as any)?.goals) setGoals((profileRes.data as any).goals as string[]);
       if (balRes.data) setClinicBalances(balRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
     };
