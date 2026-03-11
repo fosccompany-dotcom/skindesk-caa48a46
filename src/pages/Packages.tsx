@@ -42,6 +42,34 @@ const Packages = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'packages';
 
+  // ── 탭 순서 커스텀 (드래그) ──
+  const TAB_ORDER_KEY = 'skindesk_tab_order';
+  const [tabOrder, setTabOrder] = useState<('packages' | 'points')[]>(() => {
+    try {
+      const saved = localStorage.getItem(TAB_ORDER_KEY);
+      if (saved) return JSON.parse(saved);
+    } catch {}
+    return ['packages', 'points'];
+  });
+  const [dragIdx, setDragIdx] = useState<number | null>(null);
+
+  const handleDragStart = (idx: number) => setDragIdx(idx);
+  const handleDragOver = (e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    if (dragIdx === null || dragIdx === idx) return;
+    const newOrder = [...tabOrder];
+    const [moved] = newOrder.splice(dragIdx, 1);
+    newOrder.splice(idx, 0, moved);
+    setTabOrder(newOrder);
+    localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(newOrder));
+    setDragIdx(idx);
+  };
+  const handleDragEnd = () => setDragIdx(null);
+
+  const tabConfig: Record<string, { icon: typeof Package; label: string }> = {
+    packages: { icon: Package, label: '시술권 관리' },
+    points:   { icon: Wallet,  label: '포인트 관리' },
+  };
   // ── 시술권 state ──
   const [packages, setPackages] = useState<TreatmentPackage[]>([]);
   const [pkgLoading, setPkgLoading] = useState(true);
