@@ -54,6 +54,8 @@ interface ChargeRecord {
   label: string;
 }
 
+type PkgPayMethod = '카드' | '현금' | '포인트' | '서비스';
+
 interface ParsedPackage {
   date: string;
   name: string;
@@ -63,6 +65,7 @@ interface ParsedPackage {
   amount_paid: number | null;
   memo: string | null;
   selected: boolean;
+  payMethod: PkgPayMethod;
 }
 
 interface BalanceInfo {
@@ -166,7 +169,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
       if (hasPackages) {
         const todayStr = new Date().toISOString().split('T')[0];
-        setPkgs(data.packages.map((p: any) => ({ ...p, clinic: p.clinic || '', date: p.date || todayStr, selected: true })));
+        setPkgs(data.packages.map((p: any) => ({ ...p, clinic: p.clinic || '', date: p.date || todayStr, selected: true, payMethod: '포인트' as PkgPayMethod })));
       }
 
       if (hasBundles) {
@@ -305,13 +308,14 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         skin_layer: 'dermis', body_area: 'face',
         clinic: p.clinic || '', expiry_date: null,
       });
-      if (p.amount_paid) {
+      if (p.payMethod !== '서비스' && p.amount_paid) {
+        const methodMap: Record<PkgPayMethod, string> = { '카드': '카드', '현금': '현금', '포인트': '시술결제', '서비스': '서비스' };
         await supabase.from('payment_records').insert({
           user_id: user.id, date: p.date, clinic: p.clinic || '',
           clinic_type: '밴스', treatment_name: p.name,
-          amount: p.amount_paid, method: '시술결제', memo: p.memo || null,
+          amount: p.amount_paid, method: methodMap[p.payMethod], memo: p.memo || null,
         });
-        if (p.clinic) {
+        if (p.clinic && p.payMethod === '포인트') {
           const { data: pkgBal } = await supabase
             .from('clinic_balances').select('balance')
             .eq('user_id', user.id).eq('clinic', p.clinic).maybeSingle();
@@ -574,12 +578,30 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           </div>
                         </div>
                       </div>
+                      {/* 결제 종류 */}
+                      <div className="px-3.5 pb-3 pt-2 border-t border-gray-100">
+                        <label className="text-[10px] text-gray-400 mb-1.5 block">결제 종류</label>
+                        <div className="flex gap-1.5">
+                          {(['포인트', '카드', '현금', '서비스'] as PkgPayMethod[]).map(m => (
+                            <button key={m}
+                              onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, payMethod: m } : pk))}
+                              className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
+                                p.payMethod === m
+                                  ? m === '포인트' ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
+                                  : m === '카드' ? 'border-blue-300 bg-blue-50 text-blue-600'
+                                  : m === '현금' ? 'border-green-300 bg-green-50 text-green-600'
+                                  : 'border-gray-300 bg-gray-100 text-gray-500'
+                                  : 'border-gray-200 bg-gray-50 text-gray-400'
+                              )}>
+                              {m}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               )}
-
-              {/* ── 번들 카드 ── */}
               {bundles.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
