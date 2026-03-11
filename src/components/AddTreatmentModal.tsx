@@ -500,7 +500,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 <label className="text-xs text-gray-400 block mb-1.5">병원</label>
                 <ClinicSearchInput
                   value={clinic}
-                  onChange={setClinic}
+                  onChange={handleClinicTextInput}
+                  onSelectPlace={handlePlaceSelect}
                   placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
                   darkMode={false} />
               </div>
