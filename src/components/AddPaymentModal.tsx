@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift } from 'lucide-react';
+import { Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import ClinicSearchInput from './ClinicSearchInput';
@@ -46,7 +46,6 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
   const handleSave = async () => {
     if (!clinic.trim())       { setError('병원명을 입력해주세요.'); return; }
-    if (!description.trim())  { setError('내용을 입력해주세요.'); return; }
     if (!amount && method !== '서비스') { setError('금액을 입력해주세요.'); return; }
 
     setSaving(true);
@@ -66,7 +65,7 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
         date,
         clinic:         clinic.trim(),
         clinic_type:    clinicType,
-        treatment_name: description.trim(),
+        treatment_name: description.trim() || METHOD_CONFIG[method].label,
         amount:         amountNum,
         charged_amount: method === '포인트충전' ? chargedNum : null,
         method,
@@ -109,10 +108,15 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
         {/* 헤더 */}
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <DialogTitle className="text-base font-semibold flex items-center gap-2">
-            <CreditCard size={16} className="text-primary" />
-            결제 내역 추가
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
+              <CreditCard size={16} className="text-primary" />
+              결제 내역 추가
+            </DialogTitle>
+            <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+              <X size={18} className="text-gray-400" />
+            </button>
+          </div>
         </DialogHeader>
 
         <div className="p-5 space-y-5">
