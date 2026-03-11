@@ -194,7 +194,7 @@ const Index = () => {
           const totalBalance = clinicBalances.reduce((s, b) => s + b.balance, 0);
           const activePackages = packages.filter(p => p.total_sessions - p.used_sessions > 0);
           const nextCyclePkg = nextCycle
-            ? activePackages.find(p => p.name.includes(nextCycle.c.name) || nextCycle.c.name.includes(p.name))
+            ? activePackages.find(p => p.name.includes(nextCycle.c.treatmentName) || nextCycle.c.treatmentName.includes(p.name))
             : null;
           const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
 
