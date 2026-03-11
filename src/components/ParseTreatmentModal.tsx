@@ -261,6 +261,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
       // 잔여금액 감지 (client-side)
       const inputText = body.text || text;
+      // "남아있는/남아계신" 패턴 감지 → 시술권으로 저장
+      const remainingPattern = /남아[있계]|남은\s*관리|잔여\s*시술|잔여\s*관리/;
+      setIsRemainingContext(remainingPattern.test(inputText));
       const balanceMatch = inputText.match(/잔여금액\s*([\d,.\s]+)\s*원/);
       let hasBalance = false;
       if (balanceMatch) {
