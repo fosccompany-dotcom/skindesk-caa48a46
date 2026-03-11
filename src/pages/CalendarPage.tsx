@@ -10,6 +10,7 @@ import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, 
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
 import MyTreatmentHistory from '@/components/MyTreatmentHistory';
+import logoImg from '@/assets/logo.png';
 
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
