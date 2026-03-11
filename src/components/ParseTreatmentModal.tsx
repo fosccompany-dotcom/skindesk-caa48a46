@@ -66,6 +66,12 @@ interface ParsedPackage {
   memo: string | null;
   selected: boolean;
   payMethod: PkgPayMethod;
+  // 중복 감지
+  existingPackageId?: string | null;
+  existingPackageName?: string | null;
+  existingUsedSessions?: number;
+  existingTotalSessions?: number;
+  duplicateAction?: 'update' | 'new' | null; // null = 아직 선택 안함
 }
 
 type BalanceMethod = 'set' | 'add';
@@ -108,6 +114,122 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     reader.readAsDataURL(file);
   };
 
+  // ── 클라이언트 사이드 패키지 파싱 (N-M회차 패턴) ──
+  const parsePackagesFromText = (inputText: string): ParsedPackage[] => {
+    const results: ParsedPackage[] = [];
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // 패턴: "베이직패키지 20-6회차" or "Premium(프리미엄) 패키지 10-6회차"
+    // 캡처: 패키지명, 총 회차, 사용 회차
+    const patterns = [
+      // "베이직패키지 20-6회차" / "베이직 패키지 20-6회차"
+      /(?:(\S+?)\s*패키지|패키지\s*(\S+?))\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
+      // "Basic 20-6회차" etc
+      /(\S+?)\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
+    ];
+
+    // 먼저 첫 번째 패턴
+    const p1 = /(?:(\S+?)\s*패키지|(\S+?)\s*패키지)\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
+    let match;
+    while ((match = p1.exec(inputText)) !== null) {
+      const rawName = (match[1] || match[2] || '').trim();
+      const total = parseInt(match[3]);
+      const used = parseInt(match[4]);
+      if (total > 0 && used >= 0 && used <= total) {
+        const pkgName = normalizePkgName(rawName);
+        results.push({
+          date: todayStr,
+          name: pkgName,
+          total_sessions: total,
+          used_sessions: used,
+          clinic: null,
+          amount_paid: null,
+          memo: null,
+          selected: true,
+          payMethod: '포인트',
+          duplicateAction: null,
+        });
+      }
+    }
+
+    // 두 번째 패턴: "Premium(프리미엄) 패키지 10-6회차"
+    const p2 = /(\S+?\([^)]+\))\s*패키지\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
+    while ((match = p2.exec(inputText)) !== null) {
+      const rawName = match[1].trim();
+      const total = parseInt(match[2]);
+      const used = parseInt(match[3]);
+      if (total > 0 && used >= 0 && used <= total) {
+        const pkgName = normalizePkgName(rawName);
+        // 중복 체크
+        if (!results.find(r => r.name === pkgName && r.total_sessions === total)) {
+          results.push({
+            date: todayStr,
+            name: pkgName,
+            total_sessions: total,
+            used_sessions: used,
+            clinic: null,
+            amount_paid: null,
+            memo: null,
+            selected: true,
+            payMethod: '포인트',
+            duplicateAction: null,
+          });
+        }
+      }
+    }
+
+    return results;
+  };
+
+  const normalizePkgName = (raw: string): string => {
+    const lower = raw.toLowerCase().replace(/[()]/g, '');
+    if (lower.includes('베이직') || lower.includes('basic')) return '베이직 패키지';
+    if (lower.includes('프리미엄') || lower.includes('premium')) return '프리미엄 패키지';
+    if (lower.includes('스페셜') || lower.includes('special')) return '스페셜 패키지';
+    if (lower.includes('바디') || lower.includes('body')) return '바디 패키지';
+    if (lower.includes('메디컬') || lower.includes('medical')) return '메디컬 패키지';
+    return raw + ' 패키지';
+  };
+
+  // ── 기존 패키지 중복 체크 ──
+  const checkDuplicatePackages = async (packages: ParsedPackage[]): Promise<ParsedPackage[]> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || packages.length === 0) return packages;
+
+    const { data: existingPkgs } = await supabase
+      .from('treatment_packages')
+      .select('id, name, total_sessions, used_sessions, clinic')
+      .eq('user_id', user.id);
+
+    if (!existingPkgs || existingPkgs.length === 0) return packages;
+
+    return packages.map(pkg => {
+      // 이름이 유사한 기존 패키지 찾기
+      const match = existingPkgs.find(ep => {
+        const epName = ep.name.toLowerCase().replace(/\s/g, '');
+        const pkgName = pkg.name.toLowerCase().replace(/\s/g, '');
+        return epName.includes(pkgName) || pkgName.includes(epName) || 
+               (epName.includes('베이직') && pkgName.includes('베이직')) ||
+               (epName.includes('프리미엄') && pkgName.includes('프리미엄')) ||
+               (epName.includes('스페셜') && pkgName.includes('스페셜')) ||
+               (epName.includes('바디') && pkgName.includes('바디')) ||
+               (epName.includes('메디컬') && pkgName.includes('메디컬'));
+      });
+
+      if (match) {
+        return {
+          ...pkg,
+          existingPackageId: match.id,
+          existingPackageName: match.name,
+          existingUsedSessions: match.used_sessions ?? 0,
+          existingTotalSessions: match.total_sessions ?? 0,
+          duplicateAction: null, // 유저에게 물어봄
+        };
+      }
+      return pkg;
+    });
+  };
+
   const handleParse = async () => {
     setLoading(true); setError(null);
     setParsed(null); setBundles([]); setCharges([]); setBalanceInfo(null);
@@ -143,7 +265,6 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       if (balanceMatch) {
         const balanceAmount = parseInt(balanceMatch[1].replace(/[,.\s]/g, '')) || 0;
         if (balanceAmount > 0) {
-          // 병원명 추출: AI 파싱 결과에서 가져오거나 텍스트에서 추출
           const clinicFromData = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic || '';
           const clinicFromText = inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
           setBalanceInfo({
@@ -156,7 +277,33 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         }
       }
 
-      if (!hasRecords && !hasBundles && !hasCharges && !hasPackages && !hasBalance) {
+      // ── 클라이언트 사이드 패키지 파싱 (N-M회차 패턴) ──
+      const clientPkgs = parsePackagesFromText(inputText);
+      // 병원명을 AI 결과에서 가져오기
+      const clinicHint = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic
+        || inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
+      clientPkgs.forEach(p => { if (!p.clinic) p.clinic = clinicHint; });
+
+      // AI 파싱된 패키지 + 클라이언트 파싱된 패키지 합치기
+      let allPkgs: ParsedPackage[] = [];
+      if (hasPackages) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        allPkgs = data.packages.map((p: any) => ({
+          ...p, clinic: p.clinic || clinicHint, date: p.date || todayStr,
+          selected: true, payMethod: '포인트' as PkgPayMethod, duplicateAction: null,
+        }));
+      }
+      // 클라이언트 파싱 결과 중 AI가 이미 추출하지 않은 것만 추가
+      for (const cp of clientPkgs) {
+        const alreadyExists = allPkgs.some(ap =>
+          ap.name === cp.name && ap.total_sessions === cp.total_sessions
+        );
+        if (!alreadyExists) allPkgs.push(cp);
+      }
+
+      const hasClientPkgs = allPkgs.length > 0;
+
+      if (!hasRecords && !hasBundles && !hasCharges && !hasPackages && !hasBalance && !hasClientPkgs) {
         if (data?.hint === 'image_credit_low') {
           setTab('text');
           setError('이미지 분석 크레딧 부족 — 텍스트 탭에서 문자 내용을 붙여넣어 주세요.');
@@ -171,9 +318,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         setChargePayments(data.charges.map(() => ({ show: false, amount: '', method: 'card' as const })));
       }
 
-      if (hasPackages) {
-        const todayStr = new Date().toISOString().split('T')[0];
-        setPkgs(data.packages.map((p: any) => ({ ...p, clinic: p.clinic || '', date: p.date || todayStr, selected: true, payMethod: '포인트' as PkgPayMethod })));
+      // 중복 패키지 감지 후 설정
+      if (hasClientPkgs) {
+        const checkedPkgs = await checkDuplicatePackages(allPkgs);
+        setPkgs(checkedPkgs);
       }
 
       if (hasBundles) {
@@ -306,12 +454,21 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     }
 
     for (const p of pkgs.filter(p => p.selected)) {
-      await supabase.from('treatment_packages').insert({
-        user_id: user.id, name: p.name, type: 'session',
-        total_sessions: p.total_sessions, used_sessions: 0,
-        skin_layer: 'dermis', body_area: 'face',
-        clinic: p.clinic || '', expiry_date: null,
-      });
+      if (p.duplicateAction === 'update' && p.existingPackageId) {
+        // 기존 패키지 업데이트
+        await supabase.from('treatment_packages').update({
+          total_sessions: p.total_sessions,
+          used_sessions: p.used_sessions,
+        }).eq('id', p.existingPackageId);
+      } else {
+        // 새로 등록
+        await supabase.from('treatment_packages').insert({
+          user_id: user.id, name: p.name, type: 'session',
+          total_sessions: p.total_sessions, used_sessions: p.used_sessions,
+          skin_layer: 'dermis', body_area: 'face',
+          clinic: p.clinic || '', expiry_date: null,
+        });
+      }
       if (p.payMethod !== '서비스' && p.amount_paid) {
         const methodMap: Record<PkgPayMethod, string> = { '카드': '카드', '현금': '현금', '포인트': '시술결제', '서비스': '서비스' };
         await supabase.from('payment_records').insert({
@@ -363,7 +520,8 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   };
 
   const selectedCount  = (parsed?.filter(r => r.selected).length ?? 0) + bundles.filter(b => b.selected).length + pkgs.filter(p => p.selected).length + (balanceInfo?.selected ? 1 : 0);
-  const showResults    = parsed !== null || balanceInfo !== null;
+  const hasPendingDuplicate = pkgs.some(p => p.selected && p.existingPackageId && !p.duplicateAction);
+  const showResults    = parsed !== null || balanceInfo !== null || pkgs.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pb-[72px]">
@@ -615,11 +773,50 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           <p className="text-[13px] font-bold text-gray-900 leading-tight">{p.name}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[11px] font-bold text-primary">{p.total_sessions}회권</span>
-                            <span className="text-[10px] text-gray-400">잔여 {p.total_sessions}회</span>
+                            <span className="text-[10px] text-gray-500">{p.used_sessions}회 사용</span>
+                            <span className="text-[10px] font-semibold text-emerald-600">잔여 {p.total_sessions - p.used_sessions}회</span>
                             {p.clinic && <span className="text-[10px] text-gray-400">{p.clinic}</span>}
                           </div>
                         </div>
                       </div>
+
+                      {/* ── 기존 패키지 중복 감지 알림 ── */}
+                      {p.existingPackageId && p.selected && (
+                        <div className="mx-3.5 mb-2 rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-2">
+                          <div className="flex items-start gap-2">
+                            <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-[11px] font-semibold text-amber-700">동일한 패키지가 이미 존재합니다</p>
+                              <p className="text-[10px] text-amber-600 mt-0.5">
+                                기존: {p.existingPackageName} ({p.existingTotalSessions}회권, {p.existingUsedSessions}회 사용)
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, duplicateAction: 'update' } : pk))}
+                              className={cn('flex-1 py-2 px-2 rounded-lg border text-left transition-all',
+                                p.duplicateAction === 'update'
+                                  ? 'border-blue-300 bg-blue-50'
+                                  : 'border-gray-200 bg-white'
+                              )}>
+                              <p className={cn('text-[11px] font-semibold', p.duplicateAction === 'update' ? 'text-blue-600' : 'text-gray-500')}>기존 패키지 업데이트</p>
+                              <p className="text-[9px] text-gray-400">{p.total_sessions}회권 / {p.used_sessions}회 사용으로 변경</p>
+                            </button>
+                            <button
+                              onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, duplicateAction: 'new' } : pk))}
+                              className={cn('flex-1 py-2 px-2 rounded-lg border text-left transition-all',
+                                p.duplicateAction === 'new'
+                                  ? 'border-violet-300 bg-violet-50'
+                                  : 'border-gray-200 bg-white'
+                              )}>
+                              <p className={cn('text-[11px] font-semibold', p.duplicateAction === 'new' ? 'text-violet-600' : 'text-gray-500')}>새로 등록</p>
+                              <p className="text-[9px] text-gray-400">별도의 새 시술권으로 추가</p>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                       {/* 결제 종류 */}
                       <div className="px-3.5 pb-3 pt-2 border-t border-gray-100">
                         <label className="text-[10px] text-gray-400 mb-1.5 block">결제 종류</label>
@@ -812,9 +1009,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                 <span className="font-semibold text-sm">저장 완료!</span>
               </div>
             ) : (
-              <button onClick={handleSave} disabled={saving || selectedCount === 0}
+              <button onClick={handleSave} disabled={saving || selectedCount === 0 || hasPendingDuplicate}
                 className="w-full py-3.5 bg-primary text-primary-foreground font-bold text-sm rounded-xl disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
-                {saving ? <><Loader2 size={16} className="animate-spin" /> 저장 중...</> : (
+                {saving ? <><Loader2 size={16} className="animate-spin" /> 저장 중...</> : hasPendingDuplicate ? '⚠ 중복 패키지 처리 방법을 선택해주세요' : (
                   <><CheckCircle size={16} /> {selectedCount}건 저장{charges.length > 0 ? ` + 충전 ${charges.length}건` : ''}</>
                 )}
               </button>
