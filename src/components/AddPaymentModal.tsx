@@ -78,7 +78,7 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
           balance:    (existing?.balance || 0) + chargedNum,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,clinic' });
-      } else if (method === '시술결제' && amountNum > 0) {
+      } else if ((method as string) === '시술결제' && amountNum > 0) {
         // 시술결제: 잔액 차감 (잔액 있는 경우만)
         const { data: existing } = await supabase
           .from('clinic_balances').select('balance')
