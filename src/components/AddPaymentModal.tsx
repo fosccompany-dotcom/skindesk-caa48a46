@@ -46,7 +46,6 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
   const handleSave = async () => {
     if (!clinic.trim())       { setError('병원명을 입력해주세요.'); return; }
-    if (!description.trim())  { setError('내용을 입력해주세요.'); return; }
     if (!amount && method !== '서비스') { setError('금액을 입력해주세요.'); return; }
 
     setSaving(true);
