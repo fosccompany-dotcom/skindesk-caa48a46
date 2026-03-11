@@ -160,11 +160,28 @@ const Packages = () => {
     else loadPayments();
   };
 
-  // ── 계산 ──────────────────────────────────────────────────────────
+  // ── 계산 (카드 내역 기반) ─────────────────────────────────────────
   const activePackages   = packages.filter(p => p.total_sessions - p.used_sessions > 0);
   const finishedPackages = packages.filter(p => p.total_sessions - p.used_sessions <= 0);
-  const totalBalance     = balances.reduce((s, b) => s + b.balance, 0);
+  const totalCharged     = payments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
   const totalSpent       = payments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
+  const totalBalance     = totalCharged - totalSpent;
+
+  // 병원별 잔액 (카드 내역 기반 계산)
+  const clinicBalancesFromPayments = useMemo(() => {
+    const map: Record<string, number> = {};
+    payments.forEach(p => {
+      if (!map[p.clinic]) map[p.clinic] = 0;
+      if (p.method === '포인트충전') {
+        map[p.clinic] += p.amount;
+      } else {
+        map[p.clinic] -= p.amount;
+      }
+    });
+    return Object.entries(map)
+      .filter(([_, balance]) => balance !== 0)
+      .map(([clinic, balance]) => ({ clinic, balance }));
+  }, [payments]);
 
   const clinicList = useMemo(() => {
     const set = new Set<string>();
@@ -233,21 +250,21 @@ const Packages = () => {
 
           {/* ══════════════ 포인트 관리 탭 ══════════════ */}
           <TabsContent value="points" className="space-y-3 mt-0">
-            {balances.length > 0 && (
-              <Card className="glass-card">
-                <CardContent className="p-4">
-                  <p className="text-[11px] text-muted-foreground mb-1">남은 잔액 (사용 가능)</p>
-                  <p className="text-2xl font-black text-foreground">{totalBalance.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
+            <Card className="glass-card">
+              <CardContent className="p-4">
+                <p className="text-[11px] text-muted-foreground mb-1">남은 잔액 (사용 가능)</p>
+                <p className="text-2xl font-black text-foreground">{totalBalance.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
+                {clinicBalancesFromPayments.length > 0 && (
                   <div className="flex flex-wrap gap-2 mt-2">
-                    {balances.map(b => (
+                    {clinicBalancesFromPayments.map(b => (
                       <span key={b.clinic} className="text-[11px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium">
                         {b.clinic} {b.balance.toLocaleString()}원
                       </span>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
 
             <Card className="glass-card">
               <CardContent className="p-4 flex items-center justify-between">
@@ -257,7 +274,7 @@ const Packages = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] text-muted-foreground">총 충전액</p>
-                  <p className="text-xl font-black text-emerald-500">{payments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0).toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
+                  <p className="text-xl font-black text-emerald-500">{totalCharged.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
                 </div>
               </CardContent>
             </Card>
