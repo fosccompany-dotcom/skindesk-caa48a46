@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { X, Clipboard, ImagePlus, Loader2, CheckCircle, ChevronDown, ChevronUp, Sparkles, AlertCircle, CreditCard, Package } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, extractDistrict } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import ClinicSearchInput from './ClinicSearchInput';
 import { useRecords } from '@/context/RecordsContext';
@@ -202,6 +202,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         skinLayer: r.skinLayer, bodyArea: r.bodyArea,
         clinic: r.clinic || '', satisfaction: undefined, notes: undefined,
         memo: r.memo || undefined, amount_paid: r.amount_paid ?? undefined,
+        input_method: 'ai_parsed',
+        clinic_kakao_id: null,
+        clinic_district: r.clinic ? extractDistrict(r.clinic) : null,
+        clinic_address: null,
       });
     }
 
@@ -218,6 +222,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           skinLayer: t.skinLayer, bodyArea: t.bodyArea,
           clinic: t.clinic || b.clinic || '', satisfaction: undefined,
           notes: undefined, memo: t.memo || b.memo || undefined, amount_paid: undefined,
+          input_method: 'ai_parsed',
+          clinic_kakao_id: null,
+          clinic_district: (t.clinic || b.clinic) ? extractDistrict(t.clinic || b.clinic || '') : null,
+          clinic_address: null,
         });
       }
       if ((b.amount_paid || 0) > 0 && b.clinic) {

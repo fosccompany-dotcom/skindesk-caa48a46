@@ -17,7 +17,7 @@ const RecordsContext = createContext<RecordsContextType | undefined>(undefined);
 const rowToRecord = (row: any): TreatmentRecord => ({
   id:            row.id,
   date:          row.date,
-  packageId:     row.package_uuid || row.package_id || '',  // UUID FK 우선
+  packageId:     row.package_uuid || row.package_id || '',
   treatmentId:   row.treatment_id,
   treatmentName: row.treatment_name,
   shots:         row.shots,
@@ -28,6 +28,10 @@ const rowToRecord = (row: any): TreatmentRecord => ({
   notes:         row.notes,
   memo:          row.memo,
   amount_paid:   row.amount_paid,
+  clinic_kakao_id:  row.clinic_kakao_id,
+  clinic_district:  row.clinic_district,
+  clinic_address:   row.clinic_address,
+  input_method:     row.input_method,
 });
 
 export function RecordsProvider({ children }: { children: ReactNode }) {
@@ -66,13 +70,16 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
       skin_layer:     record.skinLayer,
       body_area:      record.bodyArea,
       clinic:         record.clinic,
-      // UUID이면 package_uuid(FK)에, 아니면 legacy package_id(text)에
       package_uuid:   isUUID ? record.packageId : null,
       package_id:     isUUID ? null : (record.packageId || null),
       satisfaction:   record.satisfaction,
       notes:          record.notes,
       memo:           record.memo,
       amount_paid:    record.amount_paid,
+      clinic_kakao_id:  record.clinic_kakao_id ?? null,
+      clinic_district:  record.clinic_district ?? null,
+      clinic_address:   record.clinic_address ?? null,
+      input_method:     record.input_method ?? 'manual',
     }).select().single();
 
     if (!error && data) {
@@ -104,6 +111,10 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
         notes:          record.notes,
         memo:           record.memo,
         amount_paid:    record.amount_paid,
+        clinic_kakao_id:  record.clinic_kakao_id ?? null,
+        clinic_district:  record.clinic_district ?? null,
+        clinic_address:   record.clinic_address ?? null,
+        input_method:     record.input_method ?? 'manual',
       })
       .eq('id', id)
       .select().single();

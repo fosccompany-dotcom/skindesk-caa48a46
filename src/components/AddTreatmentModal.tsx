@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, extractDistrict } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import ClinicSearchInput from './ClinicSearchInput';
+import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
 
 // ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
@@ -215,6 +215,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [shots, setShots] = useState<number | null>(null);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [clinic, setClinic] = useState('밴스 미금');
+  const [clinicKakaoId, setClinicKakaoId] = useState<string | null>(null);
+  const [clinicDistrict, setClinicDistrict] = useState<string | null>(null);
+  const [clinicAddress, setClinicAddress] = useState<string | null>(null);
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
 
@@ -224,10 +227,14 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [pkgExpiry, setPkgExpiry] = useState('');
   const [pkgSaving, setPkgSaving] = useState(false);
 
+  const resetClinicMeta = () => {
+    setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
+  };
+
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
-    setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
+    setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
     setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
   };
   const handleClose = () => { reset(); setMode('record'); onClose(); };
@@ -251,6 +258,17 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
   };
 
+  const handleClinicTextInput = (value: string) => {
+    setClinic(value);
+    resetClinicMeta();
+  };
+
+  const handlePlaceSelect = (place: ClinicPlace) => {
+    setClinicKakaoId(place.kakao_id ?? null);
+    setClinicDistrict(extractDistrict(place.address || ''));
+    setClinicAddress(place.road_address ?? place.address ?? null);
+  };
+
   const handleSave = () => {
     if (!selectedItem) return;
     onSave({
@@ -264,6 +282,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       clinic,
       satisfaction,
       memo,
+      clinic_kakao_id: clinicKakaoId,
+      clinic_district: clinicDistrict,
+      clinic_address: clinicAddress,
+      input_method: 'manual',
     });
     handleClose();
   };
@@ -478,7 +500,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 <label className="text-xs text-gray-400 block mb-1.5">병원</label>
                 <ClinicSearchInput
                   value={clinic}
-                  onChange={setClinic}
+                  onChange={handleClinicTextInput}
+                  onSelectPlace={handlePlaceSelect}
                   placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
                   darkMode={false} />
               </div>
