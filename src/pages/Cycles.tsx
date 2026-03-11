@@ -1,4 +1,5 @@
 import { Clock, AlertTriangle, CheckCircle2, Timer, CalendarDays, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
