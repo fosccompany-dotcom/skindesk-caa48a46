@@ -265,7 +265,6 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       if (balanceMatch) {
         const balanceAmount = parseInt(balanceMatch[1].replace(/[,.\s]/g, '')) || 0;
         if (balanceAmount > 0) {
-          // 병원명 추출: AI 파싱 결과에서 가져오거나 텍스트에서 추출
           const clinicFromData = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic || '';
           const clinicFromText = inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
           setBalanceInfo({
@@ -278,7 +277,33 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         }
       }
 
-      if (!hasRecords && !hasBundles && !hasCharges && !hasPackages && !hasBalance) {
+      // ── 클라이언트 사이드 패키지 파싱 (N-M회차 패턴) ──
+      const clientPkgs = parsePackagesFromText(inputText);
+      // 병원명을 AI 결과에서 가져오기
+      const clinicHint = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic
+        || inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
+      clientPkgs.forEach(p => { if (!p.clinic) p.clinic = clinicHint; });
+
+      // AI 파싱된 패키지 + 클라이언트 파싱된 패키지 합치기
+      let allPkgs: ParsedPackage[] = [];
+      if (hasPackages) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        allPkgs = data.packages.map((p: any) => ({
+          ...p, clinic: p.clinic || clinicHint, date: p.date || todayStr,
+          selected: true, payMethod: '포인트' as PkgPayMethod, duplicateAction: null,
+        }));
+      }
+      // 클라이언트 파싱 결과 중 AI가 이미 추출하지 않은 것만 추가
+      for (const cp of clientPkgs) {
+        const alreadyExists = allPkgs.some(ap =>
+          ap.name === cp.name && ap.total_sessions === cp.total_sessions
+        );
+        if (!alreadyExists) allPkgs.push(cp);
+      }
+
+      const hasClientPkgs = allPkgs.length > 0;
+
+      if (!hasRecords && !hasBundles && !hasCharges && !hasPackages && !hasBalance && !hasClientPkgs) {
         if (data?.hint === 'image_credit_low') {
           setTab('text');
           setError('이미지 분석 크레딧 부족 — 텍스트 탭에서 문자 내용을 붙여넣어 주세요.');
@@ -293,9 +318,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         setChargePayments(data.charges.map(() => ({ show: false, amount: '', method: 'card' as const })));
       }
 
-      if (hasPackages) {
-        const todayStr = new Date().toISOString().split('T')[0];
-        setPkgs(data.packages.map((p: any) => ({ ...p, clinic: p.clinic || '', date: p.date || todayStr, selected: true, payMethod: '포인트' as PkgPayMethod })));
+      // 중복 패키지 감지 후 설정
+      if (hasClientPkgs) {
+        const checkedPkgs = await checkDuplicatePackages(allPkgs);
+        setPkgs(checkedPkgs);
       }
 
       if (hasBundles) {
