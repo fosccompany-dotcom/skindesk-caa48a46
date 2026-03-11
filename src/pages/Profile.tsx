@@ -230,6 +230,8 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
 const Profile = () => {
   const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
+  const [langOpen, setLangOpen] = useState(false);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
   const [skinType, setSkinType] = useState<SkinType>('중성');
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     undefined
