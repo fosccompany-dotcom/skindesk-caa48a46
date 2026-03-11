@@ -772,11 +772,50 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           <p className="text-[13px] font-bold text-gray-900 leading-tight">{p.name}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[11px] font-bold text-primary">{p.total_sessions}회권</span>
-                            <span className="text-[10px] text-gray-400">잔여 {p.total_sessions}회</span>
+                            <span className="text-[10px] text-gray-500">{p.used_sessions}회 사용</span>
+                            <span className="text-[10px] font-semibold text-emerald-600">잔여 {p.total_sessions - p.used_sessions}회</span>
                             {p.clinic && <span className="text-[10px] text-gray-400">{p.clinic}</span>}
                           </div>
                         </div>
                       </div>
+
+                      {/* ── 기존 패키지 중복 감지 알림 ── */}
+                      {p.existingPackageId && p.selected && (
+                        <div className="mx-3.5 mb-2 rounded-lg border border-amber-200 bg-amber-50 p-3 space-y-2">
+                          <div className="flex items-start gap-2">
+                            <AlertCircle size={14} className="text-amber-600 shrink-0 mt-0.5" />
+                            <div className="flex-1">
+                              <p className="text-[11px] font-semibold text-amber-700">동일한 패키지가 이미 존재합니다</p>
+                              <p className="text-[10px] text-amber-600 mt-0.5">
+                                기존: {p.existingPackageName} ({p.existingTotalSessions}회권, {p.existingUsedSessions}회 사용)
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex gap-1.5">
+                            <button
+                              onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, duplicateAction: 'update' } : pk))}
+                              className={cn('flex-1 py-2 px-2 rounded-lg border text-left transition-all',
+                                p.duplicateAction === 'update'
+                                  ? 'border-blue-300 bg-blue-50'
+                                  : 'border-gray-200 bg-white'
+                              )}>
+                              <p className={cn('text-[11px] font-semibold', p.duplicateAction === 'update' ? 'text-blue-600' : 'text-gray-500')}>기존 패키지 업데이트</p>
+                              <p className="text-[9px] text-gray-400">{p.total_sessions}회권 / {p.used_sessions}회 사용으로 변경</p>
+                            </button>
+                            <button
+                              onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, duplicateAction: 'new' } : pk))}
+                              className={cn('flex-1 py-2 px-2 rounded-lg border text-left transition-all',
+                                p.duplicateAction === 'new'
+                                  ? 'border-violet-300 bg-violet-50'
+                                  : 'border-gray-200 bg-white'
+                              )}>
+                              <p className={cn('text-[11px] font-semibold', p.duplicateAction === 'new' ? 'text-violet-600' : 'text-gray-500')}>새로 등록</p>
+                              <p className="text-[9px] text-gray-400">별도의 새 시술권으로 추가</p>
+                            </button>
+                          </div>
+                        </div>
+                      )}
+
                       {/* 결제 종류 */}
                       <div className="px-3.5 pb-3 pt-2 border-t border-gray-100">
                         <label className="text-[10px] text-gray-400 mb-1.5 block">결제 종류</label>
