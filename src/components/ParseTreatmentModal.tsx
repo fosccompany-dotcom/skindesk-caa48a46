@@ -308,11 +308,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         skin_layer: 'dermis', body_area: 'face',
         clinic: p.clinic || '', expiry_date: null,
       });
-      if (p.amount_paid) {
+      if (p.payMethod !== '서비스' && p.amount_paid) {
+        const methodMap: Record<PkgPayMethod, string> = { '카드': '카드', '현금': '현금', '포인트': '시술결제', '서비스': '서비스' };
         await supabase.from('payment_records').insert({
           user_id: user.id, date: p.date, clinic: p.clinic || '',
           clinic_type: '밴스', treatment_name: p.name,
-          amount: p.amount_paid, method: '시술결제', memo: p.memo || null,
+          amount: p.amount_paid, method: methodMap[p.payMethod], memo: p.memo || null,
         });
         if (p.clinic) {
           const { data: pkgBal } = await supabase
