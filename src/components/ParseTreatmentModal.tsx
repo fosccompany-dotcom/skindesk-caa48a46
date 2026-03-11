@@ -326,12 +326,22 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
     }
 
+    // 잔여금액 → clinic_balances에 직접 세팅
+    if (balanceInfo?.selected && balanceInfo.clinic && balanceInfo.amount > 0) {
+      await supabase.from('clinic_balances').upsert({
+        user_id: user.id,
+        clinic: balanceInfo.clinic,
+        balance: balanceInfo.amount,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,clinic' });
+    }
+
     setSaving(false); setSaved(true);
     setTimeout(onClose, 1200);
   };
 
-  const selectedCount  = (parsed?.filter(r => r.selected).length ?? 0) + bundles.filter(b => b.selected).length + pkgs.filter(p => p.selected).length;
-  const showResults    = parsed !== null;
+  const selectedCount  = (parsed?.filter(r => r.selected).length ?? 0) + bundles.filter(b => b.selected).length + pkgs.filter(p => p.selected).length + (balanceInfo?.selected ? 1 : 0);
+  const showResults    = parsed !== null || balanceInfo !== null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pb-[72px]">
