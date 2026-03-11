@@ -1,13 +1,15 @@
 import { useState, useMemo } from 'react';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope, ClipboardList } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
+import MyTreatmentHistory from '@/components/MyTreatmentHistory';
 
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
@@ -189,7 +191,7 @@ const CalendarPage = () => {
         <div className="page-header-gradient">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-70 font-light">나의 일정 📅</p>
+              <p className="text-sm opacity-70 font-light">나의 피부관리 📅</p>
               <h1 className="mt-0.5 text-xl font-bold">{format(currentMonth, 'yyyy년 M월', { locale: ko })}</h1>
             </div>
             <div className="flex items-center gap-1">
@@ -202,6 +204,19 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-5 pt-4">
+        <Tabs defaultValue="calendar" className="w-full">
+          <TabsList className="w-full grid grid-cols-2 mb-4">
+            <TabsTrigger value="calendar" className="gap-1.5 text-xs">
+              <CalendarDays className="h-3.5 w-3.5" />
+              캘린더
+            </TabsTrigger>
+            <TabsTrigger value="history" className="gap-1.5 text-xs">
+              <ClipboardList className="h-3.5 w-3.5" />
+              피부관리 현황
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="calendar" className="space-y-5">
         {/* 캘린더 카드 */}
         <Card className="glass-card overflow-hidden">
           <div className="grid grid-cols-7 border-b border-border">
@@ -236,14 +251,12 @@ const CalendarPage = () => {
                     {format(day, 'd')}
                   </span>
                   <div className="flex gap-0.5 mt-0.5 h-2 items-center">
-                    {/* 이벤트 dot */}
                     {dayEvents.slice(0, 2).map((event, i) => {
                       const isCycleEvent = event.id.startsWith('auto_');
                       const configKey = isCycleEvent ? 'cycle' : event.type;
                       const config = eventTypeConfig[configKey as keyof typeof eventTypeConfig] || eventTypeConfig.recommendation;
                       return <div key={i} className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />;
                     })}
-                    {/* 시술 기록 dot — 골드 */}
                     {hasRec && (
                       <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />
                     )}
@@ -261,7 +274,6 @@ const CalendarPage = () => {
             {format(selectedDate, 'M월 d일 EEEE', { locale: ko })}
           </h2>
 
-          {/* 시술 기록 섹션 */}
           {selectedRecords.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-semibold text-[#C9A96E] flex items-center gap-1.5 px-1">
@@ -272,7 +284,6 @@ const CalendarPage = () => {
             </div>
           )}
 
-          {/* 일정/추천 섹션 */}
           {selectedEvents.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5 px-1">
@@ -311,7 +322,6 @@ const CalendarPage = () => {
             </div>
           )}
 
-          {/* 아무것도 없을 때 */}
           {selectedRecords.length === 0 && selectedEvents.length === 0 && (
             <Card className="glass-card">
               <CardContent className="flex flex-col items-center justify-center py-12 text-muted-foreground">
@@ -321,6 +331,12 @@ const CalendarPage = () => {
             </Card>
           )}
         </div>
+          </TabsContent>
+
+          <TabsContent value="history">
+            <MyTreatmentHistory />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
