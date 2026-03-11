@@ -62,16 +62,20 @@ export interface TreatmentRecord {
   id: string;
   date: string;
   packageId: string;
-  treatmentId?: string;   // 시술 카탈로그 ID (주기 계산용)
+  treatmentId?: string;
   treatmentName: string;
-  shots?: number;          // 샷수 (리프팅 시술용)
+  shots?: number;
   skinLayer: SkinLayer;
   bodyArea: BodyArea;
   notes?: string;
   clinic: string;
-  satisfaction?: 1 | 2 | 3 | 4 | 5; // 만족도 1~5
-  memo?: string; // 상세 후기/메모
-  amount_paid?: number;   // 실결제 금액 (VAT 포함). 서비스=0, 미확인=undefined
+  satisfaction?: 1 | 2 | 3 | 4 | 5;
+  memo?: string;
+  amount_paid?: number;
+  clinic_kakao_id?: string | null;
+  clinic_district?: string | null;
+  clinic_address?: string | null;
+  input_method?: 'manual' | 'ai_parsed' | 'kakao_imported';
 }
 
 export interface CalendarEvent {
