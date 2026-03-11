@@ -218,9 +218,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
 
-  // 시술권 추가 state
-  const [pkgName, setPkgName] = useState('');
-  const [pkgClinic, setPkgClinic] = useState('밴스 미금');
+  // 시술권 추가 전용 state
   const [pkgTotal, setPkgTotal] = useState<number>(10);
   const [pkgUsed, setPkgUsed] = useState<number>(0);
   const [pkgExpiry, setPkgExpiry] = useState('');
@@ -230,7 +228,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
-    setPkgName(''); setPkgClinic('밴스 미금'); setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
+    setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
   };
   const handleClose = () => { reset(); setMode('record'); onClose(); };
 
@@ -271,17 +269,19 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   const handleSavePackage = async () => {
-    if (!pkgName || !pkgClinic) return;
+    if (!selectedItem || !clinic) return;
     setPkgSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setPkgSaving(false); return; }
     await supabase.from('treatment_packages').insert({
       user_id: user.id,
-      name: pkgName,
-      clinic: pkgClinic,
+      name: getTreatmentName(),
+      clinic,
       total_sessions: pkgTotal,
       used_sessions: pkgUsed,
       expiry_date: pkgExpiry || null,
+      skin_layer: selectedItem.skinLayer,
+      body_area: 'face',
     });
     setPkgSaving(false);
     handleClose();
@@ -323,58 +323,22 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* 시술내역 진행바 */}
-          {mode === 'record' && (
-            <div className="flex items-center justify-between mt-2">
-              <div className="flex gap-1 flex-1">
-                {Array.from({ length: totalSteps }).map((_, i) => (
-                  <div key={i} className={cn('h-0.5 flex-1 rounded-full transition-all',
-                    i < step ? 'bg-primary' : 'bg-muted')} />
-                ))}
-              </div>
-              <span className="text-xs text-muted-foreground ml-2">{step} / {totalSteps}</span>
+          {/* 진행바 */}
+          <div className="flex items-center justify-between mt-2">
+            <div className="flex gap-1 flex-1">
+              {Array.from({ length: totalSteps }).map((_, i) => (
+                <div key={i} className={cn('h-0.5 flex-1 rounded-full transition-all',
+                  i < step ? 'bg-primary' : 'bg-muted')} />
+              ))}
             </div>
-          )}
+            <span className="text-xs text-muted-foreground ml-2">{step} / {totalSteps}</span>
+          </div>
         </DialogHeader>
 
         <div className="px-5 py-4">
 
-          {/* ══ 시술권 추가 모드 ══ */}
-          {mode === 'package' && (
-            <div className="space-y-4">
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1.5">시술권 이름</label>
-                <input type="text" value={pkgName} onChange={e => setPkgName(e.target.value)}
-                  placeholder="예: 슈링크 10회권"
-                  className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground placeholder-muted-foreground focus:outline-none focus:border-primary/50" />
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1.5">병원</label>
-                <ClinicSearchInput value={pkgClinic} onChange={setPkgClinic}
-                  placeholder="병원명 검색" darkMode={false} />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1.5">총 횟수</label>
-                  <input type="number" min={1} value={pkgTotal} onChange={e => setPkgTotal(Number(e.target.value))}
-                    className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
-                </div>
-                <div>
-                  <label className="text-xs text-muted-foreground block mb-1.5">사용 횟수</label>
-                  <input type="number" min={0} value={pkgUsed} onChange={e => setPkgUsed(Number(e.target.value))}
-                    className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
-                </div>
-              </div>
-              <div>
-                <label className="text-xs text-muted-foreground block mb-1.5">만료일 (선택)</label>
-                <input type="date" value={pkgExpiry} onChange={e => setPkgExpiry(e.target.value)}
-                  className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
-              </div>
-            </div>
-          )}
-
-          {/* ══ 시술내역 추가 모드 ══ */}
-          {mode === 'record' && (<>
+          {/* ── 공통 STEP 1~3: 카테고리 → 시술 → 샷수 ── */}
+          {(<>
           {step === 1 && (
             <div>
               <p className="text-xs text-gray-400 mb-3">시술 카테고리를 선택하세요</p>
