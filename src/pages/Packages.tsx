@@ -160,28 +160,9 @@ const Packages = () => {
     else loadPayments();
   };
 
-  // ── 계산 (카드 내역 기반) ─────────────────────────────────────────
+  // ── 계산 (카드 내역 기반, 필터 반영) ──────────────────────────────
   const activePackages   = packages.filter(p => p.total_sessions - p.used_sessions > 0);
   const finishedPackages = packages.filter(p => p.total_sessions - p.used_sessions <= 0);
-  const totalCharged     = payments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
-  const totalSpent       = payments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
-  const totalBalance     = totalCharged - totalSpent;
-
-  // 병원별 잔액 (카드 내역 기반 계산)
-  const clinicBalancesFromPayments = useMemo(() => {
-    const map: Record<string, number> = {};
-    payments.forEach(p => {
-      if (!map[p.clinic]) map[p.clinic] = 0;
-      if (p.method === '포인트충전') {
-        map[p.clinic] += p.amount;
-      } else {
-        map[p.clinic] -= p.amount;
-      }
-    });
-    return Object.entries(map)
-      .filter(([_, balance]) => balance !== 0)
-      .map(([clinic, balance]) => ({ clinic, balance }));
-  }, [payments]);
 
   const clinicList = useMemo(() => {
     const set = new Set<string>();
@@ -192,6 +173,11 @@ const Packages = () => {
   const filteredPayments = filterClinic === '전체'
     ? payments
     : payments.filter(p => p.clinic === filterClinic);
+
+  // 필터된 내역 기반으로 요약 계산
+  const totalCharged = filteredPayments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
+  const totalSpent   = filteredPayments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
+  const totalBalance = totalCharged - totalSpent;
 
   return (
     <div className="min-h-screen bg-background">
