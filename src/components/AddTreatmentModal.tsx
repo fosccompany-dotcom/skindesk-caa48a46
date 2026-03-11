@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft, Check, Zap, Sparkles } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ClinicSearchInput from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
+import { supabase } from '@/integrations/supabase/client';
 
 // ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
 
@@ -215,11 +216,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [clinic, setClinic] = useState('밴스 미금');
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
+  // 시술권 선택 (package_uuid — 플로우 3)
+  const [availPkgs, setAvailPkgs] = useState<{ id: string; name: string; remaining: number }[]>([]);
+  const [selectedPkgId, setSelectedPkgId] = useState<string>(''); // '' = 시술권 미사용
 
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
+    setAvailPkgs([]); setSelectedPkgId('');
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -230,6 +235,26 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   // 총 단계: 1(카테고리) → 2(시술) → 3(샷수, 해당시) → 마지막(상세)
   const totalSteps = needsShots ? 4 : 3;
   const isDetailStep = needsShots ? step === 4 : step === 3;
+
+  // 상세 단계 진입 시 사용 가능한 시술권 조회
+  useEffect(() => {
+    if (!isDetailStep || !selectedItem) return;
+    (async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('treatment_packages')
+        .select('id, name, total_sessions, used_sessions, clinic')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+      if (data) {
+        const active = data
+          .filter(p => p.used_sessions < p.total_sessions)
+          .map(p => ({ id: p.id, name: p.name, remaining: p.total_sessions - p.used_sessions }));
+        setAvailPkgs(active);
+      }
+    })();
+  }, [isDetailStep, selectedItem]);
 
   const canNext = () => {
     if (step === 1) return !!catId;
@@ -247,12 +272,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     if (!selectedItem) return;
     onSave({
       date,
-      packageId: catId === 'skincare' && itemId?.startsWith('b_') ? 'p1'
-               : catId === 'skincare' && itemId?.startsWith('p_') ? 'p2' : '',
+      // selectedPkgId가 UUID면 그것을 사용 (플로우 3: 시술권 차감)
+      // 없으면 빈 문자열 (포인트/잔액 변동 없음)
+      packageId:     selectedPkgId || '',
       treatmentName: getTreatmentName(),
-      skinLayer: selectedItem.skinLayer,
-      bodyArea: 'face',
-      notes: '',
+      skinLayer:     selectedItem.skinLayer,
+      bodyArea:      'face',
+      notes:         '',
       clinic,
       satisfaction,
       memo,
@@ -399,6 +425,41 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
                   darkMode={false} />
               </div>
+
+              {/* 시술권 연결 (보유 시술권이 있을 때만 표시) */}
+              {availPkgs.length > 0 && (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1.5 flex items-center gap-1">
+                    <Package size={11} />시술권 사용 (선택)
+                  </label>
+                  <div className="space-y-1.5">
+                    <button onClick={() => setSelectedPkgId('')}
+                      className={cn('w-full text-left px-3 py-2 rounded-lg border text-xs transition-all',
+                        !selectedPkgId
+                          ? 'border-gray-300 bg-gray-50 text-gray-500 font-medium'
+                          : 'border-gray-200 text-gray-300')}>
+                      시술권 미사용 (잔액 차감 없음)
+                    </button>
+                    {availPkgs.map(p => (
+                      <button key={p.id} onClick={() => setSelectedPkgId(p.id)}
+                        className={cn('w-full text-left px-3 py-2 rounded-lg border text-xs transition-all',
+                          selectedPkgId === p.id
+                            ? 'border-indigo-400 bg-indigo-50 text-indigo-700 font-semibold'
+                            : 'border-gray-200 text-gray-500')}>
+                        🎫 {p.name}
+                        <span className={cn('ml-2 font-bold', selectedPkgId === p.id ? 'text-indigo-500' : 'text-gray-400')}>
+                          잔여 {p.remaining}회
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                  {selectedPkgId && (
+                    <p className="text-[10px] text-indigo-400 mt-1">
+                      ✅ 저장 시 시술권 1회 차감 (결제·잔액 변동 없음)
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* 만족도 */}
               <div>
