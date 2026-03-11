@@ -346,36 +346,57 @@ const Index = () => {
                 </div>
 
                 {activePackages.length > 0 ? (
-                  <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                    {activePackages.map(pkg => {
+                  <div className="space-y-2">
+                    {activePackages.slice(0, 2).map(pkg => {
                       const remaining = pkg.total_sessions - pkg.used_sessions;
                       const pct = (pkg.used_sessions / pkg.total_sessions) * 100;
                       return (
                         <div key={pkg.id}
-                          className="shrink-0 bg-white border border-gray-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer active:bg-gray-50"
+                          className="bg-white border border-gray-100 rounded-xl px-4 py-3 cursor-pointer active:bg-gray-50 flex items-center gap-3"
                           onClick={() => navigate('/packages')}>
-                          <p className="text-[11px] font-bold text-gray-800 truncate">{pkg.name}</p>
-                          <p className="text-[10px] text-gray-400 mb-1.5">{pkg.clinic}</p>
-                          <div className="flex items-center gap-1 mb-1">
-                            <span className="text-base font-black text-indigo-600">{remaining}</span>
-                            <span className="text-[11px] text-gray-400">/ {pkg.total_sessions}회</span>
+                          {/* 남은 횟수 */}
+                          <div className="shrink-0 w-11 h-11 rounded-xl bg-indigo-50 flex flex-col items-center justify-center">
+                            <span className="text-lg font-black text-indigo-600 leading-none">{remaining}</span>
+                            <span className="text-[9px] text-indigo-400 leading-none mt-0.5">회</span>
                           </div>
-                          <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-indigo-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                          {/* 정보 */}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold text-gray-800 truncate">{pkg.name}</p>
+                            <p className="text-[11px] text-gray-400 mb-1.5">{pkg.clinic}</p>
+                            <div className="flex items-center gap-2">
+                              <div className="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <div className="h-full bg-indigo-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
+                              </div>
+                              <span className="text-[10px] text-gray-400 shrink-0">{pkg.used_sessions}/{pkg.total_sessions}회 사용</span>
+                            </div>
                           </div>
+                          <ChevronRight size={14} className="text-gray-300 shrink-0" />
                         </div>
                       );
                     })}
 
-                    {/* 잔액 카드 — 시술권 가로 스크롤 맨 끝 */}
+                    {/* 전체보기 버튼 — 3개 이상일 때 */}
+                    {activePackages.length > 2 && (
+                      <button
+                        onClick={() => navigate('/packages')}
+                        className="w-full py-2.5 rounded-xl border border-dashed border-gray-200 text-[11px] font-semibold text-gray-400 flex items-center justify-center gap-1 active:bg-gray-50"
+                      >
+                        나머지 {activePackages.length - 2}개 시술권 보기 <ChevronRight size={11} />
+                      </button>
+                    )}
+
+                    {/* 잔액 카드 */}
                     {totalBalance > 0 && (
-                      <div className="shrink-0 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer"
-                        onClick={() => navigate('/points')}>
-                        <p className="text-[10px] font-semibold text-emerald-600 mb-1">남은 잔액</p>
-                        <p className="text-base font-black text-emerald-700">{totalBalance.toLocaleString()}원</p>
-                        {clinicBalances.map(b => (
-                          <p key={b.clinic} className="text-[9px] text-emerald-500 mt-0.5">{b.clinic} {b.balance.toLocaleString()}원</p>
-                        ))}
+                      <div className="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-3 cursor-pointer flex items-center gap-3"
+                        onClick={() => navigate('/packages?tab=points')}>
+                        <div className="shrink-0 w-11 h-11 rounded-xl bg-emerald-100 flex items-center justify-center">
+                          <Wallet size={18} className="text-emerald-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[11px] text-emerald-600 font-semibold">병원 잔액</p>
+                          <p className="text-[15px] font-black text-emerald-700">{totalBalance.toLocaleString()}원</p>
+                        </div>
+                        <ChevronRight size={14} className="text-emerald-300 shrink-0" />
                       </div>
                     )}
                   </div>
