@@ -108,10 +108,15 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
         {/* 헤더 */}
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <DialogTitle className="text-base font-semibold flex items-center gap-2">
-            <CreditCard size={16} className="text-primary" />
-            결제 내역 추가
-          </DialogTitle>
+          <div className="flex items-center justify-between">
+            <DialogTitle className="text-base font-semibold flex items-center gap-2">
+              <CreditCard size={16} className="text-primary" />
+              결제 내역 추가
+            </DialogTitle>
+            <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+              <X size={18} className="text-gray-400" />
+            </button>
+          </div>
         </DialogHeader>
 
         <div className="p-5 space-y-5">
