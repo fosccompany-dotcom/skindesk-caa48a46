@@ -24,7 +24,8 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
   const [clinic, setClinic]           = useState('');
   const [clinicType, setClinicType]   = useState<ClinicType>('밴스');
   const [method, setMethod]           = useState<PayMethod>('포인트충전');
-  const [amount, setAmount]           = useState('');
+  const [amount, setAmount]           = useState('');           // 실결제금액
+  const [chargedAmount, setChargedAmount] = useState('');       // 충전금액 (포인트충전 전용)
   const [description, setDescription] = useState('');
   const [memo, setMemo]               = useState('');
   const [saving, setSaving]           = useState(false);
@@ -43,35 +44,36 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('로그인이 필요합니다.');
 
-      const amountNum = method === '서비스' ? 0 : parseInt(amount.replace(/,/g, '')) || 0;
+    const amountNum  = method === '서비스' ? 0 : parseInt(amount.replace(/,/g, '')) || 0;
+      // 충전금액: 입력했으면 그 값, 아니면 결제금액과 동일
+      const chargedNum = method === '포인트충전'
+        ? (chargedAmount ? parseInt(chargedAmount.replace(/,/g, '')) || amountNum : amountNum)
+        : amountNum;
 
       // 1. payment_records 삽입
       const { error: insertErr } = await supabase.from('payment_records').insert({
-        user_id:       user.id,
+        user_id:        user.id,
         date,
-        clinic:        clinic.trim(),
-        clinic_type:   clinicType,
+        clinic:         clinic.trim(),
+        clinic_type:    clinicType,
         treatment_name: description.trim(),
-        amount:        amountNum,
+        amount:         amountNum,
+        charged_amount: method === '포인트충전' ? chargedNum : null,
         method,
-        memo:          memo.trim() || null,
+        memo:           memo.trim() || null,
       });
       if (insertErr) throw insertErr;
 
-      // 2. 포인트충전이면 clinic_balances upsert (잔액 증가)
-      if (method === '포인트충전' && amountNum > 0) {
+      // 2. 포인트충전이면 clinic_balances에 충전금액 반영
+      if (method === '포인트충전' && chargedNum > 0) {
         const { data: existing } = await supabase
-          .from('clinic_balances')
-          .select('balance')
-          .eq('user_id', user.id)
-          .eq('clinic', clinic.trim())
-          .single();
+          .from('clinic_balances').select('balance')
+          .eq('user_id', user.id).eq('clinic', clinic.trim()).single();
 
-        const newBalance = (existing?.balance || 0) + amountNum;
         await supabase.from('clinic_balances').upsert({
           user_id:    user.id,
           clinic:     clinic.trim(),
-          balance:    newBalance,
+          balance:    (existing?.balance || 0) + chargedNum,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,clinic' });
       }
@@ -173,18 +175,40 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
 
           {/* 금액 */}
           {method !== '서비스' && (
-            <div>
-              <label className="text-[11px] text-white/40 mb-1.5 block">
-                금액 (원)
-                {method === '포인트충전' && <span className="ml-1.5 text-emerald-400">→ 잔액에 추가됩니다</span>}
-              </label>
-              <div className="relative">
-                <input type="text" value={amount} inputMode="numeric"
-                  onChange={e => setAmount(formatAmount(e.target.value))}
-                  placeholder="0"
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A96E]/50 pr-8" />
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30">원</span>
+            <div className={method === '포인트충전' ? 'grid grid-cols-2 gap-2' : ''}>
+              <div>
+                <label className="text-[11px] text-white/40 mb-1.5 block">
+                  {method === '포인트충전' ? '실결제금액 (원)' : '금액 (원)'}
+                </label>
+                <div className="relative">
+                  <input type="text" value={amount} inputMode="numeric"
+                    onChange={e => setAmount(formatAmount(e.target.value))}
+                    placeholder="0"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-[#C9A96E]/50 pr-8" />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30">원</span>
+                </div>
               </div>
+
+              {method === '포인트충전' && (
+                <div>
+                  <label className="text-[11px] mb-1.5 block">
+                    <span className="text-emerald-400">충전금액 (원)</span>
+                    <span className="text-white/30 ml-1">잔액에 반영</span>
+                  </label>
+                  <div className="relative">
+                    <input type="text" value={chargedAmount} inputMode="numeric"
+                      onChange={e => setChargedAmount(formatAmount(e.target.value))}
+                      placeholder={amount || '0'}
+                      className="w-full bg-emerald-500/5 border border-emerald-500/30 rounded-xl px-4 py-2.5 text-sm text-white placeholder:text-white/20 focus:outline-none focus:border-emerald-500/60 pr-8" />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-white/30">원</span>
+                  </div>
+                  {amount && chargedAmount && amount !== chargedAmount && (
+                    <p className="text-[10px] text-emerald-400 mt-1">
+                      +{(parseInt(chargedAmount.replace(/,/g,'')) - parseInt(amount.replace(/,/g,''))).toLocaleString()}원 보너스
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
