@@ -73,9 +73,10 @@ const Login = () => {
 
       <div className="w-full max-w-[380px] space-y-6">
         {/* Title */}
-        <div className="text-center space-y-1">
+        <div className="text-center space-y-2">
+          <img src={logoImg} alt="SKINDESK" className="w-16 h-16 mx-auto" />
           <h1 className="text-2xl font-bold tracking-tight">{t('auth_login_title')}</h1>
-          <p className="text-sm font-semibold tracking-[0.2em] text-[#C9A96E]">SKINDESK</p>
+          <p className="text-sm font-semibold tracking-[0.2em] text-primary">SKINDESK</p>
         </div>
 
         {/* Social Login */}
