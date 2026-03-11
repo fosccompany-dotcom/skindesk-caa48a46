@@ -216,12 +216,23 @@ const Packages = () => {
       <div className="page-content pb-28">
         <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="w-full grid grid-cols-2 mb-4 rounded-xl h-auto bg-muted p-1">
-            <TabsTrigger value="packages" className="rounded-lg text-xs py-2 flex items-center gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <Package className="h-3.5 w-3.5" /> 시술권 관리
-            </TabsTrigger>
-            <TabsTrigger value="points" className="rounded-lg text-xs py-2 flex items-center gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm">
-              <Wallet className="h-3.5 w-3.5" /> 포인트 관리
-            </TabsTrigger>
+            {tabOrder.map((tabKey, idx) => {
+              const cfg = tabConfig[tabKey];
+              const Icon = cfg.icon;
+              return (
+                <TabsTrigger
+                  key={tabKey}
+                  value={tabKey}
+                  draggable
+                  onDragStart={() => handleDragStart(idx)}
+                  onDragOver={e => handleDragOver(e, idx)}
+                  onDragEnd={handleDragEnd}
+                  className="rounded-lg text-xs py-2 flex items-center gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm cursor-grab active:cursor-grabbing"
+                >
+                  <Icon className="h-3.5 w-3.5" /> {cfg.label}
+                </TabsTrigger>
+              );
+            })}
           </TabsList>
 
           {/* ══════════════ 시술권 관리 탭 ══════════════ */}
