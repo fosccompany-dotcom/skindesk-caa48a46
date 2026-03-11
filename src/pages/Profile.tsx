@@ -967,11 +967,11 @@ function PaymentHistoryTab() {
                         <div>
                           <label className="text-[10px] text-muted-foreground mb-1 block">결제 방법</label>
                           <div className="flex gap-1.5">
-                            {['포인트충전', '카드', '현금', '서비스'].map(m => (
-                              <button key={m} onClick={() => setEditForm(f => ({ ...f, method: m }))}
+                            {[{ value: '포인트충전', label: '포인트' }, { value: '카드', label: '카드' }, { value: '현금', label: '현금' }, { value: '서비스', label: '서비스' }].map(m => (
+                              <button key={m.value} onClick={() => setEditForm(f => ({ ...f, method: m.value }))}
                                 className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
-                                  editForm.method === m ? 'border-primary bg-primary/10 text-primary' : 'border-input bg-background text-muted-foreground')}>
-                                {m}
+                                  editForm.method === m.value ? 'border-primary bg-primary/10 text-primary' : 'border-input bg-background text-muted-foreground')}>
+                                {m.label}
                               </button>
                             ))}
                           </div>
