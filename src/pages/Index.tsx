@@ -61,7 +61,6 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
-  const [fabOpen, setFabOpen] = useState(false);
   const [showAllRecords, setShowAllRecords] = useState(false);
   const [currentSeason, setCurrentSeason] = useState<SeasonKey | null>(null);
   const [goals, setGoals] = useState<string[]>([]);
@@ -503,32 +502,11 @@ const Index = () => {
       </div>
 
       {/* FAB */}
-      {fabOpen && (
-        <div className="fixed bottom-36 right-4 z-40 flex flex-col gap-2 items-end">
-          <button
-            onClick={() => { setFabOpen(false); setParseModalOpen(true); }}
-            className="flex items-center gap-2 bg-[#1a1a1a] border border-[#C9A96E]/40 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"
-          >
-            <Sparkles size={14} className="text-[#C9A96E]" />
-            문자/카톡으로 등록
-          </button>
-          <button
-            onClick={() => { setFabOpen(false); setEditRecord(null); setModalOpen(true); }}
-            className="flex items-center gap-2 bg-[#1a1a1a] border border-white/20 text-white text-xs font-semibold px-4 py-2.5 rounded-full shadow-lg"
-          >
-            <Plus size={14} />
-            직접 입력
-          </button>
-        </div>
-      )}
-      {fabOpen && (
-        <div className="fixed inset-0 z-30" onClick={() => setFabOpen(false)} />
-      )}
       <button
-        onClick={() => setFabOpen(v => !v)}
+        onClick={() => { setEditRecord(null); setModalOpen(true); }}
         className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform"
       >
-        <Plus size={24} className={`text-black transition-transform duration-200 ${fabOpen ? "rotate-45" : ""}`} strokeWidth={2.5} />
+        <Plus size={24} className="text-black" strokeWidth={2.5} />
       </button>
 
       {parseModalOpen && (
