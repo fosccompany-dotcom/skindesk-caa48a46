@@ -539,6 +539,7 @@ const Index = () => {
         onClose={() => { setModalOpen(false); setEditRecord(null); }}
         onSave={handleSave}
         editRecord={editRecord}
+        onOpenParse={() => { setModalOpen(false); setParseModalOpen(true); }}
       />
 
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
