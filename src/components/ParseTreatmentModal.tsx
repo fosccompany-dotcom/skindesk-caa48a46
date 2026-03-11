@@ -315,7 +315,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           clinic_type: '밴스', treatment_name: p.name,
           amount: p.amount_paid, method: methodMap[p.payMethod], memo: p.memo || null,
         });
-        if (p.clinic) {
+        if (p.clinic && p.payMethod === '포인트') {
           const { data: pkgBal } = await supabase
             .from('clinic_balances').select('balance')
             .eq('user_id', user.id).eq('clinic', p.clinic).maybeSingle();
