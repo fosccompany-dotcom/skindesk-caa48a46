@@ -322,9 +322,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const showResults    = parsed !== null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center">
+    <div className="fixed inset-0 z-50 flex items-end justify-center pb-[72px]">
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="relative w-full max-w-lg bg-[#111] rounded-t-3xl max-h-[calc(90vh-5rem)] flex flex-col">
+      <div className="relative w-full max-w-lg bg-[#111] rounded-t-3xl max-h-[calc(100vh-72px)] flex flex-col">
         <div className="flex justify-center pt-3 pb-1">
           <div className="w-10 h-1 rounded-full bg-white/20" />
         </div>
