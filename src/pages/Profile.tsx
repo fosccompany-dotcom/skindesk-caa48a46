@@ -374,7 +374,10 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="page-header safe-top flex items-center justify-between">
+      <div className="relative safe-top overflow-hidden">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="page-header-gradient relative z-10 flex items-center justify-between" style={{ background: 'transparent' }}>
         <h1 className="text-lg font-bold">{t('my_page')}</h1>
         <div className="relative" ref={langDropdownRef}>
           <button
