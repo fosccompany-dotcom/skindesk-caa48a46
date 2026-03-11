@@ -768,19 +768,36 @@ function PaymentHistoryTab() {
 
   return (
     <div className="space-y-3">
-      {/* 합계 카드 */}
+      {/* 합계 카드 + 추가 버튼 */}
       <Card className="glass-card">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div>
-            <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
-            <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
+              <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
+            </div>
+            <div className="text-right">
+              <p className="text-[11px] text-muted-foreground">결제 건수</p>
+              <p className="text-xl font-black text-foreground">{payments.filter(p => p.method !== '포인트충전').length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[11px] text-muted-foreground">결제 건수</p>
-            <p className="text-xl font-black text-foreground">{payments.filter(p => p.method !== '포인트충전').length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
-          </div>
+          <Button
+            onClick={() => setShowAddModal(true)}
+            className="w-full mt-3 rounded-xl text-xs gap-1.5"
+            size="sm"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            결제 내역 추가
+          </Button>
         </CardContent>
       </Card>
+
+      {showAddModal && (
+        <AddPaymentModal
+          onClose={() => setShowAddModal(false)}
+          onSaved={() => { setShowAddModal(false); loadPayments(); }}
+        />
+      )}
 
       {/* 결제 목록 */}
       {payments.length === 0 ? (
