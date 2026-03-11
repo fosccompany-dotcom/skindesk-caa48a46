@@ -190,7 +190,7 @@ const CalendarPage = () => {
       {/* 헤더 */}
       <div className="relative safe-top overflow-hidden">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/50" />
+        <div className="absolute inset-0 bg-black/40" />
         <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
           <div className="flex items-center justify-between">
             <div>
