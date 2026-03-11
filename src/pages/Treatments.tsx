@@ -3,6 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
@@ -257,12 +258,18 @@ const Treatments = () => {
   };
 
   return (
-    <div className="page-container pb-24">
+    <div className="min-h-screen bg-background pb-24">
       {/* Header */}
-      <div className="pt-6 pb-3 px-1">
-        <h1 className="text-xl font-bold text-foreground">시술 리스트</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">클리닉별 시술 정보</p>
+      <div className="relative safe-top overflow-hidden">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="page-header-gradient relative z-10 pt-4" style={{ background: 'transparent' }}>
+          <h1 className="text-lg font-bold">시술 리스트</h1>
+          <p className="text-xs opacity-70 mt-0.5">클리닉별 시술 정보</p>
+        </div>
       </div>
+
+      <div className="page-content pt-4">
 
       {/* Original list header */}
       <div className="pb-3 px-1">
@@ -643,6 +650,7 @@ const Treatments = () => {
           )}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 };

@@ -10,6 +10,7 @@ import { useRecords } from '@/context/RecordsContext';
 import AddPaymentModal from '@/components/AddPaymentModal';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
 import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, CreditCard, Star, ChevronDown, ChevronUp, Globe, LogOut, Plus, Trash2, Pencil, Check } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -373,7 +374,10 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="page-header safe-top flex items-center justify-between">
+      <div className="relative safe-top overflow-hidden">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="page-header-gradient relative z-10 flex items-center justify-between" style={{ background: 'transparent' }}>
         <h1 className="text-lg font-bold">{t('my_page')}</h1>
         <div className="relative" ref={langDropdownRef}>
           <button
@@ -400,6 +404,7 @@ const Profile = () => {
               ))}
             </div>
           )}
+        </div>
         </div>
       </div>
 
