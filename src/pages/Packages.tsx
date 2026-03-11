@@ -40,7 +40,8 @@ const methodStyle: Record<string, { bg: string; text: string }> = {
 // ─────────────────────────────────────────────────────────────────────
 const Packages = () => {
   const [searchParams] = useSearchParams();
-  const defaultTab = searchParams.get('tab') || 'packages';
+  const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
+  const defaultTab = searchParams.get('tab') || (savedTabOrder ? savedTabOrder[0] : 'packages');
 
   // ── 탭 순서 커스텀 (드래그) ──
   const TAB_ORDER_KEY = 'skindesk_tab_order';
