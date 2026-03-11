@@ -111,6 +111,10 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
         notes:          record.notes,
         memo:           record.memo,
         amount_paid:    record.amount_paid,
+        clinic_kakao_id:  record.clinic_kakao_id ?? null,
+        clinic_district:  record.clinic_district ?? null,
+        clinic_address:   record.clinic_address ?? null,
+        input_method:     record.input_method ?? 'manual',
       })
       .eq('id', id)
       .select().single();
