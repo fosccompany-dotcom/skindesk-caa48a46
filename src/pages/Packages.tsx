@@ -30,6 +30,7 @@ interface ClinicBalance { clinic: string; balance: number; }
 
 const methodStyle: Record<string, { bg: string; text: string }> = {
   '포인트충전': { bg: 'bg-emerald-50', text: 'text-emerald-600' },
+  '포인트':     { bg: 'bg-orange-50',  text: 'text-orange-600' },
   '시술결제':   { bg: 'bg-indigo-50',  text: 'text-indigo-600' },
   '카드':       { bg: 'bg-sky-50',     text: 'text-sky-600' },
   '현금':       { bg: 'bg-amber-50',   text: 'text-amber-600' },
@@ -394,8 +395,8 @@ const Packages = () => {
             </div>
             <div>
               <Label className="text-xs">결제 종류</Label>
-              <div className="grid grid-cols-5 gap-1.5 mt-1">
-                {(['포인트충전', '시술결제', '카드', '현금', '서비스'] as const).map(m => (
+              <div className="grid grid-cols-3 gap-1.5 mt-1">
+                {(['포인트충전', '포인트', '시술결제', '카드', '현금', '서비스'] as const).map(m => (
                   <button
                     key={m}
                     type="button"
