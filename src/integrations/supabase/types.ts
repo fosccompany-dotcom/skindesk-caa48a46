@@ -43,6 +43,8 @@ export type Database = {
           amount: number
           charged_amount: number | null
           clinic: string
+          clinic_district: string | null
+          clinic_kakao_id: string | null
           clinic_type: string | null
           created_at: string | null
           date: string
@@ -57,6 +59,8 @@ export type Database = {
           amount?: number
           charged_amount?: number | null
           clinic: string
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
           clinic_type?: string | null
           created_at?: string | null
           date: string
@@ -71,6 +75,8 @@ export type Database = {
           amount?: number
           charged_amount?: number | null
           clinic?: string
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
           clinic_type?: string | null
           created_at?: string | null
           date?: string
@@ -144,6 +150,8 @@ export type Database = {
         Row: {
           body_area: string | null
           clinic: string
+          clinic_district: string | null
+          clinic_kakao_id: string | null
           created_at: string | null
           cycle_days: number
           id: string
@@ -158,6 +166,8 @@ export type Database = {
         Insert: {
           body_area?: string | null
           clinic: string
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
           created_at?: string | null
           cycle_days: number
           id?: string
@@ -172,6 +182,8 @@ export type Database = {
         Update: {
           body_area?: string | null
           clinic?: string
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
           created_at?: string | null
           cycle_days?: number
           id?: string
@@ -246,9 +258,13 @@ export type Database = {
           amount_paid: number | null
           body_area: string | null
           clinic: string
+          clinic_address: string | null
+          clinic_district: string | null
+          clinic_kakao_id: string | null
           created_at: string | null
           date: string
           id: string
+          input_method: string | null
           memo: string | null
           notes: string | null
           package_id: string | null
@@ -264,9 +280,13 @@ export type Database = {
           amount_paid?: number | null
           body_area?: string | null
           clinic: string
+          clinic_address?: string | null
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
           created_at?: string | null
           date: string
           id?: string
+          input_method?: string | null
           memo?: string | null
           notes?: string | null
           package_id?: string | null
@@ -282,9 +302,13 @@ export type Database = {
           amount_paid?: number | null
           body_area?: string | null
           clinic?: string
+          clinic_address?: string | null
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
           created_at?: string | null
           date?: string
           id?: string
+          input_method?: string | null
           memo?: string | null
           notes?: string | null
           package_id?: string | null
