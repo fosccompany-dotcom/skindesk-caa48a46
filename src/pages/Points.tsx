@@ -93,8 +93,10 @@ const Points = () => {
     <div className="min-h-screen bg-background">
 
       {/* ── 헤더 ── */}
-      <div className="gradient-sage safe-top">
-        <div className="page-header-gradient pt-4">
+      <div className="relative safe-top overflow-hidden">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="page-header-gradient relative z-10 pt-4" style={{ background: 'transparent' }}>
           <h1 className="text-lg font-bold">포인트 관리</h1>
           <div className="flex items-end gap-6 mt-3">
             <div>
