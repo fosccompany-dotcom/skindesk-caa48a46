@@ -360,19 +360,7 @@ const Profile = () => {
       </div>
 
       <div className="page-content pt-2">
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="w-full mb-4 rounded-xl">
-            <TabsTrigger value="profile" className="flex-1 rounded-lg text-xs gap-1">
-              <User className="h-3.5 w-3.5" />
-              {t('profile_tab')}
-            </TabsTrigger>
-            <TabsTrigger value="history" className="flex-1 rounded-lg text-xs gap-1">
-              <ClipboardList className="h-3.5 w-3.5" />
-              {t('treatment_history_tab')}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile" className="space-y-3">
+          <div className="space-y-3">
             {/* Language Setting */}
             <Card className="glass-card">
               <CardContent className="p-4">
@@ -661,122 +649,7 @@ const Profile = () => {
             )}>
               {t('auto_saved')}
             </div>
-          </TabsContent>
-
-          {/* ===== 시술 기록 탭 ===== */}
-          <TabsContent value="history" className="space-y-3">
-            <Card className="glass-card">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-[11px] text-muted-foreground">{t('total_records')}</p>
-                    <p className="text-2xl font-bold text-foreground">{records.length}<span className="text-sm font-normal text-muted-foreground">건</span></p>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-[11px] text-muted-foreground">{t('avg_satisfaction')}</p>
-                    <div className="flex items-center gap-1.5">
-                      <Star className="h-4 w-4 fill-amber text-amber" />
-                      <span className="text-2xl font-bold text-foreground">{avgSatisfaction.toFixed(1)}</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <div className="space-y-2">
-              {sortedRecords.map((record) => {
-                const isExpanded = expandedRecord === record.id;
-                const memoValue = editingMemo[record.id] ?? record.memo ?? '';
-
-                return (
-                  <Card key={record.id} className="glass-card overflow-hidden">
-                    <button
-                      className="w-full text-left"
-                      onClick={() => setExpandedRecord(isExpanded ? null : record.id)}
-                    >
-                      <CardContent className="p-3.5">
-                        <div className="flex items-center justify-between">
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-1.5">
-                              <span className="text-sm font-semibold text-foreground">{record.treatmentName}</span>
-                              <Badge variant="outline" className="text-[9px] px-1.5 py-0">{BODY_AREA_LABELS[record.bodyArea]}</Badge>
-                            </div>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">
-                              {format(new Date(record.date), 'yyyy.M.d (EEE)', { locale: ko })} · {record.clinic}
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            {record.satisfaction && (
-                              <div className="flex items-center gap-0.5">
-                                <Star className="h-3 w-3 fill-amber text-amber" />
-                                <span className="text-xs font-semibold text-foreground">{record.satisfaction}</span>
-                              </div>
-                            )}
-                            {isExpanded ? (
-                              <ChevronUp className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </div>
-                        </div>
-                        {record.notes && !isExpanded && (
-                          <p className="text-[10px] text-muted-foreground mt-1 truncate">{record.notes}</p>
-                        )}
-                      </CardContent>
-                    </button>
-
-                    {isExpanded && (
-                      <div className="border-t border-border/50 px-3.5 pb-3.5 pt-3 space-y-3">
-                        <div className="flex flex-wrap gap-1.5">
-                          <Badge variant="secondary" className="text-[10px]">{SKIN_LAYER_LABELS[record.skinLayer]}</Badge>
-                          <Badge variant="secondary" className="text-[10px]">{BODY_AREA_LABELS[record.bodyArea]}</Badge>
-                          <Badge variant="outline" className="text-[10px]">{record.clinic}</Badge>
-                        </div>
-
-                        {record.notes && (
-                          <p className="text-xs text-muted-foreground bg-muted/50 rounded-lg p-2.5">{record.notes}</p>
-                        )}
-
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">{t('satisfaction')}</Label>
-                          <StarRating
-                            value={record.satisfaction || 0}
-                            onChange={(v) => updateSatisfaction(record.id, v)}
-                          />
-                        </div>
-
-                        <div>
-                          <Label className="text-[11px] text-muted-foreground mb-1.5 block">메모</Label>
-                          <Textarea
-                            value={memoValue}
-                            onChange={(e) => setEditingMemo(prev => ({ ...prev, [record.id]: e.target.value }))}
-                            placeholder={t('memo_placeholder')}
-                            className="text-xs min-h-[80px] rounded-xl resize-none"
-                          />
-                          {editingMemo[record.id] !== undefined && editingMemo[record.id] !== (record.memo ?? '') && (
-                            <Button
-                              size="sm"
-                              className="mt-2 w-full rounded-xl text-xs"
-                              onClick={() => updateMemo(record.id)}
-                            >
-                              {t('save')}
-                            </Button>
-                          )}
-                        </div>
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-
-            {sortedRecords.length === 0 && (
-              <div className="text-center py-12 text-muted-foreground text-sm">
-                {t('no_records')}
-              </div>
-            )}
-          </TabsContent>
-        </Tabs>
+          </div>
       </div>
     </div>
   );
