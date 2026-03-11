@@ -103,6 +103,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const [chargePayments, setChargePayments] = useState<{ show: boolean; amount: string; method: 'card' | 'cash' }[]>([]);
   const [pkgs, setPkgs] = useState<ParsedPackage[]>([]);
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo | null>(null);
+  const [isRemainingContext, setIsRemainingContext] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -260,6 +261,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
       // 잔여금액 감지 (client-side)
       const inputText = body.text || text;
+      // "남아있는/남아계신" 패턴 감지 → 시술권으로 저장
+      const remainingPattern = /남아[있계]|남은\s*관리|잔여\s*시술|잔여\s*관리/;
+      setIsRemainingContext(remainingPattern.test(inputText));
       const balanceMatch = inputText.match(/잔여금액\s*([\d,.\s]+)\s*원/);
       let hasBalance = false;
       if (balanceMatch) {
@@ -380,17 +384,36 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     setSaving(true);
 
     const toSave = (parsed || []).filter(r => r.selected);
-    for (const r of toSave) {
-      await addRecord({
-        date: r.date, packageId: '', treatmentName: r.treatmentName,
-        skinLayer: r.skinLayer, bodyArea: r.bodyArea,
-        clinic: r.clinic || '', satisfaction: undefined, notes: undefined,
-        memo: r.memo || undefined, amount_paid: r.amount_paid ?? undefined,
-        input_method: 'ai_parsed',
-        clinic_kakao_id: null,
-        clinic_district: r.clinic ? extractDistrict(r.clinic) : null,
-        clinic_address: null,
-      });
+    
+    if (isRemainingContext) {
+      // "남아있는" 시술 → 시술권(treatment_packages)으로 저장
+      for (const r of toSave) {
+        await supabase.from('treatment_packages').insert({
+          user_id: user.id,
+          name: r.treatmentName,
+          type: 'session',
+          total_sessions: 1,
+          used_sessions: 0,
+          skin_layer: r.skinLayer || 'dermis',
+          body_area: r.bodyArea || 'face',
+          clinic: r.clinic || '',
+          expiry_date: null,
+        });
+      }
+    } else {
+      // 일반 시술내역으로 저장
+      for (const r of toSave) {
+        await addRecord({
+          date: r.date, packageId: '', treatmentName: r.treatmentName,
+          skinLayer: r.skinLayer, bodyArea: r.bodyArea,
+          clinic: r.clinic || '', satisfaction: undefined, notes: undefined,
+          memo: r.memo || undefined, amount_paid: r.amount_paid ?? undefined,
+          input_method: 'ai_parsed',
+          clinic_kakao_id: null,
+          clinic_district: r.clinic ? extractDistrict(r.clinic) : null,
+          clinic_address: null,
+        });
+      }
     }
 
     const selectedBundles = bundles.filter(b => b.selected);
@@ -491,8 +514,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
     }
 
-    // 잔여금액 → clinic_balances 반영
+    // 잔여금액 → clinic_balances + point_transactions 반영
     if (balanceInfo?.selected && balanceInfo.clinic && balanceInfo.amount > 0) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      
       if (balanceInfo.method === 'set') {
         // 직접 세팅
         await supabase.from('clinic_balances').upsert({
@@ -513,6 +538,17 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,clinic' });
       }
+
+      // point_transactions에도 기록 추가
+      await supabase.from('point_transactions').insert({
+        user_id: user.id,
+        date: todayStr,
+        amount: balanceInfo.amount,
+        balance: balanceInfo.amount,
+        type: 'charge',
+        description: `${balanceInfo.clinic} 포인트 잔액 설정`,
+        clinic: balanceInfo.clinic,
+      });
     }
 
     setSaving(false); setSaved(true);
