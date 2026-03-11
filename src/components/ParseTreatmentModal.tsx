@@ -454,12 +454,21 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     }
 
     for (const p of pkgs.filter(p => p.selected)) {
-      await supabase.from('treatment_packages').insert({
-        user_id: user.id, name: p.name, type: 'session',
-        total_sessions: p.total_sessions, used_sessions: 0,
-        skin_layer: 'dermis', body_area: 'face',
-        clinic: p.clinic || '', expiry_date: null,
-      });
+      if (p.duplicateAction === 'update' && p.existingPackageId) {
+        // 기존 패키지 업데이트
+        await supabase.from('treatment_packages').update({
+          total_sessions: p.total_sessions,
+          used_sessions: p.used_sessions,
+        }).eq('id', p.existingPackageId);
+      } else {
+        // 새로 등록
+        await supabase.from('treatment_packages').insert({
+          user_id: user.id, name: p.name, type: 'session',
+          total_sessions: p.total_sessions, used_sessions: p.used_sessions,
+          skin_layer: 'dermis', body_area: 'face',
+          clinic: p.clinic || '', expiry_date: null,
+        });
+      }
       if (p.payMethod !== '서비스' && p.amount_paid) {
         const methodMap: Record<PkgPayMethod, string> = { '카드': '카드', '현금': '현금', '포인트': '시술결제', '서비스': '서비스' };
         await supabase.from('payment_records').insert({
