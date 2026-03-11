@@ -94,7 +94,7 @@ const Points = () => {
       {/* ── 헤더 ── */}
       <div className="gradient-sage safe-top">
         <div className="page-header-gradient pt-4">
-          <h1 className="text-lg font-bold">결제 · 포인트</h1>
+          <h1 className="text-lg font-bold">포인트 관리</h1>
           <div className="flex items-end gap-6 mt-3">
             <div>
               <p className="text-3xl font-bold tracking-tight">{currentBalance.toLocaleString()}원</p>
