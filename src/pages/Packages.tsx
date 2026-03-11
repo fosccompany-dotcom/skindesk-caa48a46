@@ -238,14 +238,6 @@ const Packages = () => {
         </Tabs>
       </div>
 
-      {/* FAB */}
-      <button
-        onClick={() => setShowAddModal(true)}
-        className="fixed bottom-20 right-4 z-40 h-14 w-14 rounded-full bg-[#C9A96E] shadow-lg shadow-[#C9A96E]/30 flex items-center justify-center active:scale-95 transition-transform"
-      >
-        <Plus size={24} className="text-black" strokeWidth={2.5} />
-      </button>
-
       <AddPaymentModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
