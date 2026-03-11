@@ -334,14 +334,28 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
     }
 
-    // 잔여금액 → clinic_balances에 직접 세팅
+    // 잔여금액 → clinic_balances 반영
     if (balanceInfo?.selected && balanceInfo.clinic && balanceInfo.amount > 0) {
-      await supabase.from('clinic_balances').upsert({
-        user_id: user.id,
-        clinic: balanceInfo.clinic,
-        balance: balanceInfo.amount,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'user_id,clinic' });
+      if (balanceInfo.method === 'set') {
+        // 직접 세팅
+        await supabase.from('clinic_balances').upsert({
+          user_id: user.id,
+          clinic: balanceInfo.clinic,
+          balance: balanceInfo.amount,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,clinic' });
+      } else {
+        // 기존 잔액에 더하기
+        const { data: existing } = await supabase
+          .from('clinic_balances').select('balance')
+          .eq('user_id', user.id).eq('clinic', balanceInfo.clinic).maybeSingle();
+        await supabase.from('clinic_balances').upsert({
+          user_id: user.id,
+          clinic: balanceInfo.clinic,
+          balance: (existing?.balance || 0) + balanceInfo.amount,
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'user_id,clinic' });
+      }
     }
 
     setSaving(false); setSaved(true);
