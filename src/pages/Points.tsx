@@ -121,7 +121,7 @@ const Points = () => {
       <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4">
         <div className="flex">
           {([
-            { key: 'remaining', label: '남은 시술 & 포인트' },
+            { key: 'remaining', label: '포인트 관리' },
             { key: 'payments',  label: '결제 내역' },
           ] as const).map(t => (
             <button
