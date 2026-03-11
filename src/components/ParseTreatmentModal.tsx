@@ -506,6 +506,46 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                 </div>
               ))}
 
+              {/* ── 잔여금액(포인트 잔액) 카드 ── */}
+              {balanceInfo && (
+                <div className={cn('rounded-xl border transition-all',
+                  balanceInfo.selected ? 'border-emerald-300 bg-emerald-50' : 'border-gray-200 bg-gray-50 opacity-50')}>
+                  <div className="flex items-center gap-3 p-3.5">
+                    <button onClick={() => setBalanceInfo(prev => prev ? { ...prev, selected: !prev.selected } : prev)}
+                      className={cn('w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all',
+                        balanceInfo.selected ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300')}>
+                      {balanceInfo.selected && <div className="w-2 h-2 rounded-full bg-white" />}
+                    </button>
+                    <Wallet size={16} className="text-emerald-600 shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 mb-0.5">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-100 text-emerald-600 border border-emerald-200 font-semibold">잔여금액</span>
+                      </div>
+                      <p className="text-lg font-black text-emerald-700">{balanceInfo.amount.toLocaleString()}<span className="text-xs font-normal text-emerald-500 ml-0.5">원</span></p>
+                      {balanceInfo.clinic && <p className="text-[11px] text-gray-500 mt-0.5">{balanceInfo.clinic}</p>}
+                    </div>
+                  </div>
+                  {balanceInfo.selected && (
+                    <div className="px-3.5 pb-3 border-t border-emerald-200 pt-2.5 space-y-2">
+                      <div>
+                        <label className="text-[10px] text-gray-400 mb-1 block">병원명</label>
+                        <input type="text" value={balanceInfo.clinic}
+                          onChange={e => setBalanceInfo(prev => prev ? { ...prev, clinic: e.target.value } : prev)}
+                          placeholder="병원명 입력"
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-primary/50" />
+                      </div>
+                      <div>
+                        <label className="text-[10px] text-gray-400 mb-1 block">잔여금액 (원)</label>
+                        <input type="number" value={balanceInfo.amount}
+                          onChange={e => setBalanceInfo(prev => prev ? { ...prev, amount: Number(e.target.value) || 0 } : prev)}
+                          className="w-full bg-white border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-primary/50" />
+                      </div>
+                      <p className="text-[10px] text-emerald-600">✓ 저장 시 해당 병원의 잔액이 이 금액으로 설정됩니다</p>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* ── 시술권(패키지) 카드 ── */}
               {pkgs.length > 0 && (
                 <div className="space-y-2">
