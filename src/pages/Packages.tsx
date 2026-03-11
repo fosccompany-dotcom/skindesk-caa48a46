@@ -240,15 +240,6 @@ const Packages = () => {
               <CardContent className="p-4">
                 <p className="text-[11px] text-muted-foreground mb-1">남은 잔액 (사용 가능)</p>
                 <p className="text-2xl font-black text-foreground">{totalBalance.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
-                {clinicBalancesFromPayments.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-2">
-                    {clinicBalancesFromPayments.map(b => (
-                      <span key={b.clinic} className="text-[11px] px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium">
-                        {b.clinic} {b.balance.toLocaleString()}원
-                      </span>
-                    ))}
-                  </div>
-                )}
               </CardContent>
             </Card>
 
