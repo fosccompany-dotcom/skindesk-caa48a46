@@ -21,11 +21,11 @@ import logoImg from '@/assets/logo.png';
 import { ALL_TREATMENT_SEASON_DATA } from '@/data/treatmentSeasonData';
 type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
 const SEASON_CONFIG: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string }> = {
-  reset:    { emoji: '🌿', title: 'Reset Season',    sub: '피부 리셋 시즌',  color: 'text-green-700',  bg: 'bg-green-50 border-green-200' },
-  recovery: { emoji: '💧', title: 'Recovery Season', sub: '회복 시즌',        color: 'text-sky-700',    bg: 'bg-sky-50 border-sky-200' },
-  maintain: { emoji: '✨', title: 'Maintain Season', sub: '유지 시즌',        color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
-  boost:    { emoji: '⚡', title: 'Boost Season',    sub: '관리 끌올 시즌',  color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200' },
-  special:  { emoji: '💫', title: 'Special Season',  sub: '스페셜 시즌',     color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
+  reset:    { emoji: '🌵', title: 'Reset Season',    sub: '피부 리셋 시즌',  color: 'text-green-700',  bg: 'bg-green-50 border-green-200' },
+  recovery: { emoji: '🌿', title: 'Recovery Season', sub: '회복 시즌',        color: 'text-sky-700',    bg: 'bg-sky-50 border-sky-200' },
+  maintain: { emoji: '💜', title: 'Maintain Season', sub: '유지 시즌',        color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
+  boost:    { emoji: '🌹', title: 'Boost Season',    sub: '관리 끌올 시즌',  color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200' },
+  special:  { emoji: '🌸', title: 'Special Season',  sub: '스페셜 시즌',     color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
 };
 
 const TODAY = new Date('2026-03-10');
