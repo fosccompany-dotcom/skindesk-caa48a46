@@ -169,7 +169,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
       if (hasPackages) {
         const todayStr = new Date().toISOString().split('T')[0];
-        setPkgs(data.packages.map((p: any) => ({ ...p, clinic: p.clinic || '', date: p.date || todayStr, selected: true })));
+        setPkgs(data.packages.map((p: any) => ({ ...p, clinic: p.clinic || '', date: p.date || todayStr, selected: true, payMethod: '포인트' as PkgPayMethod })));
       }
 
       if (hasBundles) {
