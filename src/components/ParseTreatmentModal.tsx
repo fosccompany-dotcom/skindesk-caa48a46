@@ -130,7 +130,26 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       const hasCharges   = data?.charges?.length  > 0;
       const hasPackages  = data?.packages?.length > 0;
 
-      if (!hasRecords && !hasBundles && !hasCharges && !hasPackages) {
+      // 잔여금액 감지 (client-side)
+      const inputText = body.text || text;
+      const balanceMatch = inputText.match(/잔여금액\s*([\d,.\s]+)\s*원/);
+      let hasBalance = false;
+      if (balanceMatch) {
+        const balanceAmount = parseInt(balanceMatch[1].replace(/[,.\s]/g, '')) || 0;
+        if (balanceAmount > 0) {
+          // 병원명 추출: AI 파싱 결과에서 가져오거나 텍스트에서 추출
+          const clinicFromData = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic || '';
+          const clinicFromText = inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
+          setBalanceInfo({
+            amount: balanceAmount,
+            clinic: clinicFromData || clinicFromText,
+            selected: true,
+          });
+          hasBalance = true;
+        }
+      }
+
+      if (!hasRecords && !hasBundles && !hasCharges && !hasPackages && !hasBalance) {
         if (data?.hint === 'image_credit_low') {
           setTab('text');
           setError('이미지 분석 크레딧 부족 — 텍스트 탭에서 문자 내용을 붙여넣어 주세요.');
