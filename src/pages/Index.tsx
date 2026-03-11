@@ -164,12 +164,9 @@ const Index = () => {
 
       {/* ── Header ── */}
       <div className="gradient-sage safe-top">
-        <div className="page-header-gradient pt-4">
+        <div className="page-header-gradient pt-3 pb-3">
           <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-70 font-light">{t('hello')}</p>
-              <h1 className="mt-0.5 text-xl font-bold">{t('my_skin_care')}</h1>
-            </div>
+            <img src={logoImg} alt="SkinDesk" className="h-9 object-contain" />
             <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer"
               onClick={() => navigate('/profile')}>
               <span className="text-base">👤</span>
