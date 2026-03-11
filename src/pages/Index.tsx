@@ -189,7 +189,9 @@ const Index = () => {
                 .sort((a, b) => b.seasons[currentSeason!].timesPerYear - a.seasons[currentSeason!].timesPerYear)[0]
             : null;
 
-          const totalBalance = clinicBalances.reduce((s, b) => s + b.balance, 0);
+          const totalCharged = clinicPayments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
+          const totalSpent = clinicPayments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
+          const totalBalance = totalCharged - totalSpent;
           const activePackages = packages.filter(p => p.total_sessions - p.used_sessions > 0);
           const nextCyclePkg = nextCycle
             ? activePackages.find(p => p.name.includes(nextCycle.c.treatmentName) || nextCycle.c.treatmentName.includes(p.name))
