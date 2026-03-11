@@ -514,8 +514,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
     }
 
-    // 잔여금액 → clinic_balances 반영
+    // 잔여금액 → clinic_balances + point_transactions 반영
     if (balanceInfo?.selected && balanceInfo.clinic && balanceInfo.amount > 0) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      
       if (balanceInfo.method === 'set') {
         // 직접 세팅
         await supabase.from('clinic_balances').upsert({
@@ -536,6 +538,17 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,clinic' });
       }
+
+      // point_transactions에도 기록 추가
+      await supabase.from('point_transactions').insert({
+        user_id: user.id,
+        date: todayStr,
+        amount: balanceInfo.amount,
+        balance: balanceInfo.amount,
+        type: 'charge',
+        description: `${balanceInfo.clinic} 포인트 잔액 설정`,
+        clinic: balanceInfo.clinic,
+      });
     }
 
     setSaving(false); setSaved(true);
