@@ -576,30 +576,32 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             <span className="text-[10px] text-gray-400">잔여 {p.total_sessions}회</span>
                             {p.clinic && <span className="text-[10px] text-gray-400">{p.clinic}</span>}
                           </div>
-                          {/* 결제 종류 */}
-                          <div className="px-3.5 pb-3 pt-2 border-t border-gray-100">
-                            <label className="text-[10px] text-gray-400 mb-1.5 block">결제 종류</label>
-                            <div className="flex gap-1.5">
-                              {(['포인트', '카드', '현금', '서비스'] as PkgPayMethod[]).map(m => (
-                                <button key={m}
-                                  onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, payMethod: m } : pk))}
-                                  className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
-                                    p.payMethod === m
-                                      ? m === '포인트' ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
-                                      : m === '카드' ? 'border-blue-300 bg-blue-50 text-blue-600'
-                                      : m === '현금' ? 'border-green-300 bg-green-50 text-green-600'
-                                      : 'border-gray-300 bg-gray-100 text-gray-500'
-                                      : 'border-gray-200 bg-gray-50 text-gray-400'
-                                  )}>
-                                  {m}
-                                </button>
-                              ))}
-                            </div>
-                          </div>
                         </div>
+                      </div>
+                      {/* 결제 종류 */}
+                      <div className="px-3.5 pb-3 pt-2 border-t border-gray-100">
+                        <label className="text-[10px] text-gray-400 mb-1.5 block">결제 종류</label>
+                        <div className="flex gap-1.5">
+                          {(['포인트', '카드', '현금', '서비스'] as PkgPayMethod[]).map(m => (
+                            <button key={m}
+                              onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, payMethod: m } : pk))}
+                              className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
+                                p.payMethod === m
+                                  ? m === '포인트' ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
+                                  : m === '카드' ? 'border-blue-300 bg-blue-50 text-blue-600'
+                                  : m === '현금' ? 'border-green-300 bg-green-50 text-green-600'
+                                  : 'border-gray-300 bg-gray-100 text-gray-500'
+                                  : 'border-gray-200 bg-gray-50 text-gray-400'
+                              )}>
+                              {m}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               )}
-
-              {/* ── 번들 카드 ── */}
               {bundles.length > 0 && (
                 <div className="space-y-2">
                   <p className="text-[11px] text-muted-foreground flex items-center gap-1.5">
