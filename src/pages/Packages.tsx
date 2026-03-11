@@ -434,8 +434,36 @@ const Packages = () => {
 function PackageCard({ pkg, onEdit, onDelete }: { pkg: TreatmentPackage; onEdit: () => void; onDelete: () => void }) {
   const remaining = pkg.total_sessions - pkg.used_sessions;
   const progress  = (pkg.used_sessions / pkg.total_sessions) * 100;
+  const [expanded, setExpanded] = useState(false);
+  const [usageRecords, setUsageRecords] = useState<{ id: string; date: string; treatment_name: string; memo: string | null }[]>([]);
+  const [loadingUsage, setLoadingUsage] = useState(false);
+  const isMultiSession = pkg.total_sessions >= 2;
+
+  const loadUsage = async () => {
+    if (usageRecords.length > 0) return; // already loaded
+    setLoadingUsage(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoadingUsage(false); return; }
+    // package_uuid로 연결된 시술 기록 + 이름이 같은 시술 기록도 포함
+    const { data } = await supabase
+      .from('treatment_records')
+      .select('id, date, treatment_name, memo')
+      .eq('user_id', user.id)
+      .or(`package_uuid.eq.${pkg.id},and(clinic.eq.${pkg.clinic},treatment_name.ilike.%${pkg.name.split(' ')[0]}%)`)
+      .order('date', { ascending: false });
+    setUsageRecords(data ?? []);
+    setLoadingUsage(false);
+  };
+
+  const handleCardClick = () => {
+    if (!isMultiSession) return;
+    const next = !expanded;
+    setExpanded(next);
+    if (next) loadUsage();
+  };
+
   return (
-    <Card className="glass-card">
+    <Card className={`glass-card ${isMultiSession ? 'cursor-pointer' : ''}`} onClick={handleCardClick}>
       <CardContent className="p-4">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1 min-w-0">
@@ -450,15 +478,15 @@ function PackageCard({ pkg, onEdit, onDelete }: { pkg: TreatmentPackage; onEdit:
             </div>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="p-1 rounded-md hover:bg-muted transition-colors -mr-1 mt-1">
+                <button className="p-1 rounded-md hover:bg-muted transition-colors -mr-1 mt-1" onClick={e => e.stopPropagation()}>
                   <MoreVertical className="h-4 w-4 text-muted-foreground" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="min-w-[100px]">
-                <DropdownMenuItem onClick={onEdit} className="text-xs gap-2">
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onEdit(); }} className="text-xs gap-2">
                   <Pencil className="h-3.5 w-3.5" /> 수정
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={onDelete} className="text-xs gap-2 text-destructive focus:text-destructive">
+                <DropdownMenuItem onClick={(e) => { e.stopPropagation(); onDelete(); }} className="text-xs gap-2 text-destructive focus:text-destructive">
                   <Trash2 className="h-3.5 w-3.5" /> 삭제
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -466,7 +494,35 @@ function PackageCard({ pkg, onEdit, onDelete }: { pkg: TreatmentPackage; onEdit:
           </div>
         </div>
         <Progress value={progress} className="h-1.5 mb-1.5" />
-        <p className="text-[11px] text-muted-foreground text-right">{pkg.used_sessions}회 사용 / 총 {pkg.total_sessions}회</p>
+        <div className="flex items-center justify-between">
+          <p className="text-[11px] text-muted-foreground">{pkg.used_sessions}회 사용 / 총 {pkg.total_sessions}회</p>
+          {isMultiSession && (
+            <ChevronDown className={`h-3.5 w-3.5 text-muted-foreground transition-transform ${expanded ? 'rotate-180' : ''}`} />
+          )}
+        </div>
+
+        {/* 사용 내역 펼침 */}
+        {expanded && isMultiSession && (
+          <div className="mt-3 pt-3 border-t border-border space-y-2" onClick={e => e.stopPropagation()}>
+            <p className="text-[11px] font-semibold text-muted-foreground">사용 내역</p>
+            {loadingUsage ? (
+              <p className="text-[11px] text-muted-foreground py-2">불러오는 중...</p>
+            ) : usageRecords.length === 0 ? (
+              <p className="text-[11px] text-muted-foreground py-2">아직 사용 기록이 없어요</p>
+            ) : (
+              usageRecords.map((r, i) => (
+                <div key={r.id} className="flex items-center gap-2 text-[11px]">
+                  <span className="w-5 h-5 rounded-full bg-muted flex items-center justify-center text-[10px] font-bold text-muted-foreground shrink-0">
+                    {i + 1}
+                  </span>
+                  <span className="text-muted-foreground shrink-0">{r.date}</span>
+                  <span className="truncate font-medium">{r.treatment_name}</span>
+                  {r.memo && <span className="text-muted-foreground truncate">· {r.memo}</span>}
+                </div>
+              ))
+            )}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
