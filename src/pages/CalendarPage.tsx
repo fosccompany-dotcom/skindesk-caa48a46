@@ -131,7 +131,54 @@ const CalendarPage = () => {
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const { cycles } = useCycles();
-  const { records } = useRecords();
+  const { records, updateRecord, deleteRecord } = useRecords();
+
+  // ── 수정/삭제 state ──
+  const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<TreatmentRecord | null>(null);
+  const [editForm, setEditForm] = useState({
+    treatmentName: '', clinic: '', date: '', memo: '', notes: '',
+    skinLayer: 'epidermis' as SkinLayer, bodyArea: 'face' as BodyArea,
+    satisfaction: 0,
+  });
+
+  const handleEditRecord = (r: TreatmentRecord) => {
+    setEditForm({
+      treatmentName: r.treatmentName, clinic: r.clinic, date: r.date,
+      memo: r.memo || '', notes: r.notes || '',
+      skinLayer: r.skinLayer, bodyArea: r.bodyArea,
+      satisfaction: r.satisfaction || 0,
+    });
+    setEditRecord(r);
+  };
+
+  const saveRecordEdit = async () => {
+    if (!editRecord) return;
+    try {
+      await updateRecord(editRecord.id, {
+        ...editRecord,
+        treatmentName: editForm.treatmentName,
+        clinic: editForm.clinic,
+        date: editForm.date,
+        memo: editForm.memo || undefined,
+        notes: editForm.notes || undefined,
+        skinLayer: editForm.skinLayer,
+        bodyArea: editForm.bodyArea,
+        satisfaction: (editForm.satisfaction || undefined) as TreatmentRecord['satisfaction'],
+      });
+      toast.success('시술 기록이 수정되었습니다');
+      setEditRecord(null);
+    } catch { toast.error('수정 실패'); }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      await deleteRecord(deleteTarget.id);
+      toast.success('삭제되었습니다');
+      setDeleteTarget(null);
+    } catch { toast.error('삭제 실패'); }
+  };
 
   // 주기 기반 자동 추천 이벤트 생성
   const cycleEvents = useMemo(() => {
