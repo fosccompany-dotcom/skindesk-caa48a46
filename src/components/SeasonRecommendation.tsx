@@ -190,7 +190,7 @@ export default function SeasonRecommendation() {
       if (!user) { setLoading(false); return; }
       const { data } = await supabase
         .from('user_profiles')
-        .select('current_season')
+        .select('current_season' as any)
         .eq('id', user.id)
         .single();
       if (data?.current_season) setSeason(data.current_season as SeasonKey);
