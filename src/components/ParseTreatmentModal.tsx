@@ -1009,9 +1009,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                 <span className="font-semibold text-sm">저장 완료!</span>
               </div>
             ) : (
-              <button onClick={handleSave} disabled={saving || selectedCount === 0}
+              <button onClick={handleSave} disabled={saving || selectedCount === 0 || hasPendingDuplicate}
                 className="w-full py-3.5 bg-primary text-primary-foreground font-bold text-sm rounded-xl disabled:opacity-40 flex items-center justify-center gap-2 active:scale-[0.98] transition-transform">
-                {saving ? <><Loader2 size={16} className="animate-spin" /> 저장 중...</> : (
+                {saving ? <><Loader2 size={16} className="animate-spin" /> 저장 중...</> : hasPendingDuplicate ? '⚠ 중복 패키지 처리 방법을 선택해주세요' : (
                   <><CheckCircle size={16} /> {selectedCount}건 저장{charges.length > 0 ? ` + 충전 ${charges.length}건` : ''}</>
                 )}
               </button>
