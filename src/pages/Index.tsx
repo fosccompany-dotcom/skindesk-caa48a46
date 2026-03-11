@@ -207,51 +207,64 @@ const Index = () => {
               {/* ════════════════════════════════════════════════════
                   BLOCK 1 — 현재 관리 상태
                   ════════════════════════════════════════════════════ */}
-              <div className="grid grid-cols-2 gap-2">
-                {/* 현재 Maintain Season */}
-                <Card
-                  className="card-interactive cursor-pointer border-0 overflow-hidden col-span-1"
-                  onClick={() => navigate('/profile')}
-                >
-                  <CardContent className="p-3">
-                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">현재 관리 시즌</p>
+
+                {/* 현재 관리 시즌 — 풀 너비 카드 */}
+                <Card className="border-0 overflow-hidden cursor-pointer" onClick={() => navigate('/profile')}>
+                  <CardContent className="p-4">
                     {seasonMeta ? (
-                      <>
-                        <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="text-base">{seasonMeta.emoji}</span>
-                          <p className={`text-[11px] font-black leading-tight ${seasonMeta.color}`}>{seasonMeta.title}</p>
+                      <div className="flex items-center gap-3">
+                        <span className="text-3xl shrink-0">{seasonMeta.emoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
+                          <p className={`text-base font-black leading-tight ${seasonMeta.color}`}>{seasonMeta.title}</p>
+                          <p className="text-[11px] text-gray-400 mt-0.5">{seasonMeta.sub}</p>
                         </div>
-                        <p className="text-[10px] text-gray-400 leading-tight">{seasonMeta.sub}</p>
-                      </>
+                        <button
+                          onClick={e => { e.stopPropagation(); navigate('/profile'); }}
+                          className="shrink-0 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-[11px] font-semibold text-gray-600"
+                        >
+                          변경
+                        </button>
+                      </div>
                     ) : (
-                      <p className="text-xs text-gray-400 mt-1">시즌 설정 →</p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
+                          <p className="text-sm font-semibold text-gray-500">시즌을 설정해보세요</p>
+                        </div>
+                        <button
+                          onClick={() => navigate('/profile')}
+                          className="shrink-0 px-3 py-1.5 rounded-full border border-gray-200 bg-white text-[11px] font-semibold text-gray-600"
+                        >
+                          설정
+                        </button>
+                      </div>
                     )}
                   </CardContent>
                 </Card>
 
-                {/* 주요 관리 타깃 */}
+              {/* 주요 관리 타깃 */}
                 <Card
-                  className="card-interactive cursor-pointer border-0 overflow-hidden col-span-1"
+                  className="card-interactive cursor-pointer border-0 overflow-hidden"
                   onClick={() => navigate('/profile')}
                 >
-                  <CardContent className="p-3">
-                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">관리 타깃</p>
+                  <CardContent className="px-4 py-3">
+                    <p className="text-[10px] text-gray-400 mb-1.5">관리 타깃</p>
                     {goals.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {goals.slice(0, 3).map(g => (
+                      <div className="flex flex-wrap gap-1.5">
+                        {goals.slice(0, 4).map(g => (
                           <span key={g}
-                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 font-medium leading-tight">
+                            className="text-[11px] px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 font-medium">
                             {g}
                           </span>
                         ))}
-                        {goals.length > 3 && <span className="text-[10px] text-gray-400">+{goals.length - 3}</span>}
+                        {goals.length > 4 && <span className="text-[10px] text-gray-400 self-center">+{goals.length - 4}</span>}
                       </div>
                     ) : (
-                      <p className="text-xs text-gray-400 mt-1">목표 설정 →</p>
+                      <p className="text-xs text-gray-500">목표 설정 →</p>
                     )}
                   </CardContent>
                 </Card>
-              </div>
 
               {/* ════════════════════════════════════════════════════
                   BLOCK 2 — 다음 해야 할 관리 (Next Skin Action)
