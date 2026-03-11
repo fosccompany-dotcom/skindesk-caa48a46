@@ -162,7 +162,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
+
+      {/* ── Header ── */}
       <div className="gradient-sage safe-top">
         <div className="page-header-gradient pt-4">
           <div className="flex items-center justify-between">
@@ -170,325 +171,262 @@ const Index = () => {
               <p className="text-sm opacity-70 font-light">{t('hello')}</p>
               <h1 className="mt-0.5 text-xl font-bold">{t('my_skin_care')}</h1>
             </div>
-            <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer" onClick={() => navigate('/profile')}>
+            <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer"
+              onClick={() => navigate('/profile')}>
               <span className="text-base">👤</span>
             </div>
-          </div>
-          <div className="flex gap-2 mt-3">
-            <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              {t('my_skin')}
-            </span>
-            <span className="text-[11px] opacity-60 bg-white/10 px-3 py-1.5 rounded-full backdrop-blur-sm">
-              내 시술 기록 관리
-            </span>
           </div>
         </div>
       </div>
 
-      {/* 현재 관리 시즌 배너 */}
-      {currentSeason && (() => {
-        const s = SEASON_CONFIG[currentSeason];
-        return (
-          <div className={`mx-4 mt-3 flex items-center gap-3 px-4 py-3 rounded-2xl border ${s.bg} cursor-pointer`}
-            onClick={() => navigate('/profile')}>
-            <span className="text-xl shrink-0">{s.emoji}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-[10px] text-gray-400 font-medium mb-0.5">현재 나의 관리 시즌</p>
-              <p className={`text-sm font-bold ${s.color}`}>{s.title}</p>
-              <p className="text-[10px] text-gray-500">{s.sub}</p>
-            </div>
-            <ChevronRight size={14} className="text-gray-400 shrink-0" />
-          </div>
-        );
-      })()}
-
-      <div className="page-content space-y-4 pt-4 pb-28">
-      <div className="page-content space-y-3 pt-4 pb-28">
-        {/* ── 6-Cell 대시보드 ────────────────────────────────────────── */}
+      <div className="page-content space-y-4 pt-3 pb-28">
         {(() => {
-          // 다음 예정 시술 (cycles 중 가장 빨리 도래하는 것)
           const allCycleStatuses = cycles.map(c => ({ c, ...getCycleStatus(c) }));
-          const nextCycle = [...allCycleStatuses].sort((a, b) => a.daysRemaining - b.daysRemaining)[0];
+          const nextCycle = [...allCycleStatuses]
+            .filter(s => true)
+            .sort((a, b) => a.daysRemaining - b.daysRemaining)[0];
 
-          // 다음 추천 시술 (현재 시즌 기준, 연간 추천 횟수 가장 높은 시술)
           const nextRecommended = currentSeason
             ? [...ALL_TREATMENT_SEASON_DATA]
-                .filter(d => d.seasons[currentSeason].timesPerYear > 0)
+                .filter(d => d.seasons[currentSeason!].timesPerYear > 0)
                 .sort((a, b) => b.seasons[currentSeason!].timesPerYear - a.seasons[currentSeason!].timesPerYear)[0]
             : null;
 
-          // 잔액 합계
           const totalBalance = clinicBalances.reduce((s, b) => s + b.balance, 0);
-
-          // 남은 시술권 (미사용 잔여 있는 것만)
           const activePackages = packages.filter(p => p.total_sessions - p.used_sessions > 0);
-
-          // 시술권 보유 여부 체크 (다음 예정 시술 이름 포함 여부)
           const nextCyclePkg = nextCycle
             ? activePackages.find(p => p.name.includes(nextCycle.c.name) || nextCycle.c.name.includes(p.name))
             : null;
-
           const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
+
+          // 2주 이내 예정 (cycles 기준)
+          const upcomingIn2w = allCycleStatuses.filter(s => s.daysRemaining >= 0 && s.daysRemaining <= 14);
 
           return (
             <>
-              {/* Row 1: 현재 관리 모드 + 주요 관리 타깃 */}
+              {/* ════════════════════════════════════════════════════
+                  BLOCK 1 — 현재 관리 상태
+                  ════════════════════════════════════════════════════ */}
               <div className="grid grid-cols-2 gap-2">
-                {/* 현재 관리 모드 */}
-                <Card className="card-interactive cursor-pointer border-0 overflow-hidden" onClick={() => navigate('/profile')}>
+                {/* 현재 Maintain Season */}
+                <Card
+                  className="card-interactive cursor-pointer border-0 overflow-hidden col-span-1"
+                  onClick={() => navigate('/profile')}
+                >
                   <CardContent className="p-3">
-                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">현재 관리 모드</p>
+                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">현재 관리 시즌</p>
                     {seasonMeta ? (
                       <>
                         <div className="flex items-center gap-1.5 mb-0.5">
-                          <span className="text-lg">{seasonMeta.emoji}</span>
+                          <span className="text-base">{seasonMeta.emoji}</span>
                           <p className={`text-[11px] font-black leading-tight ${seasonMeta.color}`}>{seasonMeta.title}</p>
                         </div>
-                        <p className="text-[10px] text-gray-400">{seasonMeta.sub}</p>
+                        <p className="text-[10px] text-gray-400 leading-tight">{seasonMeta.sub}</p>
                       </>
                     ) : (
-                      <p className="text-xs text-gray-400">미설정</p>
+                      <p className="text-xs text-gray-400 mt-1">시즌 설정 →</p>
                     )}
                   </CardContent>
                 </Card>
 
                 {/* 주요 관리 타깃 */}
-                <Card className="card-interactive cursor-pointer border-0 overflow-hidden" onClick={() => navigate('/profile')}>
+                <Card
+                  className="card-interactive cursor-pointer border-0 overflow-hidden col-span-1"
+                  onClick={() => navigate('/profile')}
+                >
                   <CardContent className="p-3">
-                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">주요 관리 타깃</p>
+                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">관리 타깃</p>
                     {goals.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
                         {goals.slice(0, 3).map(g => (
-                          <span key={g} className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 font-medium">{g}</span>
+                          <span key={g}
+                            className="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100 font-medium leading-tight">
+                            {g}
+                          </span>
                         ))}
                         {goals.length > 3 && <span className="text-[10px] text-gray-400">+{goals.length - 3}</span>}
                       </div>
                     ) : (
-                      <p className="text-xs text-gray-400">미설정</p>
+                      <p className="text-xs text-gray-400 mt-1">목표 설정 →</p>
                     )}
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Row 2: 다음 예정 시술 + 다음 추천 시술 */}
-              <div className="grid grid-cols-2 gap-2">
-                {/* 다음 예정 시술 */}
-                <Card className="card-interactive cursor-pointer border-0 overflow-hidden" onClick={() => navigate('/cycles')}>
-                  <CardContent className="p-3">
-                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">다음 예정 시술</p>
-                    {nextCycle ? (
-                      <>
-                        <p className="text-[12px] font-bold text-gray-800 leading-tight truncate">{nextCycle.c.name}</p>
-                        <p className={`text-[11px] font-semibold mt-0.5 ${
-                          nextCycle.daysRemaining <= 0 ? 'text-rose-500' :
-                          nextCycle.daysRemaining <= 14 ? 'text-amber-500' : 'text-indigo-500'
-                        }`}>
-                          {nextCycle.daysRemaining <= 0 ? `${Math.abs(nextCycle.daysRemaining)}일 초과` :
-                           nextCycle.daysRemaining === 0 ? '오늘' : `${nextCycle.daysRemaining}일 후`}
-                        </p>
-                        {nextCyclePkg && (
-                          <p className="text-[9px] text-emerald-500 mt-0.5">🎫 시술권 보유</p>
-                        )}
-                      </>
-                    ) : (
-                      <p className="text-[11px] text-gray-400">등록된 주기 없음</p>
-                    )}
-                  </CardContent>
-                </Card>
-
-                {/* 다음 추천 시술 */}
-                <Card className="card-interactive cursor-pointer border-0 overflow-hidden" onClick={() => navigate('/cycles?tab=season')}>
-                  <CardContent className="p-3">
-                    <p className="text-[9px] font-semibold text-gray-400 mb-1.5 uppercase tracking-wide">다음 추천 시술</p>
-                    {nextRecommended && currentSeason ? (
-                      <>
-                        <p className="text-[12px] font-bold text-gray-800 leading-tight truncate">{nextRecommended.name}</p>
-                        <p className="text-[10px] text-amber-500 font-semibold mt-0.5">
-                          {nextRecommended.seasons[currentSeason].intervalDays > 0
-                            ? `${nextRecommended.seasons[currentSeason].intervalDays}일 간격`
-                            : '추천'}
-                        </p>
-                        <p className="text-[9px] text-gray-400 mt-0.5 truncate">{nextRecommended.seasons[currentSeason].label}</p>
-                      </>
-                    ) : (
-                      <p className="text-[11px] text-gray-400">시즌 설정 필요</p>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Row 3: 남은 시술금액 */}
-              <Card className="card-interactive cursor-pointer border-0" onClick={() => navigate('/points')}>
-                <CardContent className="p-3">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide mb-1">남은 시술금액</p>
-                      <p className="text-lg font-black text-gray-800">
-                        {totalBalance > 0 ? `${totalBalance.toLocaleString()}원` : '—'}
-                      </p>
-                    </div>
-                    <div className="flex flex-col gap-1 items-end">
-                      {clinicBalances.length > 0 ? clinicBalances.map(b => (
-                        <div key={b.clinic} className="flex items-center gap-1.5">
-                          <span className="text-[9px] text-gray-400">{b.clinic}</span>
-                          <span className="text-[10px] font-semibold text-gray-600">{b.balance.toLocaleString()}원</span>
-                        </div>
-                      )) : (
-                        <span className="text-[10px] text-gray-400">잔액 없음</span>
-                      )}
-                    </div>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground ml-2 shrink-0" />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Row 4: 남은 시술권 */}
+              {/* ════════════════════════════════════════════════════
+                  BLOCK 2 — 다음 해야 할 관리 (Next Skin Action)
+                  ════════════════════════════════════════════════════ */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs font-bold text-gray-700">남은 시술권</p>
-                  <button onClick={() => navigate('/packages')} className="text-[10px] text-gray-400 flex items-center gap-0.5">
+                <p className="text-[11px] font-bold text-gray-500 mb-2 px-0.5">다음 해야 할 관리</p>
+                <div className="grid grid-cols-2 gap-2">
+
+                  {/* 다음 예정 시술 */}
+                  <Card className="card-interactive cursor-pointer border-0 overflow-hidden" onClick={() => navigate('/cycles')}>
+                    <CardContent className="p-3 flex flex-col gap-2">
+                      <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">다음 예정 시술</p>
+                      {nextCycle ? (
+                        <>
+                          <div>
+                            <p className="text-[12px] font-bold text-gray-800 leading-tight truncate">{nextCycle.c.name}</p>
+                            <p className={`text-[13px] font-black mt-0.5 ${
+                              nextCycle.daysRemaining <= 0 ? 'text-rose-500' :
+                              nextCycle.daysRemaining <= 7 ? 'text-amber-500' : 'text-indigo-500'
+                            }`}>
+                              {nextCycle.daysRemaining < 0
+                                ? `${Math.abs(nextCycle.daysRemaining)}일 초과`
+                                : nextCycle.daysRemaining === 0 ? '오늘'
+                                : `${nextCycle.daysRemaining}일 후`}
+                            </p>
+                            {nextCyclePkg && (
+                              <span className="text-[9px] text-emerald-500 mt-0.5 block">🎫 시술권 보유</span>
+                            )}
+                          </div>
+                          <button
+                            onClick={e => { e.stopPropagation(); setEditRecord(null); setModalOpen(true); }}
+                            className="w-full py-1.5 rounded-lg bg-gray-100 text-[10px] font-semibold text-gray-600 active:bg-gray-200 transition-colors">
+                            시술 기록 추가
+                          </button>
+                        </>
+                      ) : (
+                        <p className="text-[11px] text-gray-400 flex-1">등록된 주기 없음</p>
+                      )}
+                    </CardContent>
+                  </Card>
+
+                  {/* 추천 관리 (Next Skin Action) */}
+                  <Card className="card-interactive cursor-pointer border-0 overflow-hidden bg-gradient-to-br from-white to-indigo-50/30"
+                    onClick={() => navigate('/cycles')}>
+                    <CardContent className="p-3 flex flex-col gap-2">
+                      <p className="text-[9px] font-semibold text-indigo-400 uppercase tracking-wide">추천 관리</p>
+                      {nextRecommended && currentSeason ? (
+                        <>
+                          <div>
+                            <p className="text-[12px] font-bold text-gray-800 leading-tight">{nextRecommended.name}</p>
+                            <p className="text-[10px] text-indigo-500 font-semibold mt-0.5">추천 시기 · 이번 주</p>
+                            <p className="text-[9px] text-gray-400 mt-0.5 line-clamp-2 leading-snug">
+                              {nextRecommended.seasons[currentSeason].label}
+                            </p>
+                          </div>
+                          <button
+                            onClick={e => { e.stopPropagation(); setEditRecord(null); setModalOpen(true); }}
+                            className="w-full py-1.5 rounded-lg bg-indigo-500 text-[10px] font-semibold text-white active:bg-indigo-600 transition-colors">
+                            시술 기록 추가
+                          </button>
+                        </>
+                      ) : (
+                        <p className="text-[11px] text-gray-400 flex-1">시즌 설정 필요</p>
+                      )}
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+
+              {/* ════════════════════════════════════════════════════
+                  BLOCK 3 — 시술 자산 (시술권 + 잔액)
+                  ════════════════════════════════════════════════════ */}
+              <div>
+                <div className="flex items-center justify-between mb-2 px-0.5">
+                  <p className="text-[11px] font-bold text-gray-500">남은 시술권</p>
+                  <button onClick={() => navigate('/packages')}
+                    className="text-[10px] text-gray-400 flex items-center gap-0.5">
                     전체보기 <ChevronRight size={10} />
                   </button>
                 </div>
+
                 {activePackages.length > 0 ? (
                   <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                     {activePackages.map(pkg => {
                       const remaining = pkg.total_sessions - pkg.used_sessions;
                       const pct = (pkg.used_sessions / pkg.total_sessions) * 100;
                       return (
-                        <div key={pkg.id} className="shrink-0 bg-white border border-gray-100 rounded-xl px-3 py-2.5 min-w-[120px] cursor-pointer"
+                        <div key={pkg.id}
+                          className="shrink-0 bg-white border border-gray-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer active:bg-gray-50"
                           onClick={() => navigate('/packages')}>
-                          <p className="text-[11px] font-bold text-gray-800 truncate mb-0.5">{pkg.name}</p>
+                          <p className="text-[11px] font-bold text-gray-800 truncate">{pkg.name}</p>
                           <p className="text-[10px] text-gray-400 mb-1.5">{pkg.clinic}</p>
-                          <div className="flex items-center gap-1.5 mb-1">
-                            <span className="text-sm font-black text-indigo-600">{remaining}</span>
-                            <span className="text-[10px] text-gray-400">/ {pkg.total_sessions}회</span>
+                          <div className="flex items-center gap-1 mb-1">
+                            <span className="text-base font-black text-indigo-600">{remaining}</span>
+                            <span className="text-[11px] text-gray-400">/ {pkg.total_sessions}회</span>
                           </div>
                           <div className="h-1 bg-gray-100 rounded-full overflow-hidden">
-                            <div className="h-full bg-indigo-400 rounded-full" style={{ width: `${pct}%` }} />
+                            <div className="h-full bg-indigo-400 rounded-full transition-all" style={{ width: `${pct}%` }} />
                           </div>
                         </div>
                       );
                     })}
+
+                    {/* 잔액 카드 — 시술권 가로 스크롤 맨 끝 */}
+                    {totalBalance > 0 && (
+                      <div className="shrink-0 bg-emerald-50 border border-emerald-100 rounded-xl px-3 py-2.5 min-w-[130px] cursor-pointer"
+                        onClick={() => navigate('/points')}>
+                        <p className="text-[10px] font-semibold text-emerald-600 mb-1">남은 잔액</p>
+                        <p className="text-base font-black text-emerald-700">{totalBalance.toLocaleString()}원</p>
+                        {clinicBalances.map(b => (
+                          <p key={b.clinic} className="text-[9px] text-emerald-500 mt-0.5">{b.clinic} {b.balance.toLocaleString()}원</p>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ) : (
-                  <div className="text-center py-4 text-[11px] text-gray-400 bg-gray-50 rounded-xl">
-                    등록된 시술권이 없습니다
+                  /* 빈 상태 개선 */
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center">
+                    <p className="text-sm font-semibold text-gray-500 mb-1">시술권을 등록하면</p>
+                    <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
+                      남은 횟수와 다음 관리 시점을<br />자동으로 알려드려요!
+                    </p>
+                    <button
+                      onClick={() => navigate('/packages')}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-800 text-white text-[11px] font-semibold">
+                      <Plus size={12} /> 시술권 추가
+                    </button>
                   </div>
                 )}
               </div>
+
+              {/* ════════════════════════════════════════════════════
+                  BLOCK 4 — 가까운 일정 (캘린더)
+                  ════════════════════════════════════════════════════ */}
+              <div>
+                <p className="text-[11px] font-bold text-gray-500 mb-2 px-0.5">가까운 일정</p>
+                {upcomingIn2w.length > 0 ? (
+                  <Card className="card-interactive cursor-pointer border-0" onClick={() => navigate('/calendar')}>
+                    <CardContent className="p-3">
+                      <div className="space-y-2">
+                        {upcomingIn2w.slice(0, 3).map(({ c, daysRemaining }) => (
+                          <div key={c.id} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className={`h-2 w-2 rounded-full shrink-0 ${daysRemaining <= 7 ? 'bg-amber-400' : 'bg-indigo-400'}`} />
+                              <span className="text-sm font-medium truncate">{c.name}</span>
+                            </div>
+                            <span className={`text-sm font-bold shrink-0 ${daysRemaining <= 7 ? 'text-amber-500' : 'text-indigo-500'}`}>
+                              {daysRemaining === 0 ? '오늘' : `D-${daysRemaining}`}
+                            </span>
+                          </div>
+                        ))}
+                        {upcomingIn2w.length > 3 && (
+                          <p className="text-[10px] text-gray-400 text-right">+{upcomingIn2w.length - 3}건 더보기</p>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-5 text-center">
+                    <CalendarDays size={20} className="text-gray-300 mx-auto mb-2" />
+                    <p className="text-xs font-semibold text-gray-500">등록된 관리 일정이 없어요</p>
+                    <p className="text-[11px] text-gray-400 mt-1 leading-relaxed">
+                      시술을 기록하면 자동으로<br />일정이 생성되어요!
+                    </p>
+                  </div>
+                )}
+              </div>
+
             </>
           );
         })()}
 
-        {/* Urgent treatments */}
-        {stats.mostUrgent.length > 0 && (
-          <Card className="card-interactive" onClick={() => navigate('/cycles')}>
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-bold flex items-center gap-1.5">
-                  <TrendingUp className="h-3.5 w-3.5 text-rose" />
-                  {t('urgent_treatments')}
-                </h2>
-                <ChevronRight className="h-4 w-4 text-muted-foreground" />
-              </div>
-              <div className="space-y-2">
-                {stats.mostUrgent.map(({ cycle, daysRemaining, status }) => {
-                  const config = statusConfig[status];
-                  return (
-                    <div key={cycle.id} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <div className={`h-2 w-2 rounded-full ${status === 'overdue' ? 'bg-rose' : status === 'upcoming' ? 'bg-amber' : 'bg-sage-dark'}`} />
-                        <span className="text-sm font-medium truncate">{cycle.treatmentName}</span>
-                        <span className="text-[10px] text-muted-foreground">{BODY_AREA_LABELS[cycle.bodyArea]}</span>
-                      </div>
-                      <span className={`text-sm font-bold ${config.color} shrink-0`}>
-                        {daysRemaining > 0 ? `D-${daysRemaining}` : daysRemaining === 0 ? 'D-Day' : `D+${Math.abs(daysRemaining)}`}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* 2-week schedule */}
-        <Card className="card-interactive" onClick={() => navigate('/calendar')}>
-          <CardContent className="flex items-center gap-3 p-4">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info-light">
-              <CalendarDays className="h-4.5 w-4.5 text-info" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-muted-foreground">{t('schedule_in_2weeks')}</p>
-              <p className="text-lg font-bold tracking-tight">{stats.scheduleCount}건</p>
-            </div>
-            <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
-          </CardContent>
-        </Card>
-
-        {/* Skin layer status */}
-        <Card className="card-interactive" onClick={() => navigate('/cycles')}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold flex items-center gap-1.5">
-                <Layers className="h-3.5 w-3.5 text-info" />
-                {t('skin_layer_status')}
-              </h2>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="space-y-2.5">
-              {stats.layerSummary.map(({ layer, count, status }) => {
-                const config = statusConfig[status];
-                return (
-                  <div key={layer} className="flex items-center gap-3">
-                    <div className={`h-8 w-8 rounded-lg flex items-center justify-center ${config.bg}`}>
-                      <span className="text-[10px] font-bold">{SKIN_LAYER_LABELS[layer].charAt(0)}</span>
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{SKIN_LAYER_LABELS[layer]}</p>
-                      <p className="text-[10px] text-muted-foreground">{count}개 시술 관리 중</p>
-                    </div>
-                    <span className={`text-xs font-semibold px-2 py-1 rounded-full ${config.bg} ${config.color}`}>
-                      {config.label}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Remaining vouchers */}
-        <Card className="card-interactive" onClick={() => navigate('/packages')}>
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between mb-3">
-              <h2 className="text-sm font-bold flex items-center gap-1.5">
-                <Package className="h-3.5 w-3.5 text-accent-foreground" />
-                {t('remaining_vouchers')}
-              </h2>
-              <ChevronRight className="h-4 w-4 text-muted-foreground" />
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {([] as any[]).map((pkg) => {
-                const remaining = pkg.totalSessions - pkg.usedSessions;
-                const progress = (pkg.usedSessions / pkg.totalSessions) * 100;
-                return (
-                  <div key={pkg.id} className="p-2.5 rounded-xl bg-muted/50">
-                    <p className="text-xs font-semibold truncate">{pkg.name}</p>
-                    <div className="flex items-end justify-between mt-1.5">
-                      <p className="text-lg font-bold text-primary">{remaining}<span className="text-[10px] font-normal text-muted-foreground">회</span></p>
-                      <BodyAreaBadge area={pkg.bodyArea} />
-                    </div>
-                    <Progress value={progress} className="h-1 mt-1.5" />
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Treatment records */}
+        {/* ════════════════════════════════════════════════════
+            시술 기록 (Records)
+            ════════════════════════════════════════════════════ */}
         <div>
           <div className="flex items-center justify-between px-1 mb-2.5">
             <h2 className="text-sm font-bold flex items-center gap-1.5">
@@ -499,7 +437,6 @@ const Index = () => {
               {showAllRecords ? t('fold') : t('view_all')}
             </button>
           </div>
-
           <div className="space-y-2">
             {displayedRecords.map((r) => (
               <Card key={r.id} className="glass-card">
@@ -544,6 +481,7 @@ const Index = () => {
             ))}
           </div>
         </div>
+
       </div>
 
       {/* FAB */}
@@ -574,7 +512,6 @@ const Index = () => {
       >
         <Plus size={24} className={`text-black transition-transform duration-200 ${fabOpen ? "rotate-45" : ""}`} strokeWidth={2.5} />
       </button>
-      </div>
 
       {parseModalOpen && (
         <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />
