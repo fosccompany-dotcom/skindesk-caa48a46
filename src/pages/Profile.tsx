@@ -605,7 +605,17 @@ const Profile = () => {
                       </div>
                       <div className="space-y-1">
                         <Label className="text-[10px] text-muted-foreground">{t('gugun')}</Label>
-                        <Select value={selectedGugun} onValueChange={setSelectedGugun} disabled={!selectedSido}>
+                        <Select value={selectedGugun} onValueChange={(v) => {
+                          setSelectedGugun(v);
+                          if (selectedSido && v) {
+                            const full = `${selectedSido} ${v}`;
+                            if (!regions.includes(full) && regions.length < 7) {
+                              setRegions(prev => [...prev, full]);
+                            }
+                            setSelectedSido('');
+                            setSelectedGugun('');
+                          }
+                        }} disabled={!selectedSido}>
                           <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('gugun')} /></SelectTrigger>
                           <SelectContent>
                             {gugunOptions.map(gu => (
