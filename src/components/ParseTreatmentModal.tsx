@@ -54,6 +54,17 @@ interface ChargeRecord {
   label: string;
 }
 
+interface ParsedPackage {
+  date: string;
+  name: string;
+  total_sessions: number;
+  used_sessions: number;
+  clinic: string | null;
+  amount_paid: number | null;
+  memo: string | null;
+  selected: boolean;
+}
+
 interface Props { onClose: () => void; }
 type Tab = 'text' | 'image';
 
@@ -73,6 +84,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const [saved, setSaved]             = useState(false);
   // 충전만 있을 때 결제내역 추가 선택
   const [chargePayments, setChargePayments] = useState<{ show: boolean; amount: string; method: 'card' | 'cash' }[]>([]);
+  const [pkgs, setPkgs] = useState<ParsedPackage[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,11 +119,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       const { data, error: fnError } = await supabase.functions.invoke('parse-treatment', { body });
       if (fnError) throw new Error(fnError.message);
 
-      const hasRecords  = data?.records?.length  > 0;
-      const hasBundles  = data?.bundles?.length  > 0;
-      const hasCharges  = data?.charges?.length  > 0;
+      const hasRecords   = data?.records?.length  > 0;
+      const hasBundles   = data?.bundles?.length  > 0;
+      const hasCharges   = data?.charges?.length  > 0;
+      const hasPackages  = data?.packages?.length > 0;
 
-      if (!hasRecords && !hasBundles && !hasCharges) {
+      if (!hasRecords && !hasBundles && !hasCharges && !hasPackages) {
         if (data?.hint === 'image_credit_low') {
           setTab('text');
           setError('이미지 분석 크레딧 부족 — 텍스트 탭에서 문자 내용을 붙여넣어 주세요.');
@@ -124,6 +137,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       if (hasCharges) {
         setCharges(data.charges);
         setChargePayments(data.charges.map(() => ({ show: false, amount: '', method: 'card' as const })));
+      }
+
+      if (hasPackages) {
+        setPkgs(data.packages.map((p: any) => ({ ...p, clinic: p.clinic || '', selected: true })));
       }
 
       if (hasBundles) {
@@ -269,11 +286,39 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       });
     }
 
+    // 5. 시술권(패키지) 저장 → treatment_packages
+    for (const p of pkgs.filter(p => p.selected)) {
+      await supabase.from('treatment_packages').insert({
+        user_id:        user.id,
+        name:           p.name,
+        type:           'session',
+        total_sessions: p.total_sessions,
+        used_sessions:  0,
+        skin_layer:     'dermis',
+        body_area:      'face',
+        clinic:         p.clinic || '',
+        expiry_date:    null,
+      });
+      // payment_records에도 구매 기록
+      if (p.amount_paid) {
+        await supabase.from('payment_records').insert({
+          user_id:        user.id,
+          date:           p.date,
+          clinic:         p.clinic || '',
+          clinic_type:    '밴스',
+          treatment_name: p.name,
+          amount:         p.amount_paid,
+          method:         '시술결제',
+          memo:           p.memo || null,
+        });
+      }
+    }
+
     setSaving(false); setSaved(true);
     setTimeout(onClose, 1200);
   };
 
-  const selectedCount  = (parsed?.filter(r => r.selected).length ?? 0) + bundles.filter(b => b.selected).length;
+  const selectedCount  = (parsed?.filter(r => r.selected).length ?? 0) + bundles.filter(b => b.selected).length + pkgs.filter(p => p.selected).length;
   const showResults    = parsed !== null;
 
   return (
@@ -359,6 +404,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
             <div className="p-5 space-y-4">
               <div className="flex items-center justify-between">
                 <p className="text-xs text-white/60">
+                  {pkgs.length > 0 && `시술권 ${pkgs.length}개 · `}
                   {bundles.length > 0 && `세트 ${bundles.length}개 · `}
                   {(parsed?.length ?? 0)}개 시술 · {selectedCount}개 선택
                 </p>
@@ -438,6 +484,42 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                   )}
                 </div>
               ))}
+
+              {/* ── 시술권(패키지) 카드 ── */}
+              {pkgs.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-[11px] text-white/40 flex items-center gap-1.5">
+                    <Package size={11} /> 시술권 구매 — treatment_packages에 등록
+                  </p>
+                  {pkgs.map((p, i) => (
+                    <div key={i} className={cn('rounded-xl border transition-all',
+                      p.selected ? 'border-[#C9A96E]/40 bg-[#C9A96E]/5' : 'border-white/10 bg-white/3 opacity-50')}>
+                      <div className="flex items-center gap-3 p-3.5">
+                        <button onClick={() => setPkgs(prev => prev.map((pk, pi) => pi === i ? { ...pk, selected: !pk.selected } : pk))}
+                          className={cn('w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all',
+                            p.selected ? 'border-[#C9A96E] bg-[#C9A96E]' : 'border-white/30')}>
+                          {p.selected && <div className="w-2 h-2 rounded-full bg-black" />}
+                        </button>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
+                            <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-violet-500/20 text-violet-300 border border-violet-500/30 font-semibold">시술권</span>
+                            {p.memo && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/5 text-white/40 border border-white/10">{p.memo}</span>}
+                          </div>
+                          <p className="text-[13px] font-bold text-white leading-tight">{p.name}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[11px] font-bold text-[#C9A96E]">{p.total_sessions}회권</span>
+                            <span className="text-[10px] text-white/40">잔여 {p.total_sessions}회</span>
+                            {p.clinic && <span className="text-[10px] text-white/40">{p.clinic}</span>}
+                          </div>
+                          {p.amount_paid && (
+                            <p className="text-[10px] text-white/40 mt-0.5">₩{p.amount_paid.toLocaleString()}</p>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {/* ── 번들 카드 ── */}
               {bundles.length > 0 && (
