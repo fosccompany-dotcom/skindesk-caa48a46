@@ -71,6 +71,8 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const [saving, setSaving]           = useState(false);
   const [parseSource, setParseSource] = useState<string | null>(null);
   const [saved, setSaved]             = useState(false);
+  // 충전만 있을 때 결제내역 추가 선택
+  const [chargePayments, setChargePayments] = useState<{ show: boolean; amount: string; method: 'card' | 'cash' }[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -119,7 +121,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         setLoading(false); return;
       }
 
-      if (hasCharges) setCharges(data.charges);
+      if (hasCharges) {
+        setCharges(data.charges);
+        setChargePayments(data.charges.map(() => ({ show: false, amount: '', method: 'card' as const })));
+      }
 
       if (hasBundles) {
         setBundles(data.bundles.map((b: any) => ({
@@ -164,6 +169,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const toggleBundle        = (i: number) => setBundles(prev => prev.map((b, idx) => idx === i ? { ...b, selected: !b.selected } : b));
   const toggleBundleExpand  = (i: number) => setBundles(prev => prev.map((b, idx) => idx === i ? { ...b, expanded: !b.expanded } : b));
   const updateBundle        = (i: number, field: string, value: any) => setBundles(prev => prev.map((b, idx) => idx === i ? { ...b, [field]: value } : b));
+  const removeBundleTreatment = (bundleIdx: number, treatIdx: number) =>
+    setBundles(prev => prev.map((b, i) => i === bundleIdx
+      ? { ...b, treatments: b.treatments.filter((_, ti) => ti !== treatIdx) }
+      : b));
 
   const handleSave = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -239,6 +248,23 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         treatment_name: c.label,
         amount:         c.amount,
         method:         '포인트충전',
+        memo:           null,
+      });
+    }
+
+    // 4. 충전 시 사용자가 추가 입력한 결제내역 저장
+    for (let ci = 0; ci < charges.length; ci++) {
+      const cp = chargePayments[ci];
+      if (!cp?.show || !cp.amount) continue;
+      const c = charges[ci];
+      await supabase.from('payment_records').insert({
+        user_id:        user.id,
+        date:           c.date,
+        clinic:         c.clinic || '',
+        clinic_type:    '밴스',
+        treatment_name: '시술결제',
+        amount:         Number(cp.amount),
+        method:         cp.method === 'card' ? '카드' : '현금',
         memo:           null,
       });
     }
@@ -346,13 +372,70 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
               {/* 충전 배너 */}
               {charges.map((c, i) => (
-                <div key={i} className="flex items-center gap-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3.5 py-2.5">
-                  <CreditCard size={14} className="text-emerald-400 shrink-0" />
-                  <div className="flex-1">
-                    <p className="text-xs font-semibold text-emerald-400">{c.label} +{c.amount.toLocaleString()}원</p>
-                    <p className="text-[10px] text-white/40">{c.date}{c.clinic && ` · ${c.clinic}`} · 잔액에 자동 반영됩니다</p>
+                <div key={i} className="space-y-2">
+                  <div className="flex items-center gap-2.5 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-3.5 py-2.5">
+                    <CreditCard size={14} className="text-emerald-400 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-xs font-semibold text-emerald-400">{c.label} +{c.amount.toLocaleString()}원</p>
+                      <p className="text-[10px] text-white/40">{c.date}{c.clinic && ` · ${c.clinic}`} · 잔액에 자동 반영됩니다</p>
+                    </div>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">저장됨</span>
                   </div>
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shrink-0">저장됨</span>
+
+                  {/* 충전만 있고 시술/번들 없을 때 → 결제내역 추가 옵션 */}
+                  {(parsed?.length ?? 0) === 0 && bundles.length === 0 && (
+                    <div className="rounded-xl border border-white/10 bg-white/3 overflow-hidden">
+                      <button
+                        onClick={() => setChargePayments(prev => prev.map((cp, ci2) => ci2 === i ? { ...cp, show: !cp.show } : cp))}
+                        className="w-full flex items-center gap-2.5 px-3.5 py-2.5 text-left"
+                      >
+                        <span className="text-sm">🧾</span>
+                        <div className="flex-1">
+                          <p className="text-xs font-semibold text-white/70">결제내역도 추가하시겠어요?</p>
+                          <p className="text-[10px] text-white/40">이번 충전 관련 결제 기록을 추가할 수 있어요</p>
+                        </div>
+                        <div className={`w-8 h-4 rounded-full transition-colors shrink-0 ${chargePayments[i]?.show ? 'bg-[#C9A96E]' : 'bg-white/15'}`}>
+                          <div className={`w-3 h-3 bg-white rounded-full mt-0.5 transition-transform ${chargePayments[i]?.show ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                        </div>
+                      </button>
+
+                      {chargePayments[i]?.show && (
+                        <div className="px-3.5 pb-3.5 space-y-2 border-t border-white/10 pt-3">
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <label className="text-[10px] text-white/40 mb-1 block">병원명</label>
+                              <input type="text" value={c.clinic || ''} readOnly
+                                className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white/60 focus:outline-none" />
+                            </div>
+                            <div>
+                              <label className="text-[10px] text-white/40 mb-1 block">결제 금액</label>
+                              <input type="number"
+                                value={chargePayments[i]?.amount || ''}
+                                placeholder="금액 입력"
+                                onChange={e => setChargePayments(prev => prev.map((cp, ci2) => ci2 === i ? { ...cp, amount: e.target.value } : cp))}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-[#C9A96E]/50" />
+                            </div>
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-white/40 mb-1.5 block">결제 수단</label>
+                            <div className="flex gap-2">
+                              {(['card', 'cash'] as const).map(m => (
+                                <button key={m}
+                                  onClick={() => setChargePayments(prev => prev.map((cp, ci2) => ci2 === i ? { ...cp, method: m } : cp))}
+                                  className={`flex-1 py-2 rounded-lg text-xs font-semibold border transition-all ${
+                                    chargePayments[i]?.method === m
+                                      ? 'border-[#C9A96E]/60 bg-[#C9A96E]/10 text-[#C9A96E]'
+                                      : 'border-white/10 bg-white/5 text-white/50'
+                                  }`}>
+                                  {m === 'card' ? '💳 카드' : '💵 현금'}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
               ))}
 
@@ -427,7 +510,13 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             {b.treatments.map((t, ti) => (
                               <div key={ti} className="flex items-center gap-2">
                                 <span className={cn('text-[9px] px-1 py-0.5 rounded border shrink-0', SKIN_LAYER_COLOR[t.skinLayer])}>{LAYER_LABEL[t.skinLayer]}</span>
-                                <span className="text-xs text-white/70">{t.treatmentName}</span>
+                                <span className="text-xs text-white/70 flex-1">{t.treatmentName}</span>
+                                <button
+                                  onClick={() => removeBundleTreatment(i, ti)}
+                                  className="p-1 rounded-full hover:bg-white/10 text-white/30 hover:text-white/60 transition-colors shrink-0"
+                                >
+                                  <X size={11} />
+                                </button>
                               </div>
                             ))}
                           </div>
