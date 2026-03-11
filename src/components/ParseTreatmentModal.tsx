@@ -159,10 +159,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         )));
       }
 
+      const todayStr2 = new Date().toISOString().split('T')[0];
       setParsed(
         hasRecords
           ? data.records.map((r: any) => ({
               ...r,
+              date: r.date || todayStr2,
               clinic: r.clinic || '',
               skinLayer: r.skinLayer || 'dermis',
               bodyArea: r.bodyArea || 'face',
