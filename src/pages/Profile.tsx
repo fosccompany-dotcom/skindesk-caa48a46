@@ -779,6 +779,7 @@ function PaymentHistoryTab() {
       .from('payment_records')
       .select('id, date, clinic, treatment_name, amount, method, memo, charged_amount, clinic_type')
       .eq('user_id', user.id)
+      .neq('method', '포인트충전')
       .order('date', { ascending: false });
     setPayments(data ?? []);
     setLoading(false);
