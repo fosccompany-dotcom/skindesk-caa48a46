@@ -1,7 +1,7 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, Wallet, Building2, MoreVertical, Pencil, Trash2, ChevronDown } from 'lucide-react';
+import { Package, Wallet, Building2, MoreVertical, Pencil, Trash2, ChevronDown, ArrowLeftRight } from 'lucide-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
