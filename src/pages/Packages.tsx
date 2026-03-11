@@ -59,7 +59,7 @@ const Packages = () => {
 
   // 편집 폼 state
   const [editPkgForm, setEditPkgForm] = useState({ name: '', clinic: '', total_sessions: 0, used_sessions: 0, expiry_date: '' });
-  const [editPayForm, setEditPayForm] = useState({ treatment_name: '', clinic: '', date: '', amount: 0, memo: '' });
+  const [editPayForm, setEditPayForm] = useState({ treatment_name: '', clinic: '', date: '', amount: 0, memo: '', method: '' as string });
 
   // 시술권 로드
   const loadPackages = useCallback(async () => {
