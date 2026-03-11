@@ -539,7 +539,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               </Button>
             )}
           </div>
-          {mode === 'record' && onOpenParse && (
+          {onOpenParse && (
             <button
               onClick={() => { handleClose(); onOpenParse(); }}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-muted-foreground text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
