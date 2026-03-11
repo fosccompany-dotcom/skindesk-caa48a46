@@ -73,7 +73,7 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [profileRes, balRes, pkgRes] = await Promise.all([
-        supabase.from('user_profiles').select('current_season,goals').eq('id', user.id).single(),
+        supabase.from('user_profiles').select('current_season,goals' as any).eq('id', user.id).single(),
         supabase.from('clinic_balances').select('clinic,balance').eq('user_id', user.id),
         supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
       ]);
