@@ -65,7 +65,7 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
         date,
         clinic:         clinic.trim(),
         clinic_type:    clinicType,
-        treatment_name: description.trim(),
+        treatment_name: description.trim() || METHOD_CONFIG[method].label,
         amount:         amountNum,
         charged_amount: method === '포인트충전' ? chargedNum : null,
         method,
