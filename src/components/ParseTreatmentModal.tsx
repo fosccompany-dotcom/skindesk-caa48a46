@@ -384,17 +384,36 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     setSaving(true);
 
     const toSave = (parsed || []).filter(r => r.selected);
-    for (const r of toSave) {
-      await addRecord({
-        date: r.date, packageId: '', treatmentName: r.treatmentName,
-        skinLayer: r.skinLayer, bodyArea: r.bodyArea,
-        clinic: r.clinic || '', satisfaction: undefined, notes: undefined,
-        memo: r.memo || undefined, amount_paid: r.amount_paid ?? undefined,
-        input_method: 'ai_parsed',
-        clinic_kakao_id: null,
-        clinic_district: r.clinic ? extractDistrict(r.clinic) : null,
-        clinic_address: null,
-      });
+    
+    if (isRemainingContext) {
+      // "남아있는" 시술 → 시술권(treatment_packages)으로 저장
+      for (const r of toSave) {
+        await supabase.from('treatment_packages').insert({
+          user_id: user.id,
+          name: r.treatmentName,
+          type: 'session',
+          total_sessions: 1,
+          used_sessions: 0,
+          skin_layer: r.skinLayer || 'dermis',
+          body_area: r.bodyArea || 'face',
+          clinic: r.clinic || '',
+          expiry_date: null,
+        });
+      }
+    } else {
+      // 일반 시술내역으로 저장
+      for (const r of toSave) {
+        await addRecord({
+          date: r.date, packageId: '', treatmentName: r.treatmentName,
+          skinLayer: r.skinLayer, bodyArea: r.bodyArea,
+          clinic: r.clinic || '', satisfaction: undefined, notes: undefined,
+          memo: r.memo || undefined, amount_paid: r.amount_paid ?? undefined,
+          input_method: 'ai_parsed',
+          clinic_kakao_id: null,
+          clinic_district: r.clinic ? extractDistrict(r.clinic) : null,
+          clinic_address: null,
+        });
+      }
     }
 
     const selectedBundles = bundles.filter(b => b.selected);
