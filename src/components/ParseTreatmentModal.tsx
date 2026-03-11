@@ -68,10 +68,13 @@ interface ParsedPackage {
   payMethod: PkgPayMethod;
 }
 
+type BalanceMethod = 'set' | 'add';
+
 interface BalanceInfo {
   amount: number;
   clinic: string;
   selected: boolean;
+  method: BalanceMethod;
 }
 
 interface Props { onClose: () => void; }
