@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
+import GlobalFAB from "./components/GlobalFAB";
 import { CyclesProvider } from "./context/CyclesContext";
 import { RecordsProvider } from "./context/RecordsContext";
 import { LanguageProvider } from "./i18n/LanguageContext";
@@ -52,6 +53,7 @@ const App = () => (
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                   <BottomNav />
+                  <GlobalFAB />
                 </div>
               </RecordsProvider>
             </CyclesProvider>
