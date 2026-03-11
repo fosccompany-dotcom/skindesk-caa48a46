@@ -126,6 +126,7 @@ const Packages = () => {
       date: pay.date,
       amount: pay.amount,
       memo: pay.memo || '',
+      method: pay.method,
     });
     setEditPay(pay);
   };
