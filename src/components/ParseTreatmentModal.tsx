@@ -90,6 +90,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const [saved, setSaved]             = useState(false);
   const [chargePayments, setChargePayments] = useState<{ show: boolean; amount: string; method: 'card' | 'cash' }[]>([]);
   const [pkgs, setPkgs] = useState<ParsedPackage[]>([]);
+  const [balanceInfo, setBalanceInfo] = useState<BalanceInfo | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
