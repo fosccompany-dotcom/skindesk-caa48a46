@@ -503,8 +503,6 @@ const Treatments = () => {
         })}
       </div>
 
-        </TabsContent>
-      </Tabs>
 
       {/* Detail Modal */}
       <Dialog open={!!selectedTreatment} onOpenChange={(open) => !open && setSelectedTreatment(null)}>
