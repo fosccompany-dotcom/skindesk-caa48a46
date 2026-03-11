@@ -843,7 +843,6 @@ function PaymentHistoryTab() {
   };
 
   const totalSpent = payments
-    .filter(p => p.method !== '포인트충전')
     .reduce((s, p) => s + p.amount, 0);
 
   const LAYER_LABEL: Record<string, string> = { epidermis: '표피', dermis: '진피', subcutaneous: '피하' };
