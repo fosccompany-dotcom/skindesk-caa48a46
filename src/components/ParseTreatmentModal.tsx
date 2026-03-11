@@ -120,65 +120,27 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     const results: ParsedPackage[] = [];
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // 패턴: "베이직패키지 20-6회차" or "Premium(프리미엄) 패키지 10-6회차"
-    // 캡처: 패키지명, 총 회차, 사용 회차
-    const patterns = [
-      // "베이직패키지 20-6회차" / "베이직 패키지 20-6회차"
-      /(?:(\S+?)\s*패키지|패키지\s*(\S+?))\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
-      // "Basic 20-6회차" etc
-      /(\S+?)\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
-    ];
-
-    // 먼저 첫 번째 패턴
-    const p1 = /(?:(\S+?)\s*패키지|(\S+?)\s*패키지)\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
+    // 통합 패턴: "XXX패키지 N-M회차" or "XXX 패키지 N-M회차" (괄호 포함 가능)
+    const regex = /(\S+(?:\([^)]+\))?)\s*패키지\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
     let match;
-    while ((match = p1.exec(inputText)) !== null) {
-      const rawName = (match[1] || match[2] || '').trim();
-      const total = parseInt(match[3]);
-      const used = parseInt(match[4]);
-      if (total > 0 && used >= 0 && used <= total) {
-        const pkgName = normalizePkgName(rawName);
-        results.push({
-          date: todayStr,
-          name: pkgName,
-          total_sessions: total,
-          used_sessions: used,
-          clinic: null,
-          amount_paid: null,
-          memo: null,
-          selected: true,
-          payMethod: '포인트',
-          duplicateAction: null,
-        });
-      }
-    }
-
-    // 두 번째 패턴: "Premium(프리미엄) 패키지 10-6회차"
-    const p2 = /(\S+?\([^)]+\))\s*패키지\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
-    while ((match = p2.exec(inputText)) !== null) {
+    while ((match = regex.exec(inputText)) !== null) {
       const rawName = match[1].trim();
       const total = parseInt(match[2]);
       const used = parseInt(match[3]);
       if (total > 0 && used >= 0 && used <= total) {
         const pkgName = normalizePkgName(rawName);
-        // 중복 체크
+        // 같은 정규화된 이름+총회차 중복 방지
         if (!results.find(r => r.name === pkgName && r.total_sessions === total)) {
           results.push({
-            date: todayStr,
-            name: pkgName,
-            total_sessions: total,
-            used_sessions: used,
-            clinic: null,
-            amount_paid: null,
-            memo: null,
-            selected: true,
-            payMethod: '포인트',
+            date: todayStr, name: pkgName,
+            total_sessions: total, used_sessions: used,
+            clinic: null, amount_paid: null, memo: null,
+            selected: true, payMethod: '포인트',
             duplicateAction: null,
           });
         }
       }
     }
-
     return results;
   };
 
