@@ -297,7 +297,7 @@ const Index = () => {
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-bold text-gray-800 truncate">{nextCycle.c.name}</p>
+                            <p className="text-[13px] font-bold text-foreground truncate">{nextCycle.c.treatmentName}</p>
                             {nextCyclePkg && <span className="text-[10px] text-emerald-500">🎫 시술권 보유</span>}
                           </div>
                           <button
