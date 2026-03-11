@@ -114,21 +114,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     reader.readAsDataURL(file);
   };
 
-  // ── 클라이언트 사이드 패키지 파싱 (N-M회차 패턴) ──
+  // ── 클라이언트 사이드 패키지 파싱 ──
   const parsePackagesFromText = (inputText: string): ParsedPackage[] => {
     const results: ParsedPackage[] = [];
     const todayStr = new Date().toISOString().split('T')[0];
 
-    // 패턴: "베이직패키지 20-6회차" or "Premium(프리미엄) 패키지 10-6회차"
-    // 캡처: 패키지명, 총 회차, 사용 회차
-    const patterns = [
-      // "베이직패키지 20-6회차" / "베이직 패키지 20-6회차"
-      /(?:(\S+?)\s*패키지|패키지\s*(\S+?))\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
-      // "Basic 20-6회차" etc
-      /(\S+?)\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
-    ];
-
-    // 먼저 첫 번째 패턴
+    // 패턴 1: "베이직패키지 20-6회차" or "Premium(프리미엄) 패키지 10-6회차"
     const p1 = /(?:(\S+?)\s*패키지|(\S+?)\s*패키지)\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
     let match;
     while ((match = p1.exec(inputText)) !== null) {
@@ -138,21 +129,14 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       if (total > 0 && used >= 0 && used <= total) {
         const pkgName = normalizePkgName(rawName);
         results.push({
-          date: todayStr,
-          name: pkgName,
-          total_sessions: total,
-          used_sessions: used,
-          clinic: null,
-          amount_paid: null,
-          memo: null,
-          selected: true,
-          payMethod: '포인트',
-          duplicateAction: null,
+          date: todayStr, name: pkgName, total_sessions: total,
+          used_sessions: used, clinic: null, amount_paid: null,
+          memo: null, selected: true, payMethod: '포인트', duplicateAction: null,
         });
       }
     }
 
-    // 두 번째 패턴: "Premium(프리미엄) 패키지 10-6회차"
+    // 패턴 2: "Premium(프리미엄) 패키지 10-6회차"
     const p2 = /(\S+?\([^)]+\))\s*패키지\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
     while ((match = p2.exec(inputText)) !== null) {
       const rawName = match[1].trim();
@@ -160,20 +144,37 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       const used = parseInt(match[3]);
       if (total > 0 && used >= 0 && used <= total) {
         const pkgName = normalizePkgName(rawName);
-        // 중복 체크
         if (!results.find(r => r.name === pkgName && r.total_sessions === total)) {
           results.push({
-            date: todayStr,
-            name: pkgName,
-            total_sessions: total,
-            used_sessions: used,
-            clinic: null,
-            amount_paid: null,
-            memo: null,
-            selected: true,
-            payMethod: '포인트',
-            duplicateAction: null,
+            date: todayStr, name: pkgName, total_sessions: total,
+            used_sessions: used, clinic: null, amount_paid: null,
+            memo: null, selected: true, payMethod: '포인트', duplicateAction: null,
           });
+        }
+      }
+    }
+
+    // 패턴 3: "남아계신 관리" 컨텍스트에서 "* 시술명 N회" or "* 시술명 N부위 N회" 감지
+    // 예: "* 내맘대로 피부관리 1회", "* 주름보톡스 코어 1부위 1회"
+    const hasRemainingContext = /남아.{0,10}관리|잔여.{0,5}시술|남은.{0,5}(관리|시술|회차)/i.test(inputText);
+    if (hasRemainingContext) {
+      // 각 줄에서 bullet point + 시술명 + N회 패턴 추출
+      const lines = inputText.split('\n');
+      for (const line of lines) {
+        const trimmed = line.trim();
+        // "* 시술명 N회" or "- 시술명 N회" or "· 시술명 N회"
+        const remainMatch = trimmed.match(/^[*\-·•]\s*(.+?)\s+(\d+)\s*회\s*$/);
+        if (remainMatch) {
+          const treatmentName = remainMatch[1].replace(/\s+\d+\s*부위/, '').trim();
+          const remaining = parseInt(remainMatch[2]);
+          if (remaining > 0 && !results.find(r => r.name === treatmentName)) {
+            results.push({
+              date: todayStr, name: treatmentName,
+              total_sessions: remaining, used_sessions: 0,
+              clinic: null, amount_paid: null, memo: `잔여 ${remaining}회`,
+              selected: true, payMethod: '포인트', duplicateAction: null,
+            });
+          }
         }
       }
     }
@@ -341,17 +342,23 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
 
       const todayStr2 = new Date().toISOString().split('T')[0];
+      // 패키지로 감지된 시술명 목록 — 중복 방지를 위해 records에서 deselect
+      const pkgNames = allPkgs.map(p => p.name.toLowerCase().replace(/\s/g, ''));
       setParsed(
         hasRecords
-          ? data.records.map((r: any) => ({
-              ...r,
-              date: r.date || todayStr2,
-              clinic: r.clinic || '',
-              skinLayer: r.skinLayer || 'dermis',
-              bodyArea: r.bodyArea || 'face',
-              selected: true,
-              expanded: false,
-            }))
+          ? data.records.map((r: any) => {
+              const rName = (r.treatmentName || '').toLowerCase().replace(/\s/g, '');
+              const matchesPkg = pkgNames.some(pn => rName.includes(pn) || pn.includes(rName));
+              return {
+                ...r,
+                date: r.date || todayStr2,
+                clinic: r.clinic || '',
+                skinLayer: r.skinLayer || 'dermis',
+                bodyArea: r.bodyArea || 'face',
+                selected: !matchesPkg, // 패키지로 감지된 건 deselect
+                expanded: false,
+              };
+            })
           : []
       );
       setParseSource(data.source || null);
