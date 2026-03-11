@@ -150,6 +150,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
             amount: balanceAmount,
             clinic: clinicFromData || clinicFromText,
             selected: true,
+            method: 'set',
           });
           hasBalance = true;
         }
