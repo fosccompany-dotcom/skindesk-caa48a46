@@ -4,13 +4,19 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope, ClipboardList } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope, ClipboardList, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { CalendarEvent, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord } from '@/types/skin';
+import { CalendarEvent, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord, SkinLayer, BodyArea } from '@/types/skin';
 import MyTreatmentHistory from '@/components/MyTreatmentHistory';
 import logoImg from '@/assets/logo.png';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
@@ -27,8 +33,25 @@ const SKIN_LAYER_COLOR: Record<string, string> = {
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-// ── 시술 기록 카드 (펼치기/접기) ─────────────────────────────────────
-const RecordCard = ({ r }: { r: TreatmentRecord }) => {
+const SKIN_LAYER_OPTIONS: { value: SkinLayer; label: string }[] = [
+  { value: 'epidermis', label: '표피층' },
+  { value: 'dermis', label: '진피층' },
+  { value: 'subcutaneous', label: '피하조직' },
+];
+
+const BODY_AREA_OPTIONS: { value: BodyArea; label: string }[] = [
+  { value: 'face', label: '얼굴' },
+  { value: 'neck', label: '목' },
+  { value: 'arm', label: '팔' },
+  { value: 'leg', label: '다리' },
+  { value: 'abdomen', label: '복부' },
+  { value: 'back', label: '등' },
+  { value: 'chest', label: '가슴' },
+  { value: 'hip', label: '엉덩이/힙' },
+];
+
+// ── 시술 기록 카드 (펼치기/접기 + 수정/삭제) ──────────────────────────
+const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: TreatmentRecord) => void; onDelete: (r: TreatmentRecord) => void }) => {
   const [expanded, setExpanded] = useState(false);
 
   return (
@@ -49,12 +72,27 @@ const RecordCard = ({ r }: { r: TreatmentRecord }) => {
               <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>
             )}
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
+          <div className="flex items-center gap-1 shrink-0">
             {r.satisfaction && (
               <span className="text-xs text-[#C9A96E] font-medium">
                 {'★'.repeat(r.satisfaction)}
               </span>
             )}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 rounded-md hover:bg-muted transition-colors" onClick={e => e.stopPropagation()}>
+                  <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[100px]">
+                <DropdownMenuItem onClick={e => { e.stopPropagation(); onEdit(r); }} className="text-xs gap-2">
+                  <Pencil className="h-3.5 w-3.5" /> 수정
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={e => { e.stopPropagation(); onDelete(r); }} className="text-xs gap-2 text-destructive focus:text-destructive">
+                  <Trash2 className="h-3.5 w-3.5" /> 삭제
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             {expanded
               ? <ChevronUp size={14} className="text-muted-foreground" />
               : <ChevronDown size={14} className="text-muted-foreground" />
