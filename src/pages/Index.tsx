@@ -270,63 +270,71 @@ const Index = () => {
                   ════════════════════════════════════════════════════ */}
               <div>
                 <p className="text-[11px] font-bold text-gray-500 mb-2 px-0.5">다음 해야 할 관리</p>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
 
                   {/* 다음 예정 시술 */}
                   <Card className="card-interactive cursor-pointer border-0 overflow-hidden" onClick={() => navigate('/cycles')}>
-                    <CardContent className="p-3 flex flex-col gap-2">
-                      <p className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">다음 예정 시술</p>
+                    <CardContent className="px-4 py-3">
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-wide mb-2">다음 예정 시술</p>
                       {nextCycle ? (
-                        <>
-                          <div>
-                            <p className="text-[12px] font-bold text-gray-800 leading-tight truncate">{nextCycle.c.name}</p>
-                            <p className={`text-[13px] font-black mt-0.5 ${
+                        <div className="flex items-center gap-3">
+                          <div className={`shrink-0 w-12 h-12 rounded-xl flex flex-col items-center justify-center ${
+                            nextCycle.daysRemaining <= 0 ? 'bg-rose-50' :
+                            nextCycle.daysRemaining <= 7 ? 'bg-amber-50' : 'bg-indigo-50'
+                          }`}>
+                            <span className={`text-base font-black leading-none ${
                               nextCycle.daysRemaining <= 0 ? 'text-rose-500' :
                               nextCycle.daysRemaining <= 7 ? 'text-amber-500' : 'text-indigo-500'
                             }`}>
-                              {nextCycle.daysRemaining < 0
-                                ? `${Math.abs(nextCycle.daysRemaining)}일 초과`
-                                : nextCycle.daysRemaining === 0 ? '오늘'
-                                : `${nextCycle.daysRemaining}일 후`}
-                            </p>
-                            {nextCyclePkg && (
-                              <span className="text-[9px] text-emerald-500 mt-0.5 block">🎫 시술권 보유</span>
-                            )}
+                              {nextCycle.daysRemaining < 0 ? Math.abs(nextCycle.daysRemaining) :
+                               nextCycle.daysRemaining === 0 ? '0' : nextCycle.daysRemaining}
+                            </span>
+                            <span className={`text-[9px] leading-none mt-0.5 ${
+                              nextCycle.daysRemaining <= 0 ? 'text-rose-400' :
+                              nextCycle.daysRemaining <= 7 ? 'text-amber-400' : 'text-indigo-400'
+                            }`}>
+                              {nextCycle.daysRemaining < 0 ? '일 초과' : nextCycle.daysRemaining === 0 ? '오늘' : '일 후'}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold text-gray-800 truncate">{nextCycle.c.name}</p>
+                            {nextCyclePkg && <span className="text-[10px] text-emerald-500">🎫 시술권 보유</span>}
                           </div>
                           <button
                             onClick={e => { e.stopPropagation(); setEditRecord(null); setModalOpen(true); }}
-                            className="w-full py-1.5 rounded-lg bg-gray-100 text-[10px] font-semibold text-gray-600 active:bg-gray-200 transition-colors">
-                            시술 기록 추가
+                            className="shrink-0 px-3 py-1.5 rounded-lg bg-gray-100 text-[11px] font-semibold text-gray-600 active:bg-gray-200">
+                            기록 추가
                           </button>
-                        </>
+                        </div>
                       ) : (
-                        <p className="text-[11px] text-gray-400 flex-1">등록된 주기 없음</p>
+                        <p className="text-[12px] text-gray-400">등록된 주기 없음</p>
                       )}
                     </CardContent>
                   </Card>
 
-                  {/* 추천 관리 (Next Skin Action) */}
+                  {/* 추천 관리 */}
                   <Card className="card-interactive cursor-pointer border-0 overflow-hidden bg-gradient-to-br from-white to-indigo-50/30"
                     onClick={() => navigate('/cycles')}>
-                    <CardContent className="p-3 flex flex-col gap-2">
-                      <p className="text-[9px] font-semibold text-indigo-400 uppercase tracking-wide">추천 관리</p>
+                    <CardContent className="px-4 py-3">
+                      <p className="text-[10px] font-semibold text-indigo-400 uppercase tracking-wide mb-2">추천 관리</p>
                       {nextRecommended && currentSeason ? (
-                        <>
-                          <div>
-                            <p className="text-[12px] font-bold text-gray-800 leading-tight">{nextRecommended.name}</p>
-                            <p className="text-[10px] text-indigo-500 font-semibold mt-0.5">추천 시기 · 이번 주</p>
-                            <p className="text-[9px] text-gray-400 mt-0.5 line-clamp-2 leading-snug">
-                              {nextRecommended.seasons[currentSeason].label}
-                            </p>
+                        <div className="flex items-center gap-3">
+                          <div className="shrink-0 w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center">
+                            <span className="text-xl">✨</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold text-gray-800 truncate">{nextRecommended.name}</p>
+                            <p className="text-[11px] text-indigo-500 font-semibold">추천 시기 · 이번 주</p>
+                            <p className="text-[10px] text-gray-400 truncate">{nextRecommended.seasons[currentSeason].label}</p>
                           </div>
                           <button
                             onClick={e => { e.stopPropagation(); setEditRecord(null); setModalOpen(true); }}
-                            className="w-full py-1.5 rounded-lg bg-indigo-500 text-[10px] font-semibold text-white active:bg-indigo-600 transition-colors">
-                            시술 기록 추가
+                            className="shrink-0 px-3 py-1.5 rounded-lg bg-indigo-500 text-[11px] font-semibold text-white active:bg-indigo-600">
+                            기록 추가
                           </button>
-                        </>
+                        </div>
                       ) : (
-                        <p className="text-[11px] text-gray-400 flex-1">시즌 설정 필요</p>
+                        <p className="text-[12px] text-gray-400">시즌 설정 필요</p>
                       )}
                     </CardContent>
                   </Card>
