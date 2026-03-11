@@ -520,7 +520,8 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   };
 
   const selectedCount  = (parsed?.filter(r => r.selected).length ?? 0) + bundles.filter(b => b.selected).length + pkgs.filter(p => p.selected).length + (balanceInfo?.selected ? 1 : 0);
-  const showResults    = parsed !== null || balanceInfo !== null;
+  const hasPendingDuplicate = pkgs.some(p => p.selected && p.existingPackageId && !p.duplicateAction);
+  const showResults    = parsed !== null || balanceInfo !== null || pkgs.length > 0;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pb-[72px]">
