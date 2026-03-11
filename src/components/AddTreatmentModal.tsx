@@ -215,6 +215,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [shots, setShots] = useState<number | null>(null);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [clinic, setClinic] = useState('밴스 미금');
+  const [clinicKakaoId, setClinicKakaoId] = useState<string | null>(null);
+  const [clinicDistrict, setClinicDistrict] = useState<string | null>(null);
+  const [clinicAddress, setClinicAddress] = useState<string | null>(null);
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
 
@@ -224,10 +227,14 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [pkgExpiry, setPkgExpiry] = useState('');
   const [pkgSaving, setPkgSaving] = useState(false);
 
+  const resetClinicMeta = () => {
+    setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
+  };
+
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
-    setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
+    setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
     setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
   };
   const handleClose = () => { reset(); setMode('record'); onClose(); };
