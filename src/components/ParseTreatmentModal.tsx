@@ -5,7 +5,6 @@ import { supabase } from '@/integrations/supabase/client';
 import ClinicSearchInput from './ClinicSearchInput';
 import { useRecords } from '@/context/RecordsContext';
 import { SkinLayer, BodyArea } from '@/types/skin';
-import { processCharge, processPackagePurchase, processSingleUse } from '@/lib/clinicPayments';
 
 const SKIN_LAYER_COLOR: Record<string, string> = {
   epidermis:    'bg-amber-500/10 text-amber-400 border-amber-500/20',
@@ -198,79 +197,151 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     if (!user) return;
     setSaving(true);
 
-    // ── 1. 단독 시술 저장 (플로우 3) ────────────────────────────
-    // treatment_records만 저장. 포인트/잔액/결제기록 변동 없음.
-    // amount_paid가 있으면 포인트에서 단건 차감(processSingleUse)
-    for (const r of (parsed || []).filter(r => r.selected)) {
+    // 1. 단독 시술 저장
+    const toSave = (parsed || []).filter(r => r.selected);
+    for (const r of toSave) {
       await addRecord({
         date: r.date, packageId: '', treatmentName: r.treatmentName,
         skinLayer: r.skinLayer, bodyArea: r.bodyArea,
-        clinic: r.clinic || '', satisfaction: undefined,
-        notes: undefined, memo: r.memo || undefined,
-        amount_paid: r.amount_paid ?? undefined,
+        clinic: r.clinic || '', satisfaction: undefined, notes: undefined,
+        memo: r.memo || undefined, amount_paid: r.amount_paid ?? undefined,
       });
-      // 단건 포인트 차감 (시술권 없이 직접 결제한 경우만)
-      if (r.amount_paid && r.amount_paid > 0 && r.clinic) {
-        await processSingleUse({
-          userId: user.id, date: r.date, clinic: r.clinic,
-          amount: r.amount_paid, description: r.treatmentName,
-        });
-      }
     }
 
-    // ── 2. 번들(세트) 시술 저장 (플로우 3) ──────────────────────
-    // 번들 전체 금액을 포인트에서 차감 (point_transactions: 'use')
-    // payment_records에는 저장하지 않음
-    for (const b of bundles.filter(b => b.selected)) {
-      // 2a. 개별 시술 treatment_records 저장
+    // 2. 번들 저장
+    const selectedBundles = bundles.filter(b => b.selected);
+    for (const b of selectedBundles) {
+      // 2a. payment_records에 묶음 결제 저장
+      await supabase.from('payment_records').insert({
+        user_id:        user.id,
+        date:           b.date,
+        clinic:         b.clinic || '',
+        clinic_type:    '밴스',   // 기본값, 추후 수정 가능
+        treatment_name: b.bundleName,
+        amount:         b.amount_paid || 0,
+        method:         '시술결제',
+        memo:           b.memo || null,
+      });
+
+      // 2b. treatment_records에 개별 시술 저장 (가격 없음)
       for (const t of b.treatments) {
         await addRecord({
           date: t.date, packageId: '', treatmentName: t.treatmentName,
           skinLayer: t.skinLayer, bodyArea: t.bodyArea,
           clinic: t.clinic || b.clinic || '', satisfaction: undefined,
           notes: undefined, memo: t.memo || b.memo || undefined,
-          amount_paid: undefined, // 번들 개별 가격 없음
+          amount_paid: undefined,  // 번들이므로 개별 가격 없음
         });
       }
-      // 2b. 번들 금액 → 포인트 차감
+
+      // 2c. 시술결제 → clinic_balances 차감
       if ((b.amount_paid || 0) > 0 && b.clinic) {
-        await processSingleUse({
-          userId: user.id, date: b.date, clinic: b.clinic,
-          amount: b.amount_paid!, description: b.bundleName,
-        });
+        const { data: bBal } = await supabase
+          .from('clinic_balances').select('balance')
+          .eq('user_id', user.id).eq('clinic', b.clinic).maybeSingle();
+        if (bBal && bBal.balance > 0) {
+          await supabase.from('clinic_balances').upsert({
+            user_id:    user.id,
+            clinic:     b.clinic,
+            balance:    Math.max(0, bBal.balance - (b.amount_paid || 0)),
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,clinic' });
+        }
       }
     }
 
-    // ── 3. 포인트 충전 (플로우 1) ────────────────────────────────
-    // payment_records(cash_payment) + point_transactions(charge) + 잔액 반영
-    for (let ci = 0; ci < charges.length; ci++) {
-      const c = charges[ci];
+    // 3. 신규충전 → clinic_balances 업데이트 + payment_records 저장
+    for (const c of charges) {
       if (!c.clinic || c.amount <= 0) continue;
 
-      // 충전 시 결제 수단 (사용자가 추가 입력한 경우)
-      const cp = chargePayments[ci];
-      const method: '카드' | '현금' = cp?.method === 'cash' ? '현금' : '카드';
+      // 기존 잔액 조회
+      const { data: existing } = await supabase
+        .from('clinic_balances')
+        .select('balance')
+        .eq('user_id', user.id)
+        .eq('clinic', c.clinic)
+        .maybeSingle();
 
-      await processCharge({
-        userId: user.id, date: c.date, clinic: c.clinic,
-        paidAmount:    cp?.show && cp.amount ? Number(cp.amount) : c.amount,
-        chargedAmount: c.amount,
-        method,
-        description: c.label || '포인트 충전',
+      const newBalance = (existing?.balance || 0) + c.amount;
+
+      // 잔액 upsert
+      await supabase.from('clinic_balances').upsert({
+        user_id:    user.id,
+        clinic:     c.clinic,
+        balance:    newBalance,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'user_id,clinic' });
+
+      // payment_records에도 충전 기록 저장
+      await supabase.from('payment_records').insert({
+        user_id:        user.id,
+        date:           c.date,
+        clinic:         c.clinic,
+        clinic_type:    '밴스',
+        treatment_name: c.label,
+        amount:         c.amount,
+        method:         '포인트충전',
+        memo:           null,
       });
     }
 
-    // ── 4. 시술권 구매 (플로우 2) ────────────────────────────────
-    // treatment_packages + point_transactions(package_purchase) + 잔액 차감
-    // payment_records에는 저장하지 않음
-    for (const p of pkgs.filter(p => p.selected)) {
-      await processPackagePurchase({
-        userId: user.id, date: p.date, clinic: p.clinic || '',
-        packageName:   p.name,
-        totalSessions: p.total_sessions,
-        purchasePrice: p.amount_paid || 0,
-        memo: p.memo || undefined,
+    // 4. 충전 시 사용자가 추가 입력한 결제내역 저장
+    for (let ci = 0; ci < charges.length; ci++) {
+      const cp = chargePayments[ci];
+      if (!cp?.show || !cp.amount) continue;
+      const c = charges[ci];
+      await supabase.from('payment_records').insert({
+        user_id:        user.id,
+        date:           c.date,
+        clinic:         c.clinic || '',
+        clinic_type:    '밴스',
+        treatment_name: '시술결제',
+        amount:         Number(cp.amount),
+        method:         cp.method === 'card' ? '카드' : '현금',
+        memo:           null,
       });
+    }
+
+    // 5. 시술권(패키지) 저장 → treatment_packages
+    for (const p of pkgs.filter(p => p.selected)) {
+      await supabase.from('treatment_packages').insert({
+        user_id:        user.id,
+        name:           p.name,
+        type:           'session',
+        total_sessions: p.total_sessions,
+        used_sessions:  0,
+        skin_layer:     'dermis',
+        body_area:      'face',
+        clinic:         p.clinic || '',
+        expiry_date:    null,
+      });
+      // payment_records에도 구매 기록
+      if (p.amount_paid) {
+        await supabase.from('payment_records').insert({
+          user_id:        user.id,
+          date:           p.date,
+          clinic:         p.clinic || '',
+          clinic_type:    '밴스',
+          treatment_name: p.name,
+          amount:         p.amount_paid,
+          method:         '시술결제',
+          memo:           p.memo || null,
+        });
+        // 시술결제 → clinic_balances 차감
+        if (p.clinic) {
+          const { data: pkgBal } = await supabase
+            .from('clinic_balances').select('balance')
+            .eq('user_id', user.id).eq('clinic', p.clinic).maybeSingle();
+          if (pkgBal && pkgBal.balance > 0) {
+            await supabase.from('clinic_balances').upsert({
+              user_id:    user.id,
+              clinic:     p.clinic,
+              balance:    Math.max(0, pkgBal.balance - p.amount_paid),
+              updated_at: new Date().toISOString(),
+            }, { onConflict: 'user_id,clinic' });
+          }
+        }
+      }
     }
 
     setSaving(false); setSaved(true);

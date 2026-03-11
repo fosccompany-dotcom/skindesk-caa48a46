@@ -73,12 +73,12 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [profileRes, balRes, pkgRes] = await Promise.all([
-        supabase.from('user_profiles').select('current_season,goals').eq('id', user.id).single(),
+        supabase.from('user_profiles').select('current_season,goals' as any).eq('id', user.id).single(),
         supabase.from('clinic_balances').select('clinic,balance').eq('user_id', user.id),
         supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
       ]);
-      if (profileRes.data?.current_season) setCurrentSeason(profileRes.data.current_season as SeasonKey);
-      if (profileRes.data?.goals) setGoals(profileRes.data.goals as string[]);
+      if ((profileRes.data as any)?.current_season) setCurrentSeason((profileRes.data as any).current_season as SeasonKey);
+      if ((profileRes.data as any)?.goals) setGoals((profileRes.data as any).goals as string[]);
       if (balRes.data) setClinicBalances(balRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
     };
@@ -194,7 +194,7 @@ const Index = () => {
           const totalBalance = clinicBalances.reduce((s, b) => s + b.balance, 0);
           const activePackages = packages.filter(p => p.total_sessions - p.used_sessions > 0);
           const nextCyclePkg = nextCycle
-            ? activePackages.find(p => p.name.includes(nextCycle.c.name) || nextCycle.c.name.includes(p.name))
+            ? activePackages.find(p => p.name.includes(nextCycle.c.treatmentName) || nextCycle.c.treatmentName.includes(p.name))
             : null;
           const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
 
@@ -297,7 +297,7 @@ const Index = () => {
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-bold text-gray-800 truncate">{nextCycle.c.name}</p>
+                            <p className="text-[13px] font-bold text-foreground truncate">{nextCycle.c.treatmentName}</p>
                             {nextCyclePkg && <span className="text-[10px] text-emerald-500">🎫 시술권 보유</span>}
                           </div>
                           <button
@@ -437,7 +437,7 @@ const Index = () => {
                           <div key={c.id} className="flex items-center justify-between">
                             <div className="flex items-center gap-2 min-w-0">
                               <div className={`h-2 w-2 rounded-full shrink-0 ${daysRemaining <= 7 ? 'bg-amber-400' : 'bg-indigo-400'}`} />
-                              <span className="text-sm font-medium truncate">{c.name}</span>
+                              <span className="text-sm font-medium truncate">{c.treatmentName}</span>
                             </div>
                             <span className={`text-sm font-bold shrink-0 ${daysRemaining <= 7 ? 'text-amber-500' : 'text-indigo-500'}`}>
                               {daysRemaining === 0 ? '오늘' : `D-${daysRemaining}`}

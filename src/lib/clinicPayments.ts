@@ -51,7 +51,7 @@ export interface ChargePayload {
   clinicType?: string;
   paidAmount: number;     // 실제 낸 돈 (카드/현금)
   chargedAmount: number;  // 충전된 포인트 (보너스 포함 가능)
-  method: '카드' | '현금' | '서비스';
+  method: '카드' | '현금';
   description: string;    // "신규충전", "포인트 충전" 등
   memo?: string;
 }
@@ -159,7 +159,7 @@ export async function processPackagePurchase(p: PackagePurchasePayload): Promise
   // 3. treatment_packages ← point_transaction_id 역참조 연결
   await supabase
     .from('treatment_packages')
-    .update({ point_transaction_id: pt.id })
+    .update({ point_transaction_id: pt.id } as any)
     .eq('id', packageId);
 
   // 4. clinic_balances — 잔액 차감

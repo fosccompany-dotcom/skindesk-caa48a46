@@ -313,7 +313,7 @@ const Profile = () => {
       if (data.goals) setGoals(data.goals as string[]);
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
-      if (data.current_season) setCurrentSeason(data.current_season as any);
+      if ((data as any).current_season) setCurrentSeason((data as any).current_season as any);
     };
     loadProfile();
   }, []);
