@@ -41,6 +41,7 @@ export type Database = {
       payment_records: {
         Row: {
           amount: number
+          charged_amount: number | null
           clinic: string
           clinic_type: string | null
           created_at: string | null
@@ -48,11 +49,13 @@ export type Database = {
           id: string
           memo: string | null
           method: string | null
+          record_type: string | null
           treatment_name: string
           user_id: string
         }
         Insert: {
           amount?: number
+          charged_amount?: number | null
           clinic: string
           clinic_type?: string | null
           created_at?: string | null
@@ -60,11 +63,13 @@ export type Database = {
           id?: string
           memo?: string | null
           method?: string | null
+          record_type?: string | null
           treatment_name: string
           user_id: string
         }
         Update: {
           amount?: number
+          charged_amount?: number | null
           clinic?: string
           clinic_type?: string | null
           created_at?: string | null
@@ -72,6 +77,7 @@ export type Database = {
           id?: string
           memo?: string | null
           method?: string | null
+          record_type?: string | null
           treatment_name?: string
           user_id?: string
         }
@@ -86,6 +92,8 @@ export type Database = {
           date: string
           description: string
           id: string
+          package_id: string | null
+          payment_record_id: string | null
           type: string | null
           user_id: string
         }
@@ -97,6 +105,8 @@ export type Database = {
           date: string
           description: string
           id?: string
+          package_id?: string | null
+          payment_record_id?: string | null
           type?: string | null
           user_id: string
         }
@@ -108,10 +118,27 @@ export type Database = {
           date?: string
           description?: string
           id?: string
+          package_id?: string | null
+          payment_record_id?: string | null
           type?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "point_transactions_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "treatment_packages"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "point_transactions_payment_record_id_fkey"
+            columns: ["payment_record_id"]
+            isOneToOne: false
+            referencedRelation: "payment_records"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       treatment_cycles: {
         Row: {
@@ -166,6 +193,8 @@ export type Database = {
           expiry_date: string | null
           id: string
           name: string
+          point_transaction_id: string | null
+          purchase_price: number | null
           skin_layer: string | null
           total_sessions: number | null
           type: string | null
@@ -179,6 +208,8 @@ export type Database = {
           expiry_date?: string | null
           id?: string
           name: string
+          point_transaction_id?: string | null
+          purchase_price?: number | null
           skin_layer?: string | null
           total_sessions?: number | null
           type?: string | null
@@ -192,13 +223,23 @@ export type Database = {
           expiry_date?: string | null
           id?: string
           name?: string
+          point_transaction_id?: string | null
+          purchase_price?: number | null
           skin_layer?: string | null
           total_sessions?: number | null
           type?: string | null
           used_sessions?: number | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "treatment_packages_point_transaction_id_fkey"
+            columns: ["point_transaction_id"]
+            isOneToOne: false
+            referencedRelation: "point_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       treatment_records: {
         Row: {
@@ -211,6 +252,7 @@ export type Database = {
           memo: string | null
           notes: string | null
           package_id: string | null
+          package_uuid: string | null
           satisfaction: number | null
           shots: number | null
           skin_layer: string | null
@@ -228,6 +270,7 @@ export type Database = {
           memo?: string | null
           notes?: string | null
           package_id?: string | null
+          package_uuid?: string | null
           satisfaction?: number | null
           shots?: number | null
           skin_layer?: string | null
@@ -245,6 +288,7 @@ export type Database = {
           memo?: string | null
           notes?: string | null
           package_id?: string | null
+          package_uuid?: string | null
           satisfaction?: number | null
           shots?: number | null
           skin_layer?: string | null
@@ -252,13 +296,22 @@ export type Database = {
           treatment_name?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "treatment_records_package_uuid_fkey"
+            columns: ["package_uuid"]
+            isOneToOne: false
+            referencedRelation: "treatment_packages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_profiles: {
         Row: {
           birth_date: string | null
           concerns: string[] | null
           created_at: string | null
+          current_season: string | null
           email: string | null
           goals: string[] | null
           id: string
@@ -272,6 +325,7 @@ export type Database = {
           birth_date?: string | null
           concerns?: string[] | null
           created_at?: string | null
+          current_season?: string | null
           email?: string | null
           goals?: string[] | null
           id: string
@@ -285,6 +339,7 @@ export type Database = {
           birth_date?: string | null
           concerns?: string[] | null
           created_at?: string | null
+          current_season?: string | null
           email?: string | null
           goals?: string[] | null
           id?: string
