@@ -3,6 +3,6 @@
   "short_name": "피부관리",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f0f0f2",
-  "theme_color": "#2d8a5e"
+  "background_color": "#f7f0f0",
+  "theme_color": "#e07070"
 }
