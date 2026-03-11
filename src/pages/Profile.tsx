@@ -230,6 +230,8 @@ function StarRating({ value, onChange, readonly = false }: { value: number; onCh
 const Profile = () => {
   const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
+  const [langOpen, setLangOpen] = useState(false);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
   const [skinType, setSkinType] = useState<SkinType>('중성');
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     undefined
@@ -246,6 +248,17 @@ const Profile = () => {
   const { records, updateRecord } = useRecords();
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
+
+  // 언어 드롭다운 외부 클릭 닫기
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   const sortedRecords = useMemo(() =>
     [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
@@ -359,8 +372,34 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="page-header safe-top">
+      <div className="page-header safe-top flex items-center justify-between">
         <h1 className="text-lg font-bold">{t('my_page')}</h1>
+        <div className="relative" ref={langDropdownRef}>
+          <button
+            onClick={() => setLangOpen(prev => !prev)}
+            className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
+          >
+            <Globe className="h-4.5 w-4.5 text-muted-foreground" />
+          </button>
+          {langOpen && (
+            <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
+              {(['ko', 'en', 'zh'] as Language[]).map(lang => (
+                <button
+                  key={lang}
+                  onClick={() => { setLanguage(lang); setLangOpen(false); }}
+                  className={cn(
+                    'w-full text-left px-4 py-2.5 text-xs font-medium transition-colors',
+                    language === lang
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-foreground hover:bg-muted'
+                  )}
+                >
+                  {LANGUAGE_LABELS[lang]}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="page-content pt-2">
@@ -377,29 +416,6 @@ const Profile = () => {
           </TabsList>
 
           <TabsContent value="profile" className="space-y-3">
-            {/* Language Setting */}
-            <Card className="glass-card">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 rounded-xl bg-info-light flex items-center justify-center">
-                    <Globe className="h-4 w-4 text-info" />
-                  </div>
-                  <h2 className="font-bold text-sm">{t('language_setting')}</h2>
-                </div>
-                <div className="flex gap-2">
-                  {(['ko', 'en', 'zh'] as Language[]).map(lang => (
-                    <Badge
-                      key={lang}
-                      variant={language === lang ? 'default' : 'outline'}
-                      className="cursor-pointer rounded-full px-4 py-2 text-xs font-medium"
-                      onClick={() => setLanguage(lang)}
-                    >
-                      {LANGUAGE_LABELS[lang]}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
 
             {/* 기본 정보 */}
             <Card className="glass-card">
