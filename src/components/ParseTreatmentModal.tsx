@@ -65,6 +65,12 @@ interface ParsedPackage {
   selected: boolean;
 }
 
+interface BalanceInfo {
+  amount: number;
+  clinic: string;
+  selected: boolean;
+}
+
 interface Props { onClose: () => void; }
 type Tab = 'text' | 'image';
 
