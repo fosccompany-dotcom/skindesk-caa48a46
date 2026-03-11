@@ -383,8 +383,8 @@ function PackageCard({ pkg }: { pkg: Package }) {
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 mb-1 flex-wrap">
               <span className="font-bold text-sm">{pkg.name}</span>
-              <BodyAreaBadge area={pkg.bodyArea} />
-              <SkinLayerBadge layer={pkg.skinLayer} />
+              <BodyAreaBadge area={pkg.bodyArea as BodyArea} />
+              <SkinLayerBadge layer={pkg.skinLayer as SkinLayer} />
             </div>
             <p className="text-[11px] text-muted-foreground">{pkg.clinic}</p>
           </div>
