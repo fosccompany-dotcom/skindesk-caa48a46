@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Wallet, ChevronRight, AlertTriangle, CheckCircle2, Timer, CalendarDays, Layers, Package, TrendingUp, Plus, Star, Trash2, Pencil, Sparkles } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
@@ -15,6 +15,16 @@ import { cn } from '@/lib/utils';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
+import { supabase } from '@/integrations/supabase/client';
+
+type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
+const SEASON_CONFIG: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string }> = {
+  reset:    { emoji: '🌿', title: 'Reset Season',    sub: '피부 리셋 시즌',  color: 'text-green-700',  bg: 'bg-green-50 border-green-200' },
+  recovery: { emoji: '💧', title: 'Recovery Season', sub: '회복 시즌',        color: 'text-sky-700',    bg: 'bg-sky-50 border-sky-200' },
+  maintain: { emoji: '✨', title: 'Maintain Season', sub: '유지 시즌',        color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
+  boost:    { emoji: '⚡', title: 'Boost Season',    sub: '관리 끌올 시즌',  color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200' },
+  special:  { emoji: '💫', title: 'Special Season',  sub: '스페셜 시즌',     color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
+};
 
 const TODAY = new Date('2026-03-10');
 
@@ -52,6 +62,18 @@ const Index = () => {
   const [parseModalOpen, setParseModalOpen] = useState(false);
   const [fabOpen, setFabOpen] = useState(false);
   const [showAllRecords, setShowAllRecords] = useState(false);
+  const [currentSeason, setCurrentSeason] = useState<SeasonKey | null>(null);
+
+  // 시즌 로드
+  useEffect(() => {
+    const loadSeason = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('user_profiles').select('current_season').eq('id', user.id).single();
+      if (data?.current_season) setCurrentSeason(data.current_season as SeasonKey);
+    };
+    loadSeason();
+  }, []);
 
   // Onboarding
   const [onboardingOpen, setOnboardingOpen] = useState(() => searchParams.get('onboarding') === 'true');
@@ -151,6 +173,23 @@ const Index = () => {
           </div>
         </div>
       </div>
+
+      {/* 현재 관리 시즌 배너 */}
+      {currentSeason && (() => {
+        const s = SEASON_CONFIG[currentSeason];
+        return (
+          <div className={`mx-4 mt-3 flex items-center gap-3 px-4 py-3 rounded-2xl border ${s.bg} cursor-pointer`}
+            onClick={() => navigate('/profile')}>
+            <span className="text-xl shrink-0">{s.emoji}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-[10px] text-gray-400 font-medium mb-0.5">현재 나의 관리 시즌</p>
+              <p className={`text-sm font-bold ${s.color}`}>{s.title}</p>
+              <p className="text-[10px] text-gray-500">{s.sub}</p>
+            </div>
+            <ChevronRight size={14} className="text-gray-400 shrink-0" />
+          </div>
+        );
+      })()}
 
       <div className="page-content space-y-4 pt-4 pb-28">
         {/* Status summary */}
