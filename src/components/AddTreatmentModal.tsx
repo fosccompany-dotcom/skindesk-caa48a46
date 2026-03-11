@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft, Check, Zap } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, Zap, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { TreatmentRecord } from '@/types/skin';
 
@@ -198,13 +198,14 @@ const SKIN_LAYER_COLOR: Record<SL, string> = {
 interface Props {
   open: boolean;
   onClose: () => void;
+  onOpenParse?: () => void;
   onSave: (record: Omit<TreatmentRecord, 'id'>) => void;
   editRecord?: TreatmentRecord | null;
 }
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
-export default function AddTreatmentModal({ open, onClose, onSave, editRecord }: Props) {
+export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
   const [step, setStep] = useState(1);
   const [catId, setCatId] = useState<string | null>(null);
   const [itemId, setItemId] = useState<string | null>(null);
@@ -441,7 +442,17 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord }:
         </div>
 
         {/* 하단 버튼 */}
-        <div className="px-5 pb-5 flex gap-3 sticky bottom-0 bg-[#111] pt-3 border-t border-white/5">
+        <div className="px-5 pb-5 sticky bottom-0 bg-[#111] pt-3 border-t border-white/5 space-y-2">
+          {onOpenParse && (
+            <button
+              onClick={() => { handleClose(); onOpenParse(); }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#C9A96E]/40 text-[#C9A96E] text-xs font-semibold hover:bg-[#C9A96E]/10 transition-colors"
+            >
+              <Sparkles size={13} />
+              텍스트 · 이미지로 한 번에 등록하기
+            </button>
+          )}
+          <div className="flex gap-3">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(s => s - 1)}
               className="flex-1 border-white/15 bg-transparent text-white/60 hover:bg-white/5 hover:text-white">
@@ -459,6 +470,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord }:
               <Check size={15} className="mr-1.5" /> 저장
             </Button>
           )}
+          </div>
         </div>
       </DialogContent>
     </Dialog>
