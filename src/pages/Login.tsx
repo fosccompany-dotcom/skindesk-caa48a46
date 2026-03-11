@@ -9,7 +9,6 @@ import { LANGUAGE_LABELS } from '@/i18n/translations';
 import type { Language } from '@/i18n/translations';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Lock, Loader2 } from 'lucide-react';
-import logoImg from '@/assets/logo.png';
 
 const Login = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -34,7 +33,7 @@ const Login = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://gaharylmkilooukxnipk.supabase.co/auth/v1/callback'
+        redirectTo: 'https://skindesk.lovable.app'
       }
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
@@ -44,7 +43,7 @@ const Login = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: 'https://gaharylmkilooukxnipk.supabase.co/auth/v1/callback'
+        redirectTo: 'https://skindesk.lovable.app'
       }
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
@@ -62,7 +61,7 @@ const Login = () => {
             onClick={() => setLanguage(lang)}
             className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
               language === lang
-                ? 'bg-primary text-primary-foreground shadow-sm'
+                ? 'bg-[#C9A96E] text-white shadow-sm'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
             }`}
           >
@@ -73,10 +72,9 @@ const Login = () => {
 
       <div className="w-full max-w-[380px] space-y-6">
         {/* Title */}
-        <div className="text-center space-y-2">
-          <img src={logoImg} alt="SKINDESK" className="w-16 h-16 mx-auto" />
+        <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">{t('auth_login_title')}</h1>
-          <p className="text-sm font-semibold tracking-[0.2em] text-primary">SKINDESK</p>
+          <p className="text-sm font-semibold tracking-[0.2em] text-[#C9A96E]">SKINDESK</p>
         </div>
 
         {/* Social Login */}
