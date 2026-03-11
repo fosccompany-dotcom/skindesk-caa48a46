@@ -250,7 +250,8 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         || inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
       clientPkgs.forEach(p => { if (!p.clinic) p.clinic = clinicHint; });
 
-      // AI 파싱된 패키지 + 클라이언트 파싱된 패키지 합치기
+      // AI 파싱된 패키지 + 클라이언트 파싱된 패키지 합치기 (정규화 기반 중복 제거)
+      const normForDedup = (n: string) => n.toLowerCase().replace(/[\s()（）]/g, '');
       let allPkgs: ParsedPackage[] = [];
       if (hasPackages) {
         const todayStr = new Date().toISOString().split('T')[0];
@@ -261,9 +262,11 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
       // 클라이언트 파싱 결과 중 AI가 이미 추출하지 않은 것만 추가
       for (const cp of clientPkgs) {
-        const alreadyExists = allPkgs.some(ap =>
-          ap.name === cp.name && ap.total_sessions === cp.total_sessions
-        );
+        const cpNorm = normForDedup(cp.name);
+        const alreadyExists = allPkgs.some(ap => {
+          const apNorm = normForDedup(ap.name);
+          return (apNorm.includes(cpNorm) || cpNorm.includes(apNorm)) && ap.total_sessions === cp.total_sessions;
+        });
         if (!alreadyExists) allPkgs.push(cp);
       }
 
