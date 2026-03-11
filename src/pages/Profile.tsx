@@ -7,8 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { useRecords } from '@/context/RecordsContext';
+import AddPaymentModal from '@/components/AddPaymentModal';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, CreditCard, Star, ChevronDown, ChevronUp, Globe, LogOut } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, CreditCard, Star, ChevronDown, ChevronUp, Globe, LogOut, Plus } from 'lucide-react';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -743,21 +744,21 @@ interface PaymentRecord {
 function PaymentHistoryTab() {
   const [payments, setPayments] = useState<PaymentRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
 
-  useEffect(() => {
-    const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setLoading(false); return; }
-      const { data } = await supabase
-        .from('payment_records')
-        .select('id, date, clinic, treatment_name, amount, method, memo')
-        .eq('user_id', user.id)
-        .order('date', { ascending: false });
-      setPayments(data ?? []);
-      setLoading(false);
-    };
-    load();
-  }, []);
+  const loadPayments = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
+    const { data } = await supabase
+      .from('payment_records')
+      .select('id, date, clinic, treatment_name, amount, method, memo')
+      .eq('user_id', user.id)
+      .order('date', { ascending: false });
+    setPayments(data ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => { loadPayments(); }, []);
 
   const totalSpent = payments
     .filter(p => p.method !== '포인트충전')
@@ -767,19 +768,36 @@ function PaymentHistoryTab() {
 
   return (
     <div className="space-y-3">
-      {/* 합계 카드 */}
+      {/* 합계 카드 + 추가 버튼 */}
       <Card className="glass-card">
-        <CardContent className="p-4 flex items-center justify-between">
-          <div>
-            <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
-            <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
+              <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
+            </div>
+            <div className="text-right">
+              <p className="text-[11px] text-muted-foreground">결제 건수</p>
+              <p className="text-xl font-black text-foreground">{payments.filter(p => p.method !== '포인트충전').length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[11px] text-muted-foreground">결제 건수</p>
-            <p className="text-xl font-black text-foreground">{payments.filter(p => p.method !== '포인트충전').length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
-          </div>
+          <Button
+            onClick={() => setShowAddModal(true)}
+            className="w-full mt-3 rounded-xl text-xs gap-1.5"
+            size="sm"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            결제 내역 추가
+          </Button>
         </CardContent>
       </Card>
+
+      {showAddModal && (
+        <AddPaymentModal
+          onClose={() => setShowAddModal(false)}
+          onSaved={() => { setShowAddModal(false); loadPayments(); }}
+        />
+      )}
 
       {/* 결제 목록 */}
       {payments.length === 0 ? (
