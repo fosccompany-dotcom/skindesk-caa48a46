@@ -222,6 +222,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           skinLayer: t.skinLayer, bodyArea: t.bodyArea,
           clinic: t.clinic || b.clinic || '', satisfaction: undefined,
           notes: undefined, memo: t.memo || b.memo || undefined, amount_paid: undefined,
+          input_method: 'ai_parsed',
+          clinic_kakao_id: null,
+          clinic_district: (t.clinic || b.clinic) ? extractDistrict(t.clinic || b.clinic || '') : null,
+          clinic_address: null,
         });
       }
       if ((b.amount_paid || 0) > 0 && b.clinic) {
