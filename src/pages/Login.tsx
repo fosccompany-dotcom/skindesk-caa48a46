@@ -9,6 +9,7 @@ import { LANGUAGE_LABELS } from '@/i18n/translations';
 import type { Language } from '@/i18n/translations';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Lock, Loader2 } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 
 const Login = () => {
   const { t, language, setLanguage } = useLanguage();
