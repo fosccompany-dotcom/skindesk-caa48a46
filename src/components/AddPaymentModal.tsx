@@ -64,18 +64,32 @@ export default function AddPaymentModal({ onClose, onSaved }: Props) {
       });
       if (insertErr) throw insertErr;
 
-      // 2. 포인트충전이면 clinic_balances에 충전금액 반영
+      // 2. clinic_balances 반영
+      const clinicKey = clinic.trim();
       if (method === '포인트충전' && chargedNum > 0) {
+        // 충전: 잔액 증가
         const { data: existing } = await supabase
           .from('clinic_balances').select('balance')
-          .eq('user_id', user.id).eq('clinic', clinic.trim()).single();
-
+          .eq('user_id', user.id).eq('clinic', clinicKey).single();
         await supabase.from('clinic_balances').upsert({
           user_id:    user.id,
-          clinic:     clinic.trim(),
+          clinic:     clinicKey,
           balance:    (existing?.balance || 0) + chargedNum,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,clinic' });
+      } else if (method === '시술결제' && amountNum > 0) {
+        // 시술결제: 잔액 차감 (잔액 있는 경우만)
+        const { data: existing } = await supabase
+          .from('clinic_balances').select('balance')
+          .eq('user_id', user.id).eq('clinic', clinicKey).maybeSingle();
+        if (existing && existing.balance > 0) {
+          await supabase.from('clinic_balances').upsert({
+            user_id:    user.id,
+            clinic:     clinicKey,
+            balance:    Math.max(0, existing.balance - amountNum),
+            updated_at: new Date().toISOString(),
+          }, { onConflict: 'user_id,clinic' });
+        }
       }
 
       setSaved(true);
