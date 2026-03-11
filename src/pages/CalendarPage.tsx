@@ -426,6 +426,88 @@ const CalendarPage = () => {
           </TabsContent>
         </Tabs>
       </div>
+
+      {/* ── 수정 모달 ── */}
+      <Dialog open={!!editRecord} onOpenChange={open => !open && setEditRecord(null)}>
+        <DialogContent className="max-w-sm max-h-[85vh] overflow-y-auto">
+          <DialogHeader><DialogTitle className="text-base">시술 기록 수정</DialogTitle></DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">시술명</Label>
+              <Input value={editForm.treatmentName} onChange={e => setEditForm(f => ({ ...f, treatmentName: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">병원</Label>
+              <Input value={editForm.clinic} onChange={e => setEditForm(f => ({ ...f, clinic: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">날짜</Label>
+              <Input type="date" value={editForm.date} onChange={e => setEditForm(f => ({ ...f, date: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">피부층</Label>
+              <div className="grid grid-cols-3 gap-1.5 mt-1">
+                {SKIN_LAYER_OPTIONS.map(o => (
+                  <button key={o.value} onClick={() => setEditForm(f => ({ ...f, skinLayer: o.value }))}
+                    className={cn('px-2 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                      editForm.skinLayer === o.value ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-transparent')}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">부위</Label>
+              <div className="grid grid-cols-4 gap-1.5 mt-1">
+                {BODY_AREA_OPTIONS.map(o => (
+                  <button key={o.value} onClick={() => setEditForm(f => ({ ...f, bodyArea: o.value }))}
+                    className={cn('px-2 py-1.5 rounded-lg text-xs font-medium border transition-colors',
+                      editForm.bodyArea === o.value ? 'bg-primary text-primary-foreground border-primary' : 'bg-muted text-muted-foreground border-transparent')}>
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">만족도</Label>
+              <div className="flex gap-1 mt-1">
+                {[1, 2, 3, 4, 5].map(s => (
+                  <button key={s} onClick={() => setEditForm(f => ({ ...f, satisfaction: s }))}
+                    className={cn('text-lg', s <= editForm.satisfaction ? 'text-[#C9A96E]' : 'text-muted-foreground/30')}>
+                    ★
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">메모</Label>
+              <Input value={editForm.memo} onChange={e => setEditForm(f => ({ ...f, memo: e.target.value }))} className="mt-1" placeholder="메모" />
+            </div>
+            <div>
+              <Label className="text-xs">노트</Label>
+              <Input value={editForm.notes} onChange={e => setEditForm(f => ({ ...f, notes: e.target.value }))} className="mt-1" placeholder="노트" />
+            </div>
+          </div>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" size="sm" onClick={() => setEditRecord(null)}>취소</Button>
+            <Button size="sm" onClick={saveRecordEdit}>저장</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── 삭제 확인 모달 ── */}
+      <Dialog open={!!deleteTarget} onOpenChange={open => !open && setDeleteTarget(null)}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader><DialogTitle className="text-base">삭제 확인</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">{deleteTarget?.treatmentName}</span> 기록을 삭제하시겠습니까?
+          </p>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" size="sm" onClick={() => setDeleteTarget(null)}>취소</Button>
+            <Button variant="destructive" size="sm" onClick={confirmDelete}>삭제</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
