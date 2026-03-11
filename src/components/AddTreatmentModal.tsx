@@ -31,7 +31,7 @@ const CATEGORIES: Category[] = [
     id: 'lifting',
     label: '레이저 리프팅',
     emoji: '✨',
-    color: 'border-purple-500/40 bg-purple-500/5',
+    color: 'border-purple-300 bg-purple-50',
     items: [
       { id: 'shrink',     name: '슈링크 유니버스',   desc: '효과UP 통증DOWN 밀착 리프팅',     skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
       { id: 'ulthera_fp', name: '울쎄라 피프라임',   desc: '프리미엄 초음파 리프팅',           skinLayer: 'subcutaneous', shotOptions: [100,200,300,600] },
@@ -48,7 +48,7 @@ const CATEGORIES: Category[] = [
     id: 'botox',
     label: '보톡스/윤곽주사',
     emoji: '💉',
-    color: 'border-blue-500/40 bg-blue-500/5',
+    color: 'border-blue-300 bg-blue-50',
     items: [
       { id: 'botox_kr',    name: '국산 보톡스',           desc: '부담없는 가격의 국산 보톡스',    skinLayer: 'subcutaneous' },
       { id: 'botox_core',  name: '코어톡스 보톡스',       desc: '내성 적은 국산 보톡스',          skinLayer: 'subcutaneous' },
@@ -61,7 +61,7 @@ const CATEGORIES: Category[] = [
     id: 'filler',
     label: '필러/실리프팅',
     emoji: '🌙',
-    color: 'border-indigo-500/40 bg-indigo-500/5',
+    color: 'border-indigo-300 bg-indigo-50',
     items: [
       { id: 'filler_kr',   name: '국산 필러 (아띠에르/뉴라미스)', desc: '자연스러운 볼륨 UP', skinLayer: 'dermis' },
       { id: 'filler_imp',  name: '수입 필러 (레스틸렌/쥬비덤)',   desc: '자연스러운 볼륨 UP', skinLayer: 'dermis' },
@@ -75,7 +75,7 @@ const CATEGORIES: Category[] = [
     id: 'booster',
     label: '스킨부스터',
     emoji: '💧',
-    color: 'border-cyan-500/40 bg-cyan-500/5',
+    color: 'border-cyan-300 bg-cyan-50',
     items: [
       { id: 'skinvive',   name: '스킨바이브',       desc: '프리미엄 히알루론산 스킨부스터',        skinLayer: 'dermis' },
       { id: 'rejuran',    name: '리쥬란 힐러',      desc: 'PN 성분 잔주름 탄력 개선',             skinLayer: 'dermis' },
@@ -95,7 +95,7 @@ const CATEGORIES: Category[] = [
     id: 'skincare',
     label: '피부관리/패키지',
     emoji: '🌿',
-    color: 'border-green-500/40 bg-green-500/5',
+    color: 'border-green-300 bg-green-50',
     items: [
       // Basic 패키지 아이템
       { id: 'b_scaling',   name: '[Basic] 스케일링',              skinLayer: 'epidermis' },
@@ -128,7 +128,7 @@ const CATEGORIES: Category[] = [
     id: 'whitening',
     label: '미백/기미/색소',
     emoji: '⚡',
-    color: 'border-amber-500/40 bg-amber-500/5',
+    color: 'border-amber-300 bg-amber-50',
     items: [
       { id: 'excelv',    name: '엑셀V',      desc: '색소·기미·잡티 제거 레이저',  skinLayer: 'epidermis' },
       { id: 'picotoning',name: '피코토닝',   desc: '피부를 맑고 깨끗하게',       skinLayer: 'epidermis' },
@@ -140,7 +140,7 @@ const CATEGORIES: Category[] = [
     id: 'acne',
     label: '여드름/점제거',
     emoji: '🔬',
-    color: 'border-rose-500/40 bg-rose-500/5',
+    color: 'border-rose-300 bg-rose-50',
     items: [
       { id: 'mole',    name: '점/쥐젖/사마귀/검버섯 제거', desc: '피부 손상 최소화 제거', skinLayer: 'epidermis' },
       { id: 'acne_tx', name: '여드름 치료',                desc: '아그네스/여드름진정주사', skinLayer: 'epidermis' },
@@ -152,7 +152,7 @@ const CATEGORIES: Category[] = [
     id: 'fat',
     label: '지방분해주사',
     emoji: '🔥',
-    color: 'border-orange-500/40 bg-orange-500/5',
+    color: 'border-orange-300 bg-orange-50',
     items: [
       { id: 'fat1',   name: '밴스 지방분해주사',        desc: '스테로이드 없는 고농도 지방분해',  skinLayer: 'subcutaneous' },
       { id: 'fat2',   name: '밴스 지방분해2주사',       desc: '통증↓ 효과↑ 강력한 고농도 주사',  skinLayer: 'subcutaneous' },
@@ -163,7 +163,7 @@ const CATEGORIES: Category[] = [
     id: 'hair_removal',
     label: '제모',
     emoji: '🪄',
-    color: 'border-slate-400/40 bg-slate-400/5',
+    color: 'border-slate-300 bg-slate-50',
     items: [
       { id: 'gentle_m',  name: '젠틀맥스프로플러스 남성제모', skinLayer: 'epidermis' },
       { id: 'gentle_f',  name: '젠틀맥스프로플러스 여성제모', skinLayer: 'epidermis' },
@@ -175,7 +175,7 @@ const CATEGORIES: Category[] = [
     id: 'iv',
     label: '수액/줄기세포',
     emoji: '🌱',
-    color: 'border-teal-500/40 bg-teal-500/5',
+    color: 'border-teal-300 bg-teal-50',
     items: [
       { id: 'iv_drip',  name: '수액주사',  desc: '숙취·피로해소 수액',  skinLayer: 'dermis' },
       { id: 'stemcell', name: '줄기세포',  desc: '피부재생 줄기세포 시술', skinLayer: 'dermis' },
@@ -189,9 +189,9 @@ const SKIN_LAYER_LABEL: Record<SL, string> = {
   epidermis: '표피층', dermis: '진피층', subcutaneous: '피하조직',
 };
 const SKIN_LAYER_COLOR: Record<SL, string> = {
-  epidermis: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-  dermis: 'bg-blue-500/15 text-blue-400 border-blue-500/25',
-  subcutaneous: 'bg-purple-500/15 text-purple-400 border-purple-500/25',
+  epidermis: 'bg-amber-100 text-amber-600 border-amber-300',
+  dermis: 'bg-blue-100 text-blue-600 border-blue-300',
+  subcutaneous: 'bg-purple-100 text-purple-600 border-purple-300',
 };
 
 // ─── Props ──────────────────────────────────────────────────────────
@@ -262,20 +262,20 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-[#111] border border-white/10 text-white max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0">
+      <DialogContent className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0">
 
         {/* 헤더 */}
-        <DialogHeader className="px-5 pt-5 pb-3 border-b border-white/10 sticky top-0 bg-[#111] z-10">
+        <DialogHeader className="px-5 pt-5 pb-3 border-b border-gray-200 sticky top-0 bg-white z-10">
           <div className="flex items-center justify-between">
             <DialogTitle className="text-base font-semibold">
               {editRecord ? '시술 수정' : '시술 등록'}
             </DialogTitle>
-            <span className="text-xs text-white/30">{step} / {totalSteps}</span>
+            <span className="text-xs text-gray-400">{step} / {totalSteps}</span>
           </div>
           <div className="flex gap-1 mt-2.5">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <div key={i} className={cn('h-0.5 flex-1 rounded-full transition-all',
-                i < step ? 'bg-[#C9A96E]' : 'bg-white/10')} />
+                i < step ? 'bg-[#C9A96E]' : 'bg-gray-200')} />
             ))}
           </div>
         </DialogHeader>
@@ -285,7 +285,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              <p className="text-xs text-white/40 mb-3">시술 카테고리를 선택하세요</p>
+              <p className="text-xs text-gray-400 mb-3">시술 카테고리를 선택하세요</p>
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map(cat => (
                   <button key={cat.id}
@@ -293,12 +293,12 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
                       cat.color,
-                      catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-white/25'
+                      catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-gray-400 border-gray-200'
                     )}>
                     <span className="text-lg">{cat.emoji}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-white leading-tight">{cat.label}</div>
-                      <div className="text-[10px] text-white/35 mt-0.5">{cat.items.length}종</div>
+                      <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">{cat.items.length}종</div>
                     </div>
                     {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
                   </button>
@@ -312,7 +312,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
-                <p className="text-sm font-semibold text-white">{selectedCat.label}</p>
+                <p className="text-sm font-semibold text-gray-900">{selectedCat.label}</p>
               </div>
               <div className="space-y-1.5">
                 {selectedCat.items.map(item => (
@@ -322,18 +322,18 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
                       itemId === item.id
                         ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
-                        : 'border-white/10 bg-white/3 hover:border-white/25'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
                     )}>
                     <div className="flex-1 min-w-0">
-                      <div className="text-sm text-white font-medium">{item.name}</div>
-                      {item.desc && <div className="text-[11px] text-white/35 mt-0.5 truncate">{item.desc}</div>}
+                      <div className="text-sm text-gray-900 font-medium">{item.name}</div>
+                      {item.desc && <div className="text-[11px] text-gray-400 mt-0.5 truncate">{item.desc}</div>}
                     </div>
                     <div className="flex items-center gap-1.5 ml-2 shrink-0">
                       <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[item.skinLayer])}>
                         {SKIN_LAYER_LABEL[item.skinLayer].replace('조직','').replace('층','')}
                       </span>
                       {item.shotOptions?.length && (
-                        <span className="text-[10px] text-white/30 flex items-center gap-0.5">
+                        <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
                           <Zap size={9} />샷
                         </span>
                       )}
@@ -348,8 +348,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 3: 샷수 선택 ── */}
           {step === 3 && needsShots && selectedItem && (
             <div>
-              <p className="text-xs text-white/40 mb-1">샷수를 선택하세요</p>
-              <p className="text-sm font-semibold text-white mb-4">{selectedItem.name}</p>
+              <p className="text-xs text-gray-400 mb-1">샷수를 선택하세요</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
               <div className="grid grid-cols-2 gap-3">
                 {selectedItem.shotOptions!.map(s => (
                   <button key={s}
@@ -358,10 +358,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       'flex flex-col items-center justify-center py-6 rounded-xl border transition-all',
                       shots === s
                         ? 'border-[#C9A96E] bg-[#C9A96E]/10 ring-1 ring-[#C9A96E]/40'
-                        : 'border-white/15 bg-white/3 hover:border-white/30'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
                     )}>
-                    <span className={cn('text-3xl font-bold', shots === s ? 'text-[#C9A96E]' : 'text-white')}>{s}</span>
-                    <span className="text-xs text-white/35 mt-1">샷</span>
+                    <span className={cn('text-3xl font-bold', shots === s ? 'text-[#C9A96E]' : 'text-gray-800')}>{s}</span>
+                    <span className="text-xs text-gray-400 mt-1">샷</span>
                   </button>
                 ))}
               </div>
@@ -372,8 +372,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {isDetailStep && selectedItem && (
             <div className="space-y-4">
               {/* 선택 요약 */}
-              <div className="bg-white/5 rounded-xl px-4 py-3 border border-white/10">
-                <div className="text-[11px] text-white/35 mb-1">등록할 시술</div>
+              <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
+                <div className="text-[11px] text-gray-400 mb-1">등록할 시술</div>
                 <div className="text-sm font-semibold text-[#C9A96E]">{getTreatmentName()}</div>
                 <div className="mt-1.5">
                   <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[selectedItem.skinLayer])}>
@@ -384,25 +384,25 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
               {/* 날짜 */}
               <div>
-                <label className="text-xs text-white/40 block mb-1.5">시술일</label>
+                <label className="text-xs text-gray-400 block mb-1.5">시술일</label>
                 <input type="date" value={date}
                   onChange={e => setDate(e.target.value)}
-                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#C9A96E]/50 [color-scheme:dark]" />
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50" />
               </div>
 
               {/* 병원 */}
               <div>
-                <label className="text-xs text-white/40 block mb-1.5">병원</label>
+                <label className="text-xs text-gray-400 block mb-1.5">병원</label>
                 <ClinicSearchInput
                   value={clinic}
                   onChange={setClinic}
                   placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
-                  darkMode={true} />
+                  darkMode={false} />
               </div>
 
               {/* 만족도 */}
               <div>
-                <label className="text-xs text-white/40 block mb-1.5">만족도</label>
+                <label className="text-xs text-gray-400 block mb-1.5">만족도</label>
                 <div className="flex gap-2">
                   {[1,2,3,4,5].map(s => (
                     <button key={s} onClick={() => setSatisfaction(s as 1 | 2 | 3 | 4 | 5)}
@@ -410,7 +410,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                         'flex-1 py-2 rounded-lg border text-sm font-bold transition-all',
                         satisfaction === s
                           ? 'border-[#C9A96E] bg-[#C9A96E]/15 text-[#C9A96E]'
-                          : 'border-white/10 text-white/30 hover:border-white/25'
+                          : 'border-gray-200 text-gray-300 hover:border-gray-400'
                       )}>
                       {'★'.repeat(s)}
                     </button>
@@ -420,30 +420,21 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
               {/* 메모 */}
               <div>
-                <label className="text-xs text-white/40 block mb-1.5">메모 (선택)</label>
+                <label className="text-xs text-gray-400 block mb-1.5">메모 (선택)</label>
                 <textarea rows={3} value={memo} onChange={e => setMemo(e.target.value)}
                   placeholder="시술 후 느낌, 효과, 다음 방문 시 참고사항..."
-                  className="w-full bg-white/5 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/20 focus:outline-none focus:border-[#C9A96E]/50 resize-none" />
+                  className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-300 focus:outline-none focus:border-[#C9A96E]/50 resize-none" />
               </div>
             </div>
           )}
         </div>
 
         {/* 하단 버튼 */}
-        <div className="px-5 pb-5 sticky bottom-0 bg-[#111] pt-3 border-t border-white/5 space-y-2">
-          {onOpenParse && (
-            <button
-              onClick={() => { handleClose(); onOpenParse(); }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-[#C9A96E]/40 text-[#C9A96E] text-xs font-semibold hover:bg-[#C9A96E]/10 transition-colors"
-            >
-              <Sparkles size={13} />
-              텍스트 · 이미지로 한 번에 등록하기
-            </button>
-          )}
+        <div className="px-5 pb-5 sticky bottom-0 bg-white pt-3 border-t border-gray-100 space-y-2">
           <div className="flex gap-3">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(s => s - 1)}
-              className="flex-1 border-white/15 bg-transparent text-white/60 hover:bg-white/5 hover:text-white">
+              className="flex-1 border-gray-200 bg-transparent text-gray-500 hover:bg-gray-50 hover:text-gray-800">
               <ChevronLeft size={15} className="mr-1" /> 이전
             </Button>
           )}
@@ -459,6 +450,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </Button>
           )}
           </div>
+          {onOpenParse && (
+            <button
+              onClick={() => { handleClose(); onOpenParse(); }}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-xs font-medium hover:bg-gray-50 hover:text-gray-600 transition-colors"
+            >
+              <Sparkles size={13} />
+              텍스트 · 이미지로 한 번에 등록하기
+            </button>
+          )}
         </div>
       </DialogContent>
     </Dialog>
