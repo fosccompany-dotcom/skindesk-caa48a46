@@ -66,6 +66,12 @@ interface ParsedPackage {
   memo: string | null;
   selected: boolean;
   payMethod: PkgPayMethod;
+  // 중복 감지
+  existingPackageId?: string | null;
+  existingPackageName?: string | null;
+  existingUsedSessions?: number;
+  existingTotalSessions?: number;
+  duplicateAction?: 'update' | 'new' | null; // null = 아직 선택 안함
 }
 
 type BalanceMethod = 'set' | 'add';
