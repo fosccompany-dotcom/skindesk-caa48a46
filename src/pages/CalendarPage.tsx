@@ -368,7 +368,7 @@ const CalendarPage = () => {
                 <Stethoscope size={12} />
                 시술 기록 ({selectedRecords.length})
               </p>
-              {selectedRecords.map(r => <RecordCard key={r.id} r={r} />)}
+              {selectedRecords.map(r => <RecordCard key={r.id} r={r} onEdit={handleEditRecord} onDelete={setDeleteTarget} />)}
             </div>
           )}
 
