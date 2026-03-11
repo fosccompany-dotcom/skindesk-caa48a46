@@ -38,15 +38,17 @@ const MyTreatmentHistory = () => {
 
   // Filter & search
   const filtered = useMemo(() => {
-    return records.filter(r => {
-      if (filterClinic && r.clinic !== filterClinic) return false;
-      if (filterLayer && r.skinLayer !== filterLayer) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        if (!r.treatmentName.toLowerCase().includes(q) && !r.clinic.toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
+    return records
+      .filter(r => !r.packageId) // 시술권 연결 기록은 피부관리 현황에서 제외
+      .filter(r => {
+        if (filterClinic && r.clinic !== filterClinic) return false;
+        if (filterLayer && r.skinLayer !== filterLayer) return false;
+        if (search) {
+          const q = search.toLowerCase();
+          if (!r.treatmentName.toLowerCase().includes(q) && !r.clinic.toLowerCase().includes(q)) return false;
+        }
+        return true;
+      });
   }, [records, filterClinic, filterLayer, search]);
 
   // Group by month
