@@ -1,13 +1,18 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, Wallet, Plus, ChevronRight, Building2, ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
+import { Package, Wallet, Building2, MoreVertical, Pencil, Trash2 } from 'lucide-react';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useRecords } from '@/context/RecordsContext';
+import { useSearchParams } from 'react-router-dom';
 import AddPaymentModal from '@/components/AddPaymentModal';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from 'sonner';
 
 // ── 타입 ──────────────────────────────────────────────────────────────
 interface TreatmentPackage {
@@ -33,7 +38,6 @@ const methodStyle: Record<string, { bg: string; text: string }> = {
 
 // ─────────────────────────────────────────────────────────────────────
 const Packages = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'packages';
 
@@ -48,21 +52,29 @@ const Packages = () => {
   const [filterClinic, setFilterClinic] = useState<string>('전체');
   const [showAddModal, setShowAddModal] = useState(false);
 
+  // ── 수정/삭제 모달 state ──
+  const [editPkg, setEditPkg] = useState<TreatmentPackage | null>(null);
+  const [editPay, setEditPay] = useState<PaymentRecord | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'package' | 'payment'; id: string; name: string } | null>(null);
+
+  // 편집 폼 state
+  const [editPkgForm, setEditPkgForm] = useState({ name: '', clinic: '', total_sessions: 0, used_sessions: 0, expiry_date: '' });
+  const [editPayForm, setEditPayForm] = useState({ treatment_name: '', clinic: '', date: '', amount: 0, memo: '' });
+
   // 시술권 로드
-  useEffect(() => {
-    const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { setPkgLoading(false); return; }
-      const { data } = await supabase
-        .from('treatment_packages')
-        .select('id, name, clinic, total_sessions, used_sessions, expiry_date')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-      setPackages(data ?? []);
-      setPkgLoading(false);
-    };
-    load();
+  const loadPackages = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setPkgLoading(false); return; }
+    const { data } = await supabase
+      .from('treatment_packages')
+      .select('id, name, clinic, total_sessions, used_sessions, expiry_date')
+      .eq('user_id', user.id)
+      .order('created_at', { ascending: false });
+    setPackages(data ?? []);
+    setPkgLoading(false);
   }, []);
+
+  useEffect(() => { loadPackages(); }, [loadPackages]);
 
   // 결제 데이터 로드
   const loadPayments = useCallback(async () => {
@@ -78,6 +90,72 @@ const Packages = () => {
   }, []);
 
   useEffect(() => { loadPayments(); }, [loadPayments]);
+
+  // ── 시술권 수정 ──
+  const handleEditPkg = (pkg: TreatmentPackage) => {
+    setEditPkgForm({
+      name: pkg.name,
+      clinic: pkg.clinic,
+      total_sessions: pkg.total_sessions,
+      used_sessions: pkg.used_sessions,
+      expiry_date: pkg.expiry_date || '',
+    });
+    setEditPkg(pkg);
+  };
+
+  const savePkgEdit = async () => {
+    if (!editPkg) return;
+    const { error } = await supabase.from('treatment_packages').update({
+      name: editPkgForm.name,
+      clinic: editPkgForm.clinic,
+      total_sessions: editPkgForm.total_sessions,
+      used_sessions: editPkgForm.used_sessions,
+      expiry_date: editPkgForm.expiry_date || null,
+    }).eq('id', editPkg.id);
+    if (error) { toast.error('수정 실패'); return; }
+    toast.success('시술권이 수정되었습니다');
+    setEditPkg(null);
+    loadPackages();
+  };
+
+  // ── 결제 수정 ──
+  const handleEditPay = (pay: PaymentRecord) => {
+    setEditPayForm({
+      treatment_name: pay.treatment_name,
+      clinic: pay.clinic,
+      date: pay.date,
+      amount: pay.amount,
+      memo: pay.memo || '',
+    });
+    setEditPay(pay);
+  };
+
+  const savePayEdit = async () => {
+    if (!editPay) return;
+    const { error } = await supabase.from('payment_records').update({
+      treatment_name: editPayForm.treatment_name,
+      clinic: editPayForm.clinic,
+      date: editPayForm.date,
+      amount: editPayForm.amount,
+      memo: editPayForm.memo || null,
+    }).eq('id', editPay.id);
+    if (error) { toast.error('수정 실패'); return; }
+    toast.success('결제 내역이 수정되었습니다');
+    setEditPay(null);
+    loadPayments();
+  };
+
+  // ── 삭제 ──
+  const handleDelete = async () => {
+    if (!deleteTarget) return;
+    const table = deleteTarget.type === 'package' ? 'treatment_packages' : 'payment_records';
+    const { error } = await supabase.from(table).delete().eq('id', deleteTarget.id);
+    if (error) { toast.error('삭제 실패'); return; }
+    toast.success('삭제되었습니다');
+    setDeleteTarget(null);
+    if (deleteTarget.type === 'package') loadPackages();
+    else loadPayments();
+  };
 
   // ── 계산 ──────────────────────────────────────────────────────────
   const activePackages   = packages.filter(p => p.total_sessions - p.used_sessions > 0);
@@ -130,7 +208,9 @@ const Packages = () => {
                   <div>
                     <p className="text-xs font-bold text-gray-500 mb-2">잔여 시술권 {activePackages.length}개</p>
                     <div className="space-y-2.5">
-                      {activePackages.map(pkg => <PackageCard key={pkg.id} pkg={pkg} />)}
+                      {activePackages.map(pkg => (
+                        <PackageCard key={pkg.id} pkg={pkg} onEdit={() => handleEditPkg(pkg)} onDelete={() => setDeleteTarget({ type: 'package', id: pkg.id, name: pkg.name })} />
+                      ))}
                     </div>
                   </div>
                 )}
@@ -138,7 +218,9 @@ const Packages = () => {
                   <div>
                     <p className="text-xs font-bold text-gray-400 mb-2 mt-4">완료 {finishedPackages.length}개</p>
                     <div className="space-y-2.5 opacity-50">
-                      {finishedPackages.map(pkg => <PackageCard key={pkg.id} pkg={pkg} />)}
+                      {finishedPackages.map(pkg => (
+                        <PackageCard key={pkg.id} pkg={pkg} onEdit={() => handleEditPkg(pkg)} onDelete={() => setDeleteTarget({ type: 'package', id: pkg.id, name: pkg.name })} />
+                      ))}
                     </div>
                   </div>
                 )}
@@ -148,8 +230,6 @@ const Packages = () => {
 
           {/* ══════════════ 포인트 관리 탭 ══════════════ */}
           <TabsContent value="points" className="space-y-3 mt-0">
-
-            {/* 잔액 요약 */}
             {balances.length > 0 && (
               <Card className="glass-card">
                 <CardContent className="p-4">
@@ -166,7 +246,6 @@ const Packages = () => {
               </Card>
             )}
 
-            {/* 결제 통계 */}
             <Card className="glass-card">
               <CardContent className="p-4 flex items-center justify-between">
                 <div>
@@ -180,7 +259,6 @@ const Packages = () => {
               </CardContent>
             </Card>
 
-            {/* 병원 필터 */}
             {clinicList.length > 1 && (
               <ScrollArea className="w-full">
                 <div className="flex gap-2 pb-1">
@@ -201,7 +279,6 @@ const Packages = () => {
               </ScrollArea>
             )}
 
-            {/* 결제 목록 */}
             {payLoading ? (
               <div className="text-center py-8 text-sm text-muted-foreground">불러오는 중...</div>
             ) : filteredPayments.length === 0 ? (
@@ -219,13 +296,30 @@ const Packages = () => {
                             <p className="text-[11px] text-muted-foreground mt-0.5">{p.date} · {p.clinic}</p>
                             {p.memo && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{p.memo}</p>}
                           </div>
-                          <div className="text-right shrink-0">
-                            <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : ''}`}>
-                              {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
-                            </p>
-                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
-                              {p.method}
-                            </span>
+                          <div className="flex items-start gap-1.5">
+                            <div className="text-right shrink-0">
+                              <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : ''}`}>
+                                {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
+                              </p>
+                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
+                                {p.method}
+                              </span>
+                            </div>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <button className="p-1 rounded-md hover:bg-muted transition-colors -mr-1">
+                                  <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                                </button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="min-w-[100px]">
+                                <DropdownMenuItem onClick={() => handleEditPay(p)} className="text-xs gap-2">
+                                  <Pencil className="h-3.5 w-3.5" /> 수정
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setDeleteTarget({ type: 'payment', id: p.id, name: p.treatment_name })} className="text-xs gap-2 text-destructive focus:text-destructive">
+                                  <Trash2 className="h-3.5 w-3.5" /> 삭제
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       </CardContent>
@@ -243,11 +337,101 @@ const Packages = () => {
         onClose={() => setShowAddModal(false)}
         onSaved={() => { setShowAddModal(false); loadPayments(); }}
       />
+
+      {/* ── 시술권 수정 모달 ── */}
+      <Dialog open={!!editPkg} onOpenChange={(open) => !open && setEditPkg(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-base">시술권 수정</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">시술권명</Label>
+              <Input value={editPkgForm.name} onChange={e => setEditPkgForm(f => ({ ...f, name: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">병원</Label>
+              <Input value={editPkgForm.clinic} onChange={e => setEditPkgForm(f => ({ ...f, clinic: e.target.value }))} className="mt-1" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">총 회차</Label>
+                <Input type="number" value={editPkgForm.total_sessions} onChange={e => setEditPkgForm(f => ({ ...f, total_sessions: Number(e.target.value) }))} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">사용 회차</Label>
+                <Input type="number" value={editPkgForm.used_sessions} onChange={e => setEditPkgForm(f => ({ ...f, used_sessions: Number(e.target.value) }))} className="mt-1" />
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">만료일 (선택)</Label>
+              <Input type="date" value={editPkgForm.expiry_date} onChange={e => setEditPkgForm(f => ({ ...f, expiry_date: e.target.value }))} className="mt-1" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditPkg(null)} size="sm">취소</Button>
+            <Button onClick={savePkgEdit} size="sm">저장</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── 결제 수정 모달 ── */}
+      <Dialog open={!!editPay} onOpenChange={(open) => !open && setEditPay(null)}>
+        <DialogContent className="max-w-sm">
+          <DialogHeader>
+            <DialogTitle className="text-base">결제 내역 수정</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <Label className="text-xs">내용</Label>
+              <Input value={editPayForm.treatment_name} onChange={e => setEditPayForm(f => ({ ...f, treatment_name: e.target.value }))} className="mt-1" />
+            </div>
+            <div>
+              <Label className="text-xs">병원</Label>
+              <Input value={editPayForm.clinic} onChange={e => setEditPayForm(f => ({ ...f, clinic: e.target.value }))} className="mt-1" />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-xs">날짜</Label>
+                <Input type="date" value={editPayForm.date} onChange={e => setEditPayForm(f => ({ ...f, date: e.target.value }))} className="mt-1" />
+              </div>
+              <div>
+                <Label className="text-xs">금액 (원)</Label>
+                <Input type="number" value={editPayForm.amount} onChange={e => setEditPayForm(f => ({ ...f, amount: Number(e.target.value) }))} className="mt-1" />
+              </div>
+            </div>
+            <div>
+              <Label className="text-xs">메모 (선택)</Label>
+              <Input value={editPayForm.memo} onChange={e => setEditPayForm(f => ({ ...f, memo: e.target.value }))} className="mt-1" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditPay(null)} size="sm">취소</Button>
+            <Button onClick={savePayEdit} size="sm">저장</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── 삭제 확인 모달 ── */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="max-w-xs">
+          <DialogHeader>
+            <DialogTitle className="text-base">삭제 확인</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            <span className="font-semibold text-foreground">"{deleteTarget?.name}"</span>을(를) 삭제하시겠습니까?<br />이 작업은 되돌릴 수 없습니다.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} size="sm">취소</Button>
+            <Button variant="destructive" onClick={handleDelete} size="sm">삭제</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
 
-function PackageCard({ pkg }: { pkg: TreatmentPackage }) {
+function PackageCard({ pkg, onEdit, onDelete }: { pkg: TreatmentPackage; onEdit: () => void; onDelete: () => void }) {
   const remaining = pkg.total_sessions - pkg.used_sessions;
   const progress  = (pkg.used_sessions / pkg.total_sessions) * 100;
   return (
@@ -259,9 +443,26 @@ function PackageCard({ pkg }: { pkg: TreatmentPackage }) {
             <p className="text-[11px] text-muted-foreground mt-0.5">{pkg.clinic}</p>
             {pkg.expiry_date && <p className="text-[10px] text-muted-foreground mt-0.5">만료 {pkg.expiry_date}</p>}
           </div>
-          <div className="text-right shrink-0 ml-3">
-            <p className="text-2xl font-black text-primary">{remaining}</p>
-            <p className="text-[10px] text-muted-foreground">잔여</p>
+          <div className="flex items-start gap-2 ml-3">
+            <div className="text-right shrink-0">
+              <p className="text-2xl font-black text-primary">{remaining}</p>
+              <p className="text-[10px] text-muted-foreground">잔여</p>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="p-1 rounded-md hover:bg-muted transition-colors -mr-1 mt-1">
+                  <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[100px]">
+                <DropdownMenuItem onClick={onEdit} className="text-xs gap-2">
+                  <Pencil className="h-3.5 w-3.5" /> 수정
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={onDelete} className="text-xs gap-2 text-destructive focus:text-destructive">
+                  <Trash2 className="h-3.5 w-3.5" /> 삭제
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
         <Progress value={progress} className="h-1.5 mb-1.5" />
