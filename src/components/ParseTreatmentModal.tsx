@@ -549,6 +549,17 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         description: `${balanceInfo.clinic} 포인트 잔액 설정`,
         clinic: balanceInfo.clinic,
       });
+
+      // payment_records에도 기록 추가 (결제 내역 리스트에 표시)
+      await supabase.from('payment_records').insert({
+        user_id: user.id,
+        date: todayStr,
+        clinic: balanceInfo.clinic,
+        treatment_name: '포인트 잔액 설정',
+        amount: balanceInfo.amount,
+        method: '포인트충전',
+        memo: balanceInfo.method === 'set' ? '잔액 직접 설정' : '기존 잔액에 더하기',
+      });
     }
 
     setSaving(false); setSaved(true);
