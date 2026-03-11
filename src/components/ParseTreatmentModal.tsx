@@ -114,6 +114,122 @@ export default function ParseTreatmentModal({ onClose }: Props) {
     reader.readAsDataURL(file);
   };
 
+  // ── 클라이언트 사이드 패키지 파싱 (N-M회차 패턴) ──
+  const parsePackagesFromText = (inputText: string): ParsedPackage[] => {
+    const results: ParsedPackage[] = [];
+    const todayStr = new Date().toISOString().split('T')[0];
+
+    // 패턴: "베이직패키지 20-6회차" or "Premium(프리미엄) 패키지 10-6회차"
+    // 캡처: 패키지명, 총 회차, 사용 회차
+    const patterns = [
+      // "베이직패키지 20-6회차" / "베이직 패키지 20-6회차"
+      /(?:(\S+?)\s*패키지|패키지\s*(\S+?))\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
+      // "Basic 20-6회차" etc
+      /(\S+?)\s+(\d+)\s*[-–]\s*(\d+)\s*회차/gi,
+    ];
+
+    // 먼저 첫 번째 패턴
+    const p1 = /(?:(\S+?)\s*패키지|(\S+?)\s*패키지)\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
+    let match;
+    while ((match = p1.exec(inputText)) !== null) {
+      const rawName = (match[1] || match[2] || '').trim();
+      const total = parseInt(match[3]);
+      const used = parseInt(match[4]);
+      if (total > 0 && used >= 0 && used <= total) {
+        const pkgName = normalizePkgName(rawName);
+        results.push({
+          date: todayStr,
+          name: pkgName,
+          total_sessions: total,
+          used_sessions: used,
+          clinic: null,
+          amount_paid: null,
+          memo: null,
+          selected: true,
+          payMethod: '포인트',
+          duplicateAction: null,
+        });
+      }
+    }
+
+    // 두 번째 패턴: "Premium(프리미엄) 패키지 10-6회차"
+    const p2 = /(\S+?\([^)]+\))\s*패키지\s*(\d+)\s*[-–]\s*(\d+)\s*회차/gi;
+    while ((match = p2.exec(inputText)) !== null) {
+      const rawName = match[1].trim();
+      const total = parseInt(match[2]);
+      const used = parseInt(match[3]);
+      if (total > 0 && used >= 0 && used <= total) {
+        const pkgName = normalizePkgName(rawName);
+        // 중복 체크
+        if (!results.find(r => r.name === pkgName && r.total_sessions === total)) {
+          results.push({
+            date: todayStr,
+            name: pkgName,
+            total_sessions: total,
+            used_sessions: used,
+            clinic: null,
+            amount_paid: null,
+            memo: null,
+            selected: true,
+            payMethod: '포인트',
+            duplicateAction: null,
+          });
+        }
+      }
+    }
+
+    return results;
+  };
+
+  const normalizePkgName = (raw: string): string => {
+    const lower = raw.toLowerCase().replace(/[()]/g, '');
+    if (lower.includes('베이직') || lower.includes('basic')) return '베이직 패키지';
+    if (lower.includes('프리미엄') || lower.includes('premium')) return '프리미엄 패키지';
+    if (lower.includes('스페셜') || lower.includes('special')) return '스페셜 패키지';
+    if (lower.includes('바디') || lower.includes('body')) return '바디 패키지';
+    if (lower.includes('메디컬') || lower.includes('medical')) return '메디컬 패키지';
+    return raw + ' 패키지';
+  };
+
+  // ── 기존 패키지 중복 체크 ──
+  const checkDuplicatePackages = async (packages: ParsedPackage[]): Promise<ParsedPackage[]> => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || packages.length === 0) return packages;
+
+    const { data: existingPkgs } = await supabase
+      .from('treatment_packages')
+      .select('id, name, total_sessions, used_sessions, clinic')
+      .eq('user_id', user.id);
+
+    if (!existingPkgs || existingPkgs.length === 0) return packages;
+
+    return packages.map(pkg => {
+      // 이름이 유사한 기존 패키지 찾기
+      const match = existingPkgs.find(ep => {
+        const epName = ep.name.toLowerCase().replace(/\s/g, '');
+        const pkgName = pkg.name.toLowerCase().replace(/\s/g, '');
+        return epName.includes(pkgName) || pkgName.includes(epName) || 
+               (epName.includes('베이직') && pkgName.includes('베이직')) ||
+               (epName.includes('프리미엄') && pkgName.includes('프리미엄')) ||
+               (epName.includes('스페셜') && pkgName.includes('스페셜')) ||
+               (epName.includes('바디') && pkgName.includes('바디')) ||
+               (epName.includes('메디컬') && pkgName.includes('메디컬'));
+      });
+
+      if (match) {
+        return {
+          ...pkg,
+          existingPackageId: match.id,
+          existingPackageName: match.name,
+          existingUsedSessions: match.used_sessions ?? 0,
+          existingTotalSessions: match.total_sessions ?? 0,
+          duplicateAction: null, // 유저에게 물어봄
+        };
+      }
+      return pkg;
+    });
+  };
+
   const handleParse = async () => {
     setLoading(true); setError(null);
     setParsed(null); setBundles([]); setCharges([]); setBalanceInfo(null);
