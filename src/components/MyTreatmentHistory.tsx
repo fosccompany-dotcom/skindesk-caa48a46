@@ -38,15 +38,17 @@ const MyTreatmentHistory = () => {
 
   // Filter & search
   const filtered = useMemo(() => {
-    return records.filter(r => {
-      if (filterClinic && r.clinic !== filterClinic) return false;
-      if (filterLayer && r.skinLayer !== filterLayer) return false;
-      if (search) {
-        const q = search.toLowerCase();
-        if (!r.treatmentName.toLowerCase().includes(q) && !r.clinic.toLowerCase().includes(q)) return false;
-      }
-      return true;
-    });
+    return records
+      .filter(r => !r.packageId) // 시술권 연결 기록은 피부관리 현황에서 제외
+      .filter(r => {
+        if (filterClinic && r.clinic !== filterClinic) return false;
+        if (filterLayer && r.skinLayer !== filterLayer) return false;
+        if (search) {
+          const q = search.toLowerCase();
+          if (!r.treatmentName.toLowerCase().includes(q) && !r.clinic.toLowerCase().includes(q)) return false;
+        }
+        return true;
+      });
   }, [records, filterClinic, filterLayer, search]);
 
   // Group by month
@@ -62,10 +64,11 @@ const MyTreatmentHistory = () => {
 
   // Stats
   const stats = useMemo(() => {
-    const totalCount = records.length;
-    const totalSpent = records.reduce((s, r) => s + (r.amount_paid || 0), 0);
-    const clinicCount = new Set(records.map(r => r.clinic)).size;
-    const thisMonth = records.filter(r => {
+    const nonPkgRecords = records.filter(r => !r.packageId);
+    const totalCount = nonPkgRecords.length;
+    const totalSpent = nonPkgRecords.reduce((s, r) => s + (r.amount_paid || 0), 0);
+    const clinicCount = new Set(nonPkgRecords.map(r => r.clinic)).size;
+    const thisMonth = nonPkgRecords.filter(r => {
       const d = parseISO(r.date);
       const now = new Date();
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
