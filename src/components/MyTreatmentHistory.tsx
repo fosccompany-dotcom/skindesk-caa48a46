@@ -64,10 +64,11 @@ const MyTreatmentHistory = () => {
 
   // Stats
   const stats = useMemo(() => {
-    const totalCount = records.length;
-    const totalSpent = records.reduce((s, r) => s + (r.amount_paid || 0), 0);
-    const clinicCount = new Set(records.map(r => r.clinic)).size;
-    const thisMonth = records.filter(r => {
+    const nonPkgRecords = records.filter(r => !r.packageId);
+    const totalCount = nonPkgRecords.length;
+    const totalSpent = nonPkgRecords.reduce((s, r) => s + (r.amount_paid || 0), 0);
+    const clinicCount = new Set(nonPkgRecords.map(r => r.clinic)).size;
+    const thisMonth = nonPkgRecords.filter(r => {
       const d = parseISO(r.date);
       const now = new Date();
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
