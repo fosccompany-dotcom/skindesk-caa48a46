@@ -792,12 +792,11 @@ function PaymentHistoryTab() {
         </CardContent>
       </Card>
 
-      {showAddModal && (
-        <AddPaymentModal
-          onClose={() => setShowAddModal(false)}
-          onSaved={() => { setShowAddModal(false); loadPayments(); }}
-        />
-      )}
+      <AddPaymentModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSaved={() => { setShowAddModal(false); loadPayments(); }}
+      />
 
       {/* 결제 목록 */}
       {payments.length === 0 ? (
