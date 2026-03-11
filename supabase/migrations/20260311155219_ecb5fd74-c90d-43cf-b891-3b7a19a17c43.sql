@@ -1,0 +1,2 @@
+ALTER TABLE public.payment_records DROP CONSTRAINT payment_records_method_check;
+ALTER TABLE public.payment_records ADD CONSTRAINT payment_records_method_check CHECK (method = ANY (ARRAY['카드'::text, '현금'::text, '포인트충전'::text, '포인트'::text, '시술결제'::text, '서비스'::text]));

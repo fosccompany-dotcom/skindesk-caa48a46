@@ -20,7 +20,7 @@ interface TreatmentPackage {
   total_sessions: number; used_sessions: number;
   expiry_date: string | null;
 }
-type PaymentMethod = '포인트충전' | '시술결제' | '카드' | '현금' | '서비스';
+type PaymentMethod = '포인트충전' | '포인트' | '시술결제' | '카드' | '현금' | '서비스';
 type ClinicType    = '밴스' | '타의원';
 interface PaymentRecord {
   id: string; date: string; clinic: string; clinic_type: ClinicType;
@@ -395,8 +395,8 @@ const Packages = () => {
             </div>
             <div>
               <Label className="text-xs">결제 종류</Label>
-              <div className="grid grid-cols-3 gap-1.5 mt-1">
-                {(['포인트충전', '포인트', '시술결제', '카드', '현금', '서비스'] as const).map(m => (
+              <div className="grid grid-cols-5 gap-1.5 mt-1">
+                {(['포인트', '시술결제', '카드', '현금', '서비스'] as const).map(m => (
                   <button
                     key={m}
                     type="button"
