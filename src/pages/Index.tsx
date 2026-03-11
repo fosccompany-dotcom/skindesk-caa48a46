@@ -3,7 +3,6 @@ import { Wallet, ChevronRight, AlertTriangle, CheckCircle2, Timer, CalendarDays,
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { FlowerSeasonBadge } from '@/components/FlowerSeasonBadge';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
 
 import { useCycles } from '@/context/CyclesContext';
@@ -170,14 +169,12 @@ const Index = () => {
             <div>
               <p className="text-sm opacity-70 font-light">{t('hello')}</p>
               <h1 className="mt-0.5 text-xl font-bold">{t('my_skin_care')}</h1>
-                                        <div className="flex items-center gap-3">
-                                                          <FlowerSeasonBadge season={currentSeason} />
-                                                                          <div className="h-9 w-9 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer"
-                                                                                            onClick={() => navigate('/profile')}>
-                                                                                                              <span className="text-base">👤</span>
-                                                                                                                              </div>
-                                                                                                                                            </div>
-                                                                                                                                            
+            </div>
+            <div className="h-10 w-10 rounded-full bg-white/15 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer"
+              onClick={() => navigate('/profile')}>
+              <span className="text-base">👤</span>
+            </div>
+          </div>
         </div>
       </div>
 
