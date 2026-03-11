@@ -258,6 +258,17 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
   };
 
+  const handleClinicTextInput = (value: string) => {
+    setClinic(value);
+    resetClinicMeta();
+  };
+
+  const handlePlaceSelect = (place: ClinicPlace) => {
+    setClinicKakaoId(place.kakao_id ?? null);
+    setClinicDistrict(extractDistrict(place.address || ''));
+    setClinicAddress(place.road_address ?? place.address ?? null);
+  };
+
   const handleSave = () => {
     if (!selectedItem) return;
     onSave({
@@ -271,6 +282,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       clinic,
       satisfaction,
       memo,
+      clinic_kakao_id: clinicKakaoId,
+      clinic_district: clinicDistrict,
+      clinic_address: clinicAddress,
+      input_method: 'manual',
     });
     handleClose();
   };
