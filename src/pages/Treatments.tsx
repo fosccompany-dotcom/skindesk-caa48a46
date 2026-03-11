@@ -260,8 +260,8 @@ const Treatments = () => {
     <div className="page-container pb-24">
       {/* Header */}
       <div className="pt-6 pb-3 px-1">
-        <h1 className="text-xl font-bold text-foreground">시술 정보</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">시술 내역 관리 및 시술 리스트</p>
+        <h1 className="text-xl font-bold text-foreground">시술 리스트</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">클리닉별 시술 정보</p>
       </div>
 
       <Tabs defaultValue="history" className="w-full">
