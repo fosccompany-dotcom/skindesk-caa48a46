@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ElementType } from 'react';
 import { ArrowUpCircle, ArrowDownCircle, Users, Gift, TrendingDown, ChevronDown, Building2, CreditCard, Banknote, Coins } from 'lucide-react';
+import logoImg from '@/assets/logo.png';
 import { Card, CardContent } from '@/components/ui/card';
 // ── 타입 정의 ─────────────────────────────────────────────────────────
 type PaymentMethod = '포인트충전' | '시술결제' | '카드' | '현금' | '서비스';
