@@ -252,12 +252,12 @@ const Packages = () => {
             <Card className="glass-card">
               <CardContent className="p-4 flex items-center justify-between">
                 <div>
-                  <p className="text-[11px] text-muted-foreground">총 결제액</p>
+                  <p className="text-[11px] text-muted-foreground">총 시술 결제액</p>
                   <p className="text-xl font-black">{totalSpent.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[11px] text-muted-foreground">결제 건수</p>
-                  <p className="text-xl font-black">{payments.filter(p => p.method !== '포인트충전').length}<span className="text-sm font-normal ml-1">건</span></p>
+                  <p className="text-[11px] text-muted-foreground">총 충전액</p>
+                  <p className="text-xl font-black text-emerald-500">{payments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0).toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
                 </div>
               </CardContent>
             </Card>
@@ -285,52 +285,70 @@ const Packages = () => {
             {payLoading ? (
               <div className="text-center py-8 text-sm text-muted-foreground">불러오는 중...</div>
             ) : filteredPayments.length === 0 ? (
-              <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없어요</div>
-            ) : (
-              <div className="space-y-2">
-                {filteredPayments.map(p => {
-                  const style = methodStyle[p.method] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
-                  return (
-                    <Card key={p.id} className="glass-card">
-                      <CardContent className="p-3.5">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold truncate">{p.treatment_name}</p>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">{p.date} · {p.clinic}</p>
-                            {p.memo && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{p.memo}</p>}
-                          </div>
-                          <div className="flex items-start gap-1.5">
-                            <div className="text-right shrink-0">
-                              <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : ''}`}>
-                                {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
-                              </p>
-                              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
-                                {p.method}
-                              </span>
-                            </div>
-                            <DropdownMenu>
-                              <DropdownMenuTrigger asChild>
-                                <button className="p-1 rounded-md hover:bg-muted transition-colors -mr-1">
-                                  <MoreVertical className="h-4 w-4 text-muted-foreground" />
-                                </button>
-                              </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end" className="min-w-[100px]">
-                                <DropdownMenuItem onClick={() => handleEditPay(p)} className="text-xs gap-2">
-                                  <Pencil className="h-3.5 w-3.5" /> 수정
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => setDeleteTarget({ type: 'payment', id: p.id, name: p.treatment_name })} className="text-xs gap-2 text-destructive focus:text-destructive">
-                                  <Trash2 className="h-3.5 w-3.5" /> 삭제
-                                </DropdownMenuItem>
-                              </DropdownMenuContent>
-                            </DropdownMenu>
-                          </div>
+              <div className="text-center py-10 text-sm text-muted-foreground">기록이 없어요</div>
+            ) : (() => {
+              const chargeRecords = filteredPayments.filter(p => p.method === '포인트충전');
+              const treatmentRecords = filteredPayments.filter(p => p.method !== '포인트충전');
+
+              const renderPayCard = (p: PaymentRecord) => {
+                const style = methodStyle[p.method] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
+                return (
+                  <Card key={p.id} className="glass-card">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-semibold truncate">{p.treatment_name}</p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">{p.date} · {p.clinic}</p>
+                          {p.memo && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{p.memo}</p>}
                         </div>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            )}
+                        <div className="flex items-start gap-1.5">
+                          <div className="text-right shrink-0">
+                            <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : ''}`}>
+                              {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
+                            </p>
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
+                              {p.method}
+                            </span>
+                          </div>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <button className="p-1 rounded-md hover:bg-muted transition-colors -mr-1">
+                                <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                              </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="min-w-[100px]">
+                              <DropdownMenuItem onClick={() => handleEditPay(p)} className="text-xs gap-2">
+                                <Pencil className="h-3.5 w-3.5" /> 수정
+                              </DropdownMenuItem>
+                              <DropdownMenuItem onClick={() => setDeleteTarget({ type: 'payment', id: p.id, name: p.treatment_name })} className="text-xs gap-2 text-destructive focus:text-destructive">
+                                <Trash2 className="h-3.5 w-3.5" /> 삭제
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              };
+
+              return (
+                <div className="space-y-4">
+                  {chargeRecords.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold text-emerald-600 mb-2">충전 내역 {chargeRecords.length}건</p>
+                      <div className="space-y-2">{chargeRecords.map(renderPayCard)}</div>
+                    </div>
+                  )}
+                  {treatmentRecords.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold text-muted-foreground mb-2">시술 내역 {treatmentRecords.length}건</p>
+                      <div className="space-y-2">{treatmentRecords.map(renderPayCard)}</div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </TabsContent>
         </Tabs>
       </div>
