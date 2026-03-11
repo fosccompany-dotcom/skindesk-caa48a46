@@ -342,17 +342,23 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       }
 
       const todayStr2 = new Date().toISOString().split('T')[0];
+      // 패키지로 감지된 시술명 목록 — 중복 방지를 위해 records에서 deselect
+      const pkgNames = allPkgs.map(p => p.name.toLowerCase().replace(/\s/g, ''));
       setParsed(
         hasRecords
-          ? data.records.map((r: any) => ({
-              ...r,
-              date: r.date || todayStr2,
-              clinic: r.clinic || '',
-              skinLayer: r.skinLayer || 'dermis',
-              bodyArea: r.bodyArea || 'face',
-              selected: true,
-              expanded: false,
-            }))
+          ? data.records.map((r: any) => {
+              const rName = (r.treatmentName || '').toLowerCase().replace(/\s/g, '');
+              const matchesPkg = pkgNames.some(pn => rName.includes(pn) || pn.includes(rName));
+              return {
+                ...r,
+                date: r.date || todayStr2,
+                clinic: r.clinic || '',
+                skinLayer: r.skinLayer || 'dermis',
+                bodyArea: r.bodyArea || 'face',
+                selected: !matchesPkg, // 패키지로 감지된 건 deselect
+                expanded: false,
+              };
+            })
           : []
       );
       setParseSource(data.source || null);
