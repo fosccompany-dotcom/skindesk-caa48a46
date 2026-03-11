@@ -188,8 +188,10 @@ const CalendarPage = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* 헤더 */}
-      <div className="gradient-sage safe-top">
-        <div className="page-header-gradient">
+      <div className="relative safe-top overflow-hidden">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-70 font-light">나의 피부관리 📅</p>
