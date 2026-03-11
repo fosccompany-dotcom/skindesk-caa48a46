@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift } from 'lucide-react';
+import { Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import ClinicSearchInput from './ClinicSearchInput';
