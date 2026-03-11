@@ -779,6 +779,7 @@ function PaymentHistoryTab() {
       .from('payment_records')
       .select('id, date, clinic, treatment_name, amount, method, memo, charged_amount, clinic_type')
       .eq('user_id', user.id)
+      .neq('method', '포인트충전')
       .order('date', { ascending: false });
     setPayments(data ?? []);
     setLoading(false);
@@ -842,7 +843,6 @@ function PaymentHistoryTab() {
   };
 
   const totalSpent = payments
-    .filter(p => p.method !== '포인트충전')
     .reduce((s, p) => s + p.amount, 0);
 
   const LAYER_LABEL: Record<string, string> = { epidermis: '표피', dermis: '진피', subcutaneous: '피하' };
@@ -861,7 +861,7 @@ function PaymentHistoryTab() {
             </div>
             <div className="text-right">
               <p className="text-[11px] text-muted-foreground">결제 건수</p>
-              <p className="text-xl font-black text-foreground">{payments.filter(p => p.method !== '포인트충전').length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
+              <p className="text-xl font-black text-foreground">{payments.length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
             </div>
           </div>
           <Button
