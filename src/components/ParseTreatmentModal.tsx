@@ -54,6 +54,8 @@ interface ChargeRecord {
   label: string;
 }
 
+type PkgPayMethod = '카드' | '현금' | '포인트' | '서비스';
+
 interface ParsedPackage {
   date: string;
   name: string;
@@ -63,6 +65,7 @@ interface ParsedPackage {
   amount_paid: number | null;
   memo: string | null;
   selected: boolean;
+  payMethod: PkgPayMethod;
 }
 
 interface BalanceInfo {
