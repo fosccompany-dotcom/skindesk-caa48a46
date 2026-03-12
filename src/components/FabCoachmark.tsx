@@ -57,6 +57,14 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
   const [rect, setRect] = useState<SpotlightRect | null>(null);
   const [dialogRect, setDialogRect] = useState<DOMRect | null>(null);
 
+  // Reset step when coachmark opens/closes
+  useEffect(() => {
+    if (open) {
+      setStepIdx(0);
+      setRect(null);
+    }
+  }, [open]);
+
   const step = STEPS[stepIdx];
 
   const measure = useCallback(() => {
@@ -70,8 +78,10 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
         width: r.width + p * 2,
         height: r.height + p * 2,
       });
+    } else {
+      // Element not found — keep trying
+      setRect(null);
     }
-    // measure dialog container for clipping
     const dialog = document.querySelector('[data-coach-container]');
     if (dialog) {
       setDialogRect(dialog.getBoundingClientRect());
@@ -80,12 +90,16 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
 
   useEffect(() => {
     if (!open) return;
-    // Small delay to let dialog render
-    const timer = setTimeout(measure, 150);
+    // Reset rect when step changes so we don't show stale spotlight
+    setRect(null);
+    // Measure with increasing delays to handle render timing
+    const t1 = setTimeout(measure, 100);
+    const t2 = setTimeout(measure, 300);
     window.addEventListener('resize', measure);
     window.addEventListener('scroll', measure, true);
     return () => {
-      clearTimeout(timer);
+      clearTimeout(t1);
+      clearTimeout(t2);
       window.removeEventListener('resize', measure);
       window.removeEventListener('scroll', measure, true);
     };
@@ -93,7 +107,7 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
 
   const next = () => {
     if (stepIdx < STEPS.length - 1) {
-      setStepIdx(stepIdx + 1);
+      setStepIdx(prev => prev + 1);
     }
   };
 
@@ -105,7 +119,6 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
   const tooltipWidth = 290;
   const gap = 14;
 
-  // Position tooltip above or below target
   const spaceAbove = rect.top - (dialogRect?.top ?? 0);
   const spaceBelow = (dialogRect ? dialogRect.bottom : window.innerHeight) - (rect.top + rect.height);
   const placeAbove = spaceAbove > spaceBelow;
@@ -179,7 +192,6 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
         onClick={(e) => {
           e.stopPropagation();
           e.preventDefault();
-          if (!isCTA) next();
         }}
       />
 
@@ -231,16 +243,24 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
           {/* Actions */}
           <div className="px-4 pb-3">
             {isCTA ? (
-              <Button
-                className="w-full rounded-xl h-10 text-sm font-bold bg-[#F2C94C] hover:bg-[#e0b83e] text-foreground"
-                onClick={() => {
-                  onClose();
-                  onClickParse();
-                }}
-              >
-                <Sparkles className="w-4 h-4 mr-1.5" />
-                텍스트 · 이미지로 등록하기
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  className="w-full rounded-xl h-10 text-sm font-bold bg-[#F2C94C] hover:bg-[#e0b83e] text-foreground"
+                  onClick={() => {
+                    onClose();
+                    onClickParse();
+                  }}
+                >
+                  <Sparkles className="w-4 h-4 mr-1.5" />
+                  텍스트 · 이미지로 등록하기
+                </Button>
+                <button
+                  onClick={skip}
+                  className="w-full text-center text-[11px] text-muted-foreground hover:text-foreground transition-colors py-1"
+                >
+                  다음에 하기
+                </button>
+              </div>
             ) : (
               <div className="flex gap-2">
                 <Button
