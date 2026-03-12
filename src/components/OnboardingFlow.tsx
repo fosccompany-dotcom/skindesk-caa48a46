@@ -257,8 +257,10 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
           {/* Arrow pointing down to element */}
           {step.position === 'top' && rect && (
             <div
-              className="absolute left-1/2 -translate-x-1/2 -bottom-2 w-0 h-0"
+              className="absolute -bottom-2 w-0 h-0"
               style={{
+                left: getArrowLeft(),
+                transform: 'translateX(-50%)',
                 borderLeft: '8px solid transparent',
                 borderRight: '8px solid transparent',
                 borderTop: '8px solid hsl(var(--card))',
