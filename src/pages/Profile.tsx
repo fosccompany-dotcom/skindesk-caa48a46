@@ -499,16 +499,16 @@ const Profile = () => {
                   </Select>
                 </div>
 
-                {/* ── 관리 시즌 ── */}
+                {/* ── 관리 모드 ── */}
                 <div className="space-y-2.5">
-                  <Label className="text-xs">현재 관리 시즌</Label>
+                  <Label className="text-xs">현재 관리 모드</Label>
                   <div className="grid grid-cols-1 gap-2">
                     {([
-                      { key: 'reset',    emoji: '🌵', title: 'Reset Season',    sub: '피부 리셋 시즌',    desc: '최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복.' },
-                      { key: 'recovery', emoji: '🌿', title: 'Recovery Season', sub: '회복 시즌',         desc: '시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계.' },
-                      { key: 'maintain', emoji: '💜', title: 'Maintain Season', sub: '유지 시즌',         desc: '현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계.' },
-                      { key: 'boost',    emoji: '🌹', title: 'Boost Season',    sub: '관리 끌올 시즌',   desc: '피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계.' },
-                      { key: 'special',  emoji: '🌸', title: 'Special Season',  sub: '스페셜 시즌',      desc: '웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계.' },
+                      { key: 'reset',    emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',    desc: '최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복.' },
+                      { key: 'recovery', emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',         desc: '시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계.' },
+                      { key: 'maintain', emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',         desc: '현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계.' },
+                      { key: 'boost',    emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',   desc: '피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계.' },
+                      { key: 'special',  emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',      desc: '웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계.' },
                     ] as const).map(({ key, emoji, title, sub, desc }) => {
                       const isSelected = currentSeason === key;
                       return (

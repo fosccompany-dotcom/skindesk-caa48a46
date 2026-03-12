@@ -10,7 +10,7 @@ import {
 } from '@/data/treatmentSeasonData';
 import { useNavigate } from 'react-router-dom';
 
-// ─── 시즌 배지 컬러 ───────────────────────────────────────────────────────────
+// ─── 모드 배지 컬러 ───────────────────────────────────────────────────────────
 const SEASON_BADGE: Record<SeasonKey, string> = {
   reset:    'bg-green-100 text-green-700 border-green-200',
   recovery: 'bg-sky-100 text-sky-700 border-sky-200',
@@ -121,7 +121,7 @@ function TreatmentCard({
             </div>
           )}
 
-          {/* 모든 시즌 비교 (접기) */}
+          {/* 모든 모드 비교 (접기) */}
           <AllSeasonCompare data={data} currentSeason={season} />
         </div>
       )}
@@ -129,7 +129,7 @@ function TreatmentCard({
   );
 }
 
-// ─── 5개 시즌 가로 비교 ───────────────────────────────────────────────────────
+// ─── 5개 모드 가로 비교 ───────────────────────────────────────────────────────
 function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; currentSeason: SeasonKey }) {
   const [show, setShow] = useState(false);
   const seasons: SeasonKey[] = ['reset', 'recovery', 'maintain', 'boost', 'special'];
@@ -141,7 +141,7 @@ function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; 
         className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-gray-600"
       >
         <Info size={10} />
-        {show ? '시즌별 비교 닫기' : '5시즌 모두 보기'}
+        {show ? '모드별 비교 닫기' : '5모드 모두 보기'}
       </button>
 
       {show && (
@@ -176,7 +176,7 @@ function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; 
   );
 }
 
-// ─── 메인 시즌 추천 컴포넌트 ──────────────────────────────────────────────────
+// ─── 메인 모드 추천 컴포넌트 ──────────────────────────────────────────────────
 export default function SeasonRecommendation() {
   const navigate = useNavigate();
   const [season, setSeason] = useState<SeasonKey | null>(null);
@@ -199,7 +199,7 @@ export default function SeasonRecommendation() {
     load();
   }, []);
 
-  // ── 시즌 미설정 안내 ────────────────────────────────────────────────────────
+  // ── 모드 미설정 안내 ────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -213,9 +213,9 @@ export default function SeasonRecommendation() {
       <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4">
         <span className="text-4xl">🌿</span>
         <div>
-          <p className="text-sm font-bold text-gray-700">관리 시즌을 먼저 설정해주세요</p>
+          <p className="text-sm font-bold text-gray-700">관리 모드를 먼저 설정해주세요</p>
           <p className="text-xs text-gray-400 mt-1">
-            마이페이지 → 기본정보에서 현재 시즌을 선택하면<br />
+            마이페이지 → 기본정보에서 현재 모드를 선택하면<br />
             맞춤 시술 주기 추천을 받을 수 있어요.
           </p>
         </div>
@@ -223,7 +223,7 @@ export default function SeasonRecommendation() {
           onClick={() => navigate('/profile')}
           className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-800 text-white text-xs font-semibold"
         >
-          시즌 설정하기 <ArrowRight size={12} />
+          모드 설정하기 <ArrowRight size={12} />
         </button>
       </div>
     );
@@ -248,11 +248,11 @@ export default function SeasonRecommendation() {
 
   return (
     <div className="space-y-4">
-      {/* 현재 시즌 헤더 */}
+      {/* 현재 모드 헤더 */}
       <div className={`rounded-2xl border px-4 py-3.5 flex items-center gap-3 ${meta.bg} ${meta.border}`}>
         <span className="text-2xl shrink-0">{meta.emoji}</span>
         <div>
-          <p className="text-[10px] text-gray-400 font-medium">현재 나의 관리 시즌</p>
+          <p className="text-[10px] text-gray-400 font-medium">현재 나의 관리 모드</p>
           <p className={`text-sm font-black ${meta.color}`}>{meta.title}</p>
           <p className="text-xs text-gray-500">{meta.sub}</p>
         </div>
@@ -326,7 +326,7 @@ export default function SeasonRecommendation() {
       {/* 하단 안내 */}
       <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 text-[10px] text-gray-400 leading-relaxed">
         💡 추천 주기는 일반적인 가이드라인입니다. 개인의 피부 상태와 의사 소견에 따라 조정하세요.
-        시즌을 변경하면 추천 내용이 달라집니다.
+        모드를 변경하면 추천 내용이 달라집니다.
       </div>
     </div>
   );

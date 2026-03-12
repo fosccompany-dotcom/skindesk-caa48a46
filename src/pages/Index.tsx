@@ -22,11 +22,11 @@ import logoImg from '@/assets/logo.png';
 import { ALL_TREATMENT_SEASON_DATA } from '@/data/treatmentSeasonData';
 type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
 const SEASON_CONFIG: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string }> = {
-  reset:    { emoji: '🌵', title: 'Reset Season',    sub: '피부 리셋 시즌',  color: 'text-green-700',  bg: 'bg-green-50 border-green-200' },
-  recovery: { emoji: '🌿', title: 'Recovery Season', sub: '회복 시즌',        color: 'text-sky-700',    bg: 'bg-sky-50 border-sky-200' },
-  maintain: { emoji: '💜', title: 'Maintain Season', sub: '유지 시즌',        color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
-  boost:    { emoji: '🌹', title: 'Boost Season',    sub: '관리 끌올 시즌',  color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200' },
-  special:  { emoji: '🌸', title: 'Special Season',  sub: '스페셜 시즌',     color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
+  reset:    { emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',  color: 'text-green-700',  bg: 'bg-green-50 border-green-200' },
+  recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',        color: 'text-sky-700',    bg: 'bg-sky-50 border-sky-200' },
+  maintain: { emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',        color: 'text-indigo-700', bg: 'bg-indigo-50 border-indigo-200' },
+  boost:    { emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',  color: 'text-amber-700',  bg: 'bg-amber-50 border-amber-200' },
+  special:  { emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',     color: 'text-purple-700', bg: 'bg-purple-50 border-purple-200' },
 };
 
 const TODAY = new Date('2026-03-10');
@@ -225,14 +225,14 @@ const Index = () => {
                   BLOCK 1 — 현재 관리 상태
                   ════════════════════════════════════════════════════ */}
 
-                {/* 현재 관리 시즌 — 풀 너비 카드 */}
+                {/* 현재 관리 모드 — 풀 너비 카드 */}
                 <Card className="border-0 overflow-hidden cursor-pointer" onClick={() => navigate('/profile')}>
                   <CardContent className="p-4">
                     {seasonMeta ? (
                       <div className="flex items-center gap-3">
                         <span className="text-3xl shrink-0">{seasonMeta.emoji}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
+                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 모드</p>
                           <p className={`text-base font-black leading-tight ${seasonMeta.color}`}>{seasonMeta.title}</p>
                           <p className="text-[11px] text-gray-400 mt-0.5">{seasonMeta.sub}</p>
                         </div>
@@ -246,8 +246,8 @@ const Index = () => {
                     ) : (
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
-                          <p className="text-sm font-semibold text-gray-500">시즌을 설정해보세요</p>
+                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 모드</p>
+                          <p className="text-sm font-semibold text-gray-500">모드를 설정해보세요</p>
                         </div>
                         <button
                           onClick={() => navigate('/profile')}
@@ -363,7 +363,7 @@ const Index = () => {
                           </button>
                         </div>
                       ) : (
-                        <p className="text-[12px] text-gray-400">시즌 설정 필요</p>
+                        <p className="text-[12px] text-gray-400">모드 설정 필요</p>
                       )}
                     </CardContent>
                   </Card>

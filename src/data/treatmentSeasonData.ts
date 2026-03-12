@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// 시술별 시즌 추천 데이터
-// 각 시술의 피부과학적 회복 주기 + 5시즌별 권장 빈도를 정의합니다.
+// 시술별 모드 추천 데이터
+// 각 시술의 피부과학적 회복 주기 + 5모드별 권장 빈도를 정의합니다.
 // ─────────────────────────────────────────────────────────────────────────────
 
 export type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
@@ -40,13 +40,13 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 고에너지 시술 지양. 피부 회복에 집중하세요.',
+        note: '리셋 모드에는 고에너지 시술 지양. 피부 회복에 집중하세요.',
       },
       recovery: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '시술 후 예민기 — 슈링크는 회복 시즌에 적합하지 않습니다.',
+        note: '시술 후 예민기 — 슈링크는 회복 모드에 적합하지 않습니다.',
       },
       maintain: {
         label: '연 2회 (6개월 간격)',
@@ -58,7 +58,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '연 3회 (4개월 간격)',
         timesPerYear: 3,
         intervalDays: 120,
-        note: '집중 관리 시즌. 4개월 간격으로 탄력·리프팅 효과를 극대화.',
+        note: '집중 관리 모드. 4개월 간격으로 탄력·리프팅 효과를 극대화.',
         synergy: ['리쥬란힐러', '스킨부스터', '엑소좀'],
       },
       special: {
@@ -82,7 +82,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '고에너지 시술로 리셋 시즌에는 피부 부담이 큽니다.',
+        note: '고에너지 시술로 리셋 모드에는 피부 부담이 큽니다.',
       },
       recovery: {
         label: '비추천',
@@ -124,7 +124,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 고에너지 시술을 피하고 피부 휴식 우선.',
+        note: '리셋 모드에는 고에너지 시술을 피하고 피부 휴식 우선.',
       },
       recovery: {
         label: '비추천',
@@ -166,7 +166,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 강한 에너지 시술 중단.',
+        note: '리셋 모드에는 강한 에너지 시술 중단.',
       },
       recovery: {
         label: '비추천',
@@ -184,7 +184,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '월 1~2회 (연 12~18회)',
         timesPerYear: 15,
         intervalDays: 28,
-        note: '집중 관리 시즌. 1개월 간격으로 효과 누적.',
+        note: '집중 관리 모드. 1개월 간격으로 효과 누적.',
         synergy: ['써마지', '보톡스(턱/사각턱)', '리쥬란힐러'],
       },
       special: {
@@ -208,7 +208,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 피부 휴식이 우선입니다.',
+        note: '리셋 모드에는 피부 휴식이 우선입니다.',
       },
       recovery: {
         label: '비추천',
@@ -257,7 +257,7 @@ const botoxFillerTreatments: TreatmentSeasonData[] = [
         label: '필요 시 1회',
         timesPerYear: 1,
         intervalDays: 180,
-        note: '리셋 시즌에는 필수 부위(사각턱, 종아리 등)만 최소한으로 유지.',
+        note: '리셋 모드에는 필수 부위(사각턱, 종아리 등)만 최소한으로 유지.',
       },
       recovery: {
         label: '최소 유지 (4~6개월 간격)',
@@ -341,7 +341,7 @@ const botoxFillerTreatments: TreatmentSeasonData[] = [
         label: '비추천 (기존 유지만)',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 새 필러 주입 지양. 기존 필러 녹임 시술만 고려.',
+        note: '리셋 모드에는 새 필러 주입 지양. 기존 필러 녹임 시술만 고려.',
       },
       recovery: {
         label: '비추천',
@@ -390,7 +390,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '연 1~2회 기본 재생',
         timesPerYear: 2,
         intervalDays: 180,
-        note: '리셋 시즌에 적합. 피부 장벽 회복과 재생에 이상적인 시술.',
+        note: '리셋 모드에 적합. 피부 장벽 회복과 재생에 이상적인 시술.',
       },
       recovery: {
         label: '월 1회 × 3개월 집중 (회복 프로토콜)',
@@ -432,7 +432,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '연 2회',
         timesPerYear: 2,
         intervalDays: 180,
-        note: '눈가 기본 유지. 리셋 시즌에도 부담 없이 진행 가능.',
+        note: '눈가 기본 유지. 리셋 모드에도 부담 없이 진행 가능.',
       },
       recovery: {
         label: '1~2개월 간격 × 3회',
@@ -474,13 +474,13 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '2~3개월 간격 (연 4~6회)',
         timesPerYear: 4,
         intervalDays: 75,
-        note: '리셋 시즌에 적합. 피부 수분 공급으로 회복 가속화.',
+        note: '리셋 모드에 적합. 피부 수분 공급으로 회복 가속화.',
       },
       recovery: {
         label: '1개월 간격 × 3회 집중',
         timesPerYear: 4,
         intervalDays: 30,
-        note: '시술 후 피부 진정·수분 공급. 회복 시즌에 가장 적합한 시술 중 하나.',
+        note: '시술 후 피부 진정·수분 공급. 회복 모드에 가장 적합한 시술 중 하나.',
       },
       maintain: {
         label: '2개월 간격 (연 6회)',
@@ -516,13 +516,13 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '월 1회 기본 수분 유지',
         timesPerYear: 8,
         intervalDays: 45,
-        note: '리셋 시즌에도 부담 없는 수분 관리. 홈케어와 병행.',
+        note: '리셋 모드에도 부담 없는 수분 관리. 홈케어와 병행.',
       },
       recovery: {
         label: '2~3주 간격 집중 수분',
         timesPerYear: 12,
         intervalDays: 21,
-        note: '예민기 피부 수분·진정에 효과적. 자극이 적어 회복 시즌에 적합.',
+        note: '예민기 피부 수분·진정에 효과적. 자극이 적어 회복 모드에 적합.',
       },
       maintain: {
         label: '3~4주 간격 (연 10~12회)',
@@ -534,7 +534,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '2주 간격 집중 (연 20회)',
         timesPerYear: 20,
         intervalDays: 14,
-        note: '부스트 시즌에는 물광주사를 모든 시술의 마무리로 활용.',
+        note: '부스트 모드에는 물광주사를 모든 시술의 마무리로 활용.',
         synergy: ['스킨부스터', '리쥬란힐러', '엑소좀', '백옥주사'],
       },
       special: {
@@ -558,13 +558,13 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '1~2개월 간격 집중 재생',
         timesPerYear: 6,
         intervalDays: 60,
-        note: '리셋 시즌에 최적. 시술 후 피부 손상 회복에 탁월.',
+        note: '리셋 모드에 최적. 시술 후 피부 손상 회복에 탁월.',
       },
       recovery: {
         label: '2주 간격 × 4회 집중 (장벽 회복 프로토콜)',
         timesPerYear: 4,
         intervalDays: 14,
-        note: '회복 시즌 핵심 시술. 피부 장벽 재건 + 항염 효과.',
+        note: '회복 모드 핵심 시술. 피부 장벽 재건 + 항염 효과.',
       },
       maintain: {
         label: '1~2개월 간격 (연 6~8회)',
@@ -576,14 +576,14 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '1개월 간격 (연 10~12회)',
         timesPerYear: 10,
         intervalDays: 30,
-        note: '부스트 시즌에 모든 시술 직후 엑소좀 병행 강력 추천.',
+        note: '부스트 모드에 모든 시술 직후 엑소좀 병행 강력 추천.',
         synergy: ['슈링크', '더블로', '리쥬란힐러', '스킨부스터'],
       },
       special: {
         label: '시술 후 반드시 병행',
         timesPerYear: 12,
         intervalDays: 28,
-        note: '스페셜 시즌 중 모든 고에너지 시술 이후 엑소좀으로 즉각 회복.',
+        note: '스페셜 모드 중 모든 고에너지 시술 이후 엑소좀으로 즉각 회복.',
         synergy: ['슈링크', '세르프', '리쥬란힐러', '물광주사'],
       },
     },
@@ -600,7 +600,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 집중 해독',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '리셋 시즌에 글루타치온으로 피부 해독·재생 집중.',
+        note: '리셋 모드에 글루타치온으로 피부 해독·재생 집중.',
       },
       recovery: {
         label: '주 1회',
@@ -618,7 +618,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 집중',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '부스트 시즌 피부 톤 개선 필수. 물광주사와 교대 사용.',
+        note: '부스트 모드 피부 톤 개선 필수. 물광주사와 교대 사용.',
         synergy: ['물광주사', '스킨부스터', '엑소좀'],
       },
       special: {
@@ -649,7 +649,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '비추천 (홈케어 대체)',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 레이저 자극 최소화. 비타민C 세럼 등 홈케어로 대체.',
+        note: '리셋 모드에는 레이저 자극 최소화. 비타민C 세럼 등 홈케어로 대체.',
       },
       recovery: {
         label: '4~6주 간격 1~2회',
@@ -691,7 +691,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 레이저 시술 중단. 피부 회복 우선.',
+        note: '리셋 모드에는 레이저 시술 중단. 피부 회복 우선.',
       },
       recovery: {
         label: '필요 시 1~2회',
@@ -733,13 +733,13 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '2~3주 간격 (연 15~18회)',
         timesPerYear: 15,
         intervalDays: 21,
-        note: '리셋 시즌에 가장 적합한 시술. 자극 없이 피부 컨디션 유지.',
+        note: '리셋 모드에 가장 적합한 시술. 자극 없이 피부 컨디션 유지.',
       },
       recovery: {
         label: '1~2주 간격 집중',
         timesPerYear: 20,
         intervalDays: 10,
-        note: '예민기 피부 진정+각질 케어. 자극이 가장 적어 회복 시즌에 최적.',
+        note: '예민기 피부 진정+각질 케어. 자극이 가장 적어 회복 모드에 최적.',
       },
       maintain: {
         label: '2주 간격 (연 20~24회)',
@@ -775,13 +775,13 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 정기 관리',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '리셋 시즌에 최적. 피부 진정과 염증 완화에 이상적.',
+        note: '리셋 모드에 최적. 피부 진정과 염증 완화에 이상적.',
       },
       recovery: {
         label: '주 2~3회 집중 진정',
         timesPerYear: 80,
         intervalDays: 3,
-        note: '회복 시즌 피부 진정의 핵심. 시술 후 즉각 진정에 효과적.',
+        note: '회복 모드 피부 진정의 핵심. 시술 후 즉각 진정에 효과적.',
       },
       maintain: {
         label: '2주 간격 정기 관리',
@@ -817,13 +817,13 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 집중 홈케어형 관리',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '리셋 시즌의 핵심. 피부 관리만으로 충분한 회복 가능.',
+        note: '리셋 모드의 핵심. 피부 관리만으로 충분한 회복 가능.',
       },
       recovery: {
         label: '주 2회 집중 진정 관리',
         timesPerYear: 80,
         intervalDays: 3,
-        note: '회복 시즌 기본 케어. 자극 없이 피부 장벽 강화.',
+        note: '회복 모드 기본 케어. 자극 없이 피부 장벽 강화.',
       },
       maintain: {
         label: '2주 간격 (연 20~24회)',
@@ -859,13 +859,13 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 2~3회',
         timesPerYear: 104,
         intervalDays: 3,
-        note: '리셋 시즌에 가장 기본적인 피부 진정 케어.',
+        note: '리셋 모드에 가장 기본적인 피부 진정 케어.',
       },
       recovery: {
         label: '매 시술 후 + 주 3회',
         timesPerYear: 120,
         intervalDays: 2,
-        note: '회복 시즌 필수. 모든 시술 직후 진정팩 병행.',
+        note: '회복 모드 필수. 모든 시술 직후 진정팩 병행.',
       },
       maintain: {
         label: '주 2회',
@@ -877,7 +877,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '모든 시술 후 병행',
         timesPerYear: 120,
         intervalDays: 3,
-        note: '부스트 시즌 고강도 시술 후 회복 필수템.',
+        note: '부스트 모드 고강도 시술 후 회복 필수템.',
         synergy: ['아쿠아필링', '크라이오테라피'],
       },
       special: {
@@ -903,11 +903,11 @@ export const ALL_TREATMENT_SEASON_DATA: TreatmentSeasonData[] = [
 ];
 
 export const SEASON_META: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string; border: string }> = {
-  reset:    { emoji: '🌵', title: 'Reset Season',    sub: '피부 리셋 시즌',  color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-200' },
-  recovery: { emoji: '🌿', title: 'Recovery Season', sub: '회복 시즌',        color: 'text-sky-700',    bg: 'bg-sky-50',     border: 'border-sky-200' },
-  maintain: { emoji: '💜', title: 'Maintain Season', sub: '유지 시즌',        color: 'text-indigo-700', bg: 'bg-indigo-50',  border: 'border-indigo-200' },
-  boost:    { emoji: '🌹', title: 'Boost Season',    sub: '관리 끌올 시즌',  color: 'text-amber-700',  bg: 'bg-amber-50',   border: 'border-amber-200' },
-  special:  { emoji: '🌸', title: 'Special Season',  sub: '스페셜 시즌',     color: 'text-purple-700', bg: 'bg-purple-50',  border: 'border-purple-200' },
+  reset:    { emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',  color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-200' },
+  recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',        color: 'text-sky-700',    bg: 'bg-sky-50',     border: 'border-sky-200' },
+  maintain: { emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',        color: 'text-indigo-700', bg: 'bg-indigo-50',  border: 'border-indigo-200' },
+  boost:    { emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',  color: 'text-amber-700',  bg: 'bg-amber-50',   border: 'border-amber-200' },
+  special:  { emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',     color: 'text-purple-700', bg: 'bg-purple-50',  border: 'border-purple-200' },
 };
 
 export const CATEGORY_ORDER = ['리프팅', '보톡스/필러', '주사', '레이저', '스킨케어'] as const;
