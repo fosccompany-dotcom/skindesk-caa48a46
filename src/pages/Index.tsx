@@ -493,6 +493,23 @@ const Index = () => {
                       </div>
                     </CardContent>
                   </Card>
+                ) : exampleUpcoming ? (
+                  <Card className="card-interactive cursor-pointer border-0 opacity-50" onClick={() => navigate('/calendar')}>
+                    <CardContent className="p-3">
+                      <div className="space-y-2">
+                        {exampleUpcoming.map((item, i) => (
+                          <div key={i} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="h-2 w-2 rounded-full shrink-0 bg-indigo-400" />
+                              <span className="text-sm font-medium truncate">{item.name}</span>
+                            </div>
+                            <span className="text-sm font-bold shrink-0 text-indigo-500">D-{item.daysRemaining}</span>
+                          </div>
+                        ))}
+                        <p className="text-[10px] text-muted-foreground">예시 · 시술을 기록하면 자동 생성돼요</p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 ) : (
                   <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 px-4 py-5 text-center">
                     <CalendarDays size={20} className="text-gray-300 mx-auto mb-2" />
