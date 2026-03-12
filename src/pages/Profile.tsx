@@ -40,7 +40,6 @@ const skinCareInterests = [
   '튼살',
 ];
 const bodyAreaOptions: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
-const bodyAreaOptions: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
 
 const REGION_DATA: Record<string, Record<string, string[]>> = {
   '서울특별시': {
