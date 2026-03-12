@@ -480,7 +480,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '1개월 간격 × 3회 집중',
         timesPerYear: 4,
         intervalDays: 30,
-        note: '시술 후 피부 진정·수분 공급. 회복 시즌에 가장 적합한 시술 중 하나.',
+        note: '시술 후 피부 진정·수분 공급. 회복 모드에 가장 적합한 시술 중 하나.',
       },
       maintain: {
         label: '2개월 간격 (연 6회)',
