@@ -40,7 +40,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 고에너지 시술 지양. 피부 회복에 집중하세요.',
+        note: '리셋 모드에는 고에너지 시술 지양. 피부 회복에 집중하세요.',
       },
       recovery: {
         label: '비추천',
