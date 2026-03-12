@@ -363,7 +363,7 @@ const Index = () => {
                           </button>
                         </div>
                       ) : (
-                        <p className="text-[12px] text-gray-400">시즌 설정 필요</p>
+                        <p className="text-[12px] text-gray-400">모드 설정 필요</p>
                       )}
                     </CardContent>
                   </Card>
