@@ -865,7 +865,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '매 시술 후 + 주 3회',
         timesPerYear: 120,
         intervalDays: 2,
-        note: '회복 시즌 필수. 모든 시술 직후 진정팩 병행.',
+        note: '회복 모드 필수. 모든 시술 직후 진정팩 병행.',
       },
       maintain: {
         label: '주 2회',
