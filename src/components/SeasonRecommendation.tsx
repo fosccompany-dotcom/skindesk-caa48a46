@@ -176,7 +176,7 @@ function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; 
   );
 }
 
-// ─── 메인 시즌 추천 컴포넌트 ──────────────────────────────────────────────────
+// ─── 메인 모드 추천 컴포넌트 ──────────────────────────────────────────────────
 export default function SeasonRecommendation() {
   const navigate = useNavigate();
   const [season, setSeason] = useState<SeasonKey | null>(null);
