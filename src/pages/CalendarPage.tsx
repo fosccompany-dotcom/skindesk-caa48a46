@@ -320,16 +320,24 @@ const CalendarPage = () => {
             {calendarDays.map((day, idx) => {
               const dateStr = format(day, 'yyyy-MM-dd');
               const dayEvents = eventsByDate[dateStr] || [];
-              const hasRec = hasRecord(dateStr);
+              const recCount = recordsByDate[dateStr]?.length || 0;
+              const hasRec = recCount > 0;
               const isCurrentMonth = isSameMonth(day, currentMonth);
               const isSelected = isSameDay(day, selectedDate);
               const isTodayDate = isToday(day) || isSameDay(day, today);
               const dayOfWeek = day.getDay();
 
+              // 히트맵: 기록 건수에 따라 코랄핑크 배경 opacity 조절
+              const heatmapOpacity = recCount >= 3 ? 1 : recCount === 2 ? 0.7 : recCount === 1 ? 0.4 : 0;
+
               return (
                 <button key={idx} onClick={() => setSelectedDate(day)}
                   className={cn('relative flex flex-col items-center py-2 min-h-[52px] tap-target',
-                    !isCurrentMonth && 'opacity-30', isSelected && 'bg-primary/5')}>
+                    !isCurrentMonth && 'opacity-30', isSelected && 'bg-primary/5')}
+                  style={heatmapOpacity > 0 && isCurrentMonth ? {
+                    backgroundColor: `rgba(255, 127, 127, ${heatmapOpacity * 0.25})`,
+                  } : undefined}
+                >
                   <span className={cn('w-7 h-7 flex items-center justify-center text-sm rounded-full transition-colors',
                     isTodayDate && 'bg-primary text-primary-foreground font-semibold',
                     !isTodayDate && isSelected && 'bg-muted font-medium',
