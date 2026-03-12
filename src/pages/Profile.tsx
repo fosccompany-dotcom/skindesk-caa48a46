@@ -413,30 +413,37 @@ const Profile = () => {
 
       {/* ── Bloom Journey Section ── */}
       {(() => {
-        const bloom = getBloomInfo(records.length);
-        const STAGES = ['씨앗', '새싹', '봉오리', '반개화', '만개', '나만의 정원'];
-        // Progress within current stage
-        const STAGE_MINS = [0, 1, 3, 6, 11, 21];
+        const activeDays = getActiveDays(records);
+        const bloom = getBloomInfo(activeDays);
+        const JOURNEY = [
+          { name: '씨앗',   emoji: '🌱' },
+          { name: '새싹',   emoji: '🌿' },
+          { name: '봉오리', emoji: '🌼' },
+          { name: '반개화', emoji: '🌸' },
+          { name: 'Bloom',  emoji: '🌺' },
+        ];
+        const STAGE_MINS = [0, 1, 8, 31, 91];
         const currentMin = STAGE_MINS[bloom.stage];
-        const nextMin = bloom.stage < 5 ? STAGE_MINS[bloom.stage + 1] : STAGE_MINS[5];
-        const progressInStage = bloom.stage >= 5
+        const nextMin = bloom.stage < 4 ? STAGE_MINS[bloom.stage + 1] : STAGE_MINS[4];
+        const progressInStage = bloom.stage >= 4
           ? 100
-          : Math.min(((records.length - currentMin) / (nextMin - currentMin)) * 100, 100);
+          : Math.min(((activeDays - currentMin) / (nextMin - currentMin)) * 100, 100);
+        const daysToNext = bloom.nextMilestone ? bloom.nextMilestone - activeDays : 0;
 
         return (
           <div className="px-4 pt-3 pb-1 space-y-3">
             {/* Avatar + message */}
             <div className="flex flex-col items-center gap-2">
-              <BloomAvatar size="md" />
+              <BloomAvatar size="md" showDays />
               <p className="text-xs text-muted-foreground text-center">{bloom.message}</p>
             </div>
 
             {/* Progress bar */}
-            {bloom.stage < 5 && (
+            {bloom.stage < 4 && (
               <div className="space-y-1">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-muted-foreground">다음 단계까지 {bloom.nextMilestone! - records.length}건</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground">{records.length}/{bloom.nextMilestone}</span>
+                  <span className="text-[10px] text-muted-foreground">다음 단계까지 {daysToNext}일</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground">{activeDays}/{bloom.nextMilestone}</span>
                 </div>
                 <Progress value={progressInStage} className="h-2" />
               </div>
@@ -444,13 +451,13 @@ const Profile = () => {
 
             {/* Journey line */}
             <div className="flex items-center justify-between gap-0.5 px-1">
-              {STAGES.map((name, idx) => (
+              {JOURNEY.map(({ name, emoji }, idx) => (
                 <span key={name} className={cn(
                   'text-[9px] font-medium transition-colors whitespace-nowrap',
                   idx < bloom.stage ? 'text-muted-foreground' :
                   idx === bloom.stage ? 'font-bold' : 'text-muted-foreground/40'
                 )} style={idx === bloom.stage ? { color: '#FF7F7F' } : undefined}>
-                  {idx < bloom.stage ? '✅' : ''}{name}
+                  {idx < bloom.stage ? '✅' : emoji}{' '}{name}
                 </span>
               ))}
             </div>

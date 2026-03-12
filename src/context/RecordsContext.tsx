@@ -3,7 +3,7 @@ import { TreatmentRecord } from '@/types/skin';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { usePackageSession } from '@/lib/clinicPayments';
-import { getBloomInfo } from '@/utils/bloomLevel';
+import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
 import { toast } from 'sonner';
 
 interface RecordsContextType {
