@@ -1,34 +1,54 @@
 export interface BloomInfo {
   stage: number;
   name: string;
+  emoji: string;
   message: string;
   nextMilestone: number | null;
 }
 
-const STAGES: { min: number; name: string; message: string }[] = [
-  { min: 0, name: "씨앗", message: "첫 시술을 기록해보세요!" },
-  { min: 1, name: "새싹", message: "좋은 시작이에요! 꾸준히 기록해봐요." },
-  { min: 3, name: "봉오리", message: "습관이 만들어지고 있어요!" },
-  { min: 6, name: "반개화", message: "절반 이상 피었어요, 대단해요!" },
-  { min: 11, name: "만개", message: "꽃이 활짝 피었어요!" },
-  { min: 21, name: "나만의 정원", message: "당신만의 뷰티 정원이 완성되었어요 🌸" },
+const STAGES: { min: number; name: string; emoji: string; message: string }[] = [
+  { min: 0,  name: "씨앗",   emoji: "🌱", message: "첫 기록을 남겨봐요" },
+  { min: 1,  name: "새싹",   emoji: "🌿", message: "관리가 시작됐어요" },
+  { min: 8,  name: "봉오리", emoji: "🌼", message: "피어나려고 해요" },
+  { min: 31, name: "반개화", emoji: "🌸", message: "조금씩 피어나고 있어요" },
+  { min: 91, name: "Bloom",  emoji: "🌺", message: "당신의 피부가 피어났어요" },
 ];
 
-const MILESTONES = [1, 3, 6, 11, 21, null];
+export const MILESTONES = [1, 8, 31, 91];
 
-export function getBloomInfo(count: number): BloomInfo {
+export function getActiveDays(records: { date?: string; created_at?: string }[]): number {
+  return new Set(
+    records.map(r => {
+      const d = r.date || r.created_at || '';
+      return d.slice(0, 10);
+    }).filter(Boolean)
+  ).size;
+}
+
+export function getBloomInfo(activeDays: number): BloomInfo {
   let stageIdx = 0;
   for (let i = STAGES.length - 1; i >= 0; i--) {
-    if (count >= STAGES[i].min) {
+    if (activeDays >= STAGES[i].min) {
       stageIdx = i;
       break;
     }
   }
 
+  const nextMilestone = stageIdx < STAGES.length - 1 ? STAGES[stageIdx + 1].min : null;
+
   return {
     stage: stageIdx,
     name: STAGES[stageIdx].name,
+    emoji: STAGES[stageIdx].emoji,
     message: STAGES[stageIdx].message,
-    nextMilestone: MILESTONES[stageIdx] ?? null,
+    nextMilestone,
   };
 }
+
+export const STAGE_FILTERS = [
+  "grayscale(1) brightness(0.4)",
+  "grayscale(0.7) brightness(0.6)",
+  "saturate(0.6) brightness(0.75)",
+  "saturate(0.8) brightness(0.88)",
+  "saturate(1.1) brightness(1.05)",
+];
