@@ -448,27 +448,45 @@ const Profile = () => {
         const daysToNext = bloom.nextMilestone ? bloom.nextMilestone - activeDays : 0;
 
         return (
-          <div className="px-4 pt-3 pb-1 space-y-3">
-            {/* Avatar + Progress bar in same row */}
-            <div className="flex items-center gap-3">
+          <div className="px-4 pt-3 pb-1 space-y-2">
+            {/* Avatar + Progress bar + Journey in same row layout */}
+            <div className="flex items-start gap-3">
               <BloomAvatar size="md" showDays={false} />
               
-              <div className="flex-1">
-                <p className="text-xs text-muted-foreground mb-1">{bloom.message}</p>
-                {bloom.stage < 4 && (
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-muted-foreground">다음 단계까지 {daysToNext}일</span>
-                      <span className="text-[10px] font-semibold text-muted-foreground">{activeDays}/{bloom.nextMilestone}</span>
+              <div className="flex-1 space-y-2">
+                {/* Message */}
+                <p className="text-xs text-muted-foreground">{bloom.message}</p>
+                
+                {/* Progress bar with aligned stage names */}
+                <div className="space-y-1">
+                  {bloom.stage < 4 && (
+                    <>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] text-muted-foreground">다음 단계까지 {daysToNext}일</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground">{activeDays}/{bloom.nextMilestone}</span>
+                      </div>
+                      <Progress value={progressInStage} className="h-2" />
+                    </>
+                  )}
+                  {bloom.stage >= 4 && (
+                    <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
+                      🌺 Bloom 달성!
                     </div>
-                    <Progress value={progressInStage} className="h-2" />
+                  )}
+                  
+                  {/* Journey line - aligned under progress bar */}
+                  <div className="flex items-center justify-between gap-0.5">
+                    {JOURNEY.map(({ name, emoji }, idx) => (
+                      <span key={name} className={cn(
+                        'text-[9px] font-medium transition-colors whitespace-nowrap',
+                        idx < bloom.stage ? 'text-muted-foreground' :
+                        idx === bloom.stage ? 'font-bold' : 'text-muted-foreground/40'
+                      )} style={idx === bloom.stage ? { color: '#FF7F7F' } : undefined}>
+                        {idx < bloom.stage ? '✅' : emoji}{' '}{name}
+                      </span>
+                    ))}
                   </div>
-                )}
-                {bloom.stage >= 4 && (
-                  <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
-                    🌺 Bloom 달성!
-                  </div>
-                )}
+                </div>
               </div>
             </div>
 
@@ -476,19 +494,6 @@ const Profile = () => {
             <p className="text-[10px] text-muted-foreground text-center">
               {activeDays}일째 기록 중
             </p>
-
-            {/* Journey line */}
-            <div className="flex items-center justify-between gap-0.5 px-1">
-              {JOURNEY.map(({ name, emoji }, idx) => (
-                <span key={name} className={cn(
-                  'text-[9px] font-medium transition-colors whitespace-nowrap',
-                  idx < bloom.stage ? 'text-muted-foreground' :
-                  idx === bloom.stage ? 'font-bold' : 'text-muted-foreground/40'
-                )} style={idx === bloom.stage ? { color: '#FF7F7F' } : undefined}>
-                  {idx < bloom.stage ? '✅' : emoji}{' '}{name}
-                </span>
-              ))}
-            </div>
           </div>
         );
       })()}
