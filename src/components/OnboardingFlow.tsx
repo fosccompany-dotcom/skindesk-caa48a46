@@ -117,7 +117,10 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
 
   if (!open) return null;
 
-  // Calculate tooltip position
+  // Calculate tooltip position — anchor to the spotlight target
+  const tooltipWidth = 320;
+  const gap = 16;
+
   const getTooltipStyle = (): React.CSSProperties => {
     if (step.position === 'center' || !rect) {
       return {
@@ -125,18 +128,39 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
         top: '50%',
         left: '50%',
         transform: 'translate(-50%, -50%)',
+        width: tooltipWidth,
       };
     }
-    if (step.position === 'top') {
-      return {
-        position: 'fixed',
-        bottom: `${window.innerHeight - rect.top + 16}px`,
-        left: '50%',
-        transform: 'translateX(-50%)',
-        maxWidth: 'min(340px, calc(100vw - 32px))',
-      };
-    }
-    return {};
+
+    // Center of the spotlight
+    const targetCenterX = rect.left + rect.width / 2;
+    // Clamp so tooltip stays on screen
+    const minLeft = 16;
+    const maxLeft = window.innerWidth - tooltipWidth - 16;
+    let tooltipLeft = targetCenterX - tooltipWidth / 2;
+    tooltipLeft = Math.max(minLeft, Math.min(maxLeft, tooltipLeft));
+
+    // Arrow offset relative to tooltip
+    const arrowLeft = targetCenterX - tooltipLeft;
+
+    return {
+      position: 'fixed',
+      bottom: `${window.innerHeight - rect.top + gap}px`,
+      left: tooltipLeft,
+      width: tooltipWidth,
+      '--arrow-left': `${arrowLeft}px`,
+    } as React.CSSProperties;
+  };
+
+  // Arrow X position (for use in JSX)
+  const getArrowLeft = (): number => {
+    if (!rect) return tooltipWidth / 2;
+    const targetCenterX = rect.left + rect.width / 2;
+    const minLeft = 16;
+    const maxLeft = window.innerWidth - tooltipWidth - 16;
+    let tooltipLeft = targetCenterX - tooltipWidth / 2;
+    tooltipLeft = Math.max(minLeft, Math.min(maxLeft, tooltipLeft));
+    return targetCenterX - tooltipLeft;
   };
 
   return createPortal(
