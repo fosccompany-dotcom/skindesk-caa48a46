@@ -82,7 +82,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '고에너지 시술로 리셋 시즌에는 피부 부담이 큽니다.',
+        note: '고에너지 시술로 리셋 모드에는 피부 부담이 큽니다.',
       },
       recovery: {
         label: '비추천',
