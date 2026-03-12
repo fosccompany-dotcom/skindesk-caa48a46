@@ -437,8 +437,22 @@ const Index = () => {
                       </div>
                     )}
                   </div>
+                ) : examplePackage ? (
+                  <div className="space-y-2 opacity-50">
+                    <div className="bg-white border border-gray-100 rounded-xl px-4 py-3 cursor-pointer flex items-center gap-3"
+                      onClick={() => navigate('/packages')}>
+                      <div className="shrink-0 w-11 h-11 rounded-xl bg-indigo-50 flex flex-col items-center justify-center">
+                        <span className="text-lg font-black text-indigo-600 leading-none">{examplePackage.total_sessions - examplePackage.used_sessions}</span>
+                        <span className="text-[9px] text-indigo-400 leading-none mt-0.5">회</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-bold text-gray-800 truncate">{examplePackage.name}</p>
+                        <p className="text-[11px] text-gray-400 mb-1">{examplePackage.clinic}</p>
+                        <p className="text-[10px] text-muted-foreground">예시 · 시술권을 등록해보세요</p>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  /* 빈 상태 개선 */
                   <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center">
                     <p className="text-sm font-semibold text-gray-500 mb-1">시술권을 등록하면</p>
                     <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
