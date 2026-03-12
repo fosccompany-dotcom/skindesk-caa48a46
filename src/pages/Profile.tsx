@@ -24,8 +24,22 @@ import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
 import { Progress } from '@/components/ui/progress';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
-const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여드름', '홍조', '건조', '다크서클', '제모', '셀룰라이트', '튼살'];
-const goalOptions = ['맑은 피부톤', '모공 축소', '탄력 개선', '주름 개선', '트러블 완화', '보습 강화', '바디라인 정리', '제모 완료'];
+// MECE 피부과 용어 기반 관리 관심사 (주요 고민 + 관리 목표 통합)
+const skinCareInterests = [
+  '모공/피지',
+  '색소/톤',
+  '탄력/리프팅',
+  '주름',
+  '트러블/여드름',
+  '홍조/혈관',
+  '보습/장벽',
+  '흉터/자국',
+  '다크서클',
+  '제모',
+  '바디컨투어링',
+  '튼살',
+];
+const bodyAreaOptions: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
 const bodyAreaOptions: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
 
 const REGION_DATA: Record<string, Record<string, string[]>> = {
