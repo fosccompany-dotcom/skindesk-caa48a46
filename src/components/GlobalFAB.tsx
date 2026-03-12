@@ -37,20 +37,20 @@ const GlobalFAB = () => {
           // max-width 컨테이너 안에서만 표시되도록
           'max-[430px]:right-5'
         )}
-        aria-label="시술 기록 추가"
-      >
-        <Plus className="w-6 h-6 text-[#E87461] stroke-[2.5]" />
+        aria-label="시술 기록 추가">
+        
+        <Plus className="text-[#E87461] stroke-[2.5] h-[27px] w-[27px]" />
       </button>
 
       {/* ParseTreatmentModal */}
-      {parseModalOpen && (
-        <ParseTreatmentModal
-          onClose={() => {
-            setParseModalOpen(false);
-            setModalOpen(false);
-          }}
-        />
-      )}
+      {parseModalOpen &&
+      <ParseTreatmentModal
+        onClose={() => {
+          setParseModalOpen(false);
+          setModalOpen(false);
+        }} />
+
+      }
 
       {/* AddTreatmentModal */}
       <AddTreatmentModal
@@ -61,10 +61,10 @@ const GlobalFAB = () => {
         onOpenParse={() => {
           setModalOpen(false);
           setParseModalOpen(true);
-        }}
-      />
-    </>
-  );
+        }} />
+      
+    </>);
+
 };
 
 export default GlobalFAB;
