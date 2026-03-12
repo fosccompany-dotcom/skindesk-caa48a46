@@ -1,6 +1,5 @@
 import { useRecords } from "@/context/RecordsContext";
-import { getBloomInfo, getActiveDays, STAGE_FILTERS } from "@/utils/bloomLevel";
-import logoImg from "@/assets/logo.png";
+import { getBloomInfo, getActiveDays } from "@/utils/bloomLevel";
 
 interface BloomAvatarProps {
   size?: "sm" | "md";
@@ -17,18 +16,17 @@ export default function BloomAvatar({ size = "sm", showDays = false }: BloomAvat
 
   return (
     <div className="inline-flex flex-col items-center gap-1">
-      <div className="relative inline-flex items-center justify-center" style={{ width: px, height: px }}>
-        {/* Logo background with stage filter */}
-        <img
-          src={logoImg}
-          alt="bloom avatar"
-          className="h-full w-full rounded-full object-cover transition-all duration-700"
-          style={{ filter: STAGE_FILTERS[bloom.stage] }}
-        />
-
-        {/* Centered emoji overlay */}
+      <div 
+        className="relative inline-flex items-center justify-center rounded-full transition-all duration-700"
+        style={{ 
+          width: px, 
+          height: px,
+          backgroundColor: "#F2C94C",
+        }}
+      >
+        {/* Centered emoji */}
         <span
-          className="absolute inset-0 flex items-center justify-center select-none pointer-events-none"
+          className="select-none pointer-events-none"
           style={{ fontSize: emojiSize }}
         >
           {bloom.emoji}
