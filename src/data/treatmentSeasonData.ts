@@ -341,7 +341,7 @@ const botoxFillerTreatments: TreatmentSeasonData[] = [
         label: '비추천 (기존 유지만)',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 새 필러 주입 지양. 기존 필러 녹임 시술만 고려.',
+        note: '리셋 모드에는 새 필러 주입 지양. 기존 필러 녹임 시술만 고려.',
       },
       recovery: {
         label: '비추천',
