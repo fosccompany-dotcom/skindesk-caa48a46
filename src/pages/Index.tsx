@@ -225,7 +225,7 @@ const Index = () => {
                   BLOCK 1 — 현재 관리 상태
                   ════════════════════════════════════════════════════ */}
 
-                {/* 현재 관리 시즌 — 풀 너비 카드 */}
+                {/* 현재 관리 모드 — 풀 너비 카드 */}
                 <Card className="border-0 overflow-hidden cursor-pointer" onClick={() => navigate('/profile')}>
                   <CardContent className="p-4">
                     {seasonMeta ? (
