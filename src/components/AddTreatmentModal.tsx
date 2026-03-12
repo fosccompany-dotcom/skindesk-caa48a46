@@ -203,6 +203,7 @@ interface Props {
   onOpenParse?: () => void;
   onSave: (record: Omit<TreatmentRecord, 'id'>) => void;
   editRecord?: TreatmentRecord | null;
+  coachActive?: boolean;
 }
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
