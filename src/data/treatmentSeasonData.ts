@@ -58,7 +58,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '연 3회 (4개월 간격)',
         timesPerYear: 3,
         intervalDays: 120,
-        note: '집중 관리 시즌. 4개월 간격으로 탄력·리프팅 효과를 극대화.',
+        note: '집중 관리 모드. 4개월 간격으로 탄력·리프팅 효과를 극대화.',
         synergy: ['리쥬란힐러', '스킨부스터', '엑소좀'],
       },
       special: {
