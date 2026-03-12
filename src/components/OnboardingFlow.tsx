@@ -280,7 +280,8 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
                 </Button>
                 <Button
                   variant="ghost"
-                            onClick={(e) => { e.stopPropagation(); onClose(); }}
+                  className="w-full rounded-xl h-11 text-sm"
+                  onClick={(e) => { e.stopPropagation(); onClose(); }}
                 >
                   나중에 할게요
                 </Button>
