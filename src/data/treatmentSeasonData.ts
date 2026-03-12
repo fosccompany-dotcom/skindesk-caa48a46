@@ -817,7 +817,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 집중 홈케어형 관리',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '리셋 시즌의 핵심. 피부 관리만으로 충분한 회복 가능.',
+        note: '리셋 모드의 핵심. 피부 관리만으로 충분한 회복 가능.',
       },
       recovery: {
         label: '주 2회 집중 진정 관리',
