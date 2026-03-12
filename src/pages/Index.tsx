@@ -324,6 +324,17 @@ const Index = () => {
                             기록 추가
                           </button>
                         </div>
+                      ) : exampleNextCycle ? (
+                        <div className="flex items-center gap-3 opacity-50">
+                          <div className="shrink-0 w-12 h-12 rounded-xl bg-indigo-50 flex flex-col items-center justify-center">
+                            <span className="text-base font-black leading-none text-indigo-500">{exampleNextCycle.daysRemaining}</span>
+                            <span className="text-[9px] leading-none mt-0.5 text-indigo-400">일 후</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold text-foreground truncate">{exampleNextCycle.treatmentName}</p>
+                            <p className="text-[10px] text-muted-foreground">예시 · 시술 주기를 등록해보세요</p>
+                          </div>
+                        </div>
                       ) : (
                         <p className="text-[12px] text-gray-400">등록된 주기 없음</p>
                       )}
