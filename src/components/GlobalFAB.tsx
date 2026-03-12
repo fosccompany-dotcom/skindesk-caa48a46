@@ -78,6 +78,7 @@ const GlobalFAB = () => {
         onClose={() => setModalOpen(false)}
         onSave={handleSave}
         editRecord={null}
+        coachActive={coachOpen}
         onOpenParse={() => {
           setModalOpen(false);
           setParseModalOpen(true);
