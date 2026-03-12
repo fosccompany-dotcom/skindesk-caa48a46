@@ -85,7 +85,14 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
     }).select().single();
 
     if (!error && data) {
-      setRecords(prev => [rowToRecord(data), ...prev]);
+      const prevStage = getBloomInfo(records.length).stage;
+      const newRecords = [rowToRecord(data), ...records];
+      setRecords(newRecords);
+      const newStage = getBloomInfo(newRecords.length).stage;
+      if (newStage > prevStage) {
+        const bloom = getBloomInfo(newRecords.length);
+        toast(`🌸 ${bloom.name}으로 피어났어요!`, { duration: 3000 });
+      }
       // 플로우 3: 시술권이 있으면 used_sessions +1 (결제/잔액 변동 없음)
       if (isUUID && record.packageId) {
         await usePackageSession(record.packageId);
