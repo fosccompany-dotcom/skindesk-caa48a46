@@ -823,7 +823,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 2회 집중 진정 관리',
         timesPerYear: 80,
         intervalDays: 3,
-        note: '회복 시즌 기본 케어. 자극 없이 피부 장벽 강화.',
+        note: '회복 모드 기본 케어. 자극 없이 피부 장벽 강화.',
       },
       maintain: {
         label: '2주 간격 (연 20~24회)',
