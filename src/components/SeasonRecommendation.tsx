@@ -248,11 +248,11 @@ export default function SeasonRecommendation() {
 
   return (
     <div className="space-y-4">
-      {/* 현재 시즌 헤더 */}
+      {/* 현재 모드 헤더 */}
       <div className={`rounded-2xl border px-4 py-3.5 flex items-center gap-3 ${meta.bg} ${meta.border}`}>
         <span className="text-2xl shrink-0">{meta.emoji}</span>
         <div>
-          <p className="text-[10px] text-gray-400 font-medium">현재 나의 관리 시즌</p>
+          <p className="text-[10px] text-gray-400 font-medium">현재 나의 관리 모드</p>
           <p className={`text-sm font-black ${meta.color}`}>{meta.title}</p>
           <p className="text-xs text-gray-500">{meta.sub}</p>
         </div>
