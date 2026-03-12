@@ -576,7 +576,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '1개월 간격 (연 10~12회)',
         timesPerYear: 10,
         intervalDays: 30,
-        note: '부스트 시즌에 모든 시술 직후 엑소좀 병행 강력 추천.',
+        note: '부스트 모드에 모든 시술 직후 엑소좀 병행 강력 추천.',
         synergy: ['슈링크', '더블로', '리쥬란힐러', '스킨부스터'],
       },
       special: {
