@@ -618,7 +618,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 집중',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '부스트 시즌 피부 톤 개선 필수. 물광주사와 교대 사용.',
+        note: '부스트 모드 피부 톤 개선 필수. 물광주사와 교대 사용.',
         synergy: ['물광주사', '스킨부스터', '엑소좀'],
       },
       special: {
