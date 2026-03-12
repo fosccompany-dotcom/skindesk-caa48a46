@@ -449,22 +449,33 @@ const Profile = () => {
 
         return (
           <div className="px-4 pt-3 pb-1 space-y-3">
-            {/* Avatar + message */}
-            <div className="flex flex-col items-center gap-2">
-              <BloomAvatar size="md" showDays />
-              <p className="text-xs text-muted-foreground text-center">{bloom.message}</p>
+            {/* Avatar + Progress bar in same row */}
+            <div className="flex items-center gap-3">
+              <BloomAvatar size="md" showDays={false} />
+              
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground mb-1">{bloom.message}</p>
+                {bloom.stage < 4 && (
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] text-muted-foreground">다음 단계까지 {daysToNext}일</span>
+                      <span className="text-[10px] font-semibold text-muted-foreground">{activeDays}/{bloom.nextMilestone}</span>
+                    </div>
+                    <Progress value={progressInStage} className="h-2" />
+                  </div>
+                )}
+                {bloom.stage >= 4 && (
+                  <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
+                    🌺 Bloom 달성!
+                  </div>
+                )}
+              </div>
             </div>
 
-            {/* Progress bar */}
-            {bloom.stage < 4 && (
-              <div className="space-y-1">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-muted-foreground">다음 단계까지 {daysToNext}일</span>
-                  <span className="text-[10px] font-semibold text-muted-foreground">{activeDays}/{bloom.nextMilestone}</span>
-                </div>
-                <Progress value={progressInStage} className="h-2" />
-              </div>
-            )}
+            {/* Days count below */}
+            <p className="text-[10px] text-muted-foreground text-center">
+              {activeDays}일째 기록 중
+            </p>
 
             {/* Journey line */}
             <div className="flex items-center justify-between gap-0.5 px-1">
