@@ -859,7 +859,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 2~3회',
         timesPerYear: 104,
         intervalDays: 3,
-        note: '리셋 시즌에 가장 기본적인 피부 진정 케어.',
+        note: '리셋 모드에 가장 기본적인 피부 진정 케어.',
       },
       recovery: {
         label: '매 시술 후 + 주 3회',
