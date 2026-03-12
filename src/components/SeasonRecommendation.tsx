@@ -223,7 +223,7 @@ export default function SeasonRecommendation() {
           onClick={() => navigate('/profile')}
           className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-gray-800 text-white text-xs font-semibold"
         >
-          시즌 설정하기 <ArrowRight size={12} />
+          모드 설정하기 <ArrowRight size={12} />
         </button>
       </div>
     );
