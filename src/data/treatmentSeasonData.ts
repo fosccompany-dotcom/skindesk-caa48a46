@@ -903,11 +903,11 @@ export const ALL_TREATMENT_SEASON_DATA: TreatmentSeasonData[] = [
 ];
 
 export const SEASON_META: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string; border: string }> = {
-  reset:    { emoji: '🌵', title: 'Reset Season',    sub: '피부 리셋 시즌',  color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-200' },
-  recovery: { emoji: '🌿', title: 'Recovery Season', sub: '회복 시즌',        color: 'text-sky-700',    bg: 'bg-sky-50',     border: 'border-sky-200' },
-  maintain: { emoji: '💜', title: 'Maintain Season', sub: '유지 시즌',        color: 'text-indigo-700', bg: 'bg-indigo-50',  border: 'border-indigo-200' },
-  boost:    { emoji: '🌹', title: 'Boost Season',    sub: '관리 끌올 시즌',  color: 'text-amber-700',  bg: 'bg-amber-50',   border: 'border-amber-200' },
-  special:  { emoji: '🌸', title: 'Special Season',  sub: '스페셜 시즌',     color: 'text-purple-700', bg: 'bg-purple-50',  border: 'border-purple-200' },
+  reset:    { emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',  color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-200' },
+  recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',        color: 'text-sky-700',    bg: 'bg-sky-50',     border: 'border-sky-200' },
+  maintain: { emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',        color: 'text-indigo-700', bg: 'bg-indigo-50',  border: 'border-indigo-200' },
+  boost:    { emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',  color: 'text-amber-700',  bg: 'bg-amber-50',   border: 'border-amber-200' },
+  special:  { emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',     color: 'text-purple-700', bg: 'bg-purple-50',  border: 'border-purple-200' },
 };
 
 export const CATEGORY_ORDER = ['리프팅', '보톡스/필러', '주사', '레이저', '스킨케어'] as const;
