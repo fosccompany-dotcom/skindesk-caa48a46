@@ -432,11 +432,23 @@ const Profile = () => {
             {/* 기본 정보 */}
             <Card className="glass-card">
               <CardContent className="p-4 space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
-                    <User className="h-4 w-4 text-accent-foreground" />
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowAvatarPicker(true)}
+                    className="relative focus:outline-none shrink-0"
+                    aria-label="아바타 변경"
+                  >
+                    <div className="rounded-full overflow-hidden" style={{ width: 56, height: 56 }}>
+                      <FlowerAvatar color={avatarColor} size={56} />
+                    </div>
+                    <div className="absolute -bottom-0.5 -right-0.5 bg-white rounded-full shadow p-0.5 border border-gray-100">
+                      <span style={{ fontSize: 11 }}>✏️</span>
+                    </div>
+                  </button>
+                  <div>
+                    <h2 className="font-bold text-sm">{t('basic_info')}</h2>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">아바타를 눌러 변경하세요</p>
                   </div>
-                  <h2 className="font-bold text-sm">{t('basic_info')}</h2>
                 </div>
                 <div className="space-y-2">
                   <Label className="text-xs">{t('skin_type')}</Label>
