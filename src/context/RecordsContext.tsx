@@ -85,13 +85,23 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
     }).select().single();
 
     if (!error && data) {
-      const prevStage = getBloomInfo(records.length).stage;
+      const prevDays = getActiveDays(records);
+      const prevStage = getBloomInfo(prevDays).stage;
       const newRecords = [rowToRecord(data), ...records];
       setRecords(newRecords);
-      const newStage = getBloomInfo(newRecords.length).stage;
+      const newDays = getActiveDays(newRecords);
+      const newStage = getBloomInfo(newDays).stage;
       if (newStage > prevStage) {
-        const bloom = getBloomInfo(newRecords.length);
-        toast(`🌸 ${bloom.name}으로 피어났어요!`, { duration: 3000 });
+        const bloom = getBloomInfo(newDays);
+        if (bloom.stage === 4) {
+          // Bloom 최초 달성
+          toast("🌺 Bloom 달성!", {
+            description: "결제 시스템 오픈 시 한 달 무료 이용권 드릴게요 🎁",
+            duration: 5000,
+          });
+        } else {
+          toast(`${bloom.emoji} ${bloom.name}으로 피어났어요!`, { duration: 3000 });
+        }
       }
       // 플로우 3: 시술권이 있으면 used_sessions +1 (결제/잔액 변동 없음)
       if (isUUID && record.packageId) {
