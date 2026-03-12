@@ -600,7 +600,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 집중 해독',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '리셋 시즌에 글루타치온으로 피부 해독·재생 집중.',
+        note: '리셋 모드에 글루타치온으로 피부 해독·재생 집중.',
       },
       recovery: {
         label: '주 1회',
