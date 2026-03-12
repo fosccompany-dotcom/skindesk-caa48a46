@@ -11,6 +11,7 @@ import AddPaymentModal from '@/components/AddPaymentModal';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
 import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, CreditCard, Star, ChevronDown, ChevronUp, Globe, LogOut, Plus, Trash2, Pencil, Check } from 'lucide-react';
 import logoImg from '@/assets/logo.png';
+import { AvatarPickerModal, FlowerAvatar } from '@/components/AvatarPickerModal';
 import { format, differenceInYears } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
