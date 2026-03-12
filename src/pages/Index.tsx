@@ -174,9 +174,8 @@ const Index = () => {
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="relative page-header-gradient pt-3 pb-3" style={{ background: 'transparent' }}>
           <div className="flex items-center justify-end">
-            <div className="h-10 w-10 rounded-full bg-white/30 flex items-center justify-center backdrop-blur-sm tap-target cursor-pointer"
-              onClick={() => navigate('/profile')}>
-              <span className="text-base">👤</span>
+            <div className="tap-target cursor-pointer" onClick={() => navigate('/profile')}>
+              <BloomAvatar size="sm" />
             </div>
           </div>
         </div>

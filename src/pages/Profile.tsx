@@ -411,6 +411,53 @@ const Profile = () => {
         </div>
       </div>
 
+      {/* ── Bloom Journey Section ── */}
+      {(() => {
+        const bloom = getBloomInfo(records.length);
+        const STAGES = ['씨앗', '새싹', '봉오리', '반개화', '만개', '나만의 정원'];
+        // Progress within current stage
+        const STAGE_MINS = [0, 1, 3, 6, 11, 21];
+        const currentMin = STAGE_MINS[bloom.stage];
+        const nextMin = bloom.stage < 5 ? STAGE_MINS[bloom.stage + 1] : STAGE_MINS[5];
+        const progressInStage = bloom.stage >= 5
+          ? 100
+          : Math.min(((records.length - currentMin) / (nextMin - currentMin)) * 100, 100);
+
+        return (
+          <div className="px-4 pt-3 pb-1 space-y-3">
+            {/* Avatar + message */}
+            <div className="flex flex-col items-center gap-2">
+              <BloomAvatar size="md" />
+              <p className="text-xs text-muted-foreground text-center">{bloom.message}</p>
+            </div>
+
+            {/* Progress bar */}
+            {bloom.stage < 5 && (
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground">다음 단계까지 {bloom.nextMilestone! - records.length}건</span>
+                  <span className="text-[10px] font-semibold text-muted-foreground">{records.length}/{bloom.nextMilestone}</span>
+                </div>
+                <Progress value={progressInStage} className="h-2" />
+              </div>
+            )}
+
+            {/* Journey line */}
+            <div className="flex items-center justify-between gap-0.5 px-1">
+              {STAGES.map((name, idx) => (
+                <span key={name} className={cn(
+                  'text-[9px] font-medium transition-colors whitespace-nowrap',
+                  idx < bloom.stage ? 'text-muted-foreground' :
+                  idx === bloom.stage ? 'font-bold' : 'text-muted-foreground/40'
+                )} style={idx === bloom.stage ? { color: '#FF7F7F' } : undefined}>
+                  {idx < bloom.stage ? '✅' : ''}{name}
+                </span>
+              ))}
+            </div>
+          </div>
+        );
+      })()}
+
       <div className="page-content pt-2">
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className="w-full mb-4 rounded-xl">
