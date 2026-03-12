@@ -10,7 +10,7 @@ import {
 } from '@/data/treatmentSeasonData';
 import { useNavigate } from 'react-router-dom';
 
-// ─── 시즌 배지 컬러 ───────────────────────────────────────────────────────────
+// ─── 모드 배지 컬러 ───────────────────────────────────────────────────────────
 const SEASON_BADGE: Record<SeasonKey, string> = {
   reset:    'bg-green-100 text-green-700 border-green-200',
   recovery: 'bg-sky-100 text-sky-700 border-sky-200',

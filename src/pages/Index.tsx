@@ -246,8 +246,8 @@ const Index = () => {
                     ) : (
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
-                          <p className="text-sm font-semibold text-gray-500">시즌을 설정해보세요</p>
+                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 모드</p>
+                          <p className="text-sm font-semibold text-gray-500">모드를 설정해보세요</p>
                         </div>
                         <button
                           onClick={() => navigate('/profile')}
