@@ -232,7 +232,7 @@ const Index = () => {
                       <div className="flex items-center gap-3">
                         <span className="text-3xl shrink-0">{seasonMeta.emoji}</span>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 시즌</p>
+                          <p className="text-[10px] text-gray-400 mb-0.5">현재 나의 관리 모드</p>
                           <p className={`text-base font-black leading-tight ${seasonMeta.color}`}>{seasonMeta.title}</p>
                           <p className="text-[11px] text-gray-400 mt-0.5">{seasonMeta.sub}</p>
                         </div>
