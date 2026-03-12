@@ -691,7 +691,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 레이저 시술 중단. 피부 회복 우선.',
+        note: '리셋 모드에는 레이저 시술 중단. 피부 회복 우선.',
       },
       recovery: {
         label: '필요 시 1~2회',
