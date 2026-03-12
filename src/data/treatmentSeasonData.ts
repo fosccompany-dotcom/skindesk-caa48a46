@@ -583,7 +583,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '시술 후 반드시 병행',
         timesPerYear: 12,
         intervalDays: 28,
-        note: '스페셜 시즌 중 모든 고에너지 시술 이후 엑소좀으로 즉각 회복.',
+        note: '스페셜 모드 중 모든 고에너지 시술 이후 엑소좀으로 즉각 회복.',
         synergy: ['슈링크', '세르프', '리쥬란힐러', '물광주사'],
       },
     },
