@@ -245,6 +245,9 @@ const Profile = () => {
   const [regions, setRegions] = useState<string[]>([]);
   type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
   const [currentSeason, setCurrentSeason] = useState<SeasonKey | ''>('');
+  const [avatarColor, setAvatarColor] = useState('rose');
+  const [showAvatarPicker, setShowAvatarPicker] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string>('');
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
 
