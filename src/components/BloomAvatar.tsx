@@ -1,7 +1,7 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useRecords } from "@/context/RecordsContext";
 import { getBloomInfo } from "@/utils/bloomLevel";
-import logoImg from "@/assets/logo.png";
+
+const STAGE_EMOJI = ["🌱", "🌿", "🌷", "🌸", "🌺", "🏡"];
 
 interface BloomAvatarProps {
   size?: "sm" | "md";
@@ -12,14 +12,17 @@ export default function BloomAvatar({ size = "sm" }: BloomAvatarProps) {
   const bloom = getBloomInfo(records.length);
 
   const px = size === "sm" ? 32 : 64;
+  const emojiSize = size === "sm" ? 18 : 32;
   const badgeText = bloom.stage < 5 ? `${bloom.stage + 1} ${bloom.name}` : `🌸 ${bloom.name}`;
 
   return (
     <div className="relative inline-flex" style={{ width: px, height: px }}>
-      <Avatar className="h-full w-full">
-        <AvatarImage src={logoImg} alt="bloom avatar" className="object-cover" />
-        <AvatarFallback className="text-xs">🌱</AvatarFallback>
-      </Avatar>
+      <div
+        className="h-full w-full rounded-full bg-muted flex items-center justify-center"
+        style={{ fontSize: emojiSize }}
+      >
+        {STAGE_EMOJI[bloom.stage]}
+      </div>
 
       {/* badge */}
       <span
