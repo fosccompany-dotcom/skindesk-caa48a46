@@ -1,8 +1,10 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useRef, ReactNode } from 'react';
 import { TreatmentRecord } from '@/types/skin';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/context/AuthContext';
 import { usePackageSession } from '@/lib/clinicPayments';
+import { getBloomInfo } from '@/utils/bloomLevel';
+import { toast } from 'sonner';
 
 interface RecordsContextType {
   records: TreatmentRecord[];
