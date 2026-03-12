@@ -739,7 +739,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '1~2주 간격 집중',
         timesPerYear: 20,
         intervalDays: 10,
-        note: '예민기 피부 진정+각질 케어. 자극이 가장 적어 회복 시즌에 최적.',
+        note: '예민기 피부 진정+각질 케어. 자극이 가장 적어 회복 모드에 최적.',
       },
       maintain: {
         label: '2주 간격 (연 20~24회)',
