@@ -199,7 +199,7 @@ export default function SeasonRecommendation() {
     load();
   }, []);
 
-  // ── 시즌 미설정 안내 ────────────────────────────────────────────────────────
+  // ── 모드 미설정 안내 ────────────────────────────────────────────────────────
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
