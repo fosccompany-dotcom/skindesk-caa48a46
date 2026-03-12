@@ -208,7 +208,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 피부 휴식이 우선입니다.',
+        note: '리셋 모드에는 피부 휴식이 우선입니다.',
       },
       recovery: {
         label: '비추천',
