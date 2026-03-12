@@ -877,7 +877,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '모든 시술 후 병행',
         timesPerYear: 120,
         intervalDays: 3,
-        note: '부스트 시즌 고강도 시술 후 회복 필수템.',
+        note: '부스트 모드 고강도 시술 후 회복 필수템.',
         synergy: ['아쿠아필링', '크라이오테라피'],
       },
       special: {
