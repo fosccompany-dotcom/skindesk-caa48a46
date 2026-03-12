@@ -332,6 +332,7 @@ export type Database = {
       }
       user_profiles: {
         Row: {
+          avatar_color: string | null
           birth_date: string | null
           concerns: string[] | null
           created_at: string | null
@@ -346,6 +347,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          avatar_color?: string | null
           birth_date?: string | null
           concerns?: string[] | null
           created_at?: string | null
@@ -360,6 +362,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          avatar_color?: string | null
           birth_date?: string | null
           concerns?: string[] | null
           created_at?: string | null
