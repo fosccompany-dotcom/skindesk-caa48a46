@@ -522,7 +522,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '2~3주 간격 집중 수분',
         timesPerYear: 12,
         intervalDays: 21,
-        note: '예민기 피부 수분·진정에 효과적. 자극이 적어 회복 시즌에 적합.',
+        note: '예민기 피부 수분·진정에 효과적. 자극이 적어 회복 모드에 적합.',
       },
       maintain: {
         label: '3~4주 간격 (연 10~12회)',
