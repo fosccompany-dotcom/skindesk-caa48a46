@@ -516,7 +516,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '월 1회 기본 수분 유지',
         timesPerYear: 8,
         intervalDays: 45,
-        note: '리셋 시즌에도 부담 없는 수분 관리. 홈케어와 병행.',
+        note: '리셋 모드에도 부담 없는 수분 관리. 홈케어와 병행.',
       },
       recovery: {
         label: '2~3주 간격 집중 수분',
