@@ -764,6 +764,14 @@ const Profile = () => {
 
         </Tabs>
       </div>
+   {showAvatarPicker && currentUserId && (
+        <AvatarPickerModal
+          currentColor={avatarColor}
+          userId={currentUserId}
+          onClose={() => setShowAvatarPicker(false)}
+          onSaved={(color) => setAvatarColor(color)}
+        />
+      )}
     </div>
   );
 };
