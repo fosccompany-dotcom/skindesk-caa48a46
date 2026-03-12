@@ -347,6 +347,7 @@ const Profile = () => {
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
       if ((data as any).current_season) setCurrentSeason((data as any).current_season as any);
+      if (data.name) setNickname(data.name);
     };
     loadProfile();
   }, []);
