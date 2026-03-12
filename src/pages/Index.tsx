@@ -86,11 +86,16 @@ const Index = () => {
     loadDashboard();
   }, []);
 
-  // Onboarding
-  const [onboardingOpen, setOnboardingOpen] = useState(() => searchParams.get('onboarding') === 'true');
+  // Onboarding — 첫 로그인 시 자동 노출
+  const [onboardingOpen, setOnboardingOpen] = useState(() => {
+    if (searchParams.get('onboarding') === 'true') return true;
+    const done = localStorage.getItem('skindesk_onboarding_done');
+    return !done;
+  });
 
   const handleCloseOnboarding = () => {
     setOnboardingOpen(false);
+    localStorage.setItem('skindesk_onboarding_done', 'true');
     searchParams.delete('onboarding');
     setSearchParams(searchParams, { replace: true });
   };
