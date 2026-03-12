@@ -497,7 +497,7 @@ const Profile = () => {
 
           <TabsContent value="profile" className="space-y-3">
 
-            {/* 기본 정보 */}
+            {/* ── 기본 정보 ── */}
             <Card className="glass-card">
               <CardContent className="p-4 space-y-4">
                 <div className="flex items-center gap-2">
@@ -506,55 +506,20 @@ const Profile = () => {
                   </div>
                   <h2 className="font-bold text-sm">{t('basic_info')}</h2>
                 </div>
+
+                {/* 닉네임 */}
                 <div className="space-y-2">
-                  <Label className="text-xs">{t('skin_type')}</Label>
-                  <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
-                    <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      {skinTypes.map((st) => <SelectItem key={st} value={st}>{st}</SelectItem>)}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-xs">닉네임</Label>
+                  <Input
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    placeholder="닉네임을 입력하세요"
+                    className="rounded-xl text-sm"
+                    maxLength={20}
+                  />
                 </div>
 
-                {/* ── 관리 모드 ── */}
-                <div className="space-y-2.5">
-                  <Label className="text-xs">현재 관리 모드</Label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {([
-                      { key: 'reset',    emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',    desc: '최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복.' },
-                      { key: 'recovery', emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',         desc: '시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계.' },
-                      { key: 'maintain', emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',         desc: '현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계.' },
-                      { key: 'boost',    emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',   desc: '피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계.' },
-                      { key: 'special',  emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',      desc: '웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계.' },
-                    ] as const).map(({ key, emoji, title, sub, desc }) => {
-                      const isSelected = currentSeason === key;
-                      return (
-                        <button key={key} onClick={() => setCurrentSeason(isSelected ? '' : key)}
-                          className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
-                            isSelected
-                              ? 'border-[#C9A96E]/60 bg-[#C9A96E]/10'
-                              : 'border-gray-100 bg-gray-50 hover:border-gray-200'
-                          }`}>
-                          <div className="flex items-center gap-2.5">
-                            <span className="text-base shrink-0">{emoji}</span>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className={`text-xs font-bold ${isSelected ? 'text-[#C9A96E]' : 'text-gray-700'}`}>{title}</span>
-                                <span className="text-[10px] text-gray-400">{sub}</span>
-                              </div>
-                              <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">{desc}</p>
-                            </div>
-                            <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                              isSelected ? 'border-[#C9A96E] bg-[#C9A96E]' : 'border-gray-300'
-                            }`}>
-                              {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                            </div>
-                          </div>
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
+                {/* 생년월일 */}
                 <div className="space-y-2">
                   <Label className="text-xs">{t('birth_date')}</Label>
                   <div className="flex gap-2">
@@ -615,181 +580,192 @@ const Profile = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                {age !== null && (
-                  <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
-                    <span className="text-sm font-bold">{t('age_prefix')}{age}{t('age_suffix')}</span>
-                  </div>
-                )}
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* 주요 활동 지역 */}
-            <Card className="glass-card">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 rounded-xl bg-sage-light flex items-center justify-center">
-                    <Navigation className="h-4 w-4 text-sage-dark" />
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-sm">{t('active_regions')}</h2>
-                    <p className="text-[10px] text-muted-foreground">{t('region_desc')}</p>
-                  </div>
+                  {age !== null && (
+                    <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
+                      <span className="text-sm font-bold">{t('age_prefix')}{age}{t('age_suffix')}</span>
+                    </div>
+                  )}
                 </div>
 
-                {regions.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 mb-3">
-                    {regions.map((r) => (
-                      <Badge key={r} variant="default" className="rounded-full px-3 py-1.5 text-xs flex items-center gap-1">
-                        {r}
-                        <X className="h-3 w-3 cursor-pointer tap-target" onClick={() => removeRegion(r)} />
-                      </Badge>
-                    ))}
+                {/* 주요 활동 지역 */}
+                <div className="space-y-3 pt-1 border-t border-border">
+                  <div className="flex items-center gap-2 pt-3">
+                    <Navigation className="h-4 w-4 text-muted-foreground" />
+                    <div>
+                      <h3 className="font-semibold text-xs">{t('active_regions')}</h3>
+                      <p className="text-[10px] text-muted-foreground">{t('region_desc')}</p>
+                    </div>
                   </div>
-                )}
 
-                {regions.length < 7 && (
-                  <>
-                    <p className="text-[10px] text-muted-foreground mb-1.5 px-0.5">{t('dense_areas')}</p>
-                    <div className="flex flex-wrap gap-1.5 mb-3">
-                      {[
-                        '서울특별시 강남구',
-                        '서울특별시 서초구',
-                        '서울특별시 송파구',
-                        '경기도 성남시 분당구',
-                        '부산광역시 해운대구',
-                      ].filter(r => !regions.includes(r)).map((r) => (
-                        <Badge
-                          key={r}
-                          variant="outline"
-                          className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                          onClick={() => regions.length < 7 && setRegions([...regions, r])}
-                        >
-                          {r.replace('특별시 ', ' ').replace('광역시 ', ' ').replace('도 ', ' ')}
+                  {regions.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5">
+                      {regions.map((r) => (
+                        <Badge key={r} variant="default" className="rounded-full px-3 py-1.5 text-xs flex items-center gap-1">
+                          {r}
+                          <X className="h-3 w-3 cursor-pointer tap-target" onClick={() => removeRegion(r)} />
                         </Badge>
                       ))}
                     </div>
+                  )}
 
-                    <div className="grid grid-cols-2 gap-2 mb-3">
-                      <div className="space-y-1">
-                        <Label className="text-[10px] text-muted-foreground">{t('sido')}</Label>
-                        <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
-                          <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('sido')} /></SelectTrigger>
-                          <SelectContent>
-                            {Object.keys(REGION_DATA).map(sido => (
-                              <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                  {regions.length < 7 && (
+                    <>
+                      <p className="text-[10px] text-muted-foreground px-0.5">{t('dense_areas')}</p>
+                      <div className="flex flex-wrap gap-1.5">
+                        {[
+                          '서울특별시 강남구',
+                          '서울특별시 서초구',
+                          '서울특별시 송파구',
+                          '경기도 성남시 분당구',
+                          '부산광역시 해운대구',
+                        ].filter(r => !regions.includes(r)).map((r) => (
+                          <Badge
+                            key={r}
+                            variant="outline"
+                            className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
+                            onClick={() => regions.length < 7 && setRegions([...regions, r])}
+                          >
+                            {r.replace('특별시 ', ' ').replace('광역시 ', ' ').replace('도 ', ' ')}
+                          </Badge>
+                        ))}
                       </div>
-                      <div className="space-y-1">
-                        <Label className="text-[10px] text-muted-foreground">{t('gugun')}</Label>
-                        <Select value={selectedGugun} onValueChange={(v) => {
-                          setSelectedGugun(v);
-                          if (selectedSido && v) {
-                            const full = `${selectedSido} ${v}`;
-                            if (!regions.includes(full) && regions.length < 7) {
-                              setRegions(prev => [...prev, full]);
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">{t('sido')}</Label>
+                          <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
+                            <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('sido')} /></SelectTrigger>
+                            <SelectContent>
+                              {Object.keys(REGION_DATA).map(sido => (
+                                <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-[10px] text-muted-foreground">{t('gugun')}</Label>
+                          <Select value={selectedGugun} onValueChange={(v) => {
+                            setSelectedGugun(v);
+                            if (selectedSido && v) {
+                              const full = `${selectedSido} ${v}`;
+                              if (!regions.includes(full) && regions.length < 7) {
+                                setRegions(prev => [...prev, full]);
+                              }
+                              setSelectedSido('');
+                              setSelectedGugun('');
                             }
-                            setSelectedSido('');
-                            setSelectedGugun('');
-                          }
-                        }} disabled={!selectedSido}>
-                          <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('gugun')} /></SelectTrigger>
-                          <SelectContent>
-                            {gugunOptions.map(gu => (
-                              <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
+                          }} disabled={!selectedSido}>
+                            <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('gugun')} /></SelectTrigger>
+                            <SelectContent>
+                              {gugunOptions.map(gu => (
+                                <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
                       </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="w-full rounded-xl text-xs tap-target"
-                      onClick={addRegion}
-                      disabled={!selectedSido || !selectedGugun}
-                    >
-                      + {t('add_region')} ({regions.length}/7)
-                    </Button>
-                  </>
-                )}
-
-                {regions.length >= 7 && (
-                  <p className="text-[11px] text-muted-foreground text-center py-1">{t('max_region')}</p>
-                )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full rounded-xl text-xs tap-target"
+                        onClick={addRegion}
+                        disabled={!selectedSido || !selectedGugun}
+                      >
+                        + {t('add_region')} ({regions.length}/7)
+                      </Button>
+                    </>
+                  )}
+                  {regions.length >= 7 && (
+                    <p className="text-[11px] text-muted-foreground text-center py-1">{t('max_region')}</p>
+                  )}
+                </div>
               </CardContent>
             </Card>
 
-            {/* 관리 부위 */}
+            {/* ── 현재 관리 모드 ── */}
             <Card className="glass-card">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
+              <CardContent className="p-4 space-y-3">
+                <div className="flex items-center gap-2">
                   <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
-                    <MapPin className="h-4 w-4 text-accent-foreground" />
+                    <Target className="h-4 w-4 text-accent-foreground" />
                   </div>
-                  <h2 className="font-bold text-sm">{t('care_areas')}</h2>
+                  <h2 className="font-bold text-sm">현재 관리 모드</h2>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {bodyAreaOptions.map((area) => (
-                    <Badge
-                      key={area}
-                      variant={targetAreas.includes(area) ? 'default' : 'outline'}
-                      className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                      onClick={() => toggleItem(targetAreas, area, setTargetAreas)}
-                    >
-                      {BODY_AREA_LABELS[area]}
-                    </Badge>
-                  ))}
+                <div className="grid grid-cols-1 gap-2">
+                  {([
+                    { key: 'reset',    emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',    desc: '최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복.' },
+                    { key: 'recovery', emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',         desc: '시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계.' },
+                    { key: 'maintain', emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',         desc: '현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계.' },
+                    { key: 'boost',    emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',   desc: '피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계.' },
+                    { key: 'special',  emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',      desc: '웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계.' },
+                  ] as const).map(({ key, emoji, title, sub, desc }) => {
+                    const isSelected = currentSeason === key;
+                    return (
+                      <button key={key} onClick={() => setCurrentSeason(isSelected ? '' : key)}
+                        className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
+                          isSelected
+                            ? 'border-[#C9A96E]/60 bg-[#C9A96E]/10'
+                            : 'border-gray-100 bg-gray-50 hover:border-gray-200'
+                        }`}>
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-base shrink-0">{emoji}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className={`text-xs font-bold ${isSelected ? 'text-[#C9A96E]' : 'text-gray-700'}`}>{title}</span>
+                              <span className="text-[10px] text-gray-400">{sub}</span>
+                            </div>
+                            <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">{desc}</p>
+                          </div>
+                          <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
+                            isSelected ? 'border-[#C9A96E] bg-[#C9A96E]' : 'border-gray-300'
+                          }`}>
+                            {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </div>
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </CardContent>
             </Card>
 
-            {/* 주요 고민 */}
+            {/* ── 관리 세팅 ── */}
             <Card className="glass-card">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 rounded-xl bg-rose-light flex items-center justify-center">
-                    <AlertCircle className="h-4 w-4 text-rose" />
+              <CardContent className="p-4 space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
+                    <Settings className="h-4 w-4 text-accent-foreground" />
                   </div>
-                  <h2 className="font-bold text-sm">{t('main_concerns')}</h2>
+                  <h2 className="font-bold text-sm">관리 세팅</h2>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {concernOptions.map((c) => (
-                    <Badge
-                      key={c}
-                      variant={concerns.includes(c) ? 'default' : 'outline'}
-                      className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                      onClick={() => toggleItem(concerns, c, setConcerns)}
-                    >
-                      {c}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
 
-            {/* 관리 목표 */}
-            <Card className="glass-card">
-              <CardContent className="p-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="h-8 w-8 rounded-xl bg-info-light flex items-center justify-center">
-                    <Target className="h-4 w-4 text-info" />
-                  </div>
-                  <h2 className="font-bold text-sm">{t('care_goals')}</h2>
+                {/* 피부 타입 */}
+                <div className="space-y-2">
+                  <Label className="text-xs">{t('skin_type')}</Label>
+                  <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
+                    <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {skinTypes.map((st) => <SelectItem key={st} value={st}>{st}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="flex flex-wrap gap-2">
-                  {goalOptions.map((g) => (
-                    <Badge
-                      key={g}
-                      variant={goals.includes(g) ? 'default' : 'outline'}
-                      className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                      onClick={() => toggleItem(goals, g, setGoals)}
-                    >
-                      {g}
-                    </Badge>
-                  ))}
+
+                {/* 주요 관심사 (고민 + 목표 통합, MECE) */}
+                <div className="space-y-2">
+                  <Label className="text-xs">주요 관심사</Label>
+                  <p className="text-[10px] text-muted-foreground -mt-1">관리하고 싶은 피부 고민을 선택하세요</p>
+                  <div className="flex flex-wrap gap-2">
+                    {skinCareInterests.map((item) => (
+                      <Badge
+                        key={item}
+                        variant={concerns.includes(item) ? 'default' : 'outline'}
+                        className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
+                        onClick={() => toggleItem(concerns, item, setConcerns)}
+                      >
+                        {item}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               </CardContent>
             </Card>
