@@ -390,7 +390,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '연 1~2회 기본 재생',
         timesPerYear: 2,
         intervalDays: 180,
-        note: '리셋 시즌에 적합. 피부 장벽 회복과 재생에 이상적인 시술.',
+        note: '리셋 모드에 적합. 피부 장벽 회복과 재생에 이상적인 시술.',
       },
       recovery: {
         label: '월 1회 × 3개월 집중 (회복 프로토콜)',
