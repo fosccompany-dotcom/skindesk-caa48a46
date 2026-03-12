@@ -365,6 +365,7 @@ const Profile = () => {
       if (!user) return;
       await supabase.from('user_profiles').upsert({
         id: user.id,
+        name: nickname || null,
         skin_type: skinType,
         birth_date: birthDate ? birthDate.toISOString().split('T')[0] : null,
         concerns,
@@ -378,7 +379,7 @@ const Profile = () => {
       setTimeout(() => setSaved(false), 1500);
     }, 600);
     return () => clearTimeout(saveTimeout.current);
-  }, [skinType, birthDate, concerns, goals, targetAreas, regions, currentSeason]);
+  }, [nickname, skinType, birthDate, concerns, goals, targetAreas, regions, currentSeason]);
 
   const avgSatisfaction = useMemo(() => {
     const rated = records.filter(r => r.satisfaction);
