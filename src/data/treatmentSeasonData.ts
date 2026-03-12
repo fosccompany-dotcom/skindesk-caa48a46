@@ -432,7 +432,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '연 2회',
         timesPerYear: 2,
         intervalDays: 180,
-        note: '눈가 기본 유지. 리셋 시즌에도 부담 없이 진행 가능.',
+        note: '눈가 기본 유지. 리셋 모드에도 부담 없이 진행 가능.',
       },
       recovery: {
         label: '1~2개월 간격 × 3회',
