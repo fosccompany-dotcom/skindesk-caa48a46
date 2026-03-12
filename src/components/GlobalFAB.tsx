@@ -31,7 +31,7 @@ const GlobalFAB = () => {
         className={cn(
           'fixed z-40 right-5 bottom-[88px]',
           'w-14 h-14 rounded-full shadow-2xl',
-          'bg-[#C9A96E] hover:bg-[#b8955c] active:scale-95',
+          'bg-[#F2C94C] hover:bg-[#e0b83e] active:scale-95',
           'flex items-center justify-center',
           'transition-all duration-200',
           // max-width 컨테이너 안에서만 표시되도록
