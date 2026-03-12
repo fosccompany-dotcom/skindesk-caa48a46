@@ -141,7 +141,7 @@ function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; 
         className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-gray-600"
       >
         <Info size={10} />
-        {show ? '시즌별 비교 닫기' : '5시즌 모두 보기'}
+        {show ? '모드별 비교 닫기' : '5모드 모두 보기'}
       </button>
 
       {show && (
