@@ -321,7 +321,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
           {/* 모드 토글 */}
           {!editRecord && (
-            <div className="flex mt-3 bg-muted rounded-lg p-0.5">
+            <div data-coach="mode-toggle" className="flex mt-3 bg-muted rounded-lg p-0.5">
               <button
                 onClick={() => { setMode('record'); reset(); }}
                 className={cn(
