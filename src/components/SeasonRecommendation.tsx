@@ -326,7 +326,7 @@ export default function SeasonRecommendation() {
       {/* 하단 안내 */}
       <div className="rounded-xl bg-gray-50 border border-gray-100 px-4 py-3 text-[10px] text-gray-400 leading-relaxed">
         💡 추천 주기는 일반적인 가이드라인입니다. 개인의 피부 상태와 의사 소견에 따라 조정하세요.
-        시즌을 변경하면 추천 내용이 달라집니다.
+        모드를 변경하면 추천 내용이 달라집니다.
       </div>
     </div>
   );
