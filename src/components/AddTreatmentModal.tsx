@@ -208,7 +208,7 @@ interface Props {
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
-export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
+export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, coachActive }: Props) {
   const [mode, setMode] = useState<'record' | 'package'>('record');
   const [step, setStep] = useState(1);
   const [catId, setCatId] = useState<string | null>(null);
