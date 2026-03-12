@@ -558,7 +558,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '1~2개월 간격 집중 재생',
         timesPerYear: 6,
         intervalDays: 60,
-        note: '리셋 시즌에 최적. 시술 후 피부 손상 회복에 탁월.',
+        note: '리셋 모드에 최적. 시술 후 피부 손상 회복에 탁월.',
       },
       recovery: {
         label: '2주 간격 × 4회 집중 (장벽 회복 프로토콜)',
