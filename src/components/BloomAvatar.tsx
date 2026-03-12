@@ -13,11 +13,12 @@ export default function BloomAvatar({ size = "sm", showDays = false }: BloomAvat
   const bloom = getBloomInfo(activeDays);
 
   const px = size === "sm" ? 32 : 64;
-  const badgeText = `${bloom.emoji} ${bloom.name}`;
+  const emojiSize = size === "sm" ? 20 : 40;
 
   return (
     <div className="inline-flex flex-col items-center gap-1">
-      <div className="relative inline-flex" style={{ width: px, height: px }}>
+      <div className="relative inline-flex items-center justify-center" style={{ width: px, height: px }}>
+        {/* Logo background with stage filter */}
         <img
           src={logoImg}
           alt="bloom avatar"
@@ -25,17 +26,12 @@ export default function BloomAvatar({ size = "sm", showDays = false }: BloomAvat
           style={{ filter: STAGE_FILTERS[bloom.stage] }}
         />
 
-        {/* badge */}
+        {/* Centered emoji overlay */}
         <span
-          className="absolute bottom-0 right-0 translate-x-1/4 translate-y-1/4 whitespace-nowrap rounded-full px-1.5 py-[1px] text-white"
-          style={{
-            fontSize: size === "sm" ? 8 : 10,
-            fontWeight: 700,
-            backgroundColor: "#FF7F7F",
-            lineHeight: 1.3,
-          }}
+          className="absolute inset-0 flex items-center justify-center select-none pointer-events-none"
+          style={{ fontSize: emojiSize }}
         >
-          {badgeText}
+          {bloom.emoji}
         </span>
       </div>
 
