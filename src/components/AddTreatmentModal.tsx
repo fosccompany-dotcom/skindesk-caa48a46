@@ -203,11 +203,12 @@ interface Props {
   onOpenParse?: () => void;
   onSave: (record: Omit<TreatmentRecord, 'id'>) => void;
   editRecord?: TreatmentRecord | null;
+  coachActive?: boolean;
 }
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
-export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
+export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, coachActive }: Props) {
   const [mode, setMode] = useState<'record' | 'package'>('record');
   const [step, setStep] = useState(1);
   const [catId, setCatId] = useState<string | null>(null);
@@ -310,8 +311,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent data-coach-container className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0">
+    <Dialog open={open} onOpenChange={(v) => { if (!coachActive) handleClose(); }}>
+      <DialogContent data-coach-container className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0" onInteractOutside={(e) => { if (coachActive) e.preventDefault(); }} onEscapeKeyDown={(e) => { if (coachActive) e.preventDefault(); }}>
 
         {/* 헤더 */}
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-gray-200 sticky top-0 bg-white z-10">
