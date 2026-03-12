@@ -564,7 +564,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '2주 간격 × 4회 집중 (장벽 회복 프로토콜)',
         timesPerYear: 4,
         intervalDays: 14,
-        note: '회복 시즌 핵심 시술. 피부 장벽 재건 + 항염 효과.',
+        note: '회복 모드 핵심 시술. 피부 장벽 재건 + 항염 효과.',
       },
       maintain: {
         label: '1~2개월 간격 (연 6~8회)',
