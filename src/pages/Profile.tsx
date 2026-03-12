@@ -18,6 +18,9 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
+import BloomAvatar from '@/components/BloomAvatar';
+import { getBloomInfo } from '@/utils/bloomLevel';
+import { Progress } from '@/components/ui/progress';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
 const concernOptions = ['모공', '색소침착', '탄력저하', '주름', '여드름', '홍조', '건조', '다크서클', '제모', '셀룰라이트', '튼살'];
