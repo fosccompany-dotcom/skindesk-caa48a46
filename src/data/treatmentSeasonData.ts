@@ -649,7 +649,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '비추천 (홈케어 대체)',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 시즌에는 레이저 자극 최소화. 비타민C 세럼 등 홈케어로 대체.',
+        note: '리셋 모드에는 레이저 자극 최소화. 비타민C 세럼 등 홈케어로 대체.',
       },
       recovery: {
         label: '4~6주 간격 1~2회',
