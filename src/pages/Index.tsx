@@ -206,6 +206,19 @@ const Index = () => {
           // 2주 이내 예정 (cycles 기준)
           const upcomingIn2w = allCycleStatuses.filter(s => s.daysRemaining >= 0 && s.daysRemaining <= 14);
 
+          // 데이터가 없을 때 보여줄 예시 데이터
+          const isEmpty = cycles.length === 0 && records.length === 0 && activePackages.length === 0;
+          const exampleNextCycle = !nextCycle && isEmpty ? {
+            treatmentName: '울쎄라 리프팅',
+            daysRemaining: 12,
+          } : null;
+          const examplePackage = activePackages.length === 0 && isEmpty ? {
+            id: 'example', name: '인모드 패키지', total_sessions: 5, used_sessions: 2, clinic: '청담 에스틴 의원',
+          } : null;
+          const exampleUpcoming = upcomingIn2w.length === 0 && isEmpty ? [
+            { name: '울쎄라 리프팅', daysRemaining: 12 },
+          ] : null;
+
           return (
             <>
               {/* ════════════════════════════════════════════════════
@@ -311,6 +324,17 @@ const Index = () => {
                             기록 추가
                           </button>
                         </div>
+                      ) : exampleNextCycle ? (
+                        <div className="flex items-center gap-3 opacity-50">
+                          <div className="shrink-0 w-12 h-12 rounded-xl bg-indigo-50 flex flex-col items-center justify-center">
+                            <span className="text-base font-black leading-none text-indigo-500">{exampleNextCycle.daysRemaining}</span>
+                            <span className="text-[9px] leading-none mt-0.5 text-indigo-400">일 후</span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-[13px] font-bold text-foreground truncate">{exampleNextCycle.treatmentName}</p>
+                            <p className="text-[10px] text-muted-foreground">예시 · 시술 주기를 등록해보세요</p>
+                          </div>
+                        </div>
                       ) : (
                         <p className="text-[12px] text-gray-400">등록된 주기 없음</p>
                       )}
@@ -413,8 +437,22 @@ const Index = () => {
                       </div>
                     )}
                   </div>
+                ) : examplePackage ? (
+                  <div className="space-y-2 opacity-50">
+                    <div className="bg-white border border-gray-100 rounded-xl px-4 py-3 cursor-pointer flex items-center gap-3"
+                      onClick={() => navigate('/packages')}>
+                      <div className="shrink-0 w-11 h-11 rounded-xl bg-indigo-50 flex flex-col items-center justify-center">
+                        <span className="text-lg font-black text-indigo-600 leading-none">{examplePackage.total_sessions - examplePackage.used_sessions}</span>
+                        <span className="text-[9px] text-indigo-400 leading-none mt-0.5">회</span>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-bold text-gray-800 truncate">{examplePackage.name}</p>
+                        <p className="text-[11px] text-gray-400 mb-1">{examplePackage.clinic}</p>
+                        <p className="text-[10px] text-muted-foreground">예시 · 시술권을 등록해보세요</p>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
-                  /* 빈 상태 개선 */
                   <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-4 text-center">
                     <p className="text-sm font-semibold text-gray-500 mb-1">시술권을 등록하면</p>
                     <p className="text-[11px] text-gray-400 leading-relaxed mb-3">
@@ -452,6 +490,23 @@ const Index = () => {
                         {upcomingIn2w.length > 3 && (
                           <p className="text-[10px] text-gray-400 text-right">+{upcomingIn2w.length - 3}건 더보기</p>
                         )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : exampleUpcoming ? (
+                  <Card className="card-interactive cursor-pointer border-0 opacity-50" onClick={() => navigate('/calendar')}>
+                    <CardContent className="p-3">
+                      <div className="space-y-2">
+                        {exampleUpcoming.map((item, i) => (
+                          <div key={i} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="h-2 w-2 rounded-full shrink-0 bg-indigo-400" />
+                              <span className="text-sm font-medium truncate">{item.name}</span>
+                            </div>
+                            <span className="text-sm font-bold shrink-0 text-indigo-500">D-{item.daysRemaining}</span>
+                          </div>
+                        ))}
+                        <p className="text-[10px] text-muted-foreground">예시 · 시술을 기록하면 자동 생성돼요</p>
                       </div>
                     </CardContent>
                   </Card>
