@@ -775,7 +775,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 1~2회 정기 관리',
         timesPerYear: 52,
         intervalDays: 7,
-        note: '리셋 시즌에 최적. 피부 진정과 염증 완화에 이상적.',
+        note: '리셋 모드에 최적. 피부 진정과 염증 완화에 이상적.',
       },
       recovery: {
         label: '주 2~3회 집중 진정',
