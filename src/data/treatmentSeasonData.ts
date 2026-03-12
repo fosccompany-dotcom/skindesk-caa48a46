@@ -534,7 +534,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '2주 간격 집중 (연 20회)',
         timesPerYear: 20,
         intervalDays: 14,
-        note: '부스트 시즌에는 물광주사를 모든 시술의 마무리로 활용.',
+        note: '부스트 모드에는 물광주사를 모든 시술의 마무리로 활용.',
         synergy: ['스킨부스터', '리쥬란힐러', '엑소좀', '백옥주사'],
       },
       special: {
