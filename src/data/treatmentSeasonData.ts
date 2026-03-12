@@ -781,7 +781,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '주 2~3회 집중 진정',
         timesPerYear: 80,
         intervalDays: 3,
-        note: '회복 시즌 피부 진정의 핵심. 시술 후 즉각 진정에 효과적.',
+        note: '회복 모드 피부 진정의 핵심. 시술 후 즉각 진정에 효과적.',
       },
       maintain: {
         label: '2주 간격 정기 관리',
