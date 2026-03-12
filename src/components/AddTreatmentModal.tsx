@@ -364,7 +364,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {step === 1 && (
             <div>
               <p className="text-xs text-gray-400 mb-3">시술 카테고리를 선택하세요</p>
-              <div className="grid grid-cols-2 gap-2">
+              <div data-coach="category-grid" className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map(cat => (
                   <button key={cat.id}
                     onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); }}
