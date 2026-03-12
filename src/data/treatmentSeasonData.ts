@@ -474,7 +474,7 @@ const injectionTreatments: TreatmentSeasonData[] = [
         label: '2~3개월 간격 (연 4~6회)',
         timesPerYear: 4,
         intervalDays: 75,
-        note: '리셋 시즌에 적합. 피부 수분 공급으로 회복 가속화.',
+        note: '리셋 모드에 적합. 피부 수분 공급으로 회복 가속화.',
       },
       recovery: {
         label: '1개월 간격 × 3회 집중',
