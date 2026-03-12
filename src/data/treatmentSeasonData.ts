@@ -257,7 +257,7 @@ const botoxFillerTreatments: TreatmentSeasonData[] = [
         label: '필요 시 1회',
         timesPerYear: 1,
         intervalDays: 180,
-        note: '리셋 시즌에는 필수 부위(사각턱, 종아리 등)만 최소한으로 유지.',
+        note: '리셋 모드에는 필수 부위(사각턱, 종아리 등)만 최소한으로 유지.',
       },
       recovery: {
         label: '최소 유지 (4~6개월 간격)',
