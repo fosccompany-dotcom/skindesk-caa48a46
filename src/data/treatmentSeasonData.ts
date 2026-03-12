@@ -733,7 +733,7 @@ const laserTreatments: TreatmentSeasonData[] = [
         label: '2~3주 간격 (연 15~18회)',
         timesPerYear: 15,
         intervalDays: 21,
-        note: '리셋 시즌에 가장 적합한 시술. 자극 없이 피부 컨디션 유지.',
+        note: '리셋 모드에 가장 적합한 시술. 자극 없이 피부 컨디션 유지.',
       },
       recovery: {
         label: '1~2주 간격 집중',
