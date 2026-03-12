@@ -46,7 +46,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '시술 후 예민기 — 슈링크는 회복 시즌에 적합하지 않습니다.',
+        note: '시술 후 예민기 — 슈링크는 회복 모드에 적합하지 않습니다.',
       },
       maintain: {
         label: '연 2회 (6개월 간격)',
