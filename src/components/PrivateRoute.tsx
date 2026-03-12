@@ -1,8 +1,18 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/context/AuthContext';
 
+const isPreview =
+  window.location.hostname.includes('preview') ||
+  window.location.hostname.includes('lovableproject.com') ||
+  window.location.hostname.includes('lovable.app');
+
 export function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+
+  // Preview 환경에서는 인증 없이 통과
+  if (isPreview) {
+    return <>{children}</>;
+  }
 
   if (loading) {
     return (
