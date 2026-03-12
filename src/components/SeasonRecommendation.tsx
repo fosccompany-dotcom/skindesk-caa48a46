@@ -121,7 +121,7 @@ function TreatmentCard({
             </div>
           )}
 
-          {/* 모든 시즌 비교 (접기) */}
+          {/* 모든 모드 비교 (접기) */}
           <AllSeasonCompare data={data} currentSeason={season} />
         </div>
       )}
