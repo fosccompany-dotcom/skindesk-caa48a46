@@ -184,7 +184,7 @@ const liftingTreatments: TreatmentSeasonData[] = [
         label: '월 1~2회 (연 12~18회)',
         timesPerYear: 15,
         intervalDays: 28,
-        note: '집중 관리 시즌. 1개월 간격으로 효과 누적.',
+        note: '집중 관리 모드. 1개월 간격으로 효과 누적.',
         synergy: ['써마지', '보톡스(턱/사각턱)', '리쥬란힐러'],
       },
       special: {
