@@ -206,6 +206,19 @@ const Index = () => {
           // 2주 이내 예정 (cycles 기준)
           const upcomingIn2w = allCycleStatuses.filter(s => s.daysRemaining >= 0 && s.daysRemaining <= 14);
 
+          // 데이터가 없을 때 보여줄 예시 데이터
+          const isEmpty = cycles.length === 0 && records.length === 0 && activePackages.length === 0;
+          const exampleNextCycle = !nextCycle && isEmpty ? {
+            treatmentName: '울쎄라 리프팅',
+            daysRemaining: 12,
+          } : null;
+          const examplePackage = activePackages.length === 0 && isEmpty ? {
+            id: 'example', name: '인모드 패키지', total_sessions: 5, used_sessions: 2, clinic: '청담 에스틴 의원',
+          } : null;
+          const exampleUpcoming = upcomingIn2w.length === 0 && isEmpty ? [
+            { name: '울쎄라 리프팅', daysRemaining: 12 },
+          ] : null;
+
           return (
             <>
               {/* ════════════════════════════════════════════════════
