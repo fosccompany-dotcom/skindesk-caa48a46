@@ -129,7 +129,7 @@ function TreatmentCard({
   );
 }
 
-// ─── 5개 시즌 가로 비교 ───────────────────────────────────────────────────────
+// ─── 5개 모드 가로 비교 ───────────────────────────────────────────────────────
 function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; currentSeason: SeasonKey }) {
   const [show, setShow] = useState(false);
   const seasons: SeasonKey[] = ['reset', 'recovery', 'maintain', 'boost', 'special'];
