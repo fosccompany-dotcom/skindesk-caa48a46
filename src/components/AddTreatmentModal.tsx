@@ -311,7 +311,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0">
+      <DialogContent data-coach-container className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0">
 
         {/* 헤더 */}
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -321,7 +321,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
           {/* 모드 토글 */}
           {!editRecord && (
-            <div className="flex mt-3 bg-muted rounded-lg p-0.5">
+            <div data-coach="mode-toggle" className="flex mt-3 bg-muted rounded-lg p-0.5">
               <button
                 onClick={() => { setMode('record'); reset(); }}
                 className={cn(
@@ -364,7 +364,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {step === 1 && (
             <div>
               <p className="text-xs text-gray-400 mb-3">시술 카테고리를 선택하세요</p>
-              <div className="grid grid-cols-2 gap-2">
+              <div data-coach="category-grid" className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map(cat => (
                   <button key={cat.id}
                     onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); }}
@@ -564,6 +564,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           </div>
           {onOpenParse && (
             <button
+              data-coach="parse-button"
               onClick={() => { handleClose(); onOpenParse(); }}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-muted-foreground text-xs font-medium hover:bg-muted hover:text-foreground transition-colors"
             >
