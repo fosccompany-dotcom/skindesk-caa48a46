@@ -39,7 +39,7 @@ const GlobalFAB = () => {
         )}
         aria-label="시술 기록 추가"
       >
-        <Plus className="w-6 h-6 text-white stroke-[2.5]" />
+        <Plus className="w-6 h-6 text-[#E87461] stroke-[2.5]" />
       </button>
 
       {/* ParseTreatmentModal */}
