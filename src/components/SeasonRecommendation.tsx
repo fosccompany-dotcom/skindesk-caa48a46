@@ -213,9 +213,9 @@ export default function SeasonRecommendation() {
       <div className="flex flex-col items-center justify-center py-16 px-6 text-center gap-4">
         <span className="text-4xl">🌿</span>
         <div>
-          <p className="text-sm font-bold text-gray-700">관리 시즌을 먼저 설정해주세요</p>
+          <p className="text-sm font-bold text-gray-700">관리 모드를 먼저 설정해주세요</p>
           <p className="text-xs text-gray-400 mt-1">
-            마이페이지 → 기본정보에서 현재 시즌을 선택하면<br />
+            마이페이지 → 기본정보에서 현재 모드를 선택하면<br />
             맞춤 시술 주기 추천을 받을 수 있어요.
           </p>
         </div>
