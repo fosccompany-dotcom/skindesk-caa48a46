@@ -33,6 +33,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <SeasonProvider>
             <CyclesProvider>
               <RecordsProvider>
                 <div className="app-container min-h-screen bg-background relative">
