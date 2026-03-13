@@ -128,6 +128,8 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
 
 // ── 메인 ─────────────────────────────────────────────────────────────
 const CalendarPage = () => {
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'calendar';
   const today = new Date('2026-03-08');
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
