@@ -406,7 +406,7 @@ const Profile = () => {
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ clipPath: 'inset(0)' }} />
         <div className="absolute inset-0 bg-black/40" style={{ clipPath: 'inset(0)' }} />
         <div className="page-header-gradient relative z-10 flex items-center justify-between" style={{ background: 'transparent' }}>
-        <h1 className="text-lg font-bold text-justify">{t('my_page')}</h1>
+        <h1 className="text-lg font-bold text-justify">{nickname ? `${nickname}님의 페이지` : t('my_page')}</h1>
         <div className="relative" ref={langDropdownRef}>
           <button
               onClick={() => setLangOpen((prev) => !prev)}
