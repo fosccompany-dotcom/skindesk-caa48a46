@@ -6,7 +6,7 @@ export interface BloomInfo {
   nextMilestone: number | null;
 }
 
-const STAGES: { min: number; name: string; emoji: string; message: string }[] = [
+export const STAGES: { min: number; name: string; emoji: string; message: string }[] = [
   { min: 0,  name: "씨앗",   emoji: "🌱", message: "첫 기록을 남겨봐요" },
   { min: 1,  name: "새싹",   emoji: "🌿", message: "관리가 시작됐어요" },
   { min: 8,  name: "봉오리", emoji: "🌼", message: "피어나려고 해요" },

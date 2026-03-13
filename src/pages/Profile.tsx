@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useRecords } from '@/context/RecordsContext';
 import AddPaymentModal from '@/components/AddPaymentModal';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
@@ -21,7 +22,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import { useNavigate } from 'react-router-dom';
 import BloomAvatar from '@/components/BloomAvatar';
-import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
+import { getBloomInfo, getActiveDays, STAGES } from '@/utils/bloomLevel';
 import { Progress } from '@/components/ui/progress';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
@@ -459,7 +460,27 @@ const Profile = () => {
           <div className="px-4 pt-3 pb-1 space-y-2">
             {/* Avatar + Progress bar + Journey in same row layout */}
             <div className="flex items-start gap-3">
-              <BloomAvatar size="md" showDays={false} />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button className="focus:outline-none">
+                    <BloomAvatar size="md" showDays={false} />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent 
+                  className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
+                  sideOffset={8}
+                >
+                  <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 등급 기준</p>
+                  <ul className="space-y-1 text-[11px]">
+                    <li className={activeDays === 0 ? 'text-[#F2C94C] font-semibold' : ''}>🌱 씨앗 — 0일</li>
+                    <li className={activeDays >= 1 && activeDays < 8 ? 'text-[#F2C94C] font-semibold' : ''}>🌿 새싹 — 1~7일</li>
+                    <li className={activeDays >= 8 && activeDays < 31 ? 'text-[#F2C94C] font-semibold' : ''}>🌼 봉오리 — 8~30일</li>
+                    <li className={activeDays >= 31 && activeDays < 91 ? 'text-[#F2C94C] font-semibold' : ''}>🌸 반개화 — 31~90일</li>
+                    <li className={activeDays >= 91 ? 'text-[#F2C94C] font-semibold' : ''}>🌺 Bloom — 91일+</li>
+                  </ul>
+                  <p className="mt-2 text-[10px] text-white/50">기록한 고유 날짜 수 기준</p>
+                </PopoverContent>
+              </Popover>
               
               <div className="flex-1 space-y-2">
                 {/* Message */}
