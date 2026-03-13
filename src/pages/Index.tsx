@@ -16,11 +16,10 @@ import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 import { supabase } from '@/integrations/supabase/client';
-import { useSeason } from '@/context/SeasonContext';
+import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import logoImg from '@/assets/logo.png';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
 
-type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
 const SEASON_CONFIG: Record<SeasonKey, {emoji: string;title: string;sub: string;color: string;bg: string;}> = {
   reset: { emoji: '🌵', title: 'Reset Mode', sub: '피부 리셋 모드', color: '#7EC8A0', bg: 'bg-green-50' },
   recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드', color: '#A8D5A2', bg: 'bg-sky-50' },
