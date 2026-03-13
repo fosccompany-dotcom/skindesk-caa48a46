@@ -91,14 +91,9 @@ const Index = () => {
   }, []);
 
   // Season change handler
-  const handleSeasonChange = async (season: SeasonKey) => {
+  const handleSeasonChange = (season: SeasonKey) => {
     setCurrentSeason(season);
     setModeDropdownOpen(false);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { error } = await supabase.from('user_profiles').update({ current_season: season }).eq('id', user.id);
-      if (error) console.error('관리모드 저장 실패:', error);
-    }
   };
 
   // Onboarding
