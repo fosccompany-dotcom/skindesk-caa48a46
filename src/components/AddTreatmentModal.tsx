@@ -192,6 +192,12 @@ interface DBPackageOption {
 
 // ─── Props ──────────────────────────────────────────────────────────
 
+interface PrefillTreatment {
+  name: string;
+  skinLayer: SL;
+  clinic: string;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -199,11 +205,12 @@ interface Props {
   onSave: (record: Omit<TreatmentRecord, 'id'>) => void;
   editRecord?: TreatmentRecord | null;
   coachActive?: boolean;
+  prefillTreatment?: PrefillTreatment;
 }
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
-export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, coachActive }: Props) {
+export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, coachActive, prefillTreatment }: Props) {
   const { user } = useAuth();
   const [mode, setMode] = useState<'record' | 'package'>('record');
   const [step, setStep] = useState(1);
@@ -275,12 +282,30 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       });
   }, [selectedPackageId]);
 
+  // prefill: 외부에서 시술 정보를 넘겨받으면 마지막 단계로 바로 이동
+  const [prefillItem, setPrefillItem] = useState<TreatmentItem | null>(null);
+  useEffect(() => {
+    if (open && prefillTreatment) {
+      const virtual: TreatmentItem = {
+        id: '__prefill__',
+        name: prefillTreatment.name,
+        skinLayer: prefillTreatment.skinLayer,
+      };
+      setPrefillItem(virtual);
+      setCatId('__prefill__');
+      setItemId('__prefill__');
+      setClinic(prefillTreatment.clinic);
+      setStep(3); // totalSteps=3 (no shots) → detail step
+    }
+  }, [open, prefillTreatment]);
+
   const resetClinicMeta = () => {
     setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
   };
 
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
+    setPrefillItem(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
     setRecPayMethod('카드'); setRecAmount('');
@@ -292,7 +317,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const handleClose = () => { reset(); setMode('record'); onClose(); };
 
   const selectedCat = CATEGORIES.find(c => c.id === catId);
-  const selectedItem = selectedCat?.items.find(i => i.id === itemId);
+  const selectedItem = prefillItem && itemId === '__prefill__' ? prefillItem : selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
 
   // 스텝 계산: skincare는 4단계 고정 (카테고리→패키지→옵션→상세)

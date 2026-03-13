@@ -2,7 +2,9 @@ import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart } from 'lucide-react';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart, Plus } from 'lucide-react';
+import AddTreatmentModal from '@/components/AddTreatmentModal';
+import { useRecords } from '@/context/RecordsContext';
 import logoImg from '@/assets/logo.png';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -157,7 +159,10 @@ const Treatments = () => {
     return saved ? new Set(JSON.parse(saved)) : new Set<string>();
   });
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [addRecordOpen, setAddRecordOpen] = useState(false);
+  const [addRecordTreatment, setAddRecordTreatment] = useState<ClinicTreatment | null>(null);
   const { cycles, setCycles } = useCycles();
+  const { addRecord } = useRecords();
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => {
@@ -637,9 +642,23 @@ const Treatments = () => {
                   </div>
                 </div>
 
+                {/* Add Record Button */}
+                <Button
+                  variant="outline"
+                  className="w-full mt-2 gap-2"
+                  onClick={() => {
+                    setAddRecordTreatment(selectedTreatment);
+                    setSelectedTreatment(null);
+                    setAddRecordOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  시술 내역 추가
+                </Button>
+
                 {/* Register Button */}
                 <Button
-                  className="w-full mt-2 gap-2"
+                  className="w-full gap-2"
                   onClick={() => registerCycle(selectedTreatment)}
                 >
                   <CalendarPlus className="h-4 w-4" />
@@ -650,6 +669,25 @@ const Treatments = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* AddTreatmentModal — 시술 내역 추가 (마지막 단계로 바로 이동) */}
+      {addRecordTreatment && (
+        <AddTreatmentModal
+          open={addRecordOpen}
+          onClose={() => { setAddRecordOpen(false); setAddRecordTreatment(null); }}
+          onSave={(record) => {
+            addRecord(record);
+            setAddRecordOpen(false);
+            setAddRecordTreatment(null);
+          }}
+          editRecord={null}
+          prefillTreatment={{
+            name: addRecordTreatment.name,
+            skinLayer: CATEGORY_TO_SKIN_LAYER[addRecordTreatment.category] || 'epidermis',
+            clinic: addRecordTreatment.clinic,
+          }}
+        />
+      )}
       </div>
     </div>
   );
