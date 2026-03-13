@@ -352,6 +352,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       });
     } else {
       if (!selectedItem) return;
+      const parsedAmt = recAmount ? parseInt(recAmount.replace(/[,\s]/g, '')) : undefined;
       onSave({
         date,
         packageId: '',
@@ -362,11 +363,24 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         clinic,
         satisfaction,
         memo,
+        amount_paid: parsedAmt || undefined,
         clinic_kakao_id: clinicKakaoId,
         clinic_district: clinicDistrict,
         clinic_address: clinicAddress,
         input_method: 'manual',
       });
+      // 결제내역 기록 (서비스 제외, 금액 있을 때만)
+      if (user && recPayMethod !== '서비스' && parsedAmt && parsedAmt > 0) {
+        supabase.from('payment_records').insert({
+          user_id: user.id,
+          date,
+          clinic,
+          treatment_name: getTreatmentName(),
+          amount: parsedAmt,
+          method: recPayMethod === '포인트' ? '시술결제' : recPayMethod,
+          memo: memo || null,
+        });
+      }
     }
     handleClose();
   };
