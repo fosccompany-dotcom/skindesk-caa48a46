@@ -260,12 +260,43 @@ const Packages = () => {
             {pkgLoading ? (
               <div className="text-center py-12 text-sm text-muted-foreground">불러오는 중...</div>
             ) : packages.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-gray-200 bg-gray-50 p-8 text-center mt-4">
-                <p className="text-sm font-semibold text-gray-500 mb-1">시술권을 등록하면</p>
-                <p className="text-xs text-gray-400 leading-relaxed mb-4">
-                  남은 횟수와 다음 관리 시점을<br />자동으로 알려드려요!
-                </p>
-                <p className="text-xs text-gray-400">문자/카카오 메시지로 자동 등록하거나<br />홈 화면에서 직접 추가할 수 있어요</p>
+              <div className="space-y-3 mt-2">
+                {/* 예시 시술권 카드 */}
+                <div className="relative opacity-60 pointer-events-none">
+                  <div className="absolute -top-2 left-3 z-10">
+                    <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">예시</span>
+                  </div>
+                  <Card className="glass-card border-dashed border-muted-foreground/30">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <div>
+                          <p className="text-sm font-bold">울쎄라 리프팅 10회</p>
+                          <p className="text-[11px] text-muted-foreground">청담 에스테틱 · 만료 2025.12.31</p>
+                        </div>
+                        <span className="text-xs font-bold text-primary">7/10회</span>
+                      </div>
+                      <Progress value={30} className="h-1.5" />
+                      <p className="text-[10px] text-muted-foreground mt-1">잔여 3회</p>
+                    </CardContent>
+                  </Card>
+                </div>
+
+                {/* 안내 문구 */}
+                <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/50 p-6 text-center">
+                  <Package className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+                  <p className="text-sm font-semibold text-muted-foreground mb-1">아직 등록된 시술권이 없어요</p>
+                  <p className="text-xs text-muted-foreground/70 leading-relaxed">
+                    시술권을 등록하면 남은 횟수와<br />다음 관리 시점을 자동으로 알려드려요
+                  </p>
+                  <div className="flex items-center justify-center gap-1.5 mt-4">
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
+                      <span className="text-[#E87461] text-lg font-bold">+</span>
+                    </span>
+                    <p className="text-xs font-medium text-muted-foreground">
+                      우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
+                    </p>
+                  </div>
+                </div>
               </div>
             ) : (
               <>
