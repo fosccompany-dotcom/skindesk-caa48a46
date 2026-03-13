@@ -223,6 +223,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [pkgUsed, setPkgUsed] = useState<number>(0);
   const [pkgExpiry, setPkgExpiry] = useState('');
   const [pkgSaving, setPkgSaving] = useState(false);
+  const [pkgPayMethod, setPkgPayMethod] = useState<'포인트' | '카드' | '현금' | '서비스'>('카드');
+  const [pkgAmount, setPkgAmount] = useState<string>('');
 
   // 패키지 선택 플로우 state
   const [userPackages, setUserPackages] = useState<DBPackage[]>([]);
@@ -280,6 +282,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
     setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
+    setPkgPayMethod('카드'); setPkgAmount('');
     setSelectedPackageId(null); setSelectedOptionName(null);
     setPackageOptions([]); setUserPackages([]);
   };
@@ -369,6 +372,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     if (!selectedItem || !clinic) return;
     setPkgSaving(true);
     if (!user) { setPkgSaving(false); return; }
+    const parsedAmount = pkgAmount ? parseInt(pkgAmount.replace(/[,\s]/g, '')) : null;
     await supabase.from('treatment_packages').insert({
       user_id: user.id,
       name: getTreatmentName(),
@@ -378,7 +382,21 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       expiry_date: pkgExpiry || null,
       skin_layer: selectedItem.skinLayer,
       body_area: 'face',
+      purchase_price: parsedAmount,
     });
+    // 결제내역 기록 (서비스 제외, 금액 있을 때만)
+    if (pkgPayMethod !== '서비스' && parsedAmount && parsedAmount > 0) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      await supabase.from('payment_records').insert({
+        user_id: user.id,
+        date: todayStr,
+        clinic,
+        treatment_name: getTreatmentName(),
+        amount: parsedAmount,
+        method: pkgPayMethod === '포인트' ? '시술결제' : pkgPayMethod,
+        memo: memo || null,
+      });
+    }
     setPkgSaving(false);
     handleClose();
   };
@@ -666,6 +684,34 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     <input type="date" value={pkgExpiry} onChange={e => setPkgExpiry(e.target.value)}
                       className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
                   </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground block mb-1.5">결제 방법</label>
+                    <div className="flex gap-1.5">
+                      {(['포인트', '카드', '현금', '서비스'] as const).map(m => (
+                        <button key={m} type="button"
+                          onClick={() => setPkgPayMethod(m)}
+                          className={cn('flex-1 py-2 rounded-lg text-xs font-semibold border transition-all',
+                            pkgPayMethod === m
+                              ? m === '포인트' ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
+                              : m === '카드' ? 'border-blue-300 bg-blue-50 text-blue-600'
+                              : m === '현금' ? 'border-green-300 bg-green-50 text-green-600'
+                              : 'border-gray-300 bg-gray-100 text-gray-500'
+                              : 'border-gray-200 bg-gray-50 text-gray-400'
+                          )}>
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {pkgPayMethod !== '서비스' && (
+                    <div>
+                      <label className="text-xs text-muted-foreground block mb-1.5">결제 금액</label>
+                      <input type="text" inputMode="numeric" value={pkgAmount}
+                        onChange={e => setPkgAmount(e.target.value.replace(/[^0-9,]/g, ''))}
+                        placeholder="금액 입력 (원)"
+                        className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
+                    </div>
+                  )}
                 </>
               )}
 
