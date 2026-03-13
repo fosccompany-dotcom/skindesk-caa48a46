@@ -626,7 +626,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                   {parseSource === 'keyword_fallback' && (
                     <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-50 text-amber-600 border border-amber-200">키워드 파싱</span>
                   )}
-                  <button onClick={() => { setParsed(null); setBundles([]); setCharges([]); setBalanceInfo(null); }} className="text-xs text-primary font-medium">다시 입력</button>
+                  <button onClick={() => { setParsed(null); setBundles([]); setCharges([]); setPkgs([]); setBalanceInfo(null); }} className="text-xs text-primary font-medium">뒤로 가서 다시 입력</button>
                 </div>
               </div>
 
@@ -790,6 +790,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             {p.clinic && <span className="text-[10px] text-gray-400">{p.clinic}</span>}
                           </div>
                         </div>
+                        <button onClick={() => setPkgs(prev => prev.filter((_, idx) => idx !== i))} className="p-1 text-gray-300 hover:text-rose-500 transition-colors shrink-0" title="삭제">
+                          <X size={14} />
+                        </button>
                       </div>
 
                       {/* ── 기존 패키지 중복 감지 알림 ── */}
@@ -889,6 +892,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           <p className="text-[10px] text-gray-400 mt-0.5">결제내역 1건 + 시술내역 {b.treatments.length}건</p>
                         </div>
 
+                        <button onClick={() => setBundles(prev => prev.filter((_, idx) => idx !== i))} className="p-1 text-gray-300 hover:text-rose-500 transition-colors mt-0.5" title="삭제">
+                          <X size={14} />
+                        </button>
                         <button onClick={() => toggleBundleExpand(i)} className="p-1 text-gray-400 mt-0.5">
                           {b.expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
@@ -964,6 +970,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             {r.amount_paid != null ? ` · ₩${r.amount_paid.toLocaleString()}` : ' · 금액 미확인'}
                           </p>
                         </div>
+                        <button onClick={() => setParsed(prev => prev!.filter((_, idx) => idx !== i))} className="p-1 text-gray-300 hover:text-rose-500 transition-colors" title="삭제">
+                          <X size={14} />
+                        </button>
                         <button onClick={() => toggleExpand(i)} className="p-1 text-gray-400">
                           {r.expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
