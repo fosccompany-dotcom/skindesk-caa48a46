@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check } from 'lucide-react';
 import BloomAvatar from '@/components/BloomAvatar';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -168,7 +169,26 @@ const Index = () => {
 
           {/* Row 1: Avatar + Nickname's Bloom Log */}
           <div className="flex items-center gap-3">
-            <BloomAvatar size="md" showDays={false} />
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="focus:outline-none"><BloomAvatar size="md" showDays={false} /></button>
+              </PopoverTrigger>
+              <PopoverContent
+                side="bottom"
+                align="start"
+                className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
+              >
+                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 등급 기준</p>
+                <ul className="space-y-1 text-[11px]">
+                  <li>🌱 씨앗 — 0일</li>
+                  <li>🌿 새싹 — 1~7일</li>
+                  <li>🌼 봉오리 — 8~30일</li>
+                  <li>🌸 반개화 — 31~90일</li>
+                  <li>🌺 Bloom — 91일+</li>
+                </ul>
+                <p className="mt-2 text-[10px] text-white/50">기록한 고유 날짜 수 기준</p>
+              </PopoverContent>
+            </Popover>
             <div className="flex-1 min-w-0">
               <p className="text-white/60 text-[10px] tracking-wide">It's ​Blooming day!  </p>
               <h1
