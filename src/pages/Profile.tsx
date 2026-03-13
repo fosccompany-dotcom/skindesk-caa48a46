@@ -27,19 +27,19 @@ import { Progress } from '@/components/ui/progress';
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
 // MECE 피부과 용어 기반 관리 관심사 (주요 고민 + 관리 목표 통합)
 const skinCareInterests = [
-  '모공/피지',
-  '색소/톤',
-  '탄력/리프팅',
-  '주름',
-  '트러블/여드름',
-  '홍조/혈관',
-  '보습/장벽',
-  '흉터/자국',
-  '다크서클',
-  '제모',
-  '바디컨투어링',
-  '튼살',
-];
+'모공/피지',
+'색소/톤',
+'탄력/리프팅',
+'주름',
+'트러블/여드름',
+'홍조/혈관',
+'보습/장벽',
+'흉터/자국',
+'다크서클',
+'제모',
+'바디컨투어링',
+'튼살'];
+
 const bodyAreaOptions: BodyArea[] = ['face', 'neck', 'arm', 'leg', 'abdomen', 'back', 'chest', 'hip'];
 
 const REGION_DATA: Record<string, Record<string, string[]>> = {
@@ -68,7 +68,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '금천구': ['시흥동', '독산동', '가산동'],
     '영등포구': ['여의도동', '영등포동', '당산동', '문래동'],
     '동작구': ['노량진동', '사당동', '상도동', '흑석동'],
-    '관악구': ['신림동', '봉천동', '낙성대'],
+    '관악구': ['신림동', '봉천동', '낙성대']
   },
   '경기도': {
     '성남시 분당구': ['서현동', '정자동', '판교동'],
@@ -100,7 +100,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '의정부시': ['의정부동', '가능동'],
     '포천시': ['신읍동', '소흘읍'],
     '이천시': ['중리동', '관고동'],
-    '광주시': ['경안동', '오포읍'],
+    '광주시': ['경안동', '오포읍']
   },
   '인천광역시': {
     '연수구': ['송도동', '동춘동', '연수동'],
@@ -109,7 +109,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '서구': ['청라동', '검단동'],
     '미추홀구': ['주안동', '숭의동'],
     '계양구': ['계산동', '작전동'],
-    '중구': ['운서동', '신포동'],
+    '중구': ['운서동', '신포동']
   },
   '부산광역시': {
     '해운대구': ['우동', '중동', '좌동', '반여동'],
@@ -121,7 +121,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '북구': ['화명동', '덕천동'],
     '강서구': ['명지동', '대저동'],
     '연제구': ['연산동', '거제동'],
-    '기장군': ['기장읍', '정관읍'],
+    '기장군': ['기장읍', '정관읍']
   },
   '대구광역시': {
     '수성구': ['범어동', '만촌동', '수성동'],
@@ -129,31 +129,31 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '달서구': ['월성동', '상인동', '성당동'],
     '동구': ['신암동', '신천동'],
     '북구': ['칠성동', '침산동'],
-    '달성군': ['다사읍', '화원읍'],
+    '달성군': ['다사읍', '화원읍']
   },
   '울산광역시': {
     '남구': ['삼산동', '달동', '옥동'],
     '북구': ['진장동', '명촌동'],
     '중구': ['성남동', '학성동'],
     '동구': ['일산동', '방어동'],
-    '울주군': ['언양읍', '온산읍'],
+    '울주군': ['언양읍', '온산읍']
   },
   '대전광역시': {
     '서구': ['둔산동', '월평동', '갈마동'],
     '유성구': ['봉명동', '궁동', '노은동'],
     '중구': ['대흥동', '은행동'],
     '동구': ['용전동', '판암동'],
-    '대덕구': ['법동', '중리동'],
+    '대덕구': ['법동', '중리동']
   },
   '광주광역시': {
     '서구': ['치평동', '농성동', '상무동'],
     '동구': ['충장로', '금남로'],
     '남구': ['봉선동', '주월동'],
     '북구': ['용봉동', '운암동'],
-    '광산구': ['수완동', '첨단동'],
+    '광산구': ['수완동', '첨단동']
   },
   '세종특별자치시': {
-    '세종시': ['어진동', '도담동', '새롬동', '아름동'],
+    '세종시': ['어진동', '도담동', '새롬동', '아름동']
   },
   '강원도': {
     '춘천시': ['효자동', '퇴계동', '석사동'],
@@ -161,7 +161,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '강릉시': ['교동', '포남동', '내곡동'],
     '동해시': ['천곡동', '송정동'],
     '속초시': ['조양동', '교동'],
-    '삼척시': ['남양동', '교동'],
+    '삼척시': ['남양동', '교동']
   },
   '충청북도': {
     '청주시 흥덕구': ['가경동', '복대동'],
@@ -170,7 +170,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '충주시': ['호암동', '연수동'],
     '제천시': ['의림동', '화산동'],
     '음성군': ['음성읍', '금왕읍'],
-    '진천군': ['진천읍', '덕산읍'],
+    '진천군': ['진천읍', '덕산읍']
   },
   '충청남도': {
     '천안시 서북구': ['불당동', '두정동', '성정동'],
@@ -180,7 +180,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '당진시': ['당진동', '합덕읍'],
     '홍성군': ['홍성읍', '광천읍'],
     '논산시': ['논산동', '강경읍'],
-    '공주시': ['반죽동', '웅진동'],
+    '공주시': ['반죽동', '웅진동']
   },
   '전라북도': {
     '전주시 완산구': ['효자동', '서신동', '삼천동'],
@@ -189,7 +189,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '군산시': ['나운동', '수송동'],
     '완주군': ['삼례읍', '이서면'],
     '정읍시': ['시기동', '연지동'],
-    '남원시': ['도통동', '향교동'],
+    '남원시': ['도통동', '향교동']
   },
   '전라남도': {
     '순천시': ['조례동', '풍덕동', '신대동'],
@@ -197,7 +197,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '광양시': ['중마동', '광영동'],
     '목포시': ['상동', '옥암동', '하당동'],
     '나주시': ['빛가람동', '남평읍'],
-    '화순군': ['화순읍', '능주면'],
+    '화순군': ['화순읍', '능주면']
   },
   '경상북도': {
     '포항시 남구': ['대잠동', '오천읍'],
@@ -206,7 +206,7 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '구미시': ['원평동', '형곡동'],
     '안동시': ['명륜동', '옥동'],
     '경산시': ['중방동', '진량읍'],
-    '칠곡군': ['왜관읍', '북삼읍'],
+    '칠곡군': ['왜관읍', '북삼읍']
   },
   '경상남도': {
     '창원시 성산구': ['상남동', '중앙동'],
@@ -218,33 +218,33 @@ const REGION_DATA: Record<string, Record<string, string[]>> = {
     '진주시': ['초전동', '상대동'],
     '양산시': ['물금읍', '호계동'],
     '거제시': ['옥포동', '고현동'],
-    '통영시': ['무전동', '도남동'],
+    '통영시': ['무전동', '도남동']
   },
   '제주특별자치도': {
     '제주시': ['연동', '노형동', '이도동', '아라동'],
-    '서귀포시': ['중문동', '대정읍', '성산읍'],
-  },
+    '서귀포시': ['중문동', '대정읍', '성산읍']
+  }
 };
 
-function StarRating({ value, onChange, readonly = false }: { value: number; onChange?: (v: 1|2|3|4|5) => void; readonly?: boolean }) {
+function StarRating({ value, onChange, readonly = false }: {value: number;onChange?: (v: 1 | 2 | 3 | 4 | 5) => void;readonly?: boolean;}) {
   return (
     <div className="flex gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <button
-          key={star}
-          type="button"
-          disabled={readonly && !onChange}
-          className={cn('p-0.5 transition-colors', !readonly && 'cursor-pointer')}
-          onClick={() => onChange?.(star as 1|2|3|4|5)}
-        >
+      {[1, 2, 3, 4, 5].map((star) =>
+      <button
+        key={star}
+        type="button"
+        disabled={readonly && !onChange}
+        className={cn('p-0.5 transition-colors', !readonly && 'cursor-pointer')}
+        onClick={() => onChange?.(star as 1 | 2 | 3 | 4 | 5)}>
+        
           <Star className={cn(
-            'h-4 w-4 transition-colors',
-            star <= value ? 'fill-amber text-amber' : 'text-muted-foreground/30'
-          )} />
+          'h-4 w-4 transition-colors',
+          star <= value ? 'fill-amber text-amber' : 'text-muted-foreground/30'
+        )} />
         </button>
-      ))}
-    </div>
-  );
+      )}
+    </div>);
+
 }
 
 const Profile = () => {
@@ -281,8 +281,8 @@ const Profile = () => {
   }, []);
 
   const sortedRecords = useMemo(() =>
-    [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
-    [records]
+  [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
+  [records]
   );
 
   const age = useMemo(() => {
@@ -290,7 +290,7 @@ const Profile = () => {
     return differenceInYears(new Date('2026-03-08'), birthDate);
   }, [birthDate]);
 
-  const toggleItem = <T extends string>(list: T[], item: T, setter: (v: T[]) => void) => {
+  const toggleItem = <T extends string,>(list: T[], item: T, setter: (v: T[]) => void) => {
     setter(list.includes(item) ? list.filter((i) => i !== item) : [...list, item]);
   };
 
@@ -305,13 +305,13 @@ const Profile = () => {
   };
 
   const removeRegion = (region: string) => {
-    setRegions(regions.filter(r => r !== region));
+    setRegions(regions.filter((r) => r !== region));
   };
 
   const gugunOptions = selectedSido ? Object.keys(REGION_DATA[selectedSido] || {}) : [];
 
-  const updateSatisfaction = async (id: string, satisfaction: 1|2|3|4|5) => {
-    const rec = records.find(r => r.id === id);
+  const updateSatisfaction = async (id: string, satisfaction: 1 | 2 | 3 | 4 | 5) => {
+    const rec = records.find((r) => r.id === id);
     if (!rec) return;
     await updateRecord(id, { ...rec, satisfaction });
   };
@@ -319,9 +319,9 @@ const Profile = () => {
   const updateMemo = async (id: string) => {
     const memo = editingMemo[id];
     if (memo !== undefined) {
-      const rec = records.find(r => r.id === id);
+      const rec = records.find((r) => r.id === id);
       if (rec) await updateRecord(id, { ...rec, memo });
-      setEditingMemo(prev => { const next = { ...prev }; delete next[id]; return next; });
+      setEditingMemo((prev) => {const next = { ...prev };delete next[id];return next;});
     }
   };
 
@@ -336,11 +336,11 @@ const Profile = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       userIdRef.current = user.id;
-      const { data, error } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      const { data, error } = await supabase.
+      from('user_profiles').
+      select('*').
+      eq('id', user.id).
+      single();
       if (error || !data) {
         profileLoaded.current = true;
         return;
@@ -352,9 +352,9 @@ const Profile = () => {
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
       // current_season은 SeasonContext에서 관리하므로 여기서 로드하지 않음
-      if (data.name) setNickname(data.name);  // context에도 반영
+      if (data.name) setNickname(data.name); // context에도 반영
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
-      requestAnimationFrame(() => { profileLoaded.current = true; });
+      requestAnimationFrame(() => {profileLoaded.current = true;});
     };
     loadProfile();
   }, []);
@@ -377,7 +377,7 @@ const Profile = () => {
         goals,
         target_areas: targetAreas,
         regions,
-        updated_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
       }).eq('id', userId);
       if (!error) {
         setSaved(true);
@@ -390,7 +390,7 @@ const Profile = () => {
   }, [nickname, skinType, birthDate, concerns, goals, targetAreas, regions]);
 
   const avgSatisfaction = useMemo(() => {
-    const rated = records.filter(r => r.satisfaction);
+    const rated = records.filter((r) => r.satisfaction);
     if (rated.length === 0) return 0;
     return rated.reduce((sum, r) => sum + (r.satisfaction || 0), 0) / rated.length;
   }, [records]);
@@ -406,32 +406,32 @@ const Profile = () => {
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ clipPath: 'inset(0)' }} />
         <div className="absolute inset-0 bg-black/40" style={{ clipPath: 'inset(0)' }} />
         <div className="page-header-gradient relative z-10 flex items-center justify-between" style={{ background: 'transparent' }}>
-        <h1 className="text-lg font-bold">{t('my_page')}</h1>
+        <h1 className="text-lg font-bold text-justify">{t('my_page')}</h1>
         <div className="relative" ref={langDropdownRef}>
           <button
-            onClick={() => setLangOpen(prev => !prev)}
-            className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors"
-          >
+              onClick={() => setLangOpen((prev) => !prev)}
+              className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
+              
             <Globe className="h-4.5 w-4.5 text-muted-foreground" />
           </button>
-          {langOpen && (
+          {langOpen &&
             <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
-              {(['ko', 'en', 'zh'] as Language[]).map(lang => (
-                <button
-                  key={lang}
-                  onClick={() => { setLanguage(lang); setLangOpen(false); }}
-                  className={cn(
-                    'w-full text-left px-4 py-2.5 text-xs font-medium transition-colors',
-                    language === lang
-                      ? 'bg-primary/10 text-primary'
-                      : 'text-foreground hover:bg-muted'
-                  )}
-                >
+              {(['ko', 'en', 'zh'] as Language[]).map((lang) =>
+              <button
+                key={lang}
+                onClick={() => {setLanguage(lang);setLangOpen(false);}}
+                className={cn(
+                  'w-full text-left px-4 py-2.5 text-xs font-medium transition-colors',
+                  language === lang ?
+                  'bg-primary/10 text-primary' :
+                  'text-foreground hover:bg-muted'
+                )}>
+                
                   {LANGUAGE_LABELS[lang]}
                 </button>
-              ))}
+              )}
             </div>
-          )}
+            }
         </div>
         </div>
       </div>
@@ -441,18 +441,18 @@ const Profile = () => {
         const activeDays = getActiveDays(records);
         const bloom = getBloomInfo(activeDays);
         const JOURNEY = [
-          { name: '씨앗',   emoji: '🌱' },
-          { name: '새싹',   emoji: '🌿' },
-          { name: '봉오리', emoji: '🌼' },
-          { name: '반개화', emoji: '🌸' },
-          { name: 'Bloom',  emoji: '🌺' },
-        ];
+        { name: '씨앗', emoji: '🌱' },
+        { name: '새싹', emoji: '🌿' },
+        { name: '봉오리', emoji: '🌼' },
+        { name: '반개화', emoji: '🌸' },
+        { name: 'Bloom', emoji: '🌺' }];
+
         const STAGE_MINS = [0, 1, 8, 31, 91];
         const currentMin = STAGE_MINS[bloom.stage];
         const nextMin = bloom.stage < 4 ? STAGE_MINS[bloom.stage + 1] : STAGE_MINS[4];
-        const progressInStage = bloom.stage >= 4
-          ? 100
-          : Math.min(((activeDays - currentMin) / (nextMin - currentMin)) * 100, 100);
+        const progressInStage = bloom.stage >= 4 ?
+        100 :
+        Math.min((activeDays - currentMin) / (nextMin - currentMin) * 100, 100);
         const daysToNext = bloom.nextMilestone ? bloom.nextMilestone - activeDays : 0;
 
         return (
@@ -467,32 +467,32 @@ const Profile = () => {
                 
                 {/* Progress bar with aligned stage names */}
                 <div className="space-y-1">
-                  {bloom.stage < 4 && (
-                    <>
+                  {bloom.stage < 4 &&
+                  <>
                       <div className="flex items-center justify-between">
                         <span className="text-[10px] text-muted-foreground">다음 단계까지 {daysToNext}일</span>
                         <span className="text-[10px] font-semibold text-muted-foreground">{activeDays}/{bloom.nextMilestone}</span>
                       </div>
                       <Progress value={progressInStage} className="h-2" />
                     </>
-                  )}
-                  {bloom.stage >= 4 && (
-                    <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
+                  }
+                  {bloom.stage >= 4 &&
+                  <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
                       🌺 Bloom 달성!
                     </div>
-                  )}
+                  }
                   
                   {/* Journey line - aligned under progress bar */}
                   <div className="flex items-center justify-between gap-0.5">
-                    {JOURNEY.map(({ name, emoji }, idx) => (
-                      <span key={name} className={cn(
-                        'text-[9px] font-medium transition-colors whitespace-nowrap',
-                        idx < bloom.stage ? 'text-muted-foreground' :
-                        idx === bloom.stage ? 'font-bold' : 'text-muted-foreground/40'
-                      )} style={idx === bloom.stage ? { color: '#FF7F7F' } : undefined}>
+                    {JOURNEY.map(({ name, emoji }, idx) =>
+                    <span key={name} className={cn(
+                      'text-[9px] font-medium transition-colors whitespace-nowrap',
+                      idx < bloom.stage ? 'text-muted-foreground' :
+                      idx === bloom.stage ? 'font-bold' : 'text-muted-foreground/40'
+                    )} style={idx === bloom.stage ? { color: '#FF7F7F' } : undefined}>
                         {idx < bloom.stage ? '✅' : emoji}{' '}{name}
                       </span>
-                    ))}
+                    )}
                   </div>
                 </div>
               </div>
@@ -502,8 +502,8 @@ const Profile = () => {
             <p className="text-[10px] text-muted-foreground text-center">
               {activeDays}일째 기록 중
             </p>
-          </div>
-        );
+          </div>);
+
       })()}
 
       <div className="page-content pt-2">
@@ -539,8 +539,8 @@ const Profile = () => {
                     onChange={(e) => setNickname(e.target.value)}
                     placeholder="닉네임을 입력하세요"
                     className="rounded-xl text-sm"
-                    maxLength={20}
-                  />
+                    maxLength={20} />
+                  
                 </div>
 
                 {/* 생년월일 */}
@@ -553,15 +553,15 @@ const Profile = () => {
                         const prev = birthDate || new Date(1994, 0, 1);
                         const maxDay = new Date(Number(y), prev.getMonth() + 1, 0).getDate();
                         setBirthDate(new Date(Number(y), prev.getMonth(), Math.min(prev.getDate(), maxDay)));
-                      }}
-                    >
+                      }}>
+                      
                       <SelectTrigger className="rounded-xl text-xs h-10 flex-1">
                         <SelectValue placeholder="년도 선택" />
                       </SelectTrigger>
                       <SelectContent className="max-h-60">
-                        {Array.from({ length: new Date().getFullYear() - 1939 }, (_, i) => new Date().getFullYear() - i).map(y => (
-                          <SelectItem key={y} value={String(y)} className="text-xs">{y}년</SelectItem>
-                        ))}
+                        {Array.from({ length: new Date().getFullYear() - 1939 }, (_, i) => new Date().getFullYear() - i).map((y) =>
+                        <SelectItem key={y} value={String(y)} className="text-xs">{y}년</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                     <Select
@@ -572,15 +572,15 @@ const Profile = () => {
                         const maxDay = new Date(prev.getFullYear(), month + 1, 0).getDate();
                         setBirthDate(new Date(prev.getFullYear(), month, Math.min(prev.getDate(), maxDay)));
                       }}
-                      disabled={!birthDate}
-                    >
+                      disabled={!birthDate}>
+                      
                       <SelectTrigger className="rounded-xl text-xs h-10 w-20">
                         <SelectValue placeholder="월" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                          <SelectItem key={m} value={String(m)} className="text-xs">{m}월</SelectItem>
-                        ))}
+                        {Array.from({ length: 12 }, (_, i) => i + 1).map((m) =>
+                        <SelectItem key={m} value={String(m)} className="text-xs">{m}월</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                     <Select
@@ -589,8 +589,8 @@ const Profile = () => {
                         const prev = birthDate || new Date(new Date().getFullYear() - 30, 0, 1);
                         setBirthDate(new Date(prev.getFullYear(), prev.getMonth(), Number(d)));
                       }}
-                      disabled={!birthDate}
-                    >
+                      disabled={!birthDate}>
+                      
                       <SelectTrigger className="rounded-xl text-xs h-10 w-20">
                         <SelectValue placeholder="일" />
                       </SelectTrigger>
@@ -598,17 +598,17 @@ const Profile = () => {
                         {Array.from(
                           { length: birthDate ? new Date(birthDate.getFullYear(), birthDate.getMonth() + 1, 0).getDate() : 31 },
                           (_, i) => i + 1
-                        ).map(d => (
-                          <SelectItem key={d} value={String(d)} className="text-xs">{d}일</SelectItem>
-                        ))}
+                        ).map((d) =>
+                        <SelectItem key={d} value={String(d)} className="text-xs">{d}일</SelectItem>
+                        )}
                       </SelectContent>
                     </Select>
                   </div>
-                  {age !== null && (
-                    <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
+                  {age !== null &&
+                  <div className="shrink-0 bg-primary/10 text-primary px-3 py-2 rounded-xl">
                       <span className="text-sm font-bold">{t('age_prefix')}{age}{t('age_suffix')}</span>
                     </div>
-                  )}
+                  }
                 </div>
 
                 {/* 주요 활동 지역 */}
@@ -621,87 +621,87 @@ const Profile = () => {
                     </div>
                   </div>
 
-                  {regions.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5">
-                      {regions.map((r) => (
-                        <Badge key={r} variant="default" className="rounded-full px-3 py-1.5 text-xs flex items-center gap-1">
+                  {regions.length > 0 &&
+                  <div className="flex flex-wrap gap-1.5">
+                      {regions.map((r) =>
+                    <Badge key={r} variant="default" className="rounded-full px-3 py-1.5 text-xs flex items-center gap-1">
                           {r}
                           <X className="h-3 w-3 cursor-pointer tap-target" onClick={() => removeRegion(r)} />
                         </Badge>
-                      ))}
+                    )}
                     </div>
-                  )}
+                  }
 
-                  {regions.length < 7 && (
-                    <>
+                  {regions.length < 7 &&
+                  <>
                       <p className="text-[10px] text-muted-foreground px-0.5">{t('dense_areas')}</p>
                       <div className="flex flex-wrap gap-1.5">
                         {[
-                          '서울특별시 강남구',
-                          '서울특별시 서초구',
-                          '서울특별시 송파구',
-                          '경기도 성남시 분당구',
-                          '부산광역시 해운대구',
-                        ].filter(r => !regions.includes(r)).map((r) => (
-                          <Badge
-                            key={r}
-                            variant="outline"
-                            className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                            onClick={() => regions.length < 7 && setRegions([...regions, r])}
-                          >
+                      '서울특별시 강남구',
+                      '서울특별시 서초구',
+                      '서울특별시 송파구',
+                      '경기도 성남시 분당구',
+                      '부산광역시 해운대구'].
+                      filter((r) => !regions.includes(r)).map((r) =>
+                      <Badge
+                        key={r}
+                        variant="outline"
+                        className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
+                        onClick={() => regions.length < 7 && setRegions([...regions, r])}>
+                        
                             {r.replace('특별시 ', ' ').replace('광역시 ', ' ').replace('도 ', ' ')}
                           </Badge>
-                        ))}
+                      )}
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
                         <div className="space-y-1">
                           <Label className="text-[10px] text-muted-foreground">{t('sido')}</Label>
-                          <Select value={selectedSido} onValueChange={(v) => { setSelectedSido(v); setSelectedGugun(''); }}>
+                          <Select value={selectedSido} onValueChange={(v) => {setSelectedSido(v);setSelectedGugun('');}}>
                             <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('sido')} /></SelectTrigger>
                             <SelectContent>
-                              {Object.keys(REGION_DATA).map(sido => (
-                                <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
-                              ))}
+                              {Object.keys(REGION_DATA).map((sido) =>
+                            <SelectItem key={sido} value={sido} className="text-xs">{sido}</SelectItem>
+                            )}
                             </SelectContent>
                           </Select>
                         </div>
                         <div className="space-y-1">
                           <Label className="text-[10px] text-muted-foreground">{t('gugun')}</Label>
                           <Select value={selectedGugun} onValueChange={(v) => {
-                            setSelectedGugun(v);
-                            if (selectedSido && v) {
-                              const full = `${selectedSido} ${v}`;
-                              if (!regions.includes(full) && regions.length < 7) {
-                                setRegions(prev => [...prev, full]);
-                              }
-                              setSelectedSido('');
-                              setSelectedGugun('');
+                          setSelectedGugun(v);
+                          if (selectedSido && v) {
+                            const full = `${selectedSido} ${v}`;
+                            if (!regions.includes(full) && regions.length < 7) {
+                              setRegions((prev) => [...prev, full]);
                             }
-                          }} disabled={!selectedSido}>
+                            setSelectedSido('');
+                            setSelectedGugun('');
+                          }
+                        }} disabled={!selectedSido}>
                             <SelectTrigger className="rounded-xl text-xs h-9"><SelectValue placeholder={t('gugun')} /></SelectTrigger>
                             <SelectContent>
-                              {gugunOptions.map(gu => (
-                                <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
-                              ))}
+                              {gugunOptions.map((gu) =>
+                            <SelectItem key={gu} value={gu} className="text-xs">{gu}</SelectItem>
+                            )}
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
                       <Button
-                        variant="outline"
-                        size="sm"
-                        className="w-full rounded-xl text-xs tap-target"
-                        onClick={addRegion}
-                        disabled={!selectedSido || !selectedGugun}
-                      >
+                      variant="outline"
+                      size="sm"
+                      className="w-full rounded-xl text-xs tap-target"
+                      onClick={addRegion}
+                      disabled={!selectedSido || !selectedGugun}>
+                      
                         + {t('add_region')} ({regions.length}/7)
                       </Button>
                     </>
-                  )}
-                  {regions.length >= 7 && (
-                    <p className="text-[11px] text-muted-foreground text-center py-1">{t('max_region')}</p>
-                  )}
+                  }
+                  {regions.length >= 7 &&
+                  <p className="text-[11px] text-muted-foreground text-center py-1">{t('max_region')}</p>
+                  }
                 </div>
               </CardContent>
             </Card>
@@ -717,20 +717,20 @@ const Profile = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-2">
                   {([
-                    { key: 'reset',    emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',    desc: '최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복.' },
-                    { key: 'recovery', emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',         desc: '시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계.' },
-                    { key: 'maintain', emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',         desc: '현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계.' },
-                    { key: 'boost',    emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',   desc: '피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계.' },
-                    { key: 'special',  emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',      desc: '웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계.' },
-                  ] as const).map(({ key, emoji, title, sub, desc }) => {
+                  { key: 'reset', emoji: '🌵', title: 'Reset Mode', sub: '피부 리셋 모드', desc: '최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복.' },
+                  { key: 'recovery', emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드', desc: '시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계.' },
+                  { key: 'maintain', emoji: '💜', title: 'Maintain Mode', sub: '유지 모드', desc: '현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계.' },
+                  { key: 'boost', emoji: '🌹', title: 'Boost Mode', sub: '관리 끌올 모드', desc: '피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계.' },
+                  { key: 'special', emoji: '🌸', title: 'Special Mode', sub: '스페셜 모드', desc: '웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계.' }] as
+                  const).map(({ key, emoji, title, sub, desc }) => {
                     const isSelected = currentSeason === key;
                     return (
                       <button key={key} onClick={() => setSeasonGlobal(isSelected ? 'maintain' as SeasonKey : key as SeasonKey)}
-                        className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
-                          isSelected
-                            ? 'border-[#C9A96E]/60 bg-[#C9A96E]/10'
-                            : 'border-gray-100 bg-gray-50 hover:border-gray-200'
-                        }`}>
+                      className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
+                      isSelected ?
+                      'border-[#C9A96E]/60 bg-[#C9A96E]/10' :
+                      'border-gray-100 bg-gray-50 hover:border-gray-200'}`
+                      }>
                         <div className="flex items-center gap-2.5">
                           <span className="text-base shrink-0">{emoji}</span>
                           <div className="flex-1 min-w-0">
@@ -741,13 +741,13 @@ const Profile = () => {
                             <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">{desc}</p>
                           </div>
                           <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                            isSelected ? 'border-[#C9A96E] bg-[#C9A96E]' : 'border-gray-300'
-                          }`}>
+                          isSelected ? 'border-[#C9A96E] bg-[#C9A96E]' : 'border-gray-300'}`
+                          }>
                             {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                           </div>
                         </div>
-                      </button>
-                    );
+                      </button>);
+
                   })}
                 </div>
               </CardContent>
@@ -779,16 +779,16 @@ const Profile = () => {
                   <Label className="text-xs">주요 관심사</Label>
                   <p className="text-[10px] text-muted-foreground -mt-1">관리하고 싶은 피부 고민을 선택하세요</p>
                   <div className="flex flex-wrap gap-2">
-                    {skinCareInterests.map((item) => (
-                      <Badge
-                        key={item}
-                        variant={concerns.includes(item) ? 'default' : 'outline'}
-                        className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                        onClick={() => toggleItem(concerns, item, setConcerns)}
-                      >
+                    {skinCareInterests.map((item) =>
+                    <Badge
+                      key={item}
+                      variant={concerns.includes(item) ? 'default' : 'outline'}
+                      className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
+                      onClick={() => toggleItem(concerns, item, setConcerns)}>
+                      
                         {item}
                       </Badge>
-                    ))}
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -798,8 +798,8 @@ const Profile = () => {
             <Button
               variant="ghost"
               className="w-full rounded-xl text-sm text-muted-foreground gap-2"
-              onClick={handleLogout}
-            >
+              onClick={handleLogout}>
+              
               <LogOut className="h-4 w-4" />
               {t('logout')}
             </Button>
@@ -820,20 +820,20 @@ const Profile = () => {
 
         </Tabs>
       </div>
-    </div>
-  );
+    </div>);
+
 };
 
 // ─── 결제 기록 탭 컴포넌트 ────────────────────────────────────────────────
 interface PaymentRecord {
-  id: string; date: string; clinic: string;
-  treatment_name: string; amount: number; method: string; memo?: string;
-  charged_amount?: number; clinic_type?: string;
+  id: string;date: string;clinic: string;
+  treatment_name: string;amount: number;method: string;memo?: string;
+  charged_amount?: number;clinic_type?: string;
 }
 
 interface MatchedTreatment {
-  id: string; date: string; treatment_name: string;
-  skin_layer?: string; body_area?: string; satisfaction?: number; memo?: string;
+  id: string;date: string;treatment_name: string;
+  skin_layer?: string;body_area?: string;satisfaction?: number;memo?: string;
 }
 
 function PaymentHistoryTab() {
@@ -848,31 +848,31 @@ function PaymentHistoryTab() {
 
   const loadPayments = async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { setLoading(false); return; }
-    const { data } = await supabase
-      .from('payment_records')
-      .select('id, date, clinic, treatment_name, amount, method, memo, charged_amount, clinic_type')
-      .eq('user_id', user.id)
-      .neq('method', '포인트충전')
-      .order('date', { ascending: false });
+    if (!user) {setLoading(false);return;}
+    const { data } = await supabase.
+    from('payment_records').
+    select('id, date, clinic, treatment_name, amount, method, memo, charged_amount, clinic_type').
+    eq('user_id', user.id).
+    neq('method', '포인트충전').
+    order('date', { ascending: false });
     setPayments(data ?? []);
     setLoading(false);
   };
 
-  useEffect(() => { loadPayments(); }, []);
+  useEffect(() => {loadPayments();}, []);
 
   const loadMatchedTreatments = async (paymentId: string, date: string, clinic: string) => {
     if (matchedTreatments[paymentId]) return;
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
-    const { data } = await supabase
-      .from('treatment_records')
-      .select('id, date, treatment_name, skin_layer, body_area, satisfaction, memo')
-      .eq('user_id', user.id)
-      .eq('date', date)
-      .eq('clinic', clinic)
-      .order('created_at', { ascending: false });
-    setMatchedTreatments(prev => ({ ...prev, [paymentId]: data ?? [] }));
+    const { data } = await supabase.
+    from('treatment_records').
+    select('id, date, treatment_name, skin_layer, body_area, satisfaction, memo').
+    eq('user_id', user.id).
+    eq('date', date).
+    eq('clinic', clinic).
+    order('created_at', { ascending: false });
+    setMatchedTreatments((prev) => ({ ...prev, [paymentId]: data ?? [] }));
   };
 
   const handleExpand = (p: PaymentRecord) => {
@@ -898,7 +898,7 @@ function PaymentHistoryTab() {
       treatment_name: editForm.treatment_name,
       amount: editForm.amount,
       method: editForm.method,
-      memo: editForm.memo || null,
+      memo: editForm.memo || null
     }).eq('id', id);
     if (!error) {
       setEditingId(null);
@@ -910,14 +910,14 @@ function PaymentHistoryTab() {
     setDeleting(id);
     const { error } = await supabase.from('payment_records').delete().eq('id', id);
     if (!error) {
-      setPayments(prev => prev.filter(p => p.id !== id));
+      setPayments((prev) => prev.filter((p) => p.id !== id));
       if (expandedId === id) setExpandedId(null);
     }
     setDeleting(null);
   };
 
-  const totalSpent = payments
-    .reduce((s, p) => s + p.amount, 0);
+  const totalSpent = payments.
+  reduce((s, p) => s + p.amount, 0);
 
   const LAYER_LABEL: Record<string, string> = { epidermis: '표피', dermis: '진피', subcutaneous: '피하' };
 
@@ -941,8 +941,8 @@ function PaymentHistoryTab() {
           <Button
             onClick={() => setShowAddModal(true)}
             className="w-full mt-3 rounded-xl text-xs gap-1.5"
-            size="sm"
-          >
+            size="sm">
+            
             <Plus className="h-3.5 w-3.5" />
             결제 내역 추가
           </Button>
@@ -952,21 +952,21 @@ function PaymentHistoryTab() {
       <AddPaymentModal
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
-        onSaved={() => { setShowAddModal(false); loadPayments(); }}
-      />
+        onSaved={() => {setShowAddModal(false);loadPayments();}} />
+      
 
       {/* 결제 목록 */}
-      {payments.length === 0 ? (
-        <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없습니다</div>
-      ) : (
-        <div className="space-y-2">
-          {payments.map(p => {
-            const isExpanded = expandedId === p.id;
-            const isEditing = editingId === p.id;
-            const matched = matchedTreatments[p.id] ?? [];
+      {payments.length === 0 ?
+      <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없습니다</div> :
 
-            return (
-              <Card key={p.id} className="glass-card overflow-hidden">
+      <div className="space-y-2">
+          {payments.map((p) => {
+          const isExpanded = expandedId === p.id;
+          const isEditing = editingId === p.id;
+          const matched = matchedTreatments[p.id] ?? [];
+
+          return (
+            <Card key={p.id} className="glass-card overflow-hidden">
                 {/* 요약 행 */}
                 <CardContent className="p-3.5 cursor-pointer" onClick={() => handleExpand(p)}>
                   <div className="flex items-start justify-between gap-2">
@@ -988,78 +988,78 @@ function PaymentHistoryTab() {
                 </CardContent>
 
                 {/* 상세 영역 */}
-                {isExpanded && (
-                  <div className="border-t border-border px-3.5 pb-3.5 pt-3 space-y-3">
+                {isExpanded &&
+              <div className="border-t border-border px-3.5 pb-3.5 pt-3 space-y-3">
 
                     {/* 결제 상세 정보 (보기 모드) */}
-                    {!isEditing ? (
-                      <div className="space-y-2">
+                    {!isEditing ?
+                <div className="space-y-2">
                         <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
                           <div><span className="text-muted-foreground">날짜</span><p className="font-medium text-foreground">{p.date}</p></div>
                           <div><span className="text-muted-foreground">병원</span><p className="font-medium text-foreground">{p.clinic}</p></div>
                           <div><span className="text-muted-foreground">결제 방법</span><p className="font-medium text-foreground">{p.method}</p></div>
                           <div><span className="text-muted-foreground">금액</span><p className="font-medium text-foreground">{p.amount.toLocaleString()}원</p></div>
-                          {p.charged_amount && p.charged_amount !== p.amount && (
-                            <div><span className="text-muted-foreground">충전금액</span><p className="font-medium text-emerald-600">{p.charged_amount.toLocaleString()}원</p></div>
-                          )}
-                          {p.memo && (
-                            <div className="col-span-2"><span className="text-muted-foreground">메모</span><p className="font-medium text-foreground">{p.memo}</p></div>
-                          )}
+                          {p.charged_amount && p.charged_amount !== p.amount &&
+                    <div><span className="text-muted-foreground">충전금액</span><p className="font-medium text-emerald-600">{p.charged_amount.toLocaleString()}원</p></div>
+                    }
+                          {p.memo &&
+                    <div className="col-span-2"><span className="text-muted-foreground">메모</span><p className="font-medium text-foreground">{p.memo}</p></div>
+                    }
                         </div>
                         <div className="flex gap-2 pt-1">
-                          <Button variant="outline" size="sm" className="flex-1 rounded-xl text-xs h-8 gap-1" onClick={(e) => { e.stopPropagation(); startEdit(p); }}>
+                          <Button variant="outline" size="sm" className="flex-1 rounded-xl text-xs h-8 gap-1" onClick={(e) => {e.stopPropagation();startEdit(p);}}>
                             <Pencil className="h-3 w-3" /> 수정
                           </Button>
                           <Button variant="outline" size="sm"
-                            className="rounded-xl text-xs h-8 gap-1 text-destructive border-destructive/30 hover:bg-destructive/10"
-                            disabled={deleting === p.id}
-                            onClick={(e) => { e.stopPropagation(); if (confirm('이 결제 기록을 삭제하시겠습니까?')) handleDelete(p.id); }}>
+                    className="rounded-xl text-xs h-8 gap-1 text-destructive border-destructive/30 hover:bg-destructive/10"
+                    disabled={deleting === p.id}
+                    onClick={(e) => {e.stopPropagation();if (confirm('이 결제 기록을 삭제하시겠습니까?')) handleDelete(p.id);}}>
                             <Trash2 className="h-3 w-3" /> 삭제
                           </Button>
                         </div>
-                      </div>
-                    ) : (
-                      /* 수정 모드 */
-                      <div className="space-y-2">
+                      </div> : (
+
+                /* 수정 모드 */
+                <div className="space-y-2">
                         <div className="grid grid-cols-2 gap-2">
                           <div>
                             <label className="text-[10px] text-muted-foreground mb-1 block">날짜</label>
-                            <input type="date" value={editForm.date || ''} onChange={e => setEditForm(f => ({ ...f, date: e.target.value }))}
-                              className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                            <input type="date" value={editForm.date || ''} onChange={(e) => setEditForm((f) => ({ ...f, date: e.target.value }))}
+                      className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                           </div>
                           <div>
                             <label className="text-[10px] text-muted-foreground mb-1 block">금액</label>
-                            <input type="number" value={editForm.amount || ''} onChange={e => setEditForm(f => ({ ...f, amount: Number(e.target.value) }))}
-                              className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                            <input type="number" value={editForm.amount || ''} onChange={(e) => setEditForm((f) => ({ ...f, amount: Number(e.target.value) }))}
+                      className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                           </div>
                         </div>
                         <div>
                           <label className="text-[10px] text-muted-foreground mb-1 block">병원명</label>
-                          <input type="text" value={editForm.clinic || ''} onChange={e => setEditForm(f => ({ ...f, clinic: e.target.value }))}
-                            className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          <input type="text" value={editForm.clinic || ''} onChange={(e) => setEditForm((f) => ({ ...f, clinic: e.target.value }))}
+                    className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                         </div>
                         <div>
                           <label className="text-[10px] text-muted-foreground mb-1 block">내용</label>
-                          <input type="text" value={editForm.treatment_name || ''} onChange={e => setEditForm(f => ({ ...f, treatment_name: e.target.value }))}
-                            className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          <input type="text" value={editForm.treatment_name || ''} onChange={(e) => setEditForm((f) => ({ ...f, treatment_name: e.target.value }))}
+                    className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                         </div>
                         <div>
                           <label className="text-[10px] text-muted-foreground mb-1 block">결제 방법</label>
                           <div className="flex gap-1.5">
-                            {[{ value: '포인트충전', label: '포인트' }, { value: '카드', label: '카드' }, { value: '현금', label: '현금' }, { value: '서비스', label: '서비스' }].map(m => (
-                              <button key={m.value} onClick={() => setEditForm(f => ({ ...f, method: m.value }))}
-                                className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
-                                  editForm.method === m.value ? 'border-primary bg-primary/10 text-primary' : 'border-input bg-background text-muted-foreground')}>
+                            {[{ value: '포인트충전', label: '포인트' }, { value: '카드', label: '카드' }, { value: '현금', label: '현금' }, { value: '서비스', label: '서비스' }].map((m) =>
+                      <button key={m.value} onClick={() => setEditForm((f) => ({ ...f, method: m.value }))}
+                      className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
+                      editForm.method === m.value ? 'border-primary bg-primary/10 text-primary' : 'border-input bg-background text-muted-foreground')}>
                                 {m.label}
                               </button>
-                            ))}
+                      )}
                           </div>
                         </div>
                         <div>
                           <label className="text-[10px] text-muted-foreground mb-1 block">메모</label>
-                          <input type="text" value={editForm.memo || ''} onChange={e => setEditForm(f => ({ ...f, memo: e.target.value }))}
-                            placeholder="메모 (선택)"
-                            className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          <input type="text" value={editForm.memo || ''} onChange={(e) => setEditForm((f) => ({ ...f, memo: e.target.value }))}
+                    placeholder="메모 (선택)"
+                    className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
                         </div>
                         <div className="flex gap-2 pt-1">
                           <Button size="sm" className="flex-1 rounded-xl text-xs h-8 gap-1" onClick={() => saveEdit(p.id)}>
@@ -1069,54 +1069,53 @@ function PaymentHistoryTab() {
                             취소
                           </Button>
                         </div>
-                      </div>
-                    )}
+                      </div>)
+                }
 
                     {/* 매핑된 시술 기록 */}
-                    {matched.length > 0 && (
-                      <div className="space-y-1.5">
+                    {matched.length > 0 &&
+                <div className="space-y-1.5">
                         <p className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1">
                           <ClipboardList className="h-3 w-3" /> 같은 날 시술 기록 ({matched.length}건)
                         </p>
-                        {matched.map(t => (
-                          <div key={t.id} className="bg-muted/50 rounded-lg px-3 py-2">
+                        {matched.map((t) =>
+                  <div key={t.id} className="bg-muted/50 rounded-lg px-3 py-2">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-1.5">
                                 <p className="text-xs font-medium text-foreground">{t.treatment_name}</p>
-                                {t.skin_layer && (
-                                  <span className={cn('text-[9px] px-1 py-0.5 rounded border font-medium',
-                                    t.skin_layer === 'epidermis' ? 'bg-amber-100 text-amber-600 border-amber-300'
-                                    : t.skin_layer === 'dermis' ? 'bg-blue-100 text-blue-600 border-blue-300'
-                                    : 'bg-purple-100 text-purple-600 border-purple-300'
-                                  )}>{LAYER_LABEL[t.skin_layer] || t.skin_layer}</span>
-                                )}
+                                {t.skin_layer &&
+                        <span className={cn('text-[9px] px-1 py-0.5 rounded border font-medium',
+                        t.skin_layer === 'epidermis' ? 'bg-amber-100 text-amber-600 border-amber-300' :
+                        t.skin_layer === 'dermis' ? 'bg-blue-100 text-blue-600 border-blue-300' :
+                        'bg-purple-100 text-purple-600 border-purple-300'
+                        )}>{LAYER_LABEL[t.skin_layer] || t.skin_layer}</span>
+                        }
                               </div>
-                              {t.satisfaction && (
-                                <div className="flex gap-0.5">
-                                  {[1,2,3,4,5].map(s => (
-                                    <Star key={s} className={cn('h-3 w-3', s <= t.satisfaction! ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20')} />
-                                  ))}
+                              {t.satisfaction &&
+                      <div className="flex gap-0.5">
+                                  {[1, 2, 3, 4, 5].map((s) =>
+                        <Star key={s} className={cn('h-3 w-3', s <= t.satisfaction! ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20')} />
+                        )}
                                 </div>
-                              )}
+                      }
                             </div>
                             {t.memo && <p className="text-[10px] text-muted-foreground mt-0.5">{t.memo}</p>}
                           </div>
-                        ))}
+                  )}
                       </div>
-                    )}
-                    {matched.length === 0 && expandedId === p.id && (
-                      <p className="text-[10px] text-muted-foreground text-center py-2">같은 날/같은 병원의 시술 기록이 없습니다</p>
-                    )}
+                }
+                    {matched.length === 0 && expandedId === p.id &&
+                <p className="text-[10px] text-muted-foreground text-center py-2">같은 날/같은 병원의 시술 기록이 없습니다</p>
+                }
                   </div>
-                )}
-              </Card>
-            );
-          })}
+              }
+              </Card>);
+
+        })}
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
 
 export default Profile;
-
