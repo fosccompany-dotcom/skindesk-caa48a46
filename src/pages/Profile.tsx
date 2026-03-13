@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { supabase } from '@/integrations/supabase/client';
+import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import { useNavigate } from 'react-router-dom';
 import BloomAvatar from '@/components/BloomAvatar';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
@@ -260,8 +261,7 @@ const Profile = () => {
   const [goals, setGoals] = useState<string[]>([]);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
-  type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
-  const [currentSeason, setCurrentSeason] = useState<SeasonKey | ''>('');
+  const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
 
@@ -351,7 +351,7 @@ const Profile = () => {
       if (data.goals) setGoals(data.goals as string[]);
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
-      if (data.current_season) setCurrentSeason(data.current_season as SeasonKey);
+      // current_season은 SeasonContext에서 관리하므로 여기서 로드하지 않음
       if (data.name) setNickname(data.name);
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
       requestAnimationFrame(() => { profileLoaded.current = true; });
@@ -377,7 +377,6 @@ const Profile = () => {
         goals,
         target_areas: targetAreas,
         regions,
-        current_season: currentSeason || null,
         updated_at: new Date().toISOString(),
       }).eq('id', userId);
       if (!error) {
@@ -388,7 +387,7 @@ const Profile = () => {
       }
     }, 600);
     return () => clearTimeout(saveTimeout.current);
-  }, [nickname, skinType, birthDate, concerns, goals, targetAreas, regions, currentSeason]);
+  }, [nickname, skinType, birthDate, concerns, goals, targetAreas, regions]);
 
   const avgSatisfaction = useMemo(() => {
     const rated = records.filter(r => r.satisfaction);
@@ -726,7 +725,7 @@ const Profile = () => {
                   ] as const).map(({ key, emoji, title, sub, desc }) => {
                     const isSelected = currentSeason === key;
                     return (
-                      <button key={key} onClick={() => setCurrentSeason(isSelected ? '' : key)}
+                      <button key={key} onClick={() => setSeasonGlobal(isSelected ? 'maintain' as SeasonKey : key as SeasonKey)}
                         className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
                           isSelected
                             ? 'border-[#C9A96E]/60 bg-[#C9A96E]/10'

@@ -16,10 +16,10 @@ import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 import { supabase } from '@/integrations/supabase/client';
+import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import logoImg from '@/assets/logo.png';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
 
-type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
 const SEASON_CONFIG: Record<SeasonKey, {emoji: string;title: string;sub: string;color: string;bg: string;}> = {
   reset: { emoji: '🌵', title: 'Reset Mode', sub: '피부 리셋 모드', color: '#7EC8A0', bg: 'bg-green-50' },
   recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드', color: '#A8D5A2', bg: 'bg-sky-50' },
@@ -61,7 +61,7 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
-  const [currentSeason, setCurrentSeason] = useState<SeasonKey | null>(null);
+  const { currentSeason, setCurrentSeason } = useSeason();
   const [nickname, setNickname] = useState<string>('');
   const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
   const [packages, setPackages] = useState<{id: string;name: string;total_sessions: number;used_sessions: number;clinic: string;}[]>([]);
@@ -78,11 +78,10 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [profileRes, payRes, pkgRes] = await Promise.all([
-        supabase.from('user_profiles').select('current_season,name').eq('id', user.id).single(),
+        supabase.from('user_profiles').select('name').eq('id', user.id).single(),
         supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
         supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
       ]);
-      if (profileRes.data?.current_season) setCurrentSeason(profileRes.data.current_season as SeasonKey);
       if (profileRes.data?.name) setNickname(profileRes.data.name);
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
@@ -91,14 +90,9 @@ const Index = () => {
   }, []);
 
   // Season change handler
-  const handleSeasonChange = async (season: SeasonKey) => {
+  const handleSeasonChange = (season: SeasonKey) => {
     setCurrentSeason(season);
     setModeDropdownOpen(false);
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      const { error } = await supabase.from('user_profiles').update({ current_season: season }).eq('id', user.id);
-      if (error) console.error('관리모드 저장 실패:', error);
-    }
   };
 
   // Onboarding

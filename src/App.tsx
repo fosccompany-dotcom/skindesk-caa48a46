@@ -21,6 +21,7 @@ import { RecordsProvider } from "./context/RecordsContext";
 import { LanguageProvider } from "./i18n/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/PrivateRoute";
+import { SeasonProvider } from "./context/SeasonContext";
 
 const queryClient = new QueryClient();
 
@@ -32,6 +33,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <AuthProvider>
+            <SeasonProvider>
             <CyclesProvider>
               <RecordsProvider>
                 <div className="app-container min-h-screen bg-background relative">
@@ -57,6 +59,7 @@ const App = () => (
                 </div>
               </RecordsProvider>
             </CyclesProvider>
+            </SeasonProvider>
           </AuthProvider>
         </BrowserRouter>
       </LanguageProvider>
