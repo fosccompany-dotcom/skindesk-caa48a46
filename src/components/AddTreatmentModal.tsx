@@ -305,6 +305,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
+    setPrefillItem(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
     setRecPayMethod('카드'); setRecAmount('');
