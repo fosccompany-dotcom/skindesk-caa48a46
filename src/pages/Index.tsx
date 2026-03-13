@@ -372,40 +372,44 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* Row 2: remaining sessions + point balance */}
-        <Card
-          className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-          onClick={() => navigate('/calendar?tab=history')}
-        >
-          <CardContent className="p-4 flex items-center justify-between">
-            <div className="flex items-center gap-3">
+        {/* Row 2: remaining sessions + point balance — separate cards */}
+        <div className="grid grid-cols-2 gap-3">
+          <Card
+            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => navigate('/packages?tab=packages')}
+          >
+            <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <Package size={18} className="text-primary" />
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground">남은 시술 횟수</p>
-                <p className="text-base font-black text-foreground">
+                <p className="text-lg font-black text-foreground leading-tight">
                   {totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}
                   <span className="text-xs font-medium text-muted-foreground ml-0.5">회</span>
                 </p>
               </div>
-            </div>
-            <div className="h-8 w-px bg-border/50 mx-2" />
-            <div className="flex items-center gap-3">
+            </CardContent>
+          </Card>
+
+          <Card
+            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => navigate('/packages?tab=points')}
+          >
+            <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-accent/20 flex items-center justify-center">
                 <Wallet size={18} className="text-accent-foreground" />
               </div>
               <div>
                 <p className="text-[10px] text-muted-foreground">잔여 포인트</p>
-                <p className="text-base font-black text-foreground">
+                <p className="text-lg font-black text-foreground leading-tight">
                   {totalBalance > 0 ? `${totalBalance.toLocaleString()}` : <span className="opacity-40">0</span>}
                   <span className="text-xs font-medium text-muted-foreground ml-0.5">원</span>
                 </p>
               </div>
-            </div>
-            <ChevronRight size={14} className="text-muted-foreground shrink-0 ml-1" />
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* ═══ Today's Condition Log ═══ */}
         <Card className="border-0 shadow-sm">
