@@ -377,7 +377,6 @@ const Profile = () => {
         goals,
         target_areas: targetAreas,
         regions,
-        current_season: currentSeason || null,
         updated_at: new Date().toISOString(),
       }).eq('id', userId);
       if (!error) {
@@ -388,7 +387,7 @@ const Profile = () => {
       }
     }, 600);
     return () => clearTimeout(saveTimeout.current);
-  }, [nickname, skinType, birthDate, concerns, goals, targetAreas, regions, currentSeason]);
+  }, [nickname, skinType, birthDate, concerns, goals, targetAreas, regions]);
 
   const avgSatisfaction = useMemo(() => {
     const rated = records.filter(r => r.satisfaction);
