@@ -302,7 +302,7 @@ const CalendarPage = () => {
           <TabsList className="w-full grid grid-cols-3 mb-4">
             <TabsTrigger value="history" className="gap-1.5 text-xs">
               <ClipboardList className="h-3.5 w-3.5" />
-              피부관리 현황
+              시술내역
             </TabsTrigger>
             <TabsTrigger value="payments" className="gap-1.5 text-xs">
               <CreditCard className="h-3.5 w-3.5" />
