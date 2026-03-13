@@ -261,8 +261,7 @@ const Profile = () => {
   const [goals, setGoals] = useState<string[]>([]);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
-  type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
-  const [currentSeason, setCurrentSeason] = useState<SeasonKey | ''>('');
+  const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState('');
   const [selectedGugun, setSelectedGugun] = useState('');
 
