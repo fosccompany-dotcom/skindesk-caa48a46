@@ -282,7 +282,23 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       });
   }, [selectedPackageId]);
 
-  const resetClinicMeta = () => {
+  // prefill: 외부에서 시술 정보를 넘겨받으면 마지막 단계로 바로 이동
+  const [prefillItem, setPrefillItem] = useState<TreatmentItem | null>(null);
+  useEffect(() => {
+    if (open && prefillTreatment) {
+      const virtual: TreatmentItem = {
+        id: '__prefill__',
+        name: prefillTreatment.name,
+        skinLayer: prefillTreatment.skinLayer,
+      };
+      setPrefillItem(virtual);
+      setCatId('__prefill__');
+      setItemId('__prefill__');
+      setClinic(prefillTreatment.clinic);
+      setStep(3); // totalSteps=3 (no shots) → detail step
+    }
+  }, [open, prefillTreatment]);
+
     setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
   };
 
