@@ -59,6 +59,7 @@ const App = () => (
                 </div>
               </RecordsProvider>
             </CyclesProvider>
+            </SeasonProvider>
           </AuthProvider>
         </BrowserRouter>
       </LanguageProvider>
