@@ -159,7 +159,10 @@ const Treatments = () => {
     return saved ? new Set(JSON.parse(saved)) : new Set<string>();
   });
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [addRecordOpen, setAddRecordOpen] = useState(false);
+  const [addRecordTreatment, setAddRecordTreatment] = useState<ClinicTreatment | null>(null);
   const { cycles, setCycles } = useCycles();
+  const { addRecord } = useRecords();
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => {
