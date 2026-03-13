@@ -78,12 +78,12 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [profileRes, payRes, pkgRes] = await Promise.all([
-      supabase.from('user_profiles').select('current_season,name' as any).eq('id', user.id).single(),
-      supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
-      supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id)]
-      );
-      if ((profileRes.data as any)?.current_season) setCurrentSeason((profileRes.data as any).current_season as SeasonKey);
-      if ((profileRes.data as any)?.name) setNickname((profileRes.data as any).name);
+        supabase.from('user_profiles').select('current_season,name').eq('id', user.id).single(),
+        supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
+        supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
+      ]);
+      if (profileRes.data?.current_season) setCurrentSeason(profileRes.data.current_season as SeasonKey);
+      if (profileRes.data?.name) setNickname(profileRes.data.name);
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
     };
@@ -96,7 +96,8 @@ const Index = () => {
     setModeDropdownOpen(false);
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from('user_profiles').update({ current_season: season } as any).eq('id', user.id);
+      const { error } = await supabase.from('user_profiles').update({ current_season: season }).eq('id', user.id);
+      if (error) console.error('관리모드 저장 실패:', error);
     }
   };
 
