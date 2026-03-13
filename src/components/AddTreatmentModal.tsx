@@ -711,8 +711,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                         placeholder="금액 입력 (원)"
                         className="w-full bg-white border border-border rounded-xl px-4 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/50" />
                     </div>
-                  )
-                  </div>
+                  )}
                 </>
               )}
 
