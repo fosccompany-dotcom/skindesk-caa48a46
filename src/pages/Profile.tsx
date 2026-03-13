@@ -527,15 +527,7 @@ const Profile = () => {
       })()}
 
       <div className="page-content pt-2">
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="w-full mb-4 rounded-xl">
-            <TabsTrigger value="profile" className="flex-1 rounded-lg text-xs gap-1">
-              <User className="h-3.5 w-3.5" />
-              {t('profile_tab')}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile" className="space-y-3">
+          <div className="space-y-3">
 
             {/* ── 기본 정보 ── */}
             <Card className="glass-card">
