@@ -223,6 +223,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [pkgUsed, setPkgUsed] = useState<number>(0);
   const [pkgExpiry, setPkgExpiry] = useState('');
   const [pkgSaving, setPkgSaving] = useState(false);
+  const [pkgPayMethod, setPkgPayMethod] = useState<'포인트' | '카드' | '현금' | '서비스'>('카드');
+  const [pkgAmount, setPkgAmount] = useState<string>('');
 
   // 패키지 선택 플로우 state
   const [userPackages, setUserPackages] = useState<DBPackage[]>([]);
