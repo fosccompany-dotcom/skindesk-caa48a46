@@ -217,6 +217,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [clinicAddress, setClinicAddress] = useState<string | null>(null);
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
+  const [recPayMethod, setRecPayMethod] = useState<'포인트' | '카드' | '현금' | '서비스'>('카드');
+  const [recAmount, setRecAmount] = useState<string>('');
 
   // 시술권 추가 전용 state
   const [pkgTotal, setPkgTotal] = useState<number>(10);
