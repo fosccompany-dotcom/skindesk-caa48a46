@@ -351,7 +351,7 @@ const Profile = () => {
       if (data.goals) setGoals(data.goals as string[]);
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
-      if (data.current_season) setCurrentSeason(data.current_season as SeasonKey);
+      // current_season은 SeasonContext에서 관리하므로 여기서 로드하지 않음
       if (data.name) setNickname(data.name);
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
       requestAnimationFrame(() => { profileLoaded.current = true; });
