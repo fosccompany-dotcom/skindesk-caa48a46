@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package, Loader2 } from 'lucide-react';
 import { cn, extractDistrict } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/context/AuthContext';
 import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
 
-// ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
+// ─── 시술 데이터 ────────────────────────────────────────────────────
 
 type SL = 'epidermis' | 'dermis' | 'subcutaneous';
 
@@ -16,14 +17,14 @@ interface TreatmentItem {
   name: string;
   desc?: string;
   skinLayer: SL;
-  shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
+  shotOptions?: number[];
 }
 
 interface Category {
   id: string;
   label: string;
   emoji: string;
-  color: string;          // tailwind border/bg 색상
+  color: string;
   items: TreatmentItem[];
 }
 
@@ -97,33 +98,7 @@ const CATEGORIES: Category[] = [
     label: '피부관리/패키지',
     emoji: '🌿',
     color: 'border-green-300 bg-green-50',
-    items: [
-      // Basic 패키지 아이템
-      { id: 'b_scaling',   name: '[Basic] 스케일링',              skinLayer: 'epidermis' },
-      { id: 'b_aquapeel',  name: '[Basic] 아쿠아필',              skinLayer: 'epidermis' },
-      { id: 'b_vitamin',   name: '[Basic] 비타민관리',            skinLayer: 'epidermis' },
-      { id: 'b_cryo',      name: '[Basic] 크라이오관리',          skinLayer: 'epidermis' },
-      { id: 'b_led',       name: '[Basic] LED재생레이저 (+모델링팩)', skinLayer: 'epidermis' },
-      { id: 'b_ionzyme',   name: '[Basic] 이온자임',              skinLayer: 'epidermis' },
-      { id: 'b_cinder',    name: '[Basic] 신데렐라주사',          skinLayer: 'dermis' },
-      { id: 'b_white',     name: '[Basic] 백옥주사',              skinLayer: 'dermis' },
-      { id: 'b_placenta',  name: '[Basic] 태반주사',              skinLayer: 'dermis' },
-      { id: 'b_vitiv',     name: '[Basic] 비타민주사',            skinLayer: 'dermis' },
-      // Premium 패키지 아이템
-      { id: 'p_larafil',   name: '[Premium] 라라필',              skinLayer: 'epidermis' },
-      { id: 'p_placenta',  name: '[Premium] 플라센타관리',        skinLayer: 'epidermis' },
-      { id: 'p_blackhead', name: '[Premium] 블랙헤드관리',        skinLayer: 'epidermis' },
-      { id: 'p_blackpeel', name: '[Premium] 블랙필',              skinLayer: 'epidermis' },
-      { id: 'p_yespeel',   name: '[Premium] 예스필',              skinLayer: 'epidermis' },
-      { id: 'p_scinder',   name: '[Premium] 슈퍼신데렐라주사',    skinLayer: 'dermis' },
-      { id: 'p_swhite',    name: '[Premium] 슈퍼백옥주사',        skinLayer: 'dermis' },
-      { id: 'p_arginine',  name: '[Premium] 아르기닌주사',        skinLayer: 'dermis' },
-      { id: 'p_water',     name: '[Premium] 물방울관리 6분',      skinLayer: 'epidermis' },
-      { id: 'p_extract',   name: '[Premium] 압출',                skinLayer: 'epidermis' },
-      { id: 'p_pinkpeel',  name: '[Premium] 핑크필',              skinLayer: 'epidermis' },
-      // 단독 스킨케어
-      { id: 'peeling',     name: '필링 (단독)',                   skinLayer: 'epidermis' },
-    ],
+    items: [], // DB에서 동적으로 불러옴
   },
   {
     id: 'whitening',
@@ -195,6 +170,26 @@ const SKIN_LAYER_COLOR: Record<SL, string> = {
   subcutaneous: 'bg-purple-100 text-purple-600 border-purple-300',
 };
 
+// ─── DB 타입 ────────────────────────────────────────────────────────
+
+interface DBPackage {
+  id: string;
+  name: string;
+  clinic: string;
+  total_sessions: number | null;
+  used_sessions: number | null;
+  skin_layer: string | null;
+  body_area: string | null;
+}
+
+interface DBPackageOption {
+  id: string;
+  package_id: string;
+  name: string;
+  category: string;
+  sort_order: number | null;
+}
+
 // ─── Props ──────────────────────────────────────────────────────────
 
 interface Props {
@@ -209,6 +204,7 @@ interface Props {
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
 export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, coachActive }: Props) {
+  const { user } = useAuth();
   const [mode, setMode] = useState<'record' | 'package'>('record');
   const [step, setStep] = useState(1);
   const [catId, setCatId] = useState<string | null>(null);
@@ -228,6 +224,53 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [pkgExpiry, setPkgExpiry] = useState('');
   const [pkgSaving, setPkgSaving] = useState(false);
 
+  // 패키지 선택 플로우 state
+  const [userPackages, setUserPackages] = useState<DBPackage[]>([]);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
+  const [packageOptions, setPackageOptions] = useState<DBPackageOption[]>([]);
+  const [selectedOptionName, setSelectedOptionName] = useState<string | null>(null);
+  const [pkgLoading, setPkgLoading] = useState(false);
+  const [optionsLoading, setOptionsLoading] = useState(false);
+  const [optionsError, setOptionsError] = useState(false);
+
+  const isSkincareFlow = catId === 'skincare';
+
+  // 패키지 목록 fetch
+  useEffect(() => {
+    if (!isSkincareFlow || !user) return;
+    setPkgLoading(true);
+    supabase
+      .from('treatment_packages')
+      .select('id, name, clinic, total_sessions, used_sessions, skin_layer, body_area')
+      .eq('user_id', user.id)
+      .then(({ data }) => {
+        setUserPackages(data ?? []);
+        setPkgLoading(false);
+      });
+  }, [isSkincareFlow, user]);
+
+  // 패키지 옵션 fetch
+  useEffect(() => {
+    if (!selectedPackageId) { setPackageOptions([]); return; }
+    setOptionsLoading(true);
+    setOptionsError(false);
+    supabase
+      .from('package_options')
+      .select('*')
+      .eq('package_id', selectedPackageId)
+      .order('category')
+      .order('sort_order')
+      .then(({ data, error }) => {
+        if (error || !data) {
+          setOptionsError(true);
+          setPackageOptions([]);
+        } else {
+          setPackageOptions(data);
+        }
+        setOptionsLoading(false);
+      });
+  }, [selectedPackageId]);
+
   const resetClinicMeta = () => {
     setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
   };
@@ -237,6 +280,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
     setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
+    setSelectedPackageId(null); setSelectedOptionName(null);
+    setPackageOptions([]); setUserPackages([]);
   };
   const handleClose = () => { reset(); setMode('record'); onClose(); };
 
@@ -244,17 +289,25 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
 
-  const totalSteps = needsShots ? 4 : 3;
-  const isDetailStep = needsShots ? step === 4 : step === 3;
+  // 스텝 계산: skincare는 4단계 고정 (카테고리→패키지→옵션→상세)
+  // 일반: 3 or 4 (카테고리→시술→[샷수]→상세)
+  const totalSteps = isSkincareFlow ? 4 : (needsShots ? 4 : 3);
+  const isDetailStep = step === totalSteps;
 
   const canNext = () => {
     if (step === 1) return !!catId;
+    if (isSkincareFlow) {
+      if (step === 2) return !!selectedPackageId;
+      if (step === 3) return !!selectedOptionName;
+      return true;
+    }
     if (step === 2) return !!itemId;
     if (step === 3 && needsShots) return !!shots;
     return true;
   };
 
   const getTreatmentName = () => {
+    if (isSkincareFlow) return selectedOptionName || '';
     if (!selectedItem) return '';
     return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
   };
@@ -270,31 +323,51 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setClinicAddress(place.road_address ?? place.address ?? null);
   };
 
+  // 선택한 패키지 정보
+  const selectedPkg = userPackages.find(p => p.id === selectedPackageId);
+
   const handleSave = () => {
-    if (!selectedItem) return;
-    onSave({
-      date,
-      packageId: catId === 'skincare' && itemId?.startsWith('b_') ? 'p1'
-               : catId === 'skincare' && itemId?.startsWith('p_') ? 'p2' : '',
-      treatmentName: getTreatmentName(),
-      skinLayer: selectedItem.skinLayer,
-      bodyArea: 'face',
-      notes: '',
-      clinic,
-      satisfaction,
-      memo,
-      clinic_kakao_id: clinicKakaoId,
-      clinic_district: clinicDistrict,
-      clinic_address: clinicAddress,
-      input_method: 'manual',
-    });
+    if (isSkincareFlow) {
+      if (!selectedOptionName || !selectedPackageId) return;
+      onSave({
+        date,
+        packageId: selectedPackageId, // UUID → RecordsContext가 package_uuid로 저장
+        treatmentName: selectedOptionName,
+        skinLayer: (selectedPkg?.skin_layer as SL) || 'epidermis',
+        bodyArea: (selectedPkg?.body_area as any) || 'face',
+        notes: '',
+        clinic: selectedPkg?.clinic || clinic,
+        satisfaction,
+        memo,
+        clinic_kakao_id: clinicKakaoId,
+        clinic_district: clinicDistrict,
+        clinic_address: clinicAddress,
+        input_method: 'manual',
+      });
+    } else {
+      if (!selectedItem) return;
+      onSave({
+        date,
+        packageId: '',
+        treatmentName: getTreatmentName(),
+        skinLayer: selectedItem.skinLayer,
+        bodyArea: 'face',
+        notes: '',
+        clinic,
+        satisfaction,
+        memo,
+        clinic_kakao_id: clinicKakaoId,
+        clinic_district: clinicDistrict,
+        clinic_address: clinicAddress,
+        input_method: 'manual',
+      });
+    }
     handleClose();
   };
 
   const handleSavePackage = async () => {
     if (!selectedItem || !clinic) return;
     setPkgSaving(true);
-    const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setPkgSaving(false); return; }
     await supabase.from('treatment_packages').insert({
       user_id: user.id,
@@ -308,6 +381,18 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     });
     setPkgSaving(false);
     handleClose();
+  };
+
+  // 옵션을 카테고리별로 그룹핑
+  const groupedOptions = packageOptions.reduce<Record<string, DBPackageOption[]>>((acc, opt) => {
+    (acc[opt.category] ??= []).push(opt);
+    return acc;
+  }, {});
+
+  // 카테고리 카드 표시 시 skincare의 item 수는 패키지 수로 표시
+  const getCategoryCount = (cat: Category) => {
+    if (cat.id === 'skincare') return userPackages.length;
+    return cat.items.length;
   };
 
   return (
@@ -360,15 +445,14 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
         <div className="px-5 py-4">
 
-          {/* ── 공통 STEP 1~3: 카테고리 → 시술 → 샷수 ── */}
-          {(<>
+          {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
               <p className="text-xs text-gray-400 mb-3">시술 카테고리를 선택하세요</p>
               <div data-coach="category-grid" className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map(cat => (
                   <button key={cat.id}
-                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); }}
+                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setSelectedPackageId(null); setSelectedOptionName(null); }}
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
                       cat.color,
@@ -377,7 +461,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     <span className="text-lg">{cat.emoji}</span>
                     <div className="flex-1 min-w-0">
                       <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">{cat.items.length}종</div>
+                      <div className="text-[10px] text-gray-400 mt-0.5">
+                        {cat.id === 'skincare' ? '내 패키지' : `${cat.items.length}종`}
+                      </div>
                     </div>
                     {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
                   </button>
@@ -386,8 +472,100 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 2: 시술 선택 ── */}
-          {step === 2 && selectedCat && (
+          {/* ── SKINCARE STEP 2: 패키지 선택 ── */}
+          {step === 2 && isSkincareFlow && (
+            <div>
+              <p className="text-xs text-gray-400 mb-3">시술할 패키지를 선택하세요</p>
+              {pkgLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="animate-spin text-muted-foreground" size={24} />
+                </div>
+              ) : userPackages.length === 0 ? (
+                <div className="text-center py-12 text-sm text-muted-foreground">
+                  등록된 패키지가 없습니다
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {userPackages.map(pkg => {
+                    const remaining = (pkg.total_sessions ?? 0) - (pkg.used_sessions ?? 0);
+                    const exhausted = remaining <= 0;
+                    return (
+                      <button key={pkg.id}
+                        disabled={exhausted}
+                        onClick={() => setSelectedPackageId(pkg.id)}
+                        className={cn(
+                          'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
+                          exhausted && 'opacity-40 cursor-not-allowed',
+                          selectedPackageId === pkg.id
+                            ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
+                            : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                        )}>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm text-gray-900 font-medium">{pkg.name}</div>
+                          <div className="text-[11px] text-gray-400 mt-0.5">{pkg.clinic}</div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-2 shrink-0">
+                          <span className={cn(
+                            'text-xs font-semibold px-2 py-0.5 rounded-full',
+                            exhausted ? 'bg-gray-100 text-gray-400' : 'bg-green-100 text-green-700'
+                          )}>
+                            잔여 {remaining}회
+                          </span>
+                          {selectedPackageId === pkg.id && <Check size={12} className="text-[#C9A96E]" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── SKINCARE STEP 3: 옵션 선택 ── */}
+          {step === 3 && isSkincareFlow && (
+            <div>
+              <p className="text-xs text-gray-400 mb-3">시술 옵션을 선택하세요</p>
+              {optionsLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="animate-spin text-muted-foreground" size={24} />
+                </div>
+              ) : optionsError ? (
+                <div className="text-center py-12 text-sm text-destructive">
+                  옵션을 불러올 수 없습니다
+                </div>
+              ) : packageOptions.length === 0 ? (
+                <div className="text-center py-12 text-sm text-muted-foreground">
+                  등록된 옵션이 없습니다
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {Object.entries(groupedOptions).map(([category, options]) => (
+                    <div key={category}>
+                      <div className="text-xs font-semibold text-gray-500 mb-1.5 px-1">{category}</div>
+                      <div className="space-y-1.5">
+                        {options.map(opt => (
+                          <button key={opt.id}
+                            onClick={() => setSelectedOptionName(opt.name)}
+                            className={cn(
+                              'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
+                              selectedOptionName === opt.name
+                                ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
+                                : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                            )}>
+                            <div className="text-sm text-gray-900">{opt.name}</div>
+                            {selectedOptionName === opt.name && <Check size={12} className="text-[#C9A96E]" />}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* ── 일반 STEP 2: 시술 선택 ── */}
+          {step === 2 && !isSkincareFlow && selectedCat && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
@@ -424,8 +602,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 3: 샷수 선택 ── */}
-          {step === 3 && needsShots && selectedItem && (
+          {/* ── STEP 3: 샷수 선택 (일반 플로우) ── */}
+          {step === 3 && !isSkincareFlow && needsShots && selectedItem && (
             <div>
               <p className="text-xs text-gray-400 mb-1">샷수를 선택하세요</p>
               <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
@@ -448,7 +626,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           )}
 
           {/* ── 상세 입력 (마지막 단계) ── */}
-          {isDetailStep && selectedItem && (
+          {isDetailStep && (isSkincareFlow ? !!selectedOptionName : !!selectedItem) && (
             <div className="space-y-4">
               {/* 선택 요약 */}
               <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
@@ -456,15 +634,20 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   {mode === 'package' ? '등록할 시술권' : '등록할 시술'}
                 </div>
                 <div className="text-sm font-semibold text-primary">{getTreatmentName()}</div>
-                <div className="mt-1.5">
-                  <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[selectedItem.skinLayer])}>
-                    {SKIN_LAYER_LABEL[selectedItem.skinLayer]}
-                  </span>
-                </div>
+                {isSkincareFlow && selectedPkg && (
+                  <div className="text-[11px] text-gray-400 mt-1">{selectedPkg.clinic} · {selectedPkg.name}</div>
+                )}
+                {!isSkincareFlow && selectedItem && (
+                  <div className="mt-1.5">
+                    <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[selectedItem.skinLayer])}>
+                      {SKIN_LAYER_LABEL[selectedItem.skinLayer]}
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* 시술권 모드: 횟수/만료일 */}
-              {mode === 'package' && (
+              {mode === 'package' && !isSkincareFlow && (
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
@@ -496,11 +679,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 </div>
               )}
 
-              {/* 병원 (공통) */}
+              {/* 병원 (공통, skincare에서는 패키지 클리닉 자동설정) */}
               <div>
                 <label className="text-xs text-gray-400 block mb-1.5">병원</label>
                 <ClinicSearchInput
-                  value={clinic}
+                  value={isSkincareFlow && selectedPkg ? selectedPkg.clinic : clinic}
                   onChange={handleClinicTextInput}
                   onSelectPlace={handlePlaceSelect}
                   placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
@@ -536,7 +719,6 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               </div>
             </div>
           )}
-          </>)}
         </div>
 
         {/* 하단 버튼 */}
@@ -555,8 +737,14 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               </Button>
             ) : (
               <Button
-                onClick={mode === 'package' ? handleSavePackage : handleSave}
-                disabled={mode === 'package' ? (!selectedItem || !clinic || pkgSaving) : (!date || !clinic)}
+                onClick={mode === 'package' && !isSkincareFlow ? handleSavePackage : handleSave}
+                disabled={
+                  isSkincareFlow
+                    ? (!selectedOptionName || !selectedPackageId)
+                    : mode === 'package'
+                      ? (!selectedItem || !clinic || pkgSaving)
+                      : (!date || !clinic)
+                }
                 className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold disabled:opacity-25">
                 <Check size={15} className="mr-1.5" />
                 {mode === 'package' ? (pkgSaving ? '저장 중...' : '시술권 저장') : '저장'}
