@@ -964,6 +964,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             {r.amount_paid != null ? ` · ₩${r.amount_paid.toLocaleString()}` : ' · 금액 미확인'}
                           </p>
                         </div>
+                        <button onClick={() => setParsed(prev => prev!.filter((_, idx) => idx !== i))} className="p-1 text-gray-300 hover:text-rose-500 transition-colors" title="삭제">
+                          <X size={14} />
+                        </button>
                         <button onClick={() => toggleExpand(i)} className="p-1 text-gray-400">
                           {r.expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
