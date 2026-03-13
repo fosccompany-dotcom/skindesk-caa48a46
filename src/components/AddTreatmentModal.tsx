@@ -282,6 +282,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
     setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
+    setPkgPayMethod('카드'); setPkgAmount('');
     setSelectedPackageId(null); setSelectedOptionName(null);
     setPackageOptions([]); setUserPackages([]);
   };
