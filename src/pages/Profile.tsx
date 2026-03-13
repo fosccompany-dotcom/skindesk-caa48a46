@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useRecords } from '@/context/RecordsContext';
 import AddPaymentModal from '@/components/AddPaymentModal';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
@@ -21,7 +22,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import { useNavigate } from 'react-router-dom';
 import BloomAvatar from '@/components/BloomAvatar';
-import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
+import { getBloomInfo, getActiveDays, STAGES } from '@/utils/bloomLevel';
 import { Progress } from '@/components/ui/progress';
 
 const skinTypes: SkinType[] = ['건성', '지성', '복합성', '민감성', '중성'];
