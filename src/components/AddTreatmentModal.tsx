@@ -217,6 +217,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [clinicAddress, setClinicAddress] = useState<string | null>(null);
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
+  const [recPayMethod, setRecPayMethod] = useState<'포인트' | '카드' | '현금' | '서비스'>('카드');
+  const [recAmount, setRecAmount] = useState<string>('');
 
   // 시술권 추가 전용 state
   const [pkgTotal, setPkgTotal] = useState<number>(10);
@@ -281,6 +283,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); resetClinicMeta(); setSatisfaction(4); setMemo('');
+    setRecPayMethod('카드'); setRecAmount('');
     setPkgTotal(10); setPkgUsed(0); setPkgExpiry('');
     setPkgPayMethod('카드'); setPkgAmount('');
     setSelectedPackageId(null); setSelectedOptionName(null);
@@ -349,6 +352,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       });
     } else {
       if (!selectedItem) return;
+      const parsedAmt = recAmount ? parseInt(recAmount.replace(/[,\s]/g, '')) : undefined;
       onSave({
         date,
         packageId: '',
@@ -359,11 +363,24 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         clinic,
         satisfaction,
         memo,
+        amount_paid: parsedAmt || undefined,
         clinic_kakao_id: clinicKakaoId,
         clinic_district: clinicDistrict,
         clinic_address: clinicAddress,
         input_method: 'manual',
       });
+      // 결제내역 기록 (서비스 제외, 금액 있을 때만)
+      if (user && recPayMethod !== '서비스' && parsedAmt && parsedAmt > 0) {
+        supabase.from('payment_records').insert({
+          user_id: user.id,
+          date,
+          clinic,
+          treatment_name: getTreatmentName(),
+          amount: parsedAmt,
+          method: recPayMethod === '포인트' ? '시술결제' : recPayMethod,
+          memo: memo || null,
+        });
+      }
     }
     handleClose();
   };
@@ -754,6 +771,40 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     ))}
                   </div>
                 </div>
+              )}
+
+              {/* 결제 방법 & 금액 (시술내역만) */}
+              {mode === 'record' && (
+                <>
+                  <div>
+                    <label className="text-xs text-gray-400 block mb-1.5">결제 방법</label>
+                    <div className="flex gap-1.5">
+                      {(['포인트', '카드', '현금', '서비스'] as const).map(m => (
+                        <button key={m} type="button"
+                          onClick={() => setRecPayMethod(m)}
+                          className={cn('flex-1 py-2 rounded-lg text-xs font-semibold border transition-all',
+                            recPayMethod === m
+                              ? m === '포인트' ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
+                              : m === '카드' ? 'border-blue-300 bg-blue-50 text-blue-600'
+                              : m === '현금' ? 'border-green-300 bg-green-50 text-green-600'
+                              : 'border-gray-300 bg-gray-100 text-gray-500'
+                              : 'border-gray-200 bg-gray-50 text-gray-400'
+                          )}>
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  {recPayMethod !== '서비스' && (
+                    <div>
+                      <label className="text-xs text-gray-400 block mb-1.5">결제 금액</label>
+                      <input type="text" inputMode="numeric" value={recAmount}
+                        onChange={e => setRecAmount(e.target.value.replace(/[^0-9,]/g, ''))}
+                        placeholder="금액 입력 (원)"
+                        className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/50" />
+                    </div>
+                  )}
+                </>
               )}
 
               {/* 메모 (공통) */}
