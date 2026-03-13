@@ -442,6 +442,10 @@ const CalendarPage = () => {
           <TabsContent value="history">
             <MyTreatmentHistory />
           </TabsContent>
+
+          <TabsContent value="payments">
+            <PaymentHistoryTab />
+          </TabsContent>
         </Tabs>
       </div>
 
