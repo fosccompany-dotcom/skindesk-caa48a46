@@ -299,7 +299,7 @@ const CalendarPage = () => {
 
       <div className="page-content space-y-5 pt-4">
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-2 mb-4">
+          <TabsList className="w-full grid grid-cols-3 mb-4">
             <TabsTrigger value="calendar" className="gap-1.5 text-xs">
               <CalendarDays className="h-3.5 w-3.5" />
               캘린더
@@ -307,6 +307,10 @@ const CalendarPage = () => {
             <TabsTrigger value="history" className="gap-1.5 text-xs">
               <ClipboardList className="h-3.5 w-3.5" />
               피부관리 현황
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="gap-1.5 text-xs">
+              <CreditCard className="h-3.5 w-3.5" />
+              결제기록
             </TabsTrigger>
           </TabsList>
 
