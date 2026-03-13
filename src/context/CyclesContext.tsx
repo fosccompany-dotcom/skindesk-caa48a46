@@ -34,9 +34,21 @@ export function CyclesProvider({ children }: { children: ReactNode }) {
           .eq('user_id', user.id);
 
         if (error) throw error;
-        if (isMounted) {
-          setCycles(data ?? []);
-        }
+
+        const mapped: TreatmentCycle[] = (data ?? []).map((row) => ({
+          id: row.id,
+          treatmentName: row.treatment_name,
+          skinLayer: (row.skin_layer as TreatmentCycle['skinLayer']) ?? 'epidermis',
+          bodyArea: (row.body_area as TreatmentCycle['bodyArea']) ?? 'face',
+          cycleDays: row.cycle_days,
+          lastTreatmentDate: row.last_treatment_date,
+          isCustomCycle: row.is_custom_cycle ?? false,
+          clinic: row.clinic,
+          product: row.product ?? undefined,
+          notes: row.notes ?? undefined,
+        }));
+
+        if (isMounted) setCycles(mapped);
       } catch (err) {
         console.error('Failed to fetch cycles:', err);
         if (isMounted) setCycles([]);
