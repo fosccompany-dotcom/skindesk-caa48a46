@@ -77,12 +77,10 @@ const Index = () => {
     const loadDashboard = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const [profileRes, payRes, pkgRes] = await Promise.all([
-        supabase.from('user_profiles').select('name').eq('id', user.id).single(),
+      const [payRes, pkgRes] = await Promise.all([
         supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
         supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
       ]);
-      if (profileRes.data?.name) setNickname(profileRes.data.name);
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
     };
