@@ -316,7 +316,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const handleClose = () => { reset(); setMode('record'); onClose(); };
 
   const selectedCat = CATEGORIES.find(c => c.id === catId);
-  const selectedItem = selectedCat?.items.find(i => i.id === itemId);
+  const selectedItem = prefillItem && itemId === '__prefill__' ? prefillItem : selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
 
   // 스텝 계산: skincare는 4단계 고정 (카테고리→패키지→옵션→상세)
