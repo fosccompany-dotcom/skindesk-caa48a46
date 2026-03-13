@@ -536,7 +536,7 @@ const Profile = () => {
                   <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
                     <User className="h-4 w-4 text-accent-foreground" />
                   </div>
-                  <h2 className="font-bold text-sm">{t('basic_info')}</h2>
+                  <h2 className="font-bold text-sm">프로필</h2>
                 </div>
 
                 {/* 닉네임 */}
