@@ -726,7 +726,7 @@ const Profile = () => {
                   ] as const).map(({ key, emoji, title, sub, desc }) => {
                     const isSelected = currentSeason === key;
                     return (
-                      <button key={key} onClick={() => setCurrentSeason(isSelected ? '' : key)}
+                      <button key={key} onClick={() => setSeasonGlobal(isSelected ? 'maintain' as SeasonKey : key as SeasonKey)}
                         className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
                           isSelected
                             ? 'border-[#C9A96E]/60 bg-[#C9A96E]/10'
