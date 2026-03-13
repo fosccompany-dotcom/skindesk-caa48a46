@@ -158,7 +158,7 @@ const ko: TranslationKeys = {
   nav_home: '홈',
   nav_list: '리스트',
   nav_packages: '시술권',
-  nav_calendar: '캘린더',
+  nav_calendar: '시술내역',
   nav_my: '마이',
 
   save: '저장',

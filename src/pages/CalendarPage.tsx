@@ -1,11 +1,12 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Button } from '@/components/ui/button';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope, ClipboardList, MoreVertical, Pencil, Trash2 } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope, ClipboardList, MoreVertical, Pencil, Trash2, CreditCard, Plus, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -14,10 +15,11 @@ import MyTreatmentHistory from '@/components/MyTreatmentHistory';
 import logoImg from '@/assets/logo.png';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
+import AddPaymentModal from '@/components/AddPaymentModal';
 
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
@@ -297,7 +299,7 @@ const CalendarPage = () => {
 
       <div className="page-content space-y-5 pt-4">
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="w-full grid grid-cols-2 mb-4">
+          <TabsList className="w-full grid grid-cols-3 mb-4">
             <TabsTrigger value="calendar" className="gap-1.5 text-xs">
               <CalendarDays className="h-3.5 w-3.5" />
               캘린더
@@ -305,6 +307,10 @@ const CalendarPage = () => {
             <TabsTrigger value="history" className="gap-1.5 text-xs">
               <ClipboardList className="h-3.5 w-3.5" />
               피부관리 현황
+            </TabsTrigger>
+            <TabsTrigger value="payments" className="gap-1.5 text-xs">
+              <CreditCard className="h-3.5 w-3.5" />
+              결제기록
             </TabsTrigger>
           </TabsList>
 
@@ -436,6 +442,10 @@ const CalendarPage = () => {
           <TabsContent value="history">
             <MyTreatmentHistory />
           </TabsContent>
+
+          <TabsContent value="payments">
+            <PaymentHistoryTab />
+          </TabsContent>
         </Tabs>
       </div>
 
@@ -523,5 +533,285 @@ const CalendarPage = () => {
     </div>
   );
 };
+
+
+// ─── 결제 기록 탭 컴포넌트 ────────────────────────────────────────────────
+interface PaymentRecord {
+  id: string;date: string;clinic: string;
+  treatment_name: string;amount: number;method: string;memo?: string;
+  charged_amount?: number;clinic_type?: string;
+}
+
+interface MatchedTreatment {
+  id: string;date: string;treatment_name: string;
+  skin_layer?: string;body_area?: string;satisfaction?: number;memo?: string;
+}
+
+function PaymentHistoryTab() {
+  const [payments, setPayments] = useState<PaymentRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [matchedTreatments, setMatchedTreatments] = useState<Record<string, MatchedTreatment[]>>({});
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState<Partial<PaymentRecord>>({});
+  const [deleting, setDeleting] = useState<string | null>(null);
+
+  const loadPayments = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {setLoading(false);return;}
+    const { data } = await supabase.
+    from('payment_records').
+    select('id, date, clinic, treatment_name, amount, method, memo, charged_amount, clinic_type').
+    eq('user_id', user.id).
+    neq('method', '포인트충전').
+    order('date', { ascending: false });
+    setPayments(data ?? []);
+    setLoading(false);
+  };
+
+  useEffect(() => {loadPayments();}, []);
+
+  const loadMatchedTreatments = async (paymentId: string, date: string, clinic: string) => {
+    if (matchedTreatments[paymentId]) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data } = await supabase.
+    from('treatment_records').
+    select('id, date, treatment_name, skin_layer, body_area, satisfaction, memo').
+    eq('user_id', user.id).
+    eq('date', date).
+    eq('clinic', clinic).
+    order('created_at', { ascending: false });
+    setMatchedTreatments((prev) => ({ ...prev, [paymentId]: data ?? [] }));
+  };
+
+  const handleExpand = (p: PaymentRecord) => {
+    if (expandedId === p.id) {
+      setExpandedId(null);
+      setEditingId(null);
+    } else {
+      setExpandedId(p.id);
+      setEditingId(null);
+      loadMatchedTreatments(p.id, p.date, p.clinic);
+    }
+  };
+
+  const startEdit = (p: PaymentRecord) => {
+    setEditingId(p.id);
+    setEditForm({ date: p.date, clinic: p.clinic, treatment_name: p.treatment_name, amount: p.amount, method: p.method, memo: p.memo });
+  };
+
+  const saveEdit = async (id: string) => {
+    const { error } = await supabase.from('payment_records').update({
+      date: editForm.date,
+      clinic: editForm.clinic,
+      treatment_name: editForm.treatment_name,
+      amount: editForm.amount,
+      method: editForm.method,
+      memo: editForm.memo || null
+    }).eq('id', id);
+    if (!error) {
+      setEditingId(null);
+      loadPayments();
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    setDeleting(id);
+    const { error } = await supabase.from('payment_records').delete().eq('id', id);
+    if (!error) {
+      setPayments((prev) => prev.filter((p) => p.id !== id));
+      if (expandedId === id) setExpandedId(null);
+    }
+    setDeleting(null);
+  };
+
+  const totalSpent = payments.reduce((s, p) => s + p.amount, 0);
+
+  const LAYER_LABEL: Record<string, string> = { epidermis: '표피', dermis: '진피', subcutaneous: '피하' };
+
+  if (loading) return <div className="text-center py-8 text-sm text-muted-foreground">불러오는 중...</div>;
+
+  return (
+    <div className="space-y-3">
+      <Card className="glass-card">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
+              <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
+            </div>
+            <div className="text-right">
+              <p className="text-[11px] text-muted-foreground">결제 건수</p>
+              <p className="text-xl font-black text-foreground">{payments.length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
+            </div>
+          </div>
+          <Button
+            onClick={() => setShowAddModal(true)}
+            className="w-full mt-3 rounded-xl text-xs gap-1.5"
+            size="sm">
+            <Plus className="h-3.5 w-3.5" />
+            결제 내역 추가
+          </Button>
+        </CardContent>
+      </Card>
+
+      <AddPaymentModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSaved={() => {setShowAddModal(false);loadPayments();}} />
+
+      {payments.length === 0 ?
+      <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없습니다</div> :
+      <div className="space-y-2">
+          {payments.map((p) => {
+          const isExpanded = expandedId === p.id;
+          const isEditing = editingId === p.id;
+          const matched = matchedTreatments[p.id] ?? [];
+
+          return (
+            <Card key={p.id} className="glass-card overflow-hidden">
+                <CardContent className="p-3.5 cursor-pointer" onClick={() => handleExpand(p)}>
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-foreground truncate">{p.treatment_name}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{p.date} · {p.clinic}</p>
+                      {p.memo && <p className="text-[10px] text-muted-foreground mt-0.5 truncate">{p.memo}</p>}
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="text-right">
+                        <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : 'text-foreground'}`}>
+                          {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
+                        </p>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">{p.method}</span>
+                      </div>
+                      {isExpanded ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
+                    </div>
+                  </div>
+                </CardContent>
+
+                {isExpanded &&
+              <div className="border-t border-border px-3.5 pb-3.5 pt-3 space-y-3">
+                    {!isEditing ?
+                <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-xs">
+                          <div><span className="text-muted-foreground">날짜</span><p className="font-medium text-foreground">{p.date}</p></div>
+                          <div><span className="text-muted-foreground">병원</span><p className="font-medium text-foreground">{p.clinic}</p></div>
+                          <div><span className="text-muted-foreground">결제 방법</span><p className="font-medium text-foreground">{p.method}</p></div>
+                          <div><span className="text-muted-foreground">금액</span><p className="font-medium text-foreground">{p.amount.toLocaleString()}원</p></div>
+                          {p.charged_amount && p.charged_amount !== p.amount &&
+                    <div><span className="text-muted-foreground">충전금액</span><p className="font-medium text-emerald-600">{p.charged_amount.toLocaleString()}원</p></div>
+                    }
+                          {p.memo &&
+                    <div className="col-span-2"><span className="text-muted-foreground">메모</span><p className="font-medium text-foreground">{p.memo}</p></div>
+                    }
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <Button variant="outline" size="sm" className="flex-1 rounded-xl text-xs h-8 gap-1" onClick={(e) => {e.stopPropagation();startEdit(p);}}>
+                            <Pencil className="h-3 w-3" /> 수정
+                          </Button>
+                          <Button variant="outline" size="sm"
+                    className="rounded-xl text-xs h-8 gap-1 text-destructive border-destructive/30 hover:bg-destructive/10"
+                    disabled={deleting === p.id}
+                    onClick={(e) => {e.stopPropagation();if (confirm('이 결제 기록을 삭제하시겠습니까?')) handleDelete(p.id);}}>
+                            <Trash2 className="h-3 w-3" /> 삭제
+                          </Button>
+                        </div>
+                      </div> :
+                <div className="space-y-2">
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="text-[10px] text-muted-foreground mb-1 block">날짜</label>
+                            <input type="date" value={editForm.date || ''} onChange={(e) => setEditForm((f) => ({ ...f, date: e.target.value }))}
+                      className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          </div>
+                          <div>
+                            <label className="text-[10px] text-muted-foreground mb-1 block">금액</label>
+                            <input type="number" value={editForm.amount || ''} onChange={(e) => setEditForm((f) => ({ ...f, amount: Number(e.target.value) }))}
+                      className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-muted-foreground mb-1 block">병원명</label>
+                          <input type="text" value={editForm.clinic || ''} onChange={(e) => setEditForm((f) => ({ ...f, clinic: e.target.value }))}
+                    className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-muted-foreground mb-1 block">내용</label>
+                          <input type="text" value={editForm.treatment_name || ''} onChange={(e) => setEditForm((f) => ({ ...f, treatment_name: e.target.value }))}
+                    className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-muted-foreground mb-1 block">결제 방법</label>
+                          <div className="flex gap-1.5">
+                            {[{ value: '포인트충전', label: '포인트' }, { value: '카드', label: '카드' }, { value: '현금', label: '현금' }, { value: '서비스', label: '서비스' }].map((m) =>
+                      <button key={m.value} onClick={() => setEditForm((f) => ({ ...f, method: m.value }))}
+                      className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
+                      editForm.method === m.value ? 'border-primary bg-primary/10 text-primary' : 'border-input bg-background text-muted-foreground')}>
+                                {m.label}
+                              </button>
+                      )}
+                          </div>
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-muted-foreground mb-1 block">메모</label>
+                          <input type="text" value={editForm.memo || ''} onChange={(e) => setEditForm((f) => ({ ...f, memo: e.target.value }))}
+                    placeholder="메모 (선택)"
+                    className="w-full bg-background border border-input rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:ring-1 focus:ring-ring" />
+                        </div>
+                        <div className="flex gap-2 pt-1">
+                          <Button size="sm" className="flex-1 rounded-xl text-xs h-8 gap-1" onClick={() => saveEdit(p.id)}>
+                            <Check className="h-3 w-3" /> 저장
+                          </Button>
+                          <Button variant="outline" size="sm" className="rounded-xl text-xs h-8" onClick={() => setEditingId(null)}>
+                            취소
+                          </Button>
+                        </div>
+                      </div>
+                }
+
+                    {matched.length > 0 &&
+                <div className="space-y-1.5">
+                        <p className="text-[10px] text-muted-foreground font-semibold flex items-center gap-1">
+                          <ClipboardList className="h-3 w-3" /> 같은 날 시술 기록 ({matched.length}건)
+                        </p>
+                        {matched.map((t) =>
+                  <div key={t.id} className="bg-muted/50 rounded-lg px-3 py-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <p className="text-xs font-medium text-foreground">{t.treatment_name}</p>
+                                {t.skin_layer &&
+                        <span className={cn('text-[9px] px-1 py-0.5 rounded border font-medium',
+                        t.skin_layer === 'epidermis' ? 'bg-amber-100 text-amber-600 border-amber-300' :
+                        t.skin_layer === 'dermis' ? 'bg-blue-100 text-blue-600 border-blue-300' :
+                        'bg-purple-100 text-purple-600 border-purple-300'
+                        )}>{LAYER_LABEL[t.skin_layer] || t.skin_layer}</span>
+                        }
+                              </div>
+                              {t.satisfaction &&
+                      <div className="flex gap-0.5">
+                                  {[1, 2, 3, 4, 5].map((s) =>
+                        <Star key={s} className={cn('h-3 w-3', s <= t.satisfaction! ? 'fill-amber-400 text-amber-400' : 'text-muted-foreground/20')} />
+                        )}
+                                </div>
+                      }
+                            </div>
+                            {t.memo && <p className="text-[10px] text-muted-foreground mt-0.5">{t.memo}</p>}
+                          </div>
+                  )}
+                      </div>
+                }
+                    {matched.length === 0 && expandedId === p.id &&
+                <p className="text-[10px] text-muted-foreground text-center py-2">같은 날/같은 병원의 시술 기록이 없습니다</p>
+                }
+                  </div>
+              }
+              </Card>);
+        })}
+        </div>
+      }
+    </div>);
+}
 
 export default CalendarPage;
