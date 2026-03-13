@@ -200,21 +200,6 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Row 2: Bloom level mini status — tap to profile */}
-          <div
-            className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 cursor-pointer active:bg-white/20 transition-colors"
-            onClick={() => navigate('/profile')}>
-            
-            <span className="text-lg">{bloom.emoji}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-white text-xs font-semibold">{bloom.name}</p>
-              <p className="text-white/60 text-[10px]">{bloom.message}</p>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <span className="text-[10px] text-white/50">{activeDays}일째</span>
-              <ChevronRight size={14} className="text-white/40" />
-            </div>
-          </div>
 
           {/* Row 3: Management Mode selector */}
           <div className="relative">
