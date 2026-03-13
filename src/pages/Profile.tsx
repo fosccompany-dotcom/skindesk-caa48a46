@@ -527,15 +527,7 @@ const Profile = () => {
       })()}
 
       <div className="page-content pt-2">
-        <Tabs defaultValue="profile" className="w-full">
-          <TabsList className="w-full mb-4 rounded-xl">
-            <TabsTrigger value="profile" className="flex-1 rounded-lg text-xs gap-1">
-              <User className="h-3.5 w-3.5" />
-              {t('profile_tab')}
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="profile" className="space-y-3">
+          <div className="space-y-3">
 
             {/* ── 기본 정보 ── */}
             <Card className="glass-card">
@@ -544,7 +536,7 @@ const Profile = () => {
                   <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
                     <User className="h-4 w-4 text-accent-foreground" />
                   </div>
-                  <h2 className="font-bold text-sm">{t('basic_info')}</h2>
+                  <h2 className="font-bold text-sm">프로필</h2>
                 </div>
 
                 {/* 닉네임 */}
@@ -827,10 +819,8 @@ const Profile = () => {
             )}>
               {t('auto_saved')}
             </div>
-          </TabsContent>
+          </div>
 
-
-        </Tabs>
       </div>
     </div>);
 
