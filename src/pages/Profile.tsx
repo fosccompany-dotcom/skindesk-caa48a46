@@ -252,7 +252,7 @@ const Profile = () => {
   const navigate = useNavigate();
   const [langOpen, setLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
-  const [nickname, setNickname] = useState('');
+  const { nickname, setNickname } = useSeason();
   const [skinType, setSkinType] = useState<SkinType>('중성');
   const [birthDate, setBirthDate] = useState<Date | undefined>(
     undefined
