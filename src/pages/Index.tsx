@@ -16,6 +16,7 @@ import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 import { supabase } from '@/integrations/supabase/client';
+import { useSeason } from '@/context/SeasonContext';
 import logoImg from '@/assets/logo.png';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
 
