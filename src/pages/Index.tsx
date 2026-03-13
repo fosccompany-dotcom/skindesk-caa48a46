@@ -198,7 +198,7 @@ const Index = () => {
                 {nickname || '회원'}님의 <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
             </div>
-
+          </div>
 
 
           {/* Row 3: Management Mode selector */}
