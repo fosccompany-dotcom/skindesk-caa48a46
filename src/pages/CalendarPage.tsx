@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -127,6 +128,8 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
 
 // ── 메인 ─────────────────────────────────────────────────────────────
 const CalendarPage = () => {
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'calendar';
   const today = new Date('2026-03-08');
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -292,7 +295,7 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-5 pt-4">
-        <Tabs defaultValue="calendar" className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="w-full grid grid-cols-2 mb-4">
             <TabsTrigger value="calendar" className="gap-1.5 text-xs">
               <CalendarDays className="h-3.5 w-3.5" />
