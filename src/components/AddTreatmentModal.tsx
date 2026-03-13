@@ -192,6 +192,12 @@ interface DBPackageOption {
 
 // ─── Props ──────────────────────────────────────────────────────────
 
+interface PrefillTreatment {
+  name: string;
+  skinLayer: SL;
+  clinic: string;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
@@ -199,11 +205,12 @@ interface Props {
   onSave: (record: Omit<TreatmentRecord, 'id'>) => void;
   editRecord?: TreatmentRecord | null;
   coachActive?: boolean;
+  prefillTreatment?: PrefillTreatment;
 }
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
-export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, coachActive }: Props) {
+export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, coachActive, prefillTreatment }: Props) {
   const { user } = useAuth();
   const [mode, setMode] = useState<'record' | 'package'>('record');
   const [step, setStep] = useState(1);
