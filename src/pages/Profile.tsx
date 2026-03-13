@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { supabase } from '@/integrations/supabase/client';
+import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import { useNavigate } from 'react-router-dom';
 import BloomAvatar from '@/components/BloomAvatar';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
