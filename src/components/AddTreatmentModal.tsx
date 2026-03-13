@@ -372,6 +372,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     if (!selectedItem || !clinic) return;
     setPkgSaving(true);
     if (!user) { setPkgSaving(false); return; }
+    const parsedAmount = pkgAmount ? parseInt(pkgAmount.replace(/[,\s]/g, '')) : null;
     await supabase.from('treatment_packages').insert({
       user_id: user.id,
       name: getTreatmentName(),
@@ -381,7 +382,21 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       expiry_date: pkgExpiry || null,
       skin_layer: selectedItem.skinLayer,
       body_area: 'face',
+      purchase_price: parsedAmount,
     });
+    // 결제내역 기록 (서비스 제외, 금액 있을 때만)
+    if (pkgPayMethod !== '서비스' && parsedAmount && parsedAmount > 0) {
+      const todayStr = new Date().toISOString().split('T')[0];
+      await supabase.from('payment_records').insert({
+        user_id: user.id,
+        date: todayStr,
+        clinic,
+        treatment_name: getTreatmentName(),
+        amount: parsedAmount,
+        method: pkgPayMethod === '포인트' ? '시술결제' : pkgPayMethod,
+        memo: memo || null,
+      });
+    }
     setPkgSaving(false);
     handleClose();
   };
