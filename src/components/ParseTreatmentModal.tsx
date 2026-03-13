@@ -889,6 +889,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           <p className="text-[10px] text-gray-400 mt-0.5">결제내역 1건 + 시술내역 {b.treatments.length}건</p>
                         </div>
 
+                        <button onClick={() => setBundles(prev => prev.filter((_, idx) => idx !== i))} className="p-1 text-gray-300 hover:text-rose-500 transition-colors mt-0.5" title="삭제">
+                          <X size={14} />
+                        </button>
                         <button onClick={() => toggleBundleExpand(i)} className="p-1 text-gray-400 mt-0.5">
                           {b.expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
                         </button>
