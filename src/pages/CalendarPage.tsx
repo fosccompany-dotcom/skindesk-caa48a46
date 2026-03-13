@@ -295,7 +295,7 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-5 pt-4">
-        <Tabs defaultValue={(() => { const [sp] = useSearchParams(); return sp.get('tab') || 'calendar'; })()} className="w-full">
+        <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="w-full grid grid-cols-2 mb-4">
             <TabsTrigger value="calendar" className="gap-1.5 text-xs">
               <CalendarDays className="h-3.5 w-3.5" />
