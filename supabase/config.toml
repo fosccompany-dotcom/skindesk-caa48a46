@@ -1,1 +1,4 @@
 project_id = "gaharylmkilooukxnipk"
+
+[functions.search-clinic]
+verify_jwt = false
