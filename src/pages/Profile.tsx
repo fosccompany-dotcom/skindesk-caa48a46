@@ -534,10 +534,6 @@ const Profile = () => {
               <User className="h-3.5 w-3.5" />
               {t('profile_tab')}
             </TabsTrigger>
-            <TabsTrigger value="history" className="flex-1 rounded-lg text-xs gap-1">
-              <CreditCard className="h-3.5 w-3.5" />
-              결제기록
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="profile" className="space-y-3">
