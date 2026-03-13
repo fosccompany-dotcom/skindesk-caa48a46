@@ -62,7 +62,7 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
-  const [currentSeason, setCurrentSeason] = useState<SeasonKey | null>(null);
+  const { currentSeason, setCurrentSeason } = useSeason();
   const [nickname, setNickname] = useState<string>('');
   const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
   const [packages, setPackages] = useState<{id: string;name: string;total_sessions: number;used_sessions: number;clinic: string;}[]>([]);
