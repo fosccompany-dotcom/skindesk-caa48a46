@@ -783,6 +783,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             {p.memo && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200">{p.memo}</span>}
                           </div>
                           <p className="text-[13px] font-bold text-gray-900 leading-tight">{p.name}</p>
+                        </div>
+                        <button onClick={() => setPkgs(prev => prev.filter((_, idx) => idx !== i))} className="p-1 text-gray-300 hover:text-rose-500 transition-colors shrink-0" title="삭제">
+                          <X size={14} />
+                        </button>
                           <div className="flex items-center gap-2 mt-1">
                             <span className="text-[11px] font-bold text-primary">{p.total_sessions}회권</span>
                             <span className="text-[10px] text-gray-500">{p.used_sessions}회 사용</span>
