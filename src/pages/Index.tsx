@@ -78,9 +78,9 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [payRes, pkgRes] = await Promise.all([
-        supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
-        supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
-      ]);
+      supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
+      supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id)]
+      );
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
     };
@@ -170,7 +170,7 @@ const Index = () => {
           <div className="flex items-center gap-3">
             <BloomAvatar size="md" showDays={false} />
             <div className="flex-1 min-w-0">
-              <p className="text-white/60 text-[10px] tracking-wide">Private Wellness Assistant  </p>
+              <p className="text-white/60 text-[10px] tracking-wide">It's ​Blooming day!  </p>
               <h1
                 className="text-white text-lg font-bold tracking-tight leading-tight"
                 style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
