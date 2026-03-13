@@ -299,6 +299,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     }
   }, [open, prefillTreatment]);
 
+  const resetClinicMeta = () => {
     setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
   };
 
