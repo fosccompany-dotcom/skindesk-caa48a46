@@ -819,10 +819,8 @@ const Profile = () => {
             )}>
               {t('auto_saved')}
             </div>
-          </TabsContent>
+          </div>
 
-
-        </Tabs>
       </div>
     </div>);
 
