@@ -325,46 +325,51 @@ const Profile = () => {
     }
   };
 
-  const isFirstRender = useRef(true);
+  const profileLoaded = useRef(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [saved, setSaved] = useState(false);
+  const userIdRef = useRef<string | null>(null);
 
   // ── Supabase 프로필 로드 ─────────────────────────────────────────────
   useEffect(() => {
     const loadProfile = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
+      userIdRef.current = user.id;
       const { data, error } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('id', user.id)
         .single();
-      if (error || !data) return;
+      if (error || !data) {
+        profileLoaded.current = true;
+        return;
+      }
       if (data.skin_type) setSkinType(data.skin_type as SkinType);
       if (data.birth_date) setBirthDate(new Date(data.birth_date));
       if (data.concerns) setConcerns(data.concerns as string[]);
       if (data.goals) setGoals(data.goals as string[]);
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
-      if ((data as any).current_season) setCurrentSeason((data as any).current_season as any);
+      if (data.current_season) setCurrentSeason(data.current_season as SeasonKey);
       if (data.name) setNickname(data.name);
+      // 로드 완료 후 다음 렌더부터 자동저장 활성화
+      requestAnimationFrame(() => { profileLoaded.current = true; });
     };
     loadProfile();
   }, []);
 
   // ── Supabase 프로필 자동저장 ─────────────────────────────────────────
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
-    }
+    // 프로필 로드 완료 전에는 저장하지 않음
+    if (!profileLoaded.current) return;
+    const userId = userIdRef.current;
+    if (!userId) return;
+
     setSaved(false);
     clearTimeout(saveTimeout.current);
     saveTimeout.current = setTimeout(async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      await supabase.from('user_profiles').upsert({
-        id: user.id,
+      const { error } = await supabase.from('user_profiles').update({
         name: nickname || null,
         skin_type: skinType,
         birth_date: birthDate ? birthDate.toISOString().split('T')[0] : null,
@@ -374,9 +379,13 @@ const Profile = () => {
         regions,
         current_season: currentSeason || null,
         updated_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
-      setSaved(true);
-      setTimeout(() => setSaved(false), 1500);
+      }).eq('id', userId);
+      if (!error) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 1500);
+      } else {
+        console.error('프로필 저장 실패:', error);
+      }
     }, 600);
     return () => clearTimeout(saveTimeout.current);
   }, [nickname, skinType, birthDate, concerns, goals, targetAreas, regions, currentSeason]);
