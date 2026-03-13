@@ -687,7 +687,7 @@ const Treatments = () => {
             clinic: addRecordTreatment.clinic,
           }}
         />
-      )
+      )}
       </div>
     </div>
   );
