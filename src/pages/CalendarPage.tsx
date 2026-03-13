@@ -132,7 +132,7 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
 // ── CalendarPage ──────────────────────────────────────────────────────
 const CalendarPage = () => {
   const [searchParams] = useSearchParams();
-  const defaultTab = searchParams.get('tab') || 'calendar';
+  const defaultTab = searchParams.get('tab') || 'history';
   const today = new Date('2026-03-08');
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -300,10 +300,6 @@ const CalendarPage = () => {
       <div className="page-content space-y-5 pt-4">
         <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="w-full grid grid-cols-3 mb-4">
-            <TabsTrigger value="calendar" className="gap-1.5 text-xs">
-              <CalendarDays className="h-3.5 w-3.5" />
-              캘린더
-            </TabsTrigger>
             <TabsTrigger value="history" className="gap-1.5 text-xs">
               <ClipboardList className="h-3.5 w-3.5" />
               피부관리 현황
@@ -311,6 +307,10 @@ const CalendarPage = () => {
             <TabsTrigger value="payments" className="gap-1.5 text-xs">
               <CreditCard className="h-3.5 w-3.5" />
               결제기록
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="gap-1.5 text-xs">
+              <CalendarDays className="h-3.5 w-3.5" />
+              캘린더
             </TabsTrigger>
           </TabsList>
 
