@@ -79,11 +79,10 @@ const Index = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
       const [profileRes, payRes, pkgRes] = await Promise.all([
-        supabase.from('user_profiles').select('current_season,name').eq('id', user.id).single(),
+        supabase.from('user_profiles').select('name').eq('id', user.id).single(),
         supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
         supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
       ]);
-      if (profileRes.data?.current_season) setCurrentSeason(profileRes.data.current_season as SeasonKey);
       if (profileRes.data?.name) setNickname(profileRes.data.name);
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
