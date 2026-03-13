@@ -168,9 +168,9 @@ const Index = () => {
     <div className="min-h-screen bg-background">
 
       {/* ── HEADER with logo background ── */}
-      <div className="safe-top relative overflow-hidden">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/50" />
+      <div className="safe-top relative">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover overflow-hidden" style={{ clipPath: 'inset(0)' }} />
+        <div className="absolute inset-0 bg-black/50" style={{ clipPath: 'inset(0)' }} />
         <div className="relative px-5 pt-10 pb-5 space-y-4">
 
           {/* Row 1: Avatar + Nickname's Bloom Log */}
