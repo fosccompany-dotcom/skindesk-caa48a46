@@ -127,6 +127,7 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
 };
 
 // ── 메인 ─────────────────────────────────────────────────────────────
+// ── CalendarPage ──────────────────────────────────────────────────────
 const CalendarPage = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get('tab') || 'calendar';
