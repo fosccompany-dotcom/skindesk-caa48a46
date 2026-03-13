@@ -642,9 +642,23 @@ const Treatments = () => {
                   </div>
                 </div>
 
+                {/* Add Record Button */}
+                <Button
+                  variant="outline"
+                  className="w-full mt-2 gap-2"
+                  onClick={() => {
+                    setAddRecordTreatment(selectedTreatment);
+                    setSelectedTreatment(null);
+                    setAddRecordOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                  시술 내역 추가
+                </Button>
+
                 {/* Register Button */}
                 <Button
-                  className="w-full mt-2 gap-2"
+                  className="w-full gap-2"
                   onClick={() => registerCycle(selectedTreatment)}
                 >
                   <CalendarPlus className="h-4 w-4" />
