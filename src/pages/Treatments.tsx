@@ -669,6 +669,25 @@ const Treatments = () => {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* AddTreatmentModal — 시술 내역 추가 (마지막 단계로 바로 이동) */}
+      {addRecordTreatment && (
+        <AddTreatmentModal
+          open={addRecordOpen}
+          onClose={() => { setAddRecordOpen(false); setAddRecordTreatment(null); }}
+          onSave={(record) => {
+            addRecord(record);
+            setAddRecordOpen(false);
+            setAddRecordTreatment(null);
+          }}
+          editRecord={null}
+          prefillTreatment={{
+            name: addRecordTreatment.name,
+            skinLayer: CATEGORY_TO_SKIN_LAYER[addRecordTreatment.category] || 'epidermis',
+            clinic: addRecordTreatment.clinic,
+          }}
+        />
+      )
       </div>
     </div>
   );
