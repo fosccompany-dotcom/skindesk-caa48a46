@@ -332,6 +332,9 @@ const en: TranslationKeys = {
   auth_kakao: 'Continue with Kakao',
   auth_or: 'or',
   auth_forgot_password: 'Forgot password?',
+  reset_email_sent: 'Check your email',
+  reset_email_title: 'Reset Password',
+  reset_email_submit: 'Send reset link',
   auth_signup_success: 'A confirmation email has been sent. Please check your inbox.',
 
   onboard_welcome: 'Welcome! 🎉',
