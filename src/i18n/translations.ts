@@ -429,6 +429,7 @@ const en: TranslationKeys = {
   privacy_start: 'Agree and get started',
   terms_title: 'Terms of Service',
   terms_url: '/terms',
+  privacy_title: 'Privacy Policy',
 };
 
 const zh: TranslationKeys = {
