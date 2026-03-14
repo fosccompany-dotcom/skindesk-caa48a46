@@ -46,6 +46,7 @@ type TranslationKeys = {
   privacy_start: string;
   terms_title: string;
   terms_url: string;
+  privacy_title: string;
 
   // Onboarding
   onboard_welcome: string;
