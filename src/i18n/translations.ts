@@ -38,6 +38,9 @@ type TranslationKeys = {
   auth_kakao: string;
   auth_or: string;
   auth_forgot_password: string;
+  reset_email_sent: string;
+  reset_email_title: string;
+  reset_email_submit: string;
   auth_signup_success: string;
   privacy_agree_policy: string;
   privacy_agree_age: string;
