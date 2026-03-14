@@ -163,7 +163,7 @@ const Treatments = () => {
   const [addRecordOpen, setAddRecordOpen] = useState(false);
   const [addRecordTreatment, setAddRecordTreatment] = useState<ClinicTreatment | null>(null);
   const { cycles, setCycles } = useCycles();
-  const { addRecord } = useRecords();
+  const { addRecord, loading } = useRecords();
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => {
