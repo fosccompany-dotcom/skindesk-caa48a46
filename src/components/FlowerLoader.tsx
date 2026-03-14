@@ -1,4 +1,4 @@
-import logoImg from '@/assets/logo.png';
+import logoImg from '@/assets/logo_transparent.png';
 
 export default function FlowerLoader() {
   return (
