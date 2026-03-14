@@ -209,6 +209,9 @@ const ko: TranslationKeys = {
   terms_title: '이용약관',
   terms_url: '/terms',
   privacy_title: '개인정보처리방침',
+  delete_account: '회원 탈퇴',
+  delete_account_confirm: '정말 탈퇴하시겠어요?',
+  delete_account_desc: '모든 시술 기록이 영구 삭제됩니다. 되돌릴 수 없습니다.',
 
   onboard_welcome: '환영합니다! 🎉',
   onboard_basic_info: '기본 정보를 입력해주세요',
