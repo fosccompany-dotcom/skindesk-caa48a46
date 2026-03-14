@@ -199,6 +199,7 @@ const ko: TranslationKeys = {
   privacy_start: '동의하고 시작하기',
   terms_title: '이용약관',
   terms_url: '/terms',
+  privacy_title: '개인정보처리방침',
 
   onboard_welcome: '환영합니다! 🎉',
   onboard_basic_info: '기본 정보를 입력해주세요',
