@@ -92,6 +92,8 @@ const Cycles = () => {
   const allStatuses = cycles.map(c => ({ cycle: c, ...getCycleStatus(c) }));
   const urgent = allStatuses.filter(s => s.status === 'overdue' || s.status === 'upcoming');
 
+  if (loading) return <FlowerLoader />;
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}

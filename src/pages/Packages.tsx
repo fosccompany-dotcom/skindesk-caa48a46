@@ -211,6 +211,8 @@ const Packages = () => {
   const totalSpent   = filteredPayments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
   const totalBalance = totalCharged - totalSpent;
 
+  if (recordsLoading) return <FlowerLoader />;
+
   return (
     <div className="min-h-screen bg-background">
       <div className="page-header safe-top">

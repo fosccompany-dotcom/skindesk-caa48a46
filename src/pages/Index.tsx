@@ -159,6 +159,8 @@ const Index = () => {
 
   const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
 
+  if (loading) return <FlowerLoader />;
+
   return (
     <div className="min-h-screen bg-background">
 
