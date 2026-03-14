@@ -49,6 +49,7 @@ const layerIconBg: Record<SkinLayer, string> = {
 const Cycles = () => {
   const navigate = useNavigate();
   const { cycles, setCycles } = useCycles();
+  const { loading } = useRecords();
   const [showSchedule, setShowSchedule] = useState(true);
 
   const upcomingEvents = useMemo(() => {
