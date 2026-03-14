@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart, Plus } from 'lucide-react';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
 import { useRecords } from '@/context/RecordsContext';
+import FlowerLoader from '@/components/FlowerLoader';
 import logoImg from '@/assets/logo.png';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
