@@ -812,6 +812,28 @@ const Profile = () => {
               {t('logout')}
             </Button>
 
+            {/* Terms & Privacy Links */}
+            <div className="border-t mt-4 pt-4 space-y-3">
+              <div className="flex items-center justify-center gap-2 text-xs">
+                <Link
+                  to="/terms"
+                  className="text-muted-foreground underline-offset-2 hover:underline"
+                >
+                  {t('terms_title')}
+                </Link>
+                <span className="text-muted-foreground">|</span>
+                <Link
+                  to="/privacy"
+                  className="text-muted-foreground underline-offset-2 hover:underline"
+                >
+                  {t('privacy_title')}
+                </Link>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                v1.0.0-beta
+              </p>
+            </div>
+
             {/* Auto-save indicator */}
             <div className={cn(
               "text-center text-xs py-2 transition-opacity duration-300",
