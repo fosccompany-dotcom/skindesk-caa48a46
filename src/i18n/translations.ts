@@ -559,6 +559,8 @@ const zh: TranslationKeys = {
   privacy_view_full: '查看全文',
   privacy_policy_url: 'https://bloomlog.io/privacy',
   privacy_start: '同意并开始',
+  terms_title: '使用条款',
+  terms_url: '/terms',
 };
 
 export const translations: Record<Language, TranslationKeys> = { ko, en, zh };
