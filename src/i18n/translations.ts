@@ -425,6 +425,8 @@ const en: TranslationKeys = {
   privacy_view_full: 'View full policy',
   privacy_policy_url: 'https://bloomlog.io/privacy',
   privacy_start: 'Agree and get started',
+  terms_title: 'Terms of Service',
+  terms_url: '/terms',
 };
 
 const zh: TranslationKeys = {
