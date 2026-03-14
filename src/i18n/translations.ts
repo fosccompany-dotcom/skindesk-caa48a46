@@ -39,6 +39,11 @@ type TranslationKeys = {
   auth_or: string;
   auth_forgot_password: string;
   auth_signup_success: string;
+  privacy_agree_policy: string;
+  privacy_agree_age: string;
+  privacy_view_full: string;
+  privacy_policy_url: string;
+  privacy_start: string;
 
   // Onboarding
   onboard_welcome: string;
