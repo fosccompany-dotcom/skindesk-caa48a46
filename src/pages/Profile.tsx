@@ -866,14 +866,24 @@ const Profile = () => {
               onClick={async () => {
                 try {
                   const { data: { session } } = await supabase.auth.getSession();
-                  await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`, {
+                  if (!session) {
+                    toast({ title: t('error') || '오류', description: '세션이 없습니다. 다시 로그인해주세요.', variant: 'destructive' });
+                    navigate('/login');
+                    return;
+                  }
+                  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`, {
                     method: 'POST',
-                    headers: { Authorization: `Bearer ${session?.access_token}` },
+                    headers: { Authorization: `Bearer ${session.access_token}` },
                   });
+                  if (!response.ok) {
+                    const errData = await response.json().catch(() => ({}));
+                    throw new Error(errData.error || '탈퇴 처리 중 오류가 발생했습니다.');
+                  }
                   await supabase.auth.signOut();
                   navigate('/login');
-                } catch (e) {
-                  console.error(e);
+                } catch (e: unknown) {
+                  const message = e instanceof Error ? e.message : '탈퇴 처리 중 오류가 발생했습니다.';
+                  toast({ title: '탈퇴 실패', description: message, variant: 'destructive' });
                 }
               }}
             >
