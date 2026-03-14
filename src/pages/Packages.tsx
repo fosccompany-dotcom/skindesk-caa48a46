@@ -42,6 +42,7 @@ const methodStyle: Record<string, { bg: string; text: string }> = {
 // ─────────────────────────────────────────────────────────────────────
 const Packages = () => {
   const [searchParams] = useSearchParams();
+  const { loading: recordsLoading } = useRecords();
   const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
   const defaultTab = searchParams.get('tab') || (savedTabOrder ? savedTabOrder[0] : 'packages');
 
