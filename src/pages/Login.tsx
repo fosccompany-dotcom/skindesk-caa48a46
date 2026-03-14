@@ -9,6 +9,12 @@ import { LANGUAGE_LABELS } from '@/i18n/translations';
 import type { Language } from '@/i18n/translations';
 import { toast } from '@/hooks/use-toast';
 import { Mail, Lock, Loader2 } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 
 const Login = () => {
   const { t, language, setLanguage } = useLanguage();
@@ -16,6 +22,9 @@ const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,6 +56,22 @@ const Login = () => {
       }
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setResetLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: window.location.origin + '/reset-password',
+    });
+    setResetLoading(false);
+    if (error) {
+      toast({ title: error.message, variant: 'destructive' });
+    } else {
+      toast({ title: t('reset_email_sent') });
+      setResetOpen(false);
+      setResetEmail('');
+    }
   };
 
   const LANGUAGES: Language[] = ['ko', 'en', 'zh'];
@@ -147,6 +172,17 @@ const Login = () => {
           </Button>
         </form>
 
+        {/* Forgot Password */}
+        <div className="text-center">
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:underline underline-offset-2"
+            onClick={() => setResetOpen(true)}
+          >
+            {t('auth_forgot_password')}
+          </button>
+        </div>
+
         {/* Footer */}
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
@@ -157,6 +193,35 @@ const Login = () => {
           </p>
         </div>
       </div>
+
+      {/* Reset Password Modal */}
+      <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+        <DialogContent className="max-w-[340px] rounded-2xl">
+          <DialogHeader>
+            <DialogTitle className="text-lg">{t('reset_email_title')}</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleResetPassword} className="space-y-4">
+            <div className="space-y-1.5">
+              <Label className="text-xs">{t('auth_email')}</Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="email"
+                  value={resetEmail}
+                  onChange={e => setResetEmail(e.target.value)}
+                  className="pl-10 h-11 rounded-xl"
+                  placeholder="email@example.com"
+                  required
+                />
+              </div>
+            </div>
+            <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold" disabled={resetLoading}>
+              {resetLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              {t('reset_email_submit')}
+            </Button>
+          </form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

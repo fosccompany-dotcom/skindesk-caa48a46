@@ -470,6 +470,9 @@ const zh: TranslationKeys = {
   auth_kakao: '使用Kakao继续',
   auth_or: '或',
   auth_forgot_password: '忘记密码？',
+  reset_email_sent: '请检查您的邮箱',
+  reset_email_title: '重置密码',
+  reset_email_submit: '发送重置链接',
   auth_signup_success: '确认邮件已发送，请查收。',
 
   onboard_welcome: '欢迎！🎉',
