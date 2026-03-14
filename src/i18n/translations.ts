@@ -548,6 +548,11 @@ const zh: TranslationKeys = {
   calendar_title: '日历',
   packages_title: '疗程券',
   status_title: '治疗状态',
+  privacy_agree_policy: '[必须] 我同意隐私政策',
+  privacy_agree_age: '[必须] 我已年满14周岁',
+  privacy_view_full: '查看全文',
+  privacy_policy_url: 'https://bloomlog.io/privacy',
+  privacy_start: '同意并开始',
 };
 
 export const translations: Record<Language, TranslationKeys> = { ko, en, zh };
