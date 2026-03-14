@@ -586,6 +586,9 @@ const zh: TranslationKeys = {
   terms_title: '使用条款',
   terms_url: '/terms',
   privacy_title: '隐私政策',
+  delete_account: '注销账户',
+  delete_account_confirm: '确认注销？',
+  delete_account_desc: '所有记录将被永久删除，此操作无法撤销。',
 };
 
 export const translations: Record<Language, TranslationKeys> = { ko, en, zh };
