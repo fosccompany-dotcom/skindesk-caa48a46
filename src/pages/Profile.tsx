@@ -829,6 +829,12 @@ const Profile = () => {
                   {t('privacy_title')}
                 </Link>
               </div>
+              <button
+                onClick={() => setDeleteOpen(true)}
+                className="text-xs text-destructive hover:underline underline-offset-2 text-center w-full"
+              >
+                {t('delete_account')}
+              </button>
               <p className="text-xs text-muted-foreground text-center">
                 v1.0.0-beta
               </p>
