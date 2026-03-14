@@ -196,6 +196,8 @@ const ko: TranslationKeys = {
   privacy_view_full: '전문 보기',
   privacy_policy_url: 'https://bloomlog.io/privacy',
   privacy_start: '동의하고 시작하기',
+  terms_title: '이용약관',
+  terms_url: '/terms',
 
   onboard_welcome: '환영합니다! 🎉',
   onboard_basic_info: '기본 정보를 입력해주세요',
