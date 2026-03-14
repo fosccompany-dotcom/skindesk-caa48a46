@@ -328,6 +328,7 @@ const Profile = () => {
   const profileLoaded = useRef(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [saved, setSaved] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const userIdRef = useRef<string | null>(null);
 
   // ── Supabase 프로필 로드 ─────────────────────────────────────────────
