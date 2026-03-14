@@ -445,6 +445,9 @@ const en: TranslationKeys = {
   terms_title: 'Terms of Service',
   terms_url: '/terms',
   privacy_title: 'Privacy Policy',
+  delete_account: 'Delete Account',
+  delete_account_confirm: 'Delete your account?',
+  delete_account_desc: 'All records will be permanently deleted. This cannot be undone.',
 };
 
 const zh: TranslationKeys = {
