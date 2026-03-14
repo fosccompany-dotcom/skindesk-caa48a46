@@ -20,7 +20,7 @@ import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
 import { CyclesProvider } from "./context/CyclesContext";
 import { RecordsProvider } from "./context/RecordsContext";
-import { LanguageProvider } from "./i18n/LanguageContext";
+import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { SeasonProvider } from "./context/SeasonContext";
