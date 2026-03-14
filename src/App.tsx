@@ -14,6 +14,7 @@ import StatusList from "./pages/StatusList";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
