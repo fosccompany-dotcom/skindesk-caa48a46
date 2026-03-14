@@ -42,6 +42,7 @@ const App = () => (
                     {/* 공개 라우트 */}
                     <Route path="/login"  element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/privacy" element={<Privacy />} />
 
                     {/* 보호된 라우트 — 로그인 필요 */}
                     <Route path="/"         element={<PrivateRoute><Index /></PrivateRoute>} />
