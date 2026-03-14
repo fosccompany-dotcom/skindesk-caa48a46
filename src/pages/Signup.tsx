@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Lock, User, Loader2 } from 'lucide-react';
+import { Mail, Lock, User, Loader2, ExternalLink } from 'lucide-react';
 
 const Signup = () => {
   const { t } = useLanguage();
@@ -16,6 +17,8 @@ const Signup = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [agreePolicy, setAgreePolicy] = useState(false);
+  const [agreeAge, setAgreeAge] = useState(false);
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,8 +43,13 @@ const Signup = () => {
     if (error) {
       toast({ title: error.message, variant: 'destructive' });
     } else if (data.user) {
+      // 개인정보 동의 시각 저장
+      await supabase.from('user_profiles').upsert({
+        id: data.user.id,
+        privacy_agreed_at: new Date().toISOString(),
+      });
+
       if (data.session) {
-        // 이메일 확인 없이 바로 로그인
         navigate('/?onboarding=true');
       } else {
         toast({ title: '가입 확인 이메일을 보냈습니다. 이메일을 확인해주세요.' });
@@ -53,7 +61,7 @@ const Signup = () => {
   const handleOAuth = async (provider: 'google' | 'kakao') => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: 'https://skindesk.lovable.app?onboarding=true' },
+      options: { redirectTo: 'https://skindesk.lovable.app?onboarding=true&privacy_agreed=true' },
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
   };
@@ -134,7 +142,48 @@ const Signup = () => {
               <Input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} className="pl-10 h-11 rounded-xl" placeholder="••••••••" required minLength={6} />
             </div>
           </div>
-          <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold bg-[#C9A96E] hover:bg-[#B8955A] text-black" disabled={loading}>
+
+          {/* 개인정보 동의 */}
+          <div className="space-y-2.5 pt-1">
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="agree-policy"
+                checked={agreePolicy}
+                onCheckedChange={(checked) => setAgreePolicy(checked === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="agree-policy" className="text-xs text-foreground leading-tight cursor-pointer">
+                {t('privacy_agree_policy')}
+                <a
+                  href={t('privacy_policy_url')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 ml-1 text-[#C9A96E] underline"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {t('privacy_view_full')}
+                  <ExternalLink className="h-3 w-3" />
+                </a>
+              </label>
+            </div>
+            <div className="flex items-start gap-2">
+              <Checkbox
+                id="agree-age"
+                checked={agreeAge}
+                onCheckedChange={(checked) => setAgreeAge(checked === true)}
+                className="mt-0.5"
+              />
+              <label htmlFor="agree-age" className="text-xs text-foreground leading-tight cursor-pointer">
+                {t('privacy_agree_age')}
+              </label>
+            </div>
+          </div>
+
+          <Button
+            type="submit"
+            className="w-full h-11 rounded-xl text-sm font-semibold bg-[#C9A96E] hover:bg-[#B8955A] text-black"
+            disabled={loading || !agreePolicy || !agreeAge}
+          >
             {loading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
             {t('signup')}
           </Button>
