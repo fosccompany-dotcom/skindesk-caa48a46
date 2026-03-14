@@ -6,6 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { useCycles } from '@/context/CyclesContext';
+import { useRecords } from '@/context/RecordsContext';
+import FlowerLoader from '@/components/FlowerLoader';
 import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
