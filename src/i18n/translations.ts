@@ -564,6 +564,7 @@ const zh: TranslationKeys = {
   privacy_start: '同意并开始',
   terms_title: '使用条款',
   terms_url: '/terms',
+  privacy_title: '隐私政策',
 };
 
 export const translations: Record<Language, TranslationKeys> = { ko, en, zh };
