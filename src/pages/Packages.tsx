@@ -13,6 +13,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import { useRecords } from '@/context/RecordsContext';
+import FlowerLoader from '@/components/FlowerLoader';
 
 // ── 타입 ──────────────────────────────────────────────────────────────
 interface TreatmentPackage {
@@ -40,6 +42,7 @@ const methodStyle: Record<string, { bg: string; text: string }> = {
 // ─────────────────────────────────────────────────────────────────────
 const Packages = () => {
   const [searchParams] = useSearchParams();
+  const { loading: recordsLoading } = useRecords();
   const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
   const defaultTab = searchParams.get('tab') || (savedTabOrder ? savedTabOrder[0] : 'packages');
 
@@ -207,6 +210,8 @@ const Packages = () => {
   const totalCharged = filteredPayments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
   const totalSpent   = filteredPayments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
   const totalBalance = totalCharged - totalSpent;
+
+  if (recordsLoading) return <FlowerLoader />;
 
   return (
     <div className="min-h-screen bg-background">

@@ -8,6 +8,7 @@ import { Progress } from '@/components/ui/progress';
 
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
+import FlowerLoader from '@/components/FlowerLoader';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { TreatmentCycle, TreatmentRecord } from '@/types/skin';
 import { differenceInDays, format, addDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
@@ -57,7 +58,7 @@ const Index = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { cycles } = useCycles();
-  const { records, addRecord, updateRecord, deleteRecord } = useRecords();
+  const { records, loading, addRecord, updateRecord, deleteRecord } = useRecords();
   const { t } = useLanguage();
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
@@ -157,6 +158,8 @@ const Index = () => {
   };
 
   const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
+
+  if (loading) return <FlowerLoader />;
 
   return (
     <div className="min-h-screen bg-background">

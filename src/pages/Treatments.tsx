@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart, Plus } from 'lucide-react';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
 import { useRecords } from '@/context/RecordsContext';
+import FlowerLoader from '@/components/FlowerLoader';
 import logoImg from '@/assets/logo.png';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -162,7 +163,7 @@ const Treatments = () => {
   const [addRecordOpen, setAddRecordOpen] = useState(false);
   const [addRecordTreatment, setAddRecordTreatment] = useState<ClinicTreatment | null>(null);
   const { cycles, setCycles } = useCycles();
-  const { addRecord } = useRecords();
+  const { addRecord, loading } = useRecords();
 
   const toggleFavorite = (id: string) => {
     setFavorites(prev => {
@@ -261,6 +262,8 @@ const Treatments = () => {
       </div>
     );
   };
+
+  if (loading) return <FlowerLoader />;
 
   return (
     <div className="min-h-screen bg-background pb-24">

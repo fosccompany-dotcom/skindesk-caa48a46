@@ -6,6 +6,8 @@ import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { useCycles } from '@/context/CyclesContext';
+import { useRecords } from '@/context/RecordsContext';
+import FlowerLoader from '@/components/FlowerLoader';
 import { SkinLayer, SKIN_LAYER_LABELS, SKIN_LAYER_DESCRIPTIONS, BODY_AREA_LABELS, TreatmentCycle } from '@/types/skin';
 import { differenceInDays, format, addDays } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -47,6 +49,7 @@ const layerIconBg: Record<SkinLayer, string> = {
 const Cycles = () => {
   const navigate = useNavigate();
   const { cycles, setCycles } = useCycles();
+  const { loading } = useRecords();
   const [showSchedule, setShowSchedule] = useState(true);
 
   const upcomingEvents = useMemo(() => {
@@ -88,6 +91,8 @@ const Cycles = () => {
 
   const allStatuses = cycles.map(c => ({ cycle: c, ...getCycleStatus(c) }));
   const urgent = allStatuses.filter(s => s.status === 'overdue' || s.status === 'upcoming');
+
+  if (loading) return <FlowerLoader />;
 
   return (
     <div className="min-h-screen bg-background">

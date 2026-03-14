@@ -27,7 +27,10 @@ import { SeasonProvider } from "./context/SeasonContext";
 
 const queryClient = new QueryClient();
 
+import ErrorBoundary from "./components/ErrorBoundary";
+
 const App = () => (
+  <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <LanguageProvider>
@@ -69,6 +72,7 @@ const App = () => (
       </LanguageProvider>
     </TooltipProvider>
   </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;
