@@ -416,6 +416,11 @@ const en: TranslationKeys = {
   calendar_title: 'Calendar',
   packages_title: 'Vouchers',
   status_title: 'Treatment Status',
+  privacy_agree_policy: '[Required] I agree to the Privacy Policy',
+  privacy_agree_age: '[Required] I am 14 years of age or older',
+  privacy_view_full: 'View full policy',
+  privacy_policy_url: 'https://bloomlog.io/privacy',
+  privacy_start: 'Agree and get started',
 };
 
 const zh: TranslationKeys = {
