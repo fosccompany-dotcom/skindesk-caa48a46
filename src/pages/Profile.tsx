@@ -1,5 +1,6 @@
-import { useState, useMemo, useEffect, useRef } from 'react';
+import { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -328,6 +329,7 @@ const Profile = () => {
   const profileLoaded = useRef(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [saved, setSaved] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const userIdRef = useRef<string | null>(null);
 
   // ── Supabase 프로필 로드 ─────────────────────────────────────────────
@@ -829,6 +831,12 @@ const Profile = () => {
                   {t('privacy_title')}
                 </Link>
               </div>
+              <button
+                onClick={() => setDeleteOpen(true)}
+                className="text-xs text-destructive hover:underline underline-offset-2 text-center w-full"
+              >
+                {t('delete_account')}
+              </button>
               <p className="text-xs text-muted-foreground text-center">
                 v1.0.0-beta
               </p>
@@ -844,6 +852,36 @@ const Profile = () => {
           </div>
 
       </div>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('delete_account_confirm')}</AlertDialogTitle>
+            <AlertDialogDescription>{t('delete_account_desc')}</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={async () => {
+                try {
+                  const { data: { session } } = await supabase.auth.getSession();
+                  await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${session?.access_token}` },
+                  });
+                  await supabase.auth.signOut();
+                  navigate('/login');
+                } catch (e) {
+                  console.error(e);
+                }
+              }}
+            >
+              {t('delete_account')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>);
 
 };

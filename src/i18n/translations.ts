@@ -50,6 +50,9 @@ type TranslationKeys = {
   terms_title: string;
   terms_url: string;
   privacy_title: string;
+  delete_account: string;
+  delete_account_confirm: string;
+  delete_account_desc: string;
 
   // Onboarding
   onboard_welcome: string;
@@ -206,6 +209,9 @@ const ko: TranslationKeys = {
   terms_title: '이용약관',
   terms_url: '/terms',
   privacy_title: '개인정보처리방침',
+  delete_account: '회원 탈퇴',
+  delete_account_confirm: '정말 탈퇴하시겠어요?',
+  delete_account_desc: '모든 시술 기록이 영구 삭제됩니다. 되돌릴 수 없습니다.',
 
   onboard_welcome: '환영합니다! 🎉',
   onboard_basic_info: '기본 정보를 입력해주세요',
@@ -439,6 +445,9 @@ const en: TranslationKeys = {
   terms_title: 'Terms of Service',
   terms_url: '/terms',
   privacy_title: 'Privacy Policy',
+  delete_account: 'Delete Account',
+  delete_account_confirm: 'Delete your account?',
+  delete_account_desc: 'All records will be permanently deleted. This cannot be undone.',
 };
 
 const zh: TranslationKeys = {
@@ -577,6 +586,9 @@ const zh: TranslationKeys = {
   terms_title: '使用条款',
   terms_url: '/terms',
   privacy_title: '隐私政策',
+  delete_account: '注销账户',
+  delete_account_confirm: '确认注销？',
+  delete_account_desc: '所有记录将被永久删除，此操作无法撤销。',
 };
 
 export const translations: Record<Language, TranslationKeys> = { ko, en, zh };
