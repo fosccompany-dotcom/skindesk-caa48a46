@@ -38,6 +38,9 @@ type TranslationKeys = {
   auth_kakao: string;
   auth_or: string;
   auth_forgot_password: string;
+  reset_email_sent: string;
+  reset_email_title: string;
+  reset_email_submit: string;
   auth_signup_success: string;
   privacy_agree_policy: string;
   privacy_agree_age: string;
@@ -191,6 +194,9 @@ const ko: TranslationKeys = {
   auth_kakao: '카카오로 계속하기',
   auth_or: '또는',
   auth_forgot_password: '비밀번호를 잊으셨나요?',
+  reset_email_sent: '이메일을 확인해주세요',
+  reset_email_title: '비밀번호 재설정',
+  reset_email_submit: '재설정 링크 발송',
   auth_signup_success: '가입 확인 이메일을 보냈습니다. 이메일을 확인해주세요.',
   privacy_agree_policy: '[필수] 개인정보처리방침에 동의합니다',
   privacy_agree_age: '[필수] 만 14세 이상입니다',
@@ -326,6 +332,9 @@ const en: TranslationKeys = {
   auth_kakao: 'Continue with Kakao',
   auth_or: 'or',
   auth_forgot_password: 'Forgot password?',
+  reset_email_sent: 'Check your email',
+  reset_email_title: 'Reset Password',
+  reset_email_submit: 'Send reset link',
   auth_signup_success: 'A confirmation email has been sent. Please check your inbox.',
 
   onboard_welcome: 'Welcome! 🎉',
@@ -461,6 +470,9 @@ const zh: TranslationKeys = {
   auth_kakao: '使用Kakao继续',
   auth_or: '或',
   auth_forgot_password: '忘记密码？',
+  reset_email_sent: '请检查您的邮箱',
+  reset_email_title: '重置密码',
+  reset_email_submit: '发送重置链接',
   auth_signup_success: '确认邮件已发送，请查收。',
 
   onboard_welcome: '欢迎！🎉',
