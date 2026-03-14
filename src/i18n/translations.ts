@@ -44,6 +44,9 @@ type TranslationKeys = {
   privacy_view_full: string;
   privacy_policy_url: string;
   privacy_start: string;
+  terms_title: string;
+  terms_url: string;
+  privacy_title: string;
 
   // Onboarding
   onboard_welcome: string;
@@ -194,6 +197,9 @@ const ko: TranslationKeys = {
   privacy_view_full: '전문 보기',
   privacy_policy_url: 'https://bloomlog.io/privacy',
   privacy_start: '동의하고 시작하기',
+  terms_title: '이용약관',
+  terms_url: '/terms',
+  privacy_title: '개인정보처리방침',
 
   onboard_welcome: '환영합니다! 🎉',
   onboard_basic_info: '기본 정보를 입력해주세요',
@@ -421,6 +427,9 @@ const en: TranslationKeys = {
   privacy_view_full: 'View full policy',
   privacy_policy_url: 'https://bloomlog.io/privacy',
   privacy_start: 'Agree and get started',
+  terms_title: 'Terms of Service',
+  terms_url: '/terms',
+  privacy_title: 'Privacy Policy',
 };
 
 const zh: TranslationKeys = {
@@ -553,6 +562,9 @@ const zh: TranslationKeys = {
   privacy_view_full: '查看全文',
   privacy_policy_url: 'https://bloomlog.io/privacy',
   privacy_start: '同意并开始',
+  terms_title: '使用条款',
+  terms_url: '/terms',
+  privacy_title: '隐私政策',
 };
 
 export const translations: Record<Language, TranslationKeys> = { ko, en, zh };

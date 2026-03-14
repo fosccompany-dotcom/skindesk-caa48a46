@@ -19,7 +19,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { supabase } from '@/integrations/supabase/client';
 import { useSeason, SeasonKey } from '@/context/SeasonContext';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import BloomAvatar from '@/components/BloomAvatar';
 import { getBloomInfo, getActiveDays, STAGES } from '@/utils/bloomLevel';
 import { Progress } from '@/components/ui/progress';
@@ -811,6 +811,28 @@ const Profile = () => {
               <LogOut className="h-4 w-4" />
               {t('logout')}
             </Button>
+
+            {/* Terms & Privacy Links */}
+            <div className="border-t mt-4 pt-4 space-y-3">
+              <div className="flex items-center justify-center gap-2 text-xs">
+                <Link
+                  to="/terms"
+                  className="text-muted-foreground underline-offset-2 hover:underline"
+                >
+                  {t('terms_title')}
+                </Link>
+                <span className="text-muted-foreground">|</span>
+                <Link
+                  to="/privacy"
+                  className="text-muted-foreground underline-offset-2 hover:underline"
+                >
+                  {t('privacy_title')}
+                </Link>
+              </div>
+              <p className="text-xs text-muted-foreground text-center">
+                v1.0.0-beta
+              </p>
+            </div>
 
             {/* Auto-save indicator */}
             <div className={cn(
