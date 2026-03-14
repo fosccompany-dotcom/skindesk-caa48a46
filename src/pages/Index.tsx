@@ -95,6 +95,37 @@ const Index = () => {
     setModeDropdownOpen(false);
   };
 
+  // Privacy consent for OAuth users
+  const [privacyConsentOpen, setPrivacyConsentOpen] = useState(false);
+  const [privacyAgreePolicy, setPrivacyAgreePolicy] = useState(false);
+  const [privacyAgreeAge, setPrivacyAgreeAge] = useState(false);
+
+  useEffect(() => {
+    const checkPrivacyConsent = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase
+        .from('user_profiles')
+        .select('privacy_agreed_at')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (!data?.privacy_agreed_at) {
+        setPrivacyConsentOpen(true);
+      }
+    };
+    checkPrivacyConsent();
+  }, []);
+
+  const handlePrivacyConsent = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('user_profiles').upsert({
+      id: user.id,
+      privacy_agreed_at: new Date().toISOString(),
+    });
+    setPrivacyConsentOpen(false);
+  };
+
   // Onboarding
   const [onboardingOpen, setOnboardingOpen] = useState(() => {
     if (searchParams.get('onboarding') === 'true') return true;
@@ -514,6 +545,57 @@ const Index = () => {
         onOpenParse={() => {setModalOpen(false);setParseModalOpen(true);}} />
       
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
+
+      {/* Privacy Consent Modal for OAuth users */}
+      {privacyConsentOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+          <div className="bg-background rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-xl">
+            <div className="text-center space-y-1">
+              <div className="text-2xl">🌸</div>
+              <h2 className="font-bold text-base">{t('privacy_title') || '서비스 이용 전 확인해주세요'}</h2>
+              <p className="text-xs text-muted-foreground">
+                {t('privacy_subtitle') || 'Bloomlog는 시술 기록을 안전하게 보관합니다'}
+              </p>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed border rounded-lg p-3 bg-muted/30">
+              {t('privacy_sensitive_notice') || '시술 기록은 건강에 관한 민감정보입니다. 본인 동의 하에만 수집되며, 서비스 제공 외 목적으로 사용되지 않습니다.'}
+            </p>
+            <div className="space-y-3">
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={privacyAgreePolicy}
+                  onChange={e => setPrivacyAgreePolicy(e.target.checked)}
+                  className="mt-0.5 accent-primary"
+                />
+                <span className="text-xs leading-relaxed">
+                  {t('privacy_agree_policy') || '[필수] 개인정보처리방침에 동의합니다'}
+                  {' '}
+                  <a href="/privacy" target="_blank" className="underline text-primary">
+                    {t('privacy_view_full') || '전문 보기'}
+                  </a>
+                </span>
+              </label>
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={privacyAgreeAge}
+                  onChange={e => setPrivacyAgreeAge(e.target.checked)}
+                  className="mt-0.5 accent-primary"
+                />
+                <span className="text-xs">{t('privacy_agree_age') || '[필수] 만 14세 이상입니다'}</span>
+              </label>
+            </div>
+            <button
+              onClick={handlePrivacyConsent}
+              disabled={!privacyAgreePolicy || !privacyAgreeAge}
+              className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+            >
+              {t('privacy_start') || '동의하고 시작하기'}
+            </button>
+          </div>
+        </div>
+      )}
     </div>);
 
 };
