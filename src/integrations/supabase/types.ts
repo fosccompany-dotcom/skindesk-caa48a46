@@ -43,24 +43,27 @@ export type Database = {
           category: string
           created_at: string | null
           id: string
+          is_default: boolean
           name: string
-          package_id: string
+          package_id: string | null
           sort_order: number | null
         }
         Insert: {
           category: string
           created_at?: string | null
           id?: string
+          is_default?: boolean
           name: string
-          package_id: string
+          package_id?: string | null
           sort_order?: number | null
         }
         Update: {
           category?: string
           created_at?: string | null
           id?: string
+          is_default?: boolean
           name?: string
-          package_id?: string
+          package_id?: string | null
           sort_order?: number | null
         }
         Relationships: [
@@ -235,7 +238,7 @@ export type Database = {
       treatment_packages: {
         Row: {
           body_area: string | null
-          clinic: string
+          clinic: string | null
           created_at: string | null
           expiry_date: string | null
           id: string
@@ -250,7 +253,7 @@ export type Database = {
         }
         Insert: {
           body_area?: string | null
-          clinic: string
+          clinic?: string | null
           created_at?: string | null
           expiry_date?: string | null
           id?: string
@@ -265,7 +268,7 @@ export type Database = {
         }
         Update: {
           body_area?: string | null
-          clinic?: string
+          clinic?: string | null
           created_at?: string | null
           expiry_date?: string | null
           id?: string
@@ -376,6 +379,7 @@ export type Database = {
           goals: string[] | null
           id: string
           name: string | null
+          privacy_agreed_at: string | null
           regions: string[] | null
           skin_type: string | null
           target_areas: string[] | null
@@ -391,6 +395,7 @@ export type Database = {
           goals?: string[] | null
           id: string
           name?: string | null
+          privacy_agreed_at?: string | null
           regions?: string[] | null
           skin_type?: string | null
           target_areas?: string[] | null
@@ -406,6 +411,7 @@ export type Database = {
           goals?: string[] | null
           id?: string
           name?: string | null
+          privacy_agreed_at?: string | null
           regions?: string[] | null
           skin_type?: string | null
           target_areas?: string[] | null
