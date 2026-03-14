@@ -189,6 +189,11 @@ const ko: TranslationKeys = {
   auth_or: '또는',
   auth_forgot_password: '비밀번호를 잊으셨나요?',
   auth_signup_success: '가입 확인 이메일을 보냈습니다. 이메일을 확인해주세요.',
+  privacy_agree_policy: '[필수] 개인정보처리방침에 동의합니다',
+  privacy_agree_age: '[필수] 만 14세 이상입니다',
+  privacy_view_full: '전문 보기',
+  privacy_policy_url: 'https://bloomlog.io/privacy',
+  privacy_start: '동의하고 시작하기',
 
   onboard_welcome: '환영합니다! 🎉',
   onboard_basic_info: '기본 정보를 입력해주세요',
