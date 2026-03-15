@@ -50,6 +50,8 @@ type TranslationKeys = {
   terms_title: string;
   terms_url: string;
   privacy_title: string;
+  privacy_subtitle: string;
+  privacy_sensitive_notice: string;
   delete_account: string;
   delete_account_confirm: string;
   delete_account_desc: string;
@@ -209,6 +211,8 @@ const ko: TranslationKeys = {
   terms_title: '이용약관',
   terms_url: '/terms',
   privacy_title: '개인정보처리방침',
+  privacy_subtitle: 'Bloomlog는 시술 기록을 안전하게 보관합니다',
+  privacy_sensitive_notice: '시술 기록은 건강에 관한 민감정보입니다. 본인 동의 하에만 수집되며, 서비스 제공 외 목적으로 사용되지 않습니다.',
   delete_account: '회원 탈퇴',
   delete_account_confirm: '정말 탈퇴하시겠어요?',
   delete_account_desc: '모든 시술 기록이 영구 삭제됩니다. 되돌릴 수 없습니다.',
@@ -445,6 +449,8 @@ const en: TranslationKeys = {
   terms_title: 'Terms of Service',
   terms_url: '/terms',
   privacy_title: 'Privacy Policy',
+  privacy_subtitle: 'Bloomlog securely stores your treatment records',
+  privacy_sensitive_notice: 'Treatment records are sensitive health information. They are collected only with your consent and are not used for purposes other than providing the service.',
   delete_account: 'Delete Account',
   delete_account_confirm: 'Delete your account?',
   delete_account_desc: 'All records will be permanently deleted. This cannot be undone.',
@@ -586,6 +592,8 @@ const zh: TranslationKeys = {
   terms_title: '使用条款',
   terms_url: '/terms',
   privacy_title: '隐私政策',
+  privacy_subtitle: 'Bloomlog安全保管您的治疗记录',
+  privacy_sensitive_notice: '治疗记录是与健康相关的敏感信息。仅在您同意的情况下收集，不会用于服务提供以外的目的。',
   delete_account: '注销账户',
   delete_account_confirm: '确认注销？',
   delete_account_desc: '所有记录将被永久删除，此操作无法撤销。',
