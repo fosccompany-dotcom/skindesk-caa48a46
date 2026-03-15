@@ -130,12 +130,14 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
         package_id:     isUUID ? null : (record.packageId || null),
         satisfaction:   record.satisfaction,
         notes:          record.notes,
-        memo:           record.memo,
-        amount_paid:    record.amount_paid,
-        clinic_kakao_id:  record.clinic_kakao_id ?? null,
-        clinic_district:  record.clinic_district ?? null,
-        clinic_address:   record.clinic_address ?? null,
-        input_method:     record.input_method ?? 'manual',
+      memo:           record.memo,
+      amount_paid:    record.amount_paid,
+      payment_method: record.payment_method ?? null,
+      payment_amount: record.payment_amount ?? null,
+      clinic_kakao_id:  record.clinic_kakao_id ?? null,
+      clinic_district:  record.clinic_district ?? null,
+      clinic_address:   record.clinic_address ?? null,
+      input_method:     record.input_method ?? 'manual',
       })
       .eq('id', id)
       .select().single();
