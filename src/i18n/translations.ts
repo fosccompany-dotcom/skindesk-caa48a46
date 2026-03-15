@@ -50,6 +50,8 @@ type TranslationKeys = {
   terms_title: string;
   terms_url: string;
   privacy_title: string;
+  privacy_subtitle: string;
+  privacy_sensitive_notice: string;
   delete_account: string;
   delete_account_confirm: string;
   delete_account_desc: string;
