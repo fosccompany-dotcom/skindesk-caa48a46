@@ -263,16 +263,35 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [clinic, setClinic] = useState('밴스 미금');
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
+  const [bodyArea, setBodyArea] = useState('face');
+  const [customBodyArea, setCustomBodyArea] = useState('');
   // 시술권 선택 (package_uuid — 플로우 3)
   const [availPkgs, setAvailPkgs] = useState<{ id: string; name: string; remaining: number }[]>([]);
   const [selectedPkgId, setSelectedPkgId] = useState<string>(''); // '' = 시술권 미사용
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
 
+  const BODY_AREA_OPTIONS_WITH_OTHER = [
+    { value: 'face', label: '얼굴' },
+    { value: 'jaw', label: '턱' },
+    { value: 'eye', label: '눈' },
+    { value: 'lip', label: '입술' },
+    { value: 'body', label: '바디' },
+    { value: 'neck', label: '목' },
+    { value: 'arm', label: '팔' },
+    { value: 'leg', label: '다리' },
+    { value: 'abdomen', label: '복부' },
+    { value: 'back', label: '등' },
+    { value: 'chest', label: '가슴' },
+    { value: 'hip', label: '엉덩이/힙' },
+    { value: '__other', label: '기타 (직접입력)' },
+  ];
+
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
+    setBodyArea('face'); setCustomBodyArea('');
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
   };
@@ -330,12 +349,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
+    const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
     onSave({
       date,
       packageId:     selectedPkgId || '',
       treatmentName: getTreatmentName(),
       skinLayer:     selectedItem.skinLayer,
-      bodyArea:      'face',
+      bodyArea:      resolvedBodyArea,
       notes:         '',
       clinic,
       satisfaction,
@@ -484,6 +504,34 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   onChange={setClinic}
                   placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
                   darkMode={false} />
+              </div>
+
+              {/* 부위 선택 */}
+              <div>
+                <label className="text-xs text-gray-400 block mb-1.5">부위</label>
+                <div className="flex gap-1.5 flex-wrap">
+                  {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
+                    <button key={opt.value}
+                      onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
+                      className={cn(
+                        'px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                        bodyArea === opt.value
+                          ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                          : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'
+                      )}>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                {bodyArea === '__other' && (
+                  <input
+                    type="text"
+                    value={customBodyArea}
+                    onChange={e => setCustomBodyArea(e.target.value)}
+                    placeholder="부위를 입력하세요"
+                    className="w-full mt-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                  />
+                )}
               </div>
 
               {/* 시술권 연결 (보유 시술권이 있을 때만 표시) */}

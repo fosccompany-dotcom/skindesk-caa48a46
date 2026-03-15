@@ -7,7 +7,7 @@ import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Ste
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { CalendarEvent, TreatmentRecord } from '@/types/skin';
+import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
 
 const eventTypeConfig = {
@@ -32,7 +32,7 @@ function RecordCard({ r }: { r: TreatmentRecord }) {
             <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
           </div>
           <div className="flex flex-col gap-1 items-end shrink-0">
-            {r.bodyArea && <BodyAreaBadge area={r.bodyArea} />}
+            {r.bodyArea && <BodyAreaBadge area={r.bodyArea as BodyArea} />}
             {r.skinLayer && <SkinLayerBadge layer={r.skinLayer} />}
           </div>
         </div>

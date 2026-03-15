@@ -118,7 +118,7 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
               </div>
             )}
             <div className="flex gap-1.5 flex-wrap">
-              <BodyAreaBadge area={r.bodyArea} />
+              <BodyAreaBadge area={r.bodyArea as BodyArea} />
               <SkinLayerBadge layer={r.skinLayer} />
             </div>
           </div>
@@ -144,7 +144,7 @@ const CalendarPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<TreatmentRecord | null>(null);
   const [editForm, setEditForm] = useState({
     treatmentName: '', clinic: '', date: '', memo: '', notes: '',
-    skinLayer: 'epidermis' as SkinLayer, bodyArea: 'face' as BodyArea,
+    skinLayer: 'epidermis' as SkinLayer, bodyArea: 'face' as string,
     satisfaction: 0,
   });
 
@@ -298,7 +298,18 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-5 pt-4">
-        <MyTreatmentHistory />
+        <Tabs defaultValue={defaultTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-2 mb-4">
+            <TabsTrigger value="history">시술내역</TabsTrigger>
+            <TabsTrigger value="payments">결제기록</TabsTrigger>
+          </TabsList>
+          <TabsContent value="history">
+            <MyTreatmentHistory />
+          </TabsContent>
+          <TabsContent value="payments">
+            <PaymentHistoryTab />
+          </TabsContent>
+        </Tabs>
       </div>
     </div>
   );
@@ -326,6 +337,7 @@ function PaymentHistoryTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<PaymentRecord>>({});
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [methodFilter, setMethodFilter] = useState<string | null>(null);
 
   const loadPayments = async () => {
     const { data: { user } } = await supabase.auth.getUser();
@@ -397,7 +409,21 @@ function PaymentHistoryTab() {
     setDeleting(null);
   };
 
-  const totalSpent = payments.reduce((s, p) => s + p.amount, 0);
+  const METHOD_FILTER_OPTIONS = [
+    { key: null, label: '전체' },
+    { key: '카드', label: '카드' },
+    { key: '현금', label: '현금' },
+    { key: '포인트', label: '포인트' },
+    { key: '시술결제', label: '시술권' },
+    { key: '서비스', label: '서비스' },
+  ] as const;
+
+  const filteredPayments = useMemo(() => {
+    if (!methodFilter) return payments;
+    return payments.filter(p => p.method === methodFilter);
+  }, [payments, methodFilter]);
+
+  const totalSpent = filteredPayments.reduce((s, p) => s + p.amount, 0);
 
   const LAYER_LABEL: Record<string, string> = { epidermis: '표피', dermis: '진피', subcutaneous: '피하' };
 
@@ -405,6 +431,20 @@ function PaymentHistoryTab() {
 
   return (
     <div className="space-y-3">
+      {/* Payment method filter chips */}
+      <div className="flex gap-1.5 flex-wrap">
+        {METHOD_FILTER_OPTIONS.map(opt => (
+          <button
+            key={opt.label}
+            onClick={() => setMethodFilter(prev => prev === opt.key ? null : opt.key)}
+            className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+              methodFilter === opt.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       <Card className="glass-card">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
@@ -414,7 +454,7 @@ function PaymentHistoryTab() {
             </div>
             <div className="text-right">
               <p className="text-[11px] text-muted-foreground">결제 건수</p>
-              <p className="text-xl font-black text-foreground">{payments.length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
+              <p className="text-xl font-black text-foreground">{filteredPayments.length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
             </div>
           </div>
           <Button
@@ -432,10 +472,10 @@ function PaymentHistoryTab() {
         onClose={() => setShowAddModal(false)}
         onSaved={() => {setShowAddModal(false);loadPayments();}} />
 
-      {payments.length === 0 ?
+      {filteredPayments.length === 0 ?
       <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없습니다</div> :
       <div className="space-y-2">
-          {payments.map((p) => {
+          {filteredPayments.map((p) => {
           const isExpanded = expandedId === p.id;
           const isEditing = editingId === p.id;
           const matched = matchedTreatments[p.id] ?? [];

@@ -66,7 +66,7 @@ export interface TreatmentRecord {
   treatmentName: string;
   shots?: number;
   skinLayer: SkinLayer;
-  bodyArea: BodyArea;
+  bodyArea: string;
   notes?: string;
   clinic: string;
   satisfaction?: 1 | 2 | 3 | 4 | 5;
