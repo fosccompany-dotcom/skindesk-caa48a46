@@ -592,6 +592,8 @@ const zh: TranslationKeys = {
   terms_title: '使用条款',
   terms_url: '/terms',
   privacy_title: '隐私政策',
+  privacy_subtitle: 'Bloomlog安全保管您的治疗记录',
+  privacy_sensitive_notice: '治疗记录是与健康相关的敏感信息。仅在您同意的情况下收集，不会用于服务提供以外的目的。',
   delete_account: '注销账户',
   delete_account_confirm: '确认注销？',
   delete_account_desc: '所有记录将被永久删除，此操作无法撤销。',

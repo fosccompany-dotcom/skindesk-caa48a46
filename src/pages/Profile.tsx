@@ -883,7 +883,7 @@ const Profile = () => {
                   navigate('/login');
                 } catch (e: unknown) {
                   const message = e instanceof Error ? e.message : '탈퇴 처리 중 오류가 발생했습니다.';
-                  toast({ title: '탈퇴 실패', description: message, variant: 'destructive' });
+                  console.error('탈퇴 실패', message);
                 }
               }}
             >
