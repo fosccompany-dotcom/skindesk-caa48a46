@@ -310,6 +310,15 @@ const CalendarPage = () => {
             </TabsTrigger>
           </TabsList>
 
+          <TabsContent value="history">
+            <MyTreatmentHistory />
+          </TabsContent>
+
+          <TabsContent value="payments">
+            <PaymentHistoryTab />
+          </TabsContent>
+        </Tabs>
+      </div>
 
 
 // ─── 결제 기록 탭 컴포넌트 ────────────────────────────────────────────────
