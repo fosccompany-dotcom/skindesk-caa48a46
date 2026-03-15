@@ -112,26 +112,14 @@ const MyTreatmentHistory = () => {
       <div className="grid grid-cols-2 gap-2">
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">총 시술 횟수</p>
-            <p className="text-xl font-black text-primary">{stats.totalCount}<span className="text-xs font-normal ml-0.5">회</span></p>
+            <p className="text-[10px] text-muted-foreground">이번 달 횟수</p>
+            <p className="text-xl font-black text-primary">{stats.thisMonth}<span className="text-xs font-normal ml-0.5">회</span></p>
           </CardContent>
         </Card>
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">이번 달</p>
-            <p className="text-xl font-black text-primary">{stats.thisMonth}<span className="text-xs font-normal ml-0.5">회</span></p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">총 시술 비용</p>
-            <p className="text-lg font-bold text-foreground">{stats.totalSpent.toLocaleString()}<span className="text-xs font-normal ml-0.5">원</span></p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">이용 병원</p>
-            <p className="text-lg font-bold text-foreground">{stats.clinicCount}<span className="text-xs font-normal ml-0.5">곳</span></p>
+            <p className="text-[10px] text-muted-foreground">마지막 시술일</p>
+            <p className="text-xl font-black text-primary">{stats.lastDateLabel}</p>
           </CardContent>
         </Card>
       </div>
