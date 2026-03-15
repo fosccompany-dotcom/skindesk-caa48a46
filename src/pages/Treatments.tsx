@@ -684,11 +684,6 @@ const Treatments = () => {
             setAddRecordTreatment(null);
           }}
           editRecord={null}
-          prefillTreatment={{
-            name: addRecordTreatment.name,
-            skinLayer: CATEGORY_TO_SKIN_LAYER[addRecordTreatment.category] || 'epidermis',
-            clinic: addRecordTreatment.clinic,
-          }}
         />
       )}
       </div>
