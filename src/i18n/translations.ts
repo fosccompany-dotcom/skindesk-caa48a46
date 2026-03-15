@@ -449,6 +449,8 @@ const en: TranslationKeys = {
   terms_title: 'Terms of Service',
   terms_url: '/terms',
   privacy_title: 'Privacy Policy',
+  privacy_subtitle: 'Bloomlog securely stores your treatment records',
+  privacy_sensitive_notice: 'Treatment records are sensitive health information. They are collected only with your consent and are not used for purposes other than providing the service.',
   delete_account: 'Delete Account',
   delete_account_confirm: 'Delete your account?',
   delete_account_desc: 'All records will be permanently deleted. This cannot be undone.',
