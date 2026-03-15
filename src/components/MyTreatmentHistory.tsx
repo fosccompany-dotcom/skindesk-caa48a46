@@ -31,19 +31,19 @@ const BODY_AREA_FILTER_MAP: Record<string, string> = {
   arm: '팔',
 };
 
-// Category options for the dropdown
-const CATEGORY_OPTIONS = [
-  { value: 'all', label: '전체' },
-  { value: 'lifting', label: '레이저 리프팅' },
-  { value: 'botox', label: '보톡스/윤곽주사' },
-  { value: 'filler', label: '필러/실리프팅' },
-  { value: 'booster', label: '스킨부스터' },
-  { value: 'skincare', label: '피부관리/패키지' },
-  { value: 'whitening', label: '미백/기미/색소' },
-  { value: 'acne', label: '여드름/점제거' },
-  { value: 'fat', label: '지방분해/윤곽주사' },
-  { value: 'hair_removal', label: '제모' },
-  { value: 'iv', label: '수액/영양주사' },
+// Category options for the dropdown — labels used to match treatment names
+const CATEGORY_OPTIONS: { value: string; label: string; keywords: string[] }[] = [
+  { value: 'all', label: '전체', keywords: [] },
+  { value: 'lifting', label: '레이저 리프팅', keywords: ['슈링크','울쎄라','세르프','써마지','덴서티','온다','인모드','올리지오','티타늄','텐써마','텐쎄라','엠페이스','볼뉴머','LDM','리프팅'] },
+  { value: 'botox', label: '보톡스/윤곽주사', keywords: ['보톡스','코어톡스','제오민','엘러간','더모톡신','아쿠아톡신','메조보톡스','윤곽주사','다한증'] },
+  { value: 'filler', label: '필러/실리프팅', keywords: ['필러','스컬트라','실리프팅','뉴라미스','아띠에르','레스틸렌','쥬비덤'] },
+  { value: 'booster', label: '스킨부스터', keywords: ['스킨바이브','리쥬란','쥬베룩','레디어스','리바이브','레티젠','리투오','엑소좀','미희','물광','포텐자','콜라스터','스킨부스터'] },
+  { value: 'skincare', label: '피부관리/패키지', keywords: ['Basic','Premium','스케일링','아쿠아필','비타민관리','크라이오','LED','이온자임','신데렐라','백옥','태반','라라필','플라센타','블랙헤드','블랙필','예스필','핑크필','물방울','압출','필링 (단독)'] },
+  { value: 'whitening', label: '미백/기미/색소', keywords: ['엑셀V','피코토닝','레이저토닝','피코프락셀','미백토닝','리팟','알라딘','PHA필링','쿰스필링'] },
+  { value: 'acne', label: '여드름/점제거', keywords: ['점/','쥐젖','사마귀','검버섯','여드름','아크네','포텐자 얼굴','카프리'] },
+  { value: 'fat', label: '지방분해/윤곽주사', keywords: ['지방분해','조각주사','브이올렛','제로핏','벨라콜린'] },
+  { value: 'hair_removal', label: '제모', keywords: ['제모','젠틀맥스','아포지','다이오드','SHR'] },
+  { value: 'iv', label: '수액/영양주사', keywords: ['수액','백옥주사','신데렐라주사','비타민주사','태반주사','줄기세포'] },
 ];
 
 const PERIOD_OPTIONS = [
@@ -52,6 +52,14 @@ const PERIOD_OPTIONS = [
   { value: '6m', label: '6개월 내' },
   { value: '1y', label: '1년 내' },
 ];
+
+const matchesCategory = (treatmentName: string, categoryValue: string): boolean => {
+  if (categoryValue === 'all') return true;
+  const cat = CATEGORY_OPTIONS.find(c => c.value === categoryValue);
+  if (!cat) return true;
+  const name = treatmentName.toLowerCase();
+  return cat.keywords.some(kw => name.includes(kw.toLowerCase()));
+};
 
 const MyTreatmentHistory = () => {
   const { records, loading, updateRecord, deleteRecord } = useRecords();
