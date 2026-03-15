@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea, TreatmentRecord } from '@/types/skin';
+import { CLINIC_PRESETS } from '@/constants/clinicPresets';
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import {
@@ -24,32 +25,25 @@ const MyTreatmentHistory = () => {
   const { records, loading, updateRecord, deleteRecord } = useRecords();
   const { cycles } = useCycles();
   const [search, setSearch] = useState('');
-  const [filterClinic, setFilterClinic] = useState<string | null>(null);
-  const [filterLayer, setFilterLayer] = useState<SkinLayer | null>(null);
+  const [filterPresetId, setFilterPresetId] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TreatmentRecord>>({});
 
-  // Unique clinics from records
-  const clinics = useMemo(() => {
-    const set = new Set(records.map(r => r.clinic));
-    return Array.from(set).sort();
-  }, [records]);
-
   // Filter & search
   const filtered = useMemo(() => {
+    const preset = CLINIC_PRESETS.find(p => p.id === filterPresetId);
     return records
-      .filter(r => !r.packageId) // 시술권 연결 기록은 피부관리 현황에서 제외
+      .filter(r => !r.packageId)
       .filter(r => {
-        if (filterClinic && r.clinic !== filterClinic) return false;
-        if (filterLayer && r.skinLayer !== filterLayer) return false;
+        if (preset && !preset.branches.includes(r.clinic)) return false;
         if (search) {
           const q = search.toLowerCase();
           if (!r.treatmentName.toLowerCase().includes(q) && !r.clinic.toLowerCase().includes(q)) return false;
         }
         return true;
       });
-  }, [records, filterClinic, filterLayer, search]);
+  }, [records, filterPresetId, search]);
 
   // Group by month
   const grouped = useMemo(() => {
@@ -65,15 +59,17 @@ const MyTreatmentHistory = () => {
   // Stats
   const stats = useMemo(() => {
     const nonPkgRecords = records.filter(r => !r.packageId);
-    const totalCount = nonPkgRecords.length;
-    const totalSpent = nonPkgRecords.reduce((s, r) => s + (r.amount_paid || 0), 0);
-    const clinicCount = new Set(nonPkgRecords.map(r => r.clinic)).size;
     const thisMonth = nonPkgRecords.filter(r => {
       const d = parseISO(r.date);
       const now = new Date();
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     }).length;
-    return { totalCount, totalSpent, clinicCount, thisMonth };
+    const sorted = [...nonPkgRecords].sort((a, b) => b.date.localeCompare(a.date));
+    const lastDate = sorted.length > 0 ? sorted[0].date : null;
+    const lastDateLabel = lastDate
+      ? `${parseISO(lastDate).getMonth() + 1}월 ${parseISO(lastDate).getDate()}일`
+      : '없음';
+    return { thisMonth, lastDateLabel };
   }, [records]);
 
   // Find matching cycle for a record
@@ -116,26 +112,14 @@ const MyTreatmentHistory = () => {
       <div className="grid grid-cols-2 gap-2">
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">총 시술 횟수</p>
-            <p className="text-xl font-black text-primary">{stats.totalCount}<span className="text-xs font-normal ml-0.5">회</span></p>
+            <p className="text-[10px] text-muted-foreground">이번 달 횟수</p>
+            <p className="text-xl font-black text-primary">{stats.thisMonth}<span className="text-xs font-normal ml-0.5">회</span></p>
           </CardContent>
         </Card>
         <Card className="bg-primary/5 border-primary/20">
           <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">이번 달</p>
-            <p className="text-xl font-black text-primary">{stats.thisMonth}<span className="text-xs font-normal ml-0.5">회</span></p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">총 시술 비용</p>
-            <p className="text-lg font-bold text-foreground">{stats.totalSpent.toLocaleString()}<span className="text-xs font-normal ml-0.5">원</span></p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-3 text-center">
-            <p className="text-[10px] text-muted-foreground">이용 병원</p>
-            <p className="text-lg font-bold text-foreground">{stats.clinicCount}<span className="text-xs font-normal ml-0.5">곳</span></p>
+            <p className="text-[10px] text-muted-foreground">마지막 시술일</p>
+            <p className="text-xl font-black text-primary">{stats.lastDateLabel}</p>
           </CardContent>
         </Card>
       </div>
@@ -152,40 +136,24 @@ const MyTreatmentHistory = () => {
       </div>
 
       {/* Filters */}
-      <div className="space-y-2">
-        {/* Clinic filter */}
-        <div className="flex gap-1.5 flex-wrap">
+      <div className="flex gap-1.5 flex-wrap">
+        <button
+          onClick={() => setFilterPresetId(null)}
+          className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+            !filterPresetId ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+        >
+          전체
+        </button>
+        {CLINIC_PRESETS.map(p => (
           <button
-            onClick={() => setFilterClinic(null)}
+            key={p.id}
+            onClick={() => setFilterPresetId(prev => prev === p.id ? null : p.id)}
             className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-              !filterClinic ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+              filterPresetId === p.id ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
           >
-            전체 병원
+            {p.label}
           </button>
-          {clinics.map(c => (
-            <button
-              key={c}
-              onClick={() => setFilterClinic(prev => prev === c ? null : c)}
-              className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                filterClinic === c ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        {/* Layer filter */}
-        <div className="flex gap-1.5">
-          {(['epidermis', 'dermis', 'subcutaneous'] as SkinLayer[]).map(layer => (
-            <button
-              key={layer}
-              onClick={() => setFilterLayer(prev => prev === layer ? null : layer)}
-              className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                filterLayer === layer ? LAYER_COLOR[layer] : 'bg-card border-border/50 text-muted-foreground')}
-            >
-              {SKIN_LAYER_LABELS[layer]}
-            </button>
-          ))}
-        </div>
+        ))}
       </div>
 
       {/* Records by month */}
