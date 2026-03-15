@@ -433,15 +433,16 @@ function PaymentHistoryTab() {
     <div className="space-y-3">
       <Card className="glass-card">
         <CardContent className="p-4">
-          <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
               <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
             </div>
             <div className="text-right">
               <p className="text-[11px] text-muted-foreground">결제 건수</p>
-              <p className="text-xl font-black text-foreground">{payments.length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
+              <p className="text-xl font-black text-foreground">{filteredPayments.length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
             </div>
+          </div>
           </div>
           <Button
             onClick={() => setShowAddModal(true)}
