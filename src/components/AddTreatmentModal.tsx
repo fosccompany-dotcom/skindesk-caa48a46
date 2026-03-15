@@ -266,12 +266,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   // 시술권 선택 (package_uuid — 플로우 3)
   const [availPkgs, setAvailPkgs] = useState<{ id: string; name: string; remaining: number }[]>([]);
   const [selectedPkgId, setSelectedPkgId] = useState<string>(''); // '' = 시술권 미사용
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState<string>('');
 
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
     setAvailPkgs([]); setSelectedPkgId('');
+    setPaymentMethod(null); setPaymentAmount('');
   };
   const handleClose = () => { reset(); onClose(); };
 
