@@ -319,6 +319,8 @@ export type Database = {
           notes: string | null
           package_id: string | null
           package_uuid: string | null
+          payment_amount: number | null
+          payment_method: string | null
           satisfaction: number | null
           shop_category: string | null
           shots: number | null
@@ -342,6 +344,8 @@ export type Database = {
           notes?: string | null
           package_id?: string | null
           package_uuid?: string | null
+          payment_amount?: number | null
+          payment_method?: string | null
           satisfaction?: number | null
           shop_category?: string | null
           shots?: number | null
@@ -365,6 +369,8 @@ export type Database = {
           notes?: string | null
           package_id?: string | null
           package_uuid?: string | null
+          payment_amount?: number | null
+          payment_method?: string | null
           satisfaction?: number | null
           shop_category?: string | null
           shots?: number | null

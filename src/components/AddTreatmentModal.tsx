@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package, CreditCard, Coins, Banknote, Gift } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ClinicSearchInput from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
@@ -266,12 +266,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   // 시술권 선택 (package_uuid — 플로우 3)
   const [availPkgs, setAvailPkgs] = useState<{ id: string; name: string; remaining: number }[]>([]);
   const [selectedPkgId, setSelectedPkgId] = useState<string>(''); // '' = 시술권 미사용
+  const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
+  const [paymentAmount, setPaymentAmount] = useState<string>('');
 
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
     setAvailPkgs([]); setSelectedPkgId('');
+    setPaymentMethod(null); setPaymentAmount('');
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -315,12 +318,20 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
   };
 
+  // 결제 수단 → DB 값 매핑
+  const resolvePaymentMethod = (): string | null => {
+    if (selectedPkgId) return 'package';
+    return paymentMethod;
+  };
+
   const handleSave = () => {
     if (!selectedItem) return;
+    const pm = resolvePaymentMethod();
+    const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
+      ? parseInt(paymentAmount, 10) || null
+      : null;
     onSave({
       date,
-      // selectedPkgId가 UUID면 그것을 사용 (플로우 3: 시술권 차감)
-      // 없으면 빈 문자열 (포인트/잔액 변동 없음)
       packageId:     selectedPkgId || '',
       treatmentName: getTreatmentName(),
       skinLayer:     selectedItem.skinLayer,
@@ -329,6 +340,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       clinic,
       satisfaction,
       memo,
+      payment_method: pm,
+      payment_amount: amt,
     });
     handleClose();
   };
@@ -504,6 +517,51 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     <p className="text-[10px] text-indigo-400 mt-1">
                       ✅ 저장 시 시술권 1회 차감 (결제·잔액 변동 없음)
                     </p>
+                  )}
+                </div>
+              )}
+
+              {/* 결제 수단 (시술권 미사용 시에만 표시) */}
+              {!selectedPkgId && (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1.5">결제 수단 (선택)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      { key: 'card',    label: '카드 결제',    desc: '신용/체크카드 직접 결제', icon: CreditCard },
+                      { key: 'point',   label: '포인트 차감',  desc: '병원 선불 잔액 차감',     icon: Coins },
+                      { key: 'cash',    label: '현금 결제',    desc: '현금 직접 결제',          icon: Banknote },
+                      { key: 'service', label: '서비스',       desc: '무료 제공',               icon: Gift },
+                    ] as const).map(m => (
+                      <button key={m.key}
+                        onClick={() => setPaymentMethod(prev => prev === m.key ? null : m.key)}
+                        className={cn(
+                          'flex flex-col items-center gap-1 px-3 py-3 rounded-xl border text-center transition-all',
+                          paymentMethod === m.key
+                            ? 'border-[#C9A96E] bg-[#C9A96E]/10 ring-1 ring-[#C9A96E]/30'
+                            : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                        )}>
+                        <m.icon size={18} className={paymentMethod === m.key ? 'text-[#C9A96E]' : 'text-gray-400'} />
+                        <span className={cn('text-xs font-medium', paymentMethod === m.key ? 'text-[#C9A96E]' : 'text-gray-600')}>{m.label}</span>
+                        <span className="text-[10px] text-gray-400 leading-tight">{m.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {/* 결제 금액 (서비스 제외) */}
+                  {paymentMethod && paymentMethod !== 'service' && (
+                    <div className="mt-3">
+                      <label className="text-xs text-gray-400 block mb-1.5">결제 금액 (선택)</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          value={paymentAmount}
+                          onChange={e => setPaymentAmount(e.target.value)}
+                          placeholder="0"
+                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50 pr-10"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">원</span>
+                      </div>
+                    </div>
                   )}
                 </div>
               )}
