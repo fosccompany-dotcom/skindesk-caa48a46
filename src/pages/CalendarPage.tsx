@@ -409,7 +409,21 @@ function PaymentHistoryTab() {
     setDeleting(null);
   };
 
-  const totalSpent = payments.reduce((s, p) => s + p.amount, 0);
+  const METHOD_FILTER_OPTIONS = [
+    { key: null, label: '전체' },
+    { key: '카드', label: '카드' },
+    { key: '현금', label: '현금' },
+    { key: '포인트', label: '포인트' },
+    { key: '시술결제', label: '시술권' },
+    { key: '서비스', label: '서비스' },
+  ] as const;
+
+  const filteredPayments = useMemo(() => {
+    if (!methodFilter) return payments;
+    return payments.filter(p => p.method === methodFilter);
+  }, [payments, methodFilter]);
+
+  const totalSpent = filteredPayments.reduce((s, p) => s + p.amount, 0);
 
   const LAYER_LABEL: Record<string, string> = { epidermis: '표피', dermis: '진피', subcutaneous: '피하' };
 
