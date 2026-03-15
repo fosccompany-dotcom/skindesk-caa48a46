@@ -144,7 +144,7 @@ const CalendarPage = () => {
   const [deleteTarget, setDeleteTarget] = useState<TreatmentRecord | null>(null);
   const [editForm, setEditForm] = useState({
     treatmentName: '', clinic: '', date: '', memo: '', notes: '',
-    skinLayer: 'epidermis' as SkinLayer, bodyArea: 'face' as BodyArea,
+    skinLayer: 'epidermis' as SkinLayer, bodyArea: 'face' as string,
     satisfaction: 0,
   });
 

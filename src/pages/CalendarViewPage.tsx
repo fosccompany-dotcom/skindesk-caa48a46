@@ -7,7 +7,7 @@ import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Ste
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { CalendarEvent, TreatmentRecord } from '@/types/skin';
+import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
 
 const eventTypeConfig = {
