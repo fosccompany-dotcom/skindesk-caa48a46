@@ -318,12 +318,20 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
   };
 
+  // 결제 수단 → DB 값 매핑
+  const resolvePaymentMethod = (): string | null => {
+    if (selectedPkgId) return 'package';
+    return paymentMethod;
+  };
+
   const handleSave = () => {
     if (!selectedItem) return;
+    const pm = resolvePaymentMethod();
+    const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
+      ? parseInt(paymentAmount, 10) || null
+      : null;
     onSave({
       date,
-      // selectedPkgId가 UUID면 그것을 사용 (플로우 3: 시술권 차감)
-      // 없으면 빈 문자열 (포인트/잔액 변동 없음)
       packageId:     selectedPkgId || '',
       treatmentName: getTreatmentName(),
       skinLayer:     selectedItem.skinLayer,
@@ -332,6 +340,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       clinic,
       satisfaction,
       memo,
+      payment_method: pm,
+      payment_amount: amt,
     });
     handleClose();
   };
