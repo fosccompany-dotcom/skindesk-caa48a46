@@ -431,9 +431,23 @@ function PaymentHistoryTab() {
 
   return (
     <div className="space-y-3">
+      {/* Payment method filter chips */}
+      <div className="flex gap-1.5 flex-wrap">
+        {METHOD_FILTER_OPTIONS.map(opt => (
+          <button
+            key={opt.label}
+            onClick={() => setMethodFilter(prev => prev === opt.key ? null : opt.key)}
+            className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+              methodFilter === opt.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
       <Card className="glass-card">
         <CardContent className="p-4">
-      <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between">
             <div>
               <p className="text-[11px] text-muted-foreground">총 결제 금액</p>
               <p className="text-xl font-black text-foreground">{totalSpent.toLocaleString()}<span className="text-sm font-normal text-muted-foreground ml-1">원</span></p>
@@ -442,7 +456,6 @@ function PaymentHistoryTab() {
               <p className="text-[11px] text-muted-foreground">결제 건수</p>
               <p className="text-xl font-black text-foreground">{filteredPayments.length}<span className="text-sm font-normal text-muted-foreground ml-1">건</span></p>
             </div>
-          </div>
           </div>
           <Button
             onClick={() => setShowAddModal(true)}
@@ -459,10 +472,10 @@ function PaymentHistoryTab() {
         onClose={() => setShowAddModal(false)}
         onSaved={() => {setShowAddModal(false);loadPayments();}} />
 
-      {payments.length === 0 ?
+      {filteredPayments.length === 0 ?
       <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없습니다</div> :
       <div className="space-y-2">
-          {payments.map((p) => {
+          {filteredPayments.map((p) => {
           const isExpanded = expandedId === p.id;
           const isEditing = editingId === p.id;
           const matched = matchedTreatments[p.id] ?? [];
