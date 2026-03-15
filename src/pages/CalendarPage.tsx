@@ -118,7 +118,7 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
               </div>
             )}
             <div className="flex gap-1.5 flex-wrap">
-              <BodyAreaBadge area={r.bodyArea} />
+              <BodyAreaBadge area={r.bodyArea as BodyArea} />
               <SkinLayerBadge layer={r.skinLayer} />
             </div>
           </div>
