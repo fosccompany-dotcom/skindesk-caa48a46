@@ -263,16 +263,35 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [clinic, setClinic] = useState('밴스 미금');
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
+  const [bodyArea, setBodyArea] = useState('face');
+  const [customBodyArea, setCustomBodyArea] = useState('');
   // 시술권 선택 (package_uuid — 플로우 3)
   const [availPkgs, setAvailPkgs] = useState<{ id: string; name: string; remaining: number }[]>([]);
   const [selectedPkgId, setSelectedPkgId] = useState<string>(''); // '' = 시술권 미사용
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
 
+  const BODY_AREA_OPTIONS_WITH_OTHER = [
+    { value: 'face', label: '얼굴' },
+    { value: 'jaw', label: '턱' },
+    { value: 'eye', label: '눈' },
+    { value: 'lip', label: '입술' },
+    { value: 'body', label: '바디' },
+    { value: 'neck', label: '목' },
+    { value: 'arm', label: '팔' },
+    { value: 'leg', label: '다리' },
+    { value: 'abdomen', label: '복부' },
+    { value: 'back', label: '등' },
+    { value: 'chest', label: '가슴' },
+    { value: 'hip', label: '엉덩이/힙' },
+    { value: '__other', label: '기타 (직접입력)' },
+  ];
+
   const reset = () => {
     setStep(1); setCatId(null); setItemId(null); setShots(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
+    setBodyArea('face'); setCustomBodyArea('');
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
   };
