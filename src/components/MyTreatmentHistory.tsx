@@ -258,12 +258,6 @@ const MyTreatmentHistory = () => {
                                 )) : <span className="text-foreground font-medium">-</span>}
                               </div>
                             </div>
-                            <div>
-                              <span className="text-muted-foreground">입력 방식</span>
-                              <p className="font-medium text-foreground">
-                                {r.input_method === 'ai_parsed' ? 'AI 파싱' : r.input_method === 'kakao_imported' ? '카카오 가져오기' : '수동 입력'}
-                              </p>
-                            </div>
                           </div>
 
                           {r.memo && (
