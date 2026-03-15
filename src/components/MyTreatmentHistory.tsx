@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea, TreatmentRecord } from '@/types/skin';
+import { CLINIC_PRESETS } from '@/constants/clinicPresets';
 import { format, parseISO } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import {
