@@ -211,6 +211,8 @@ const ko: TranslationKeys = {
   terms_title: '이용약관',
   terms_url: '/terms',
   privacy_title: '개인정보처리방침',
+  privacy_subtitle: 'Bloomlog는 시술 기록을 안전하게 보관합니다',
+  privacy_sensitive_notice: '시술 기록은 건강에 관한 민감정보입니다. 본인 동의 하에만 수집되며, 서비스 제공 외 목적으로 사용되지 않습니다.',
   delete_account: '회원 탈퇴',
   delete_account_confirm: '정말 탈퇴하시겠어요?',
   delete_account_desc: '모든 시술 기록이 영구 삭제됩니다. 되돌릴 수 없습니다.',
