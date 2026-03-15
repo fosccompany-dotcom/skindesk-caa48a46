@@ -51,13 +51,6 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) { setResults([]); setOpen(false); setLoading(false); return; }
-      const { data, error } = await supabase.functions.invoke('search-clinic', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        body: undefined,
-      });
-      // supabase.functions.invoke doesn't support query params, use fetch directly
       const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/search-clinic?query=${encodeURIComponent(q)}`;
       const res = await fetch(url, {
         headers: {
