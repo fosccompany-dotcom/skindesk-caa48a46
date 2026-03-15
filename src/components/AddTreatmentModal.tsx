@@ -521,6 +521,51 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 </div>
               )}
 
+              {/* 결제 수단 (시술권 미사용 시에만 표시) */}
+              {!selectedPkgId && (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1.5">결제 수단 (선택)</label>
+                  <div className="grid grid-cols-2 gap-2">
+                    {([
+                      { key: 'card',    label: '카드 결제',    desc: '신용/체크카드 직접 결제', icon: CreditCard },
+                      { key: 'point',   label: '포인트 차감',  desc: '병원 선불 잔액 차감',     icon: Coins },
+                      { key: 'cash',    label: '현금 결제',    desc: '현금 직접 결제',          icon: Banknote },
+                      { key: 'service', label: '서비스',       desc: '무료 제공',               icon: Gift },
+                    ] as const).map(m => (
+                      <button key={m.key}
+                        onClick={() => setPaymentMethod(prev => prev === m.key ? null : m.key)}
+                        className={cn(
+                          'flex flex-col items-center gap-1 px-3 py-3 rounded-xl border text-center transition-all',
+                          paymentMethod === m.key
+                            ? 'border-[#C9A96E] bg-[#C9A96E]/10 ring-1 ring-[#C9A96E]/30'
+                            : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                        )}>
+                        <m.icon size={18} className={paymentMethod === m.key ? 'text-[#C9A96E]' : 'text-gray-400'} />
+                        <span className={cn('text-xs font-medium', paymentMethod === m.key ? 'text-[#C9A96E]' : 'text-gray-600')}>{m.label}</span>
+                        <span className="text-[10px] text-gray-400 leading-tight">{m.desc}</span>
+                      </button>
+                    ))}
+                  </div>
+                  {/* 결제 금액 (서비스 제외) */}
+                  {paymentMethod && paymentMethod !== 'service' && (
+                    <div className="mt-3">
+                      <label className="text-xs text-gray-400 block mb-1.5">결제 금액 (선택)</label>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          inputMode="numeric"
+                          value={paymentAmount}
+                          onChange={e => setPaymentAmount(e.target.value)}
+                          placeholder="0"
+                          className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50 pr-10"
+                        />
+                        <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-gray-400">원</span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* 만족도 */}
               <div>
                 <label className="text-xs text-gray-400 block mb-1.5">만족도</label>

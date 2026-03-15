@@ -34,6 +34,8 @@ const rowToRecord = (row: any): TreatmentRecord => ({
   clinic_district:  row.clinic_district,
   clinic_address:   row.clinic_address,
   input_method:     row.input_method,
+  payment_method:   row.payment_method,
+  payment_amount:   row.payment_amount,
 });
 
 export function RecordsProvider({ children }: { children: ReactNode }) {

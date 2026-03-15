@@ -76,6 +76,8 @@ export interface TreatmentRecord {
   clinic_district?: string | null;
   clinic_address?: string | null;
   input_method?: 'manual' | 'ai_parsed' | 'kakao_imported';
+  payment_method?: string | null;
+  payment_amount?: number | null;
 }
 
 export interface CalendarEvent {
