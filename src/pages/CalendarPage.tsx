@@ -337,6 +337,7 @@ function PaymentHistoryTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<PaymentRecord>>({});
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [methodFilter, setMethodFilter] = useState<string | null>(null);
 
   const loadPayments = async () => {
     const { data: { user } } = await supabase.auth.getUser();
