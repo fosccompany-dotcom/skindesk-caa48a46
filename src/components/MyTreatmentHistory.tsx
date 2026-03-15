@@ -59,15 +59,17 @@ const MyTreatmentHistory = () => {
   // Stats
   const stats = useMemo(() => {
     const nonPkgRecords = records.filter(r => !r.packageId);
-    const totalCount = nonPkgRecords.length;
-    const totalSpent = nonPkgRecords.reduce((s, r) => s + (r.amount_paid || 0), 0);
-    const clinicCount = new Set(nonPkgRecords.map(r => r.clinic)).size;
     const thisMonth = nonPkgRecords.filter(r => {
       const d = parseISO(r.date);
       const now = new Date();
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
     }).length;
-    return { totalCount, totalSpent, clinicCount, thisMonth };
+    const sorted = [...nonPkgRecords].sort((a, b) => b.date.localeCompare(a.date));
+    const lastDate = sorted.length > 0 ? sorted[0].date : null;
+    const lastDateLabel = lastDate
+      ? `${parseISO(lastDate).getMonth() + 1}월 ${parseISO(lastDate).getDate()}일`
+      : '없음';
+    return { thisMonth, lastDateLabel };
   }, [records]);
 
   // Find matching cycle for a record
