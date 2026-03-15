@@ -2,11 +2,10 @@ import { useState, useMemo } from 'react';
 import { useRecords } from '@/context/RecordsContext';
 import { useCycles } from '@/context/CyclesContext';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea, TreatmentRecord } from '@/types/skin';
-import { CLINIC_PRESETS } from '@/constants/clinicPresets';
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, subMonths } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import {
   Search, ChevronDown, ChevronUp, Pencil, Trash2, Check, X, Star,
@@ -21,29 +20,122 @@ const LAYER_COLOR: Record<string, string> = {
   subcutaneous: 'bg-violet-100 text-violet-700 border-violet-200',
 };
 
+// Body area mapping for filter chips
+const BODY_AREA_FILTER_MAP: Record<string, string> = {
+  face: '얼굴',
+  jaw: '턱',
+  eye: '눈',
+  lip: '입술',
+  body: '바디',
+  leg: '다리',
+  arm: '팔',
+};
+
+// Category options for the dropdown
+const CATEGORY_OPTIONS = [
+  { value: 'all', label: '전체' },
+  { value: 'lifting', label: '레이저 리프팅' },
+  { value: 'botox', label: '보톡스/윤곽주사' },
+  { value: 'filler', label: '필러/실리프팅' },
+  { value: 'booster', label: '스킨부스터' },
+  { value: 'skincare', label: '피부관리/패키지' },
+  { value: 'whitening', label: '미백/기미/색소' },
+  { value: 'acne', label: '여드름/점제거' },
+  { value: 'fat', label: '지방분해/윤곽주사' },
+  { value: 'hair_removal', label: '제모' },
+  { value: 'iv', label: '수액/영양주사' },
+];
+
+const PERIOD_OPTIONS = [
+  { value: 'all', label: '전체' },
+  { value: '3m', label: '3개월 내' },
+  { value: '6m', label: '6개월 내' },
+  { value: '1y', label: '1년 내' },
+];
+
 const MyTreatmentHistory = () => {
   const { records, loading, updateRecord, deleteRecord } = useRecords();
   const { cycles } = useCycles();
   const [search, setSearch] = useState('');
-  const [filterPresetId, setFilterPresetId] = useState<string | null>(null);
+  const [periodFilter, setPeriodFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [bodyAreaFilter, setBodyAreaFilter] = useState<string | null>(null);
+  const [clinicFilter, setClinicFilter] = useState<string | null>(null);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TreatmentRecord>>({});
 
+  // Derive dynamic body area chips from records
+  const bodyAreaChips = useMemo(() => {
+    const nonPkgRecords = records.filter(r => !r.packageId);
+    const areaSet = new Set<string>();
+    let hasOther = false;
+    nonPkgRecords.forEach(r => {
+      if (r.bodyArea) {
+        if (BODY_AREA_FILTER_MAP[r.bodyArea]) {
+          areaSet.add(r.bodyArea);
+        } else {
+          hasOther = true;
+        }
+      }
+    });
+    const chips = Array.from(areaSet).map(key => ({
+      key,
+      label: BODY_AREA_FILTER_MAP[key],
+    }));
+    if (hasOther) {
+      chips.push({ key: '__other', label: '기타' });
+    }
+    return chips;
+  }, [records]);
+
+  // Derive dynamic clinic chips from records
+  const clinicChips = useMemo(() => {
+    const nonPkgRecords = records.filter(r => !r.packageId);
+    const clinicSet = new Set<string>();
+    nonPkgRecords.forEach(r => {
+      if (r.clinic) clinicSet.add(r.clinic);
+    });
+    return Array.from(clinicSet).sort();
+  }, [records]);
+
   // Filter & search
   const filtered = useMemo(() => {
-    const preset = CLINIC_PRESETS.find(p => p.id === filterPresetId);
+    const now = new Date();
     return records
       .filter(r => !r.packageId)
       .filter(r => {
-        if (preset && !preset.branches.includes(r.clinic)) return false;
+        // Period filter
+        if (periodFilter !== 'all') {
+          const d = parseISO(r.date);
+          if (periodFilter === '3m' && d < subMonths(now, 3)) return false;
+          if (periodFilter === '6m' && d < subMonths(now, 6)) return false;
+          if (periodFilter === '1y' && d < subMonths(now, 12)) return false;
+        }
+        // Category filter
+        if (categoryFilter !== 'all' && r.shop_category !== categoryFilter) {
+          // Match by shop_category field stored on the record
+          // If no shop_category, skip
+          if (!r.shop_category || r.shop_category !== categoryFilter) return false;
+        }
+        // Body area filter
+        if (bodyAreaFilter) {
+          if (bodyAreaFilter === '__other') {
+            if (!r.bodyArea || BODY_AREA_FILTER_MAP[r.bodyArea]) return false;
+          } else {
+            if (r.bodyArea !== bodyAreaFilter) return false;
+          }
+        }
+        // Clinic filter
+        if (clinicFilter && r.clinic !== clinicFilter) return false;
+        // Search
         if (search) {
           const q = search.toLowerCase();
           if (!r.treatmentName.toLowerCase().includes(q) && !r.clinic.toLowerCase().includes(q)) return false;
         }
         return true;
       });
-  }, [records, filterPresetId, search]);
+  }, [records, periodFilter, categoryFilter, bodyAreaFilter, clinicFilter, search]);
 
   // Group by month
   const grouped = useMemo(() => {
@@ -135,25 +227,89 @@ const MyTreatmentHistory = () => {
         />
       </div>
 
-      {/* Filters */}
-      <div className="flex gap-1.5 flex-wrap">
-        <button
-          onClick={() => setFilterPresetId(null)}
-          className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-            !filterPresetId ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
-        >
-          전체
-        </button>
-        {CLINIC_PRESETS.map(p => (
-          <button
-            key={p.id}
-            onClick={() => setFilterPresetId(prev => prev === p.id ? null : p.id)}
-            className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-              filterPresetId === p.id ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
-          >
-            {p.label}
-          </button>
-        ))}
+      {/* Row 1 — 기간 dropdown */}
+      <div className="space-y-2">
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="text-[10px] text-muted-foreground mb-1 block">기간</label>
+            <Select value={periodFilter} onValueChange={setPeriodFilter}>
+              <SelectTrigger className="h-8 text-xs rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PERIOD_OPTIONS.map(o => (
+                  <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          {/* Row 2 — 시술종류 dropdown */}
+          <div>
+            <label className="text-[10px] text-muted-foreground mb-1 block">시술종류</label>
+            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+              <SelectTrigger className="h-8 text-xs rounded-lg">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {CATEGORY_OPTIONS.map(o => (
+                  <SelectItem key={o.value} value={o.value} className="text-xs">{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+
+        {/* Row 3 — 부위 chips */}
+        {bodyAreaChips.length > 0 && (
+          <div>
+            <label className="text-[10px] text-muted-foreground mb-1 block">부위</label>
+            <div className="flex gap-1.5 flex-wrap">
+              <button
+                onClick={() => setBodyAreaFilter(null)}
+                className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                  !bodyAreaFilter ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+              >
+                전체
+              </button>
+              {bodyAreaChips.map(chip => (
+                <button
+                  key={chip.key}
+                  onClick={() => setBodyAreaFilter(prev => prev === chip.key ? null : chip.key)}
+                  className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                    bodyAreaFilter === chip.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Row 3 — 병원 chips */}
+        {clinicChips.length > 0 && (
+          <div>
+            <label className="text-[10px] text-muted-foreground mb-1 block">병원</label>
+            <div className="flex gap-1.5 flex-wrap">
+              <button
+                onClick={() => setClinicFilter(null)}
+                className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                  !clinicFilter ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+              >
+                전체
+              </button>
+              {clinicChips.map(clinic => (
+                <button
+                  key={clinic}
+                  onClick={() => setClinicFilter(prev => prev === clinic ? null : clinic)}
+                  className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                    clinicFilter === clinic ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+                >
+                  {clinic}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Records by month */}
@@ -212,7 +368,11 @@ const MyTreatmentHistory = () => {
                           <div className="grid grid-cols-2 gap-2 text-[11px]">
                             <div>
                               <span className="text-muted-foreground">부위</span>
-                              <p className="font-medium text-foreground">{r.bodyArea ? BODY_AREA_LABELS[r.bodyArea as BodyArea] : '-'}</p>
+                              <p className="font-medium text-foreground">
+                                {r.bodyArea
+                                  ? (BODY_AREA_LABELS[r.bodyArea as BodyArea] || BODY_AREA_FILTER_MAP[r.bodyArea] || r.bodyArea)
+                                  : '-'}
+                              </p>
                             </div>
                             <div>
                               <span className="text-muted-foreground">샷 수</span>
