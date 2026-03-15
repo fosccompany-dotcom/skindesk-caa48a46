@@ -867,7 +867,7 @@ const Profile = () => {
                 try {
                   const { data: { session } } = await supabase.auth.getSession();
                   if (!session) {
-                    toast({ title: t('error') || '오류', description: '세션이 없습니다. 다시 로그인해주세요.', variant: 'destructive' });
+                    console.error('세션이 없습니다.');
                     navigate('/login');
                     return;
                   }
