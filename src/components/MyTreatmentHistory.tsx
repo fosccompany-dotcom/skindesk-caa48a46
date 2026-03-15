@@ -120,12 +120,8 @@ const MyTreatmentHistory = () => {
           if (periodFilter === '6m' && d < subMonths(now, 6)) return false;
           if (periodFilter === '1y' && d < subMonths(now, 12)) return false;
         }
-        // Category filter
-        if (categoryFilter !== 'all' && r.shop_category !== categoryFilter) {
-          // Match by shop_category field stored on the record
-          // If no shop_category, skip
-          if (!r.shop_category || r.shop_category !== categoryFilter) return false;
-        }
+        // Category filter — match by treatment name keywords
+        if (categoryFilter !== 'all' && !matchesCategory(r.treatmentName, categoryFilter)) return false;
         // Body area filter
         if (bodyAreaFilter) {
           if (bodyAreaFilter === '__other') {
