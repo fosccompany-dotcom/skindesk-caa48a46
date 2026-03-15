@@ -349,12 +349,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
+    const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
     onSave({
       date,
       packageId:     selectedPkgId || '',
       treatmentName: getTreatmentName(),
       skinLayer:     selectedItem.skinLayer,
-      bodyArea:      'face',
+      bodyArea:      resolvedBodyArea,
       notes:         '',
       clinic,
       satisfaction,
