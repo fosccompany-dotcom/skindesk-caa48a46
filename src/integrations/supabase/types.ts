@@ -19,6 +19,7 @@ export type Database = {
           balance: number
           clinic: string
           id: string
+          shop_category: string | null
           updated_at: string | null
           user_id: string
         }
@@ -26,6 +27,7 @@ export type Database = {
           balance?: number
           clinic: string
           id?: string
+          shop_category?: string | null
           updated_at?: string | null
           user_id: string
         }
@@ -33,6 +35,7 @@ export type Database = {
           balance?: number
           clinic?: string
           id?: string
+          shop_category?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -90,6 +93,7 @@ export type Database = {
           memo: string | null
           method: string | null
           record_type: string | null
+          shop_category: string | null
           treatment_name: string
           user_id: string
         }
@@ -106,6 +110,7 @@ export type Database = {
           memo?: string | null
           method?: string | null
           record_type?: string | null
+          shop_category?: string | null
           treatment_name: string
           user_id: string
         }
@@ -122,6 +127,7 @@ export type Database = {
           memo?: string | null
           method?: string | null
           record_type?: string | null
+          shop_category?: string | null
           treatment_name?: string
           user_id?: string
         }
@@ -197,6 +203,7 @@ export type Database = {
           last_treatment_date: string
           notes: string | null
           product: string | null
+          shop_category: string | null
           skin_layer: string | null
           treatment_name: string
           user_id: string
@@ -213,6 +220,7 @@ export type Database = {
           last_treatment_date: string
           notes?: string | null
           product?: string | null
+          shop_category?: string | null
           skin_layer?: string | null
           treatment_name: string
           user_id: string
@@ -229,6 +237,7 @@ export type Database = {
           last_treatment_date?: string
           notes?: string | null
           product?: string | null
+          shop_category?: string | null
           skin_layer?: string | null
           treatment_name?: string
           user_id?: string
@@ -245,6 +254,7 @@ export type Database = {
           name: string
           point_transaction_id: string | null
           purchase_price: number | null
+          shop_category: string | null
           skin_layer: string | null
           total_sessions: number | null
           type: string | null
@@ -260,6 +270,7 @@ export type Database = {
           name: string
           point_transaction_id?: string | null
           purchase_price?: number | null
+          shop_category?: string | null
           skin_layer?: string | null
           total_sessions?: number | null
           type?: string | null
@@ -275,6 +286,7 @@ export type Database = {
           name?: string
           point_transaction_id?: string | null
           purchase_price?: number | null
+          shop_category?: string | null
           skin_layer?: string | null
           total_sessions?: number | null
           type?: string | null
@@ -308,6 +320,7 @@ export type Database = {
           package_id: string | null
           package_uuid: string | null
           satisfaction: number | null
+          shop_category: string | null
           shots: number | null
           skin_layer: string | null
           treatment_id: string | null
@@ -330,6 +343,7 @@ export type Database = {
           package_id?: string | null
           package_uuid?: string | null
           satisfaction?: number | null
+          shop_category?: string | null
           shots?: number | null
           skin_layer?: string | null
           treatment_id?: string | null
@@ -352,6 +366,7 @@ export type Database = {
           package_id?: string | null
           package_uuid?: string | null
           satisfaction?: number | null
+          shop_category?: string | null
           shots?: number | null
           skin_layer?: string | null
           treatment_id?: string | null
