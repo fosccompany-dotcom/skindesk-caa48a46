@@ -50,11 +50,12 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
     if (!q.trim() || q.trim().length < 1) { setResults([]); setOpen(false); return; }
     setLoading(true);
     try {
-      const url = `${(supabase as any).supabaseUrl}/functions/v1/search-clinic?query=${encodeURIComponent(q)}`;
+      const { data: { session } } = await supabase.auth.getSession();
+      const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/search-clinic?query=${encodeURIComponent(q)}`;
       const res = await fetch(url, {
         headers: {
-          Authorization: `Bearer ${(await supabase.auth.getSession()).data.session?.access_token ?? ''}`,
-          apikey: (supabase as any).supabaseKey ?? '',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
         },
       });
       const json = await res.json();
