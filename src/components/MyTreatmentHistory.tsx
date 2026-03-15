@@ -136,40 +136,24 @@ const MyTreatmentHistory = () => {
       </div>
 
       {/* Filters */}
-      <div className="space-y-2">
-        {/* Clinic filter */}
-        <div className="flex gap-1.5 flex-wrap">
+      <div className="flex gap-1.5 flex-wrap">
+        <button
+          onClick={() => setFilterPresetId(null)}
+          className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+            !filterPresetId ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+        >
+          전체
+        </button>
+        {CLINIC_PRESETS.map(p => (
           <button
-            onClick={() => setFilterClinic(null)}
+            key={p.id}
+            onClick={() => setFilterPresetId(prev => prev === p.id ? null : p.id)}
             className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-              !filterClinic ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
+              filterPresetId === p.id ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
           >
-            전체 병원
+            {p.label}
           </button>
-          {clinics.map(c => (
-            <button
-              key={c}
-              onClick={() => setFilterClinic(prev => prev === c ? null : c)}
-              className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                filterClinic === c ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
-            >
-              {c}
-            </button>
-          ))}
-        </div>
-        {/* Layer filter */}
-        <div className="flex gap-1.5">
-          {(['epidermis', 'dermis', 'subcutaneous'] as SkinLayer[]).map(layer => (
-            <button
-              key={layer}
-              onClick={() => setFilterLayer(prev => prev === layer ? null : layer)}
-              className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                filterLayer === layer ? LAYER_COLOR[layer] : 'bg-card border-border/50 text-muted-foreground')}
-            >
-              {SKIN_LAYER_LABELS[layer]}
-            </button>
-          ))}
-        </div>
+        ))}
       </div>
 
       {/* Records by month */}
