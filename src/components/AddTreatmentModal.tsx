@@ -441,8 +441,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 2: 시술 선택 ── */}
-          {step === 2 && selectedCat && (
+          {/* ── STEP 2: 시술 선택 (비보톡스) / 약물 선택 (보톡스) ── */}
+          {step === 2 && selectedCat && !isBotox && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
@@ -451,7 +451,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="space-y-1.5">
                 {selectedCat.items.map(item => (
                   <button key={item.id}
-                    onClick={() => { setItemId(item.id); setShots(null); setDrugId(null); }}
+                    onClick={() => { setItemId(item.id); setShots(null); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
                       itemId === item.id
@@ -479,13 +479,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── 약물 선택 (보톡스 카테고리) ── */}
-          {step === drugStep && needsDrug && selectedItem && (
+          {/* ── STEP 2 (보톡스): 약물 선택 ── */}
+          {step === 2 && isBotox && (
             <div>
               <p className="text-xs text-gray-400 mb-1">사용 약물을 선택하세요</p>
-              <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">💉 보톡스/윤곽주사</p>
               <div className="space-y-1.5">
-                {selectedItem.drugOptions!.map(drug => (
+                {BOTOX_DRUGS.map(drug => (
                   <button key={drug.id}
                     onClick={() => setDrugId(drug.id)}
                     className={cn(
@@ -502,10 +502,49 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   </button>
                 ))}
               </div>
+              <button
+                onClick={() => { setDrugId(null); setStep(3); }}
+                className="w-full mt-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors"
+              >
+                잘 모르겠어요 →
+              </button>
             </div>
           )}
 
-          {/* ── 샷수 선택 ── */}
+          {/* ── STEP 3 (보톡스): 부위 선택 ── */}
+          {step === 3 && isBotox && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">시술 부위를 선택하세요</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">
+                {selectedDrug ? `💉 ${selectedDrug.name}` : '💉 보톡스'}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
+                  <button key={opt.value}
+                    onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
+                    className={cn(
+                      'py-3 rounded-xl border text-sm font-medium transition-all',
+                      bodyArea === opt.value
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'
+                    )}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              {bodyArea === '__other' && (
+                <input
+                  type="text"
+                  value={customBodyArea}
+                  onChange={e => setCustomBodyArea(e.target.value)}
+                  placeholder="부위를 입력하세요"
+                  className="w-full mt-3 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                />
+              )}
+            </div>
+          )}
+
+          {/* ── 샷수 선택 (비보톡스) ── */}
           {step === shotsStep && needsShots && selectedItem && (
             <div>
               <p className="text-xs text-gray-400 mb-1">샷수를 선택하세요</p>
