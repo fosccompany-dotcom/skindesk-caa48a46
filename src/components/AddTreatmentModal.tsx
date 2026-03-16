@@ -641,13 +641,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       className={cn(
                         'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
                         cat.color,
-                        catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-gray-400 border-gray-200'
+                        catId === cat.id ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
                       )}>
                       <span className="text-lg">{cat.emoji}</span>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
+                        <div className="text-xs font-medium text-foreground leading-tight">{cat.label}</div>
                       </div>
-                      {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                      {catId === cat.id && <Check size={12} className="text-amber shrink-0" />}
                     </button>
                   ))}
                 </div>
