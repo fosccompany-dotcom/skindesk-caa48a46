@@ -68,6 +68,7 @@ const Index = () => {
   const { currentSeason, setCurrentSeason } = useSeason();
   const { nickname } = useSeason();
   const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
+  const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<{id: string;name: string;total_sessions: number;used_sessions: number;clinic: string;}[]>([]);
   const [clinicPayments, setClinicPayments] = useState<{amount: number;method: string;}[]>([]);
   const [todayCondition, setTodayCondition] = useState<number | null>(null);
