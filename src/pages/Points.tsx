@@ -240,7 +240,7 @@ const Points = () => {
 
             {/* 포인트 내역 요약 */}
             <div className="pt-2">
-              <p className="text-xs font-semibold text-gray-400 px-1 mb-2">밴스 포인트 내역</p>
+              <p className="text-xs font-semibold text-muted-foreground px-1 mb-2">밴스 포인트 내역</p>
               <Card className="glass-card">
                 <CardContent className="p-4">
                   <div className="grid grid-cols-2 gap-3 mb-3">
