@@ -204,7 +204,7 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === stepIdx ? 'w-5 bg-[#F2C94C]' : i < stepIdx ? 'w-1.5 bg-[#F2C94C]/50' : 'w-1.5 bg-muted'
+                  i === stepIdx ? 'w-5 bg-accent' : i < stepIdx ? 'w-1.5 bg-accent/50' : 'w-1.5 bg-muted'
                 }`}
               />
             ))}
