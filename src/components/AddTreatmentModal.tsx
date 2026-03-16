@@ -527,13 +527,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   const handleSave = () => {
-    if (!isBotox && !selectedItem) return;
+    if (!isBotox && !isFiller && !selectedItem) return;
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
     const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
-    const skinLayer = isBotox ? getBotoxSkinLayer() : (selectedItem?.skinLayer || 'dermis');
+    const skinLayer = isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : (selectedItem?.skinLayer || 'dermis');
     onSave({
       date,
       packageId:     selectedPkgId || '',
