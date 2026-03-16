@@ -457,7 +457,7 @@ const Packages = () => {
                 <div className="space-y-4">
                   {chargeRecords.length > 0 && (
                     <div>
-                      <p className="text-xs font-bold text-emerald-600 mb-2">충전 내역 {chargeRecords.length}건</p>
+                      <p className="text-xs font-bold text-sage-dark mb-2">충전 내역 {chargeRecords.length}건</p>
                       <div className="space-y-2">{chargeRecords.map(renderPayCard)}</div>
                     </div>
                   )}
