@@ -168,4 +168,43 @@ export const CYCLE_PRESETS: CyclePreset[] = [
   { treatmentName: '울쎄라', skinLayer: 'subcutaneous', defaultCycleDays: 365, description: '12개월 간격 권장' },
   { treatmentName: '슈링크', skinLayer: 'subcutaneous', defaultCycleDays: 180, description: '6개월 간격 권장' },
   { treatmentName: '인모드', skinLayer: 'subcutaneous', defaultCycleDays: 30, description: '4주 간격 (코스)' },
+// 보톡스/윤곽주사 추가
+  { treatmentName: '사각턱보톡스', skinLayer: 'dermis', defaultCycleDays: 120, description: '4개월 효력', product: '보톡스' },
+  { treatmentName: '다한증보톡스', skinLayer: 'dermis', defaultCycleDays: 180, description: '6개월 효력' },
+  { treatmentName: '바디보톡스', skinLayer: 'dermis', defaultCycleDays: 180, description: '6개월 효력' },
+  { treatmentName: '주름보톡스', skinLayer: 'dermis', defaultCycleDays: 120, description: '4개월 효력' },
+  { treatmentName: '윤곽주사', skinLayer: 'dermis', defaultCycleDays: 180, description: '6개월 효력' },
+  { treatmentName: '조각주사', skinLayer: 'dermis', defaultCycleDays: 180, description: '6개월 효력' },
+  // 레이저 리프팅 추가
+  { treatmentName: '써마지FLX', skinLayer: 'subcutaneous', defaultCycleDays: 365, description: '12개월 간격 권장' },
+  { treatmentName: '인모드FX', skinLayer: 'subcutaneous', defaultCycleDays: 90, description: '3개월 간격 (코스)' },
+  { treatmentName: '티타늄리프팅', skinLayer: 'subcutaneous', defaultCycleDays: 180, description: '6개월 간격 권장' },
+  { treatmentName: '볼뉴머', skinLayer: 'subcutaneous', defaultCycleDays: 365, description: '12개월 간격 권장' },
+  { treatmentName: '텐써마', skinLayer: 'subcutaneous', defaultCycleDays: 180, description: '6개월 간격 권장' },
+  // 필러 추가
+  { treatmentName: '입술필러', skinLayer: 'dermis', defaultCycleDays: 365, description: '12개월 효력' },
+  { treatmentName: '코필러', skinLayer: 'dermis', defaultCycleDays: 365, description: '12개월 효력' },
+  { treatmentName: '눈밑필러', skinLayer: 'dermis', defaultCycleDays: 365, description: '12개월 효력' },
+  { treatmentName: '스컬트라', skinLayer: 'dermis', defaultCycleDays: 540, description: '18개월 효력' },
+  // 스킨부스터 추가
+  { treatmentName: '쥬베룩', skinLayer: 'dermis', defaultCycleDays: 90, description: '3개월 간격 권장' },
+  { treatmentName: '쥬베룩볼륨', skinLayer: 'dermis', defaultCycleDays: 180, description: '6개월 효력' },
+  { treatmentName: '리쥬란HB', skinLayer: 'dermis', defaultCycleDays: 90, description: '3개월 간격 권장' },
+  { treatmentName: '엑소좀', skinLayer: 'dermis', defaultCycleDays: 60, description: '2개월 간격 권장' },
+  { treatmentName: '스킨바이브', skinLayer: 'dermis', defaultCycleDays: 90, description: '3개월 간격 권장' },
+  // 미백/기미/색소 추가
+  { treatmentName: '피코토닝', skinLayer: 'epidermis', defaultCycleDays: 14, description: '2주 간격 권장' },
+  { treatmentName: '피코프락셀', skinLayer: 'epidermis', defaultCycleDays: 30, description: '4주 간격 권장' },
+  { treatmentName: 'IPL', skinLayer: 'epidermis', defaultCycleDays: 30, description: '4주 간격 권장' },
+  // 여드름/모공 추가
+  { treatmentName: '골드PTT', skinLayer: 'dermis', defaultCycleDays: 90, description: '3개월 간격 권장' },
+  { treatmentName: '포텐자', skinLayer: 'dermis', defaultCycleDays: 30, description: '4주 간격 (코스)' },
+  { treatmentName: '아쿠아필링', skinLayer: 'epidermis', defaultCycleDays: 28, description: '4주 간격 권장' },
+  // 수액/영양주사 추가
+  { treatmentName: '미백수액', skinLayer: 'dermis', defaultCycleDays: 14, description: '2주 간격 권장' },
+  { treatmentName: '셀럽주사', skinLayer: 'dermis', defaultCycleDays: 14, description: '2주 간격 권장' },
+  { treatmentName: '마늘주사', skinLayer: 'dermis', defaultCycleDays: 14, description: '2주 간격 권장' },
+  // 제모 추가
+  { treatmentName: '레이저제모 (얼굴)', skinLayer: 'epidermis', defaultCycleDays: 42, description: '6주 간격 권장' },
+  { treatmentName: '레이저제모 (바디)', skinLayer: 'epidermis', defaultCycleDays: 42, description: '6주 간격 권장' },
 ];
