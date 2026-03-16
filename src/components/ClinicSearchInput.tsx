@@ -49,29 +49,40 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
   const search = async (q: string) => {
     if (!q.trim() || q.trim().length < 1) { setResults([]); setOpen(false); return; }
 
-    // No API key → free text fallback (no search)
-    if (!KAKAO_API_KEY) return;
-
     setLoading(true);
     try {
-      const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(q)}&category_group_code=HP8`;
-      const res = await fetch(url, {
-        headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
+      const { data, error } = await supabase.functions.invoke('search-clinic', {
+        body: null,
+        headers: { 'Content-Type': 'application/json' },
+        method: 'GET',
       });
-      if (!res.ok) throw new Error('kakao api error');
+
+      // supabase.functions.invoke doesn't support query params well for GET,
+      // so let's use fetch directly with the session token
+      const session = (await supabase.auth.getSession()).data.session;
+      const projectUrl = import.meta.env.VITE_SUPABASE_URL;
+      const res = await fetch(
+        `${projectUrl}/functions/v1/search-clinic?query=${encodeURIComponent(q)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+            apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+          },
+        }
+      );
+      if (!res.ok) throw new Error('edge function error');
       const json = await res.json();
-      const places: ClinicPlace[] = (json.documents ?? []).map((d: any) => ({
-        name: d.place_name,
-        address: d.address_name,
-        phone: d.phone,
-        category: d.category_name,
-        kakao_id: d.id,
-        road_address: d.road_address_name,
+      const places: ClinicPlace[] = (json.places ?? []).map((p: any) => ({
+        name: p.name,
+        address: p.address,
+        phone: p.phone,
+        category: p.category,
+        kakao_id: p.kakao_id,
+        road_address: p.road_address,
       }));
       setResults(places);
       setOpen(places.length > 0);
     } catch {
-      // API failure → silent fallback to free text
       setResults([]);
       setOpen(false);
     } finally {
