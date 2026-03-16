@@ -12,7 +12,7 @@ import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
 import Cycles from "./pages/Cycles";
 import StatusList from "./pages/StatusList";
-import Login from "./pages/Login";
+
 import Signup from "./pages/Signup";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -45,7 +45,6 @@ const App = () => (
                 <div className="app-container min-h-screen bg-background relative">
                   <Routes>
                     {/* 공개 라우트 */}
-                    <Route path="/login"  element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />

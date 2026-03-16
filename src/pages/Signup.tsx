@@ -55,7 +55,7 @@ const Signup = () => {
         navigate('/?onboarding=true');
       } else {
         toast({ title: '가입 확인 이메일을 보냈습니다. 이메일을 확인해주세요.' });
-        navigate('/login');
+        navigate('/');
       }
     }
   };
@@ -76,7 +76,7 @@ const Signup = () => {
     <div className="min-h-screen bg-background flex items-center justify-center px-5">
       <div className="w-full max-w-[380px] space-y-6">
         {/* Back button */}
-        <button onClick={() => navigate('/login')} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+        <button onClick={() => navigate('/')} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
           <ArrowLeft className="h-4 w-4" />
           뒤로
         </button>
@@ -185,7 +185,7 @@ const Signup = () => {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             {t('auth_has_account')}{' '}
-            <button className="text-primary font-semibold" onClick={() => navigate('/login')}>
+            <button className="text-primary font-semibold" onClick={() => navigate('/')}>
               {t('login')}
             </button>
           </p>
