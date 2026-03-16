@@ -121,7 +121,7 @@ const Points = () => {
       </div>
 
       {/* ── 탭 ── */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4">
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4">
         <div className="flex">
           {([
             { key: 'remaining', label: '포인트 관리' },
@@ -131,7 +131,7 @@ const Points = () => {
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-                tab === t.key ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400'
+                tab === t.key ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground'
               }`}
             >
               {t.label}
