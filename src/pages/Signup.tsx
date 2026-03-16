@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Lock, User, Loader2, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Mail, Lock, User, Loader2, Eye, EyeOff, ExternalLink, ArrowLeft } from 'lucide-react';
 
 const Signup = () => {
   const { t } = useLanguage();
