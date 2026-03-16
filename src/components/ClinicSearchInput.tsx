@@ -1,6 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, X, MapPin } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
 
 export interface ClinicPlace {
   name: string;
@@ -26,6 +25,8 @@ interface Props {
   darkMode?: boolean;
 }
 
+const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+
 export default function ClinicSearchInput({ value, onChange, onSelectPlace, placeholder = '병원명 검색', className = '', darkMode = false }: Props) {
   const [query, setQuery] = useState(value);
   const [results, setResults] = useState<ClinicPlace[]>([]);
@@ -48,21 +49,32 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
 
   const search = async (q: string) => {
     if (!q.trim() || q.trim().length < 1) { setResults([]); setOpen(false); return; }
+
+    // No API key → free text fallback (no search)
+    if (!KAKAO_API_KEY) return;
+
     setLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const url = `https://${import.meta.env.VITE_SUPABASE_PROJECT_ID}.supabase.co/functions/v1/search-clinic?query=${encodeURIComponent(q)}`;
+      const url = `https://dapi.kakao.com/v2/local/search/keyword.json?query=${encodeURIComponent(q)}&category_group_code=HP8`;
       const res = await fetch(url, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-          apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
-        },
+        headers: { Authorization: `KakaoAK ${KAKAO_API_KEY}` },
       });
+      if (!res.ok) throw new Error('kakao api error');
       const json = await res.json();
-      setResults(json.places ?? []);
-      setOpen(true);
+      const places: ClinicPlace[] = (json.documents ?? []).map((d: any) => ({
+        name: d.place_name,
+        address: d.address_name,
+        phone: d.phone,
+        category: d.category_name,
+        kakao_id: d.id,
+        road_address: d.road_address_name,
+      }));
+      setResults(places);
+      setOpen(places.length > 0);
     } catch {
+      // API failure → silent fallback to free text
       setResults([]);
+      setOpen(false);
     } finally {
       setLoading(false);
     }
@@ -72,7 +84,7 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
     setQuery(val);
     onChange(val);
     if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => search(val), 350);
+    debounceRef.current = setTimeout(() => search(val), 300);
   };
 
   const select = (place: ClinicPlace) => {
@@ -118,7 +130,7 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
         }`}>
           {results.map((p, i) => (
             <button
-              key={i}
+              key={p.kakao_id || i}
               className={`w-full text-left px-3 py-2.5 flex items-start gap-2.5 transition-colors ${
                 darkMode
                   ? 'hover:bg-white/8 border-b border-white/8 last:border-0'
@@ -126,7 +138,7 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
               }`}
               onClick={() => select(p)}
             >
-              <MapPin className={`h-3.5 w-3.5 mt-0.5 shrink-0 ${darkMode ? 'text-primary' : 'text-primary'}`} />
+              <MapPin className={`h-3.5 w-3.5 mt-0.5 shrink-0 text-primary`} />
               <div className="min-w-0">
                 <p className={`text-sm font-semibold truncate ${darkMode ? 'text-white' : 'text-foreground'}`}>{p.name}</p>
                 {p.address && (
