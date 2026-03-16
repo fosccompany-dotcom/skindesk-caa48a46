@@ -11,6 +11,8 @@ import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
 import AddReservationModal from '@/components/AddReservationModal';
+import LoginRequiredSheet from '@/components/LoginRequiredSheet';
+import { useLoginGuard } from '@/hooks/useLoginGuard';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 const eventTypeConfig = {
@@ -60,6 +62,7 @@ const CalendarViewPage = () => {
   const [showReservationModal, setShowReservationModal] = useState(false);
   const { cycles } = useCycles();
   const { records, addRecord } = useRecords();
+  const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
 
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
@@ -259,7 +262,7 @@ const CalendarViewPage = () => {
 
           {selectedRecords.length === 0 && selectedEvents.length === 0 && (
             <button
-              onClick={() => setShowActionPicker(true)}
+              onClick={() => guardAction(() => setShowActionPicker(true))}
               className="w-full text-left"
             >
               <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-6 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
@@ -328,6 +331,12 @@ const CalendarViewPage = () => {
         open={showReservationModal}
         onClose={() => setShowReservationModal(false)}
         defaultDate={selectedDateStr}
+      />
+
+      <LoginRequiredSheet
+        open={showLoginSheet}
+        onClose={handleLoginClose}
+        onLoginSuccess={handleLoginSuccess}
       />
     </div>
   );

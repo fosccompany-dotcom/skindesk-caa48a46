@@ -19,6 +19,8 @@ import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 import { supabase } from '@/integrations/supabase/client';
 import { useSeason, SeasonKey } from '@/context/SeasonContext';
+import LoginRequiredSheet from '@/components/LoginRequiredSheet';
+import { useLoginGuard } from '@/hooks/useLoginGuard';
 import logoImg from '@/assets/logo.png';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
 
@@ -66,6 +68,7 @@ const Index = () => {
   const { currentSeason, setCurrentSeason } = useSeason();
   const { nickname } = useSeason();
   const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
+  const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<{id: string;name: string;total_sessions: number;used_sessions: number;clinic: string;}[]>([]);
   const [clinicPayments, setClinicPayments] = useState<{amount: number;method: string;}[]>([]);
   const [todayCondition, setTodayCondition] = useState<number | null>(null);
@@ -245,7 +248,7 @@ const Index = () => {
           <div className="relative">
             <div
               className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 cursor-pointer active:bg-white/20 transition-colors"
-              onClick={() => setModeDropdownOpen((v) => !v)}>
+              onClick={() => guardAction(() => setModeDropdownOpen((v) => !v))}>
               
               <span className="text-lg">{seasonMeta?.emoji || '⚙️'}</span>
               <div className="flex-1 min-w-0">
@@ -553,6 +556,12 @@ const Index = () => {
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
 
       {/* Privacy Consent Modal for OAuth users */}
+      <LoginRequiredSheet
+        open={showLoginSheet}
+        onClose={handleLoginClose}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
       {privacyConsentOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="bg-background rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-xl">
