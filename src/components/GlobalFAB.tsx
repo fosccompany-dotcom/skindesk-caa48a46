@@ -11,7 +11,7 @@ import { useLoginGuard } from '@/hooks/useLoginGuard';
 import { TreatmentRecord } from '@/types/skin';
 
 // 인증/온보딩 페이지에서는 숨김
-const HIDDEN_PATHS = ['/login', '/signup'];
+const HIDDEN_PATHS = ['/signup', '/farewell'];
 
 const FAB_COACH_KEY = 'skindesk_fab_coach_done';
 
