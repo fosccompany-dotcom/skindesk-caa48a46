@@ -39,11 +39,11 @@ interface Reservation {
 }
 
 const SEASON_CONFIG: Record<SeasonKey, {emoji: string;title: string;sub: string;color: string;bg: string;}> = {
-  reset: { emoji: '🌵', title: 'Reset Mode', sub: '피부 리셋 모드', color: '#7EC8A0', bg: 'bg-green-50' },
-  recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드', color: '#A8D5A2', bg: 'bg-sky-50' },
-  maintain: { emoji: '💜', title: 'Maintain Mode', sub: '유지 모드', color: '#C9A8E0', bg: 'bg-indigo-50' },
-  boost: { emoji: '🌹', title: 'Boost Mode', sub: '관리 끌올 모드', color: '#E8A0A0', bg: 'bg-amber-50' },
-  special: { emoji: '🌸', title: 'Special Mode', sub: '스페셜 모드', color: '#F0B8D8', bg: 'bg-purple-50' }
+  reset: { emoji: '🌵', title: 'Reset Mode', sub: '피부 리셋 모드', color: 'hsl(var(--sage))', bg: 'bg-sage-light' },
+  recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드', color: 'hsl(var(--sage-dark))', bg: 'bg-sage-light' },
+  maintain: { emoji: '💜', title: 'Maintain Mode', sub: '유지 모드', color: 'hsl(var(--secondary))', bg: 'bg-warm' },
+  boost: { emoji: '🌹', title: 'Boost Mode', sub: '관리 끌올 모드', color: 'hsl(var(--rose))', bg: 'bg-rose-light' },
+  special: { emoji: '🌸', title: 'Special Mode', sub: '스페셜 모드', color: 'hsl(var(--rose))', bg: 'bg-warm' }
 };
 
 const TODAY = new Date('2026-03-10');
