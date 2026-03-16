@@ -191,8 +191,8 @@ const Index = () => {
   }, [clinicPayments]);
 
   // Mini calendar
-  const monthStart = startOfMonth(TODAY);
-  const monthEnd = endOfMonth(TODAY);
+  const monthStart = startOfMonth(calendarMonth);
+  const monthEnd = endOfMonth(calendarMonth);
   const calStart = startOfWeek(monthStart, { weekStartsOn: 0 });
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
   const calendarDays = useMemo(() => {
@@ -200,7 +200,7 @@ const Index = () => {
     let d = calStart;
     while (d <= calEnd) {days.push(d);d = addDays(d, 1);}
     return days;
-  }, []);
+  }, [calendarMonth]);
 
   // Records by date for calendar dots
   const recordDateSet = useMemo(() => new Set(records.map((r) => r.date.slice(0, 10))), [records]);
