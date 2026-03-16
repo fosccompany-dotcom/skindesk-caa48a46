@@ -17,8 +17,6 @@ INSERT INTO package_options (category, category_en, category_zh, name, name_en, 
 ('리프팅·보톡스','Lifting·Botox','提升·肉毒素','LDM 리프팅','LDM Lifting','LDM超声波提升',true,180),
 ('리프팅·보톡스','Lifting·Botox','提升·肉毒素','윤곽주사','Contour Injection','轮廓针',true,190),
 -- 신규 카테고리: 필러·실리프팅
-('필러·실리프팅','Filler·Thread','填充·线雕','국산 필러','Korean Filler','国产填充',true,10),
-('필러·실리프팅','Filler·Thread','填充·线雕','수입 필러','Imported Filler','进口填充',true,20),
 ('필러·실리프팅','Filler·Thread','填充·线雕','턱끝 필러','Chin Filler','下巴填充',true,30),
 ('필러·실리프팅','Filler·Thread','填充·线雕','입술 필러','Lip Filler','唇部填充',true,40),
 ('필러·실리프팅','Filler·Thread','填充·线雕','코 필러','Nose Filler','鼻部填充',true,50),
