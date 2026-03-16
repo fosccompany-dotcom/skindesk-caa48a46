@@ -5,7 +5,9 @@ import { cn } from '@/lib/utils';
 import AddTreatmentModal from './AddTreatmentModal';
 import ParseTreatmentModal from './ParseTreatmentModal';
 import FabCoachmark from './FabCoachmark';
+import LoginRequiredSheet from './LoginRequiredSheet';
 import { useRecords } from '@/context/RecordsContext';
+import { useLoginGuard } from '@/hooks/useLoginGuard';
 import { TreatmentRecord } from '@/types/skin';
 
 // 인증/온보딩 페이지에서는 숨김
