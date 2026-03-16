@@ -411,7 +411,7 @@ const Packages = () => {
 
               const renderPayCard = (p: PaymentRecord) => {
                 const normalizedMethod = normalizeMethodKey(p.method) || 'card';
-                const style = METHOD_STYLE[normalizedMethod] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
+                const style = METHOD_STYLE[normalizedMethod] ?? { bg: 'bg-muted', text: 'text-muted-foreground' };
                 const methodLabel = getMethodLabel(normalizedMethod, language);
                 return (
                   <Card key={p.id} className="glass-card">
