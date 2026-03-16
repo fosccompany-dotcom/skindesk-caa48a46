@@ -346,13 +346,19 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const canNext = () => {
     if (step === 1) return !!catId;
     if (step === 2) return !!itemId;
-    if (step === 3 && needsShots) return !!shots;
+    if (step === drugStep) return !!drugId;
+    if (step === shotsStep) return !!shots;
     return true;
   };
 
+  const selectedDrug = selectedItem?.drugOptions?.find(d => d.id === drugId);
+
   const getTreatmentName = () => {
     if (!selectedItem) return '';
-    return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
+    let name = selectedItem.name;
+    if (selectedDrug) name += ` (${selectedDrug.name})`;
+    if (shots) name += ` ${shots}샷`;
+    return name;
   };
 
   // 결제 수단 → DB 값 매핑
