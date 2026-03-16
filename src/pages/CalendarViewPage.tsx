@@ -241,6 +241,36 @@ const CalendarViewPage = () => {
             {format(selectedDate, 'M월 d일 EEEE', { locale: ko })}
           </h2>
 
+          {selectedReservations.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-info flex items-center gap-1.5 px-1">
+                <CalendarPlus size={12} /> 예약 일정 ({selectedReservations.length})
+              </p>
+              {selectedReservations.map((r: any) => (
+                <Card key={r.id} className="glass-card">
+                  <CardContent className="flex items-center gap-3 p-3.5">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info/10">
+                      <CalendarPlus className="h-4 w-4 text-info" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{r.treatment_name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                          <MapPin className="h-3 w-3" /> {r.clinic}
+                        </span>
+                        {r.time && (
+                          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3 w-3" /> {r.time}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+
           {selectedRecords.length > 0 && (
             <div className="space-y-2">
               <p className="text-xs font-semibold text-[#C9A96E] flex items-center gap-1.5 px-1">
