@@ -312,6 +312,7 @@ interface Props {
   onOpenParse?: () => void;
   onSave: (record: Omit<TreatmentRecord, 'id'>) => void;
   editRecord?: TreatmentRecord | null;
+  defaultDate?: string;
 }
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
