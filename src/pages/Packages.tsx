@@ -338,7 +338,7 @@ const Packages = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] text-muted-foreground">총 충전액</p>
-                  <p className="text-xl font-black text-emerald-500">{totalCharged.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
+                  <p className="text-xl font-black text-sage-dark">{totalCharged.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
                 </div>
               </CardContent>
             </Card>
