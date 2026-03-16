@@ -135,13 +135,19 @@ export default {
   				to: {
   					height: '0'
   				}
-  			}
-  		},
-  		animation: {
-  			'accordion-down': 'accordion-down 0.2s ease-out',
-  			'accordion-up': 'accordion-up 0.2s ease-out',
-  			'spin-slow': 'spin 2s linear infinite',
-  		},
+			},
+			'shake': {
+				'0%, 100%': { transform: 'translateX(0)' },
+				'10%, 30%, 50%, 70%, 90%': { transform: 'translateX(-4px)' },
+				'20%, 40%, 60%, 80%': { transform: 'translateX(4px)' },
+			}
+		},
+		animation: {
+			'accordion-down': 'accordion-down 0.2s ease-out',
+			'accordion-up': 'accordion-up 0.2s ease-out',
+			'spin-slow': 'spin 2s linear infinite',
+			'shake': 'shake 0.5s ease-in-out',
+		},
   		boxShadow: {
   			'2xs': 'var(--shadow-2xs)',
   			xs: 'var(--shadow-xs)',
