@@ -262,7 +262,7 @@ const CalendarViewPage = () => {
 
           {selectedRecords.length === 0 && selectedEvents.length === 0 && (
             <button
-              onClick={() => setShowActionPicker(true)}
+              onClick={() => guardAction(() => setShowActionPicker(true))}
               className="w-full text-left"
             >
               <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-6 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
