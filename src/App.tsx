@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
 import Cycles from "./pages/Cycles";
 import StatusList from "./pages/StatusList";
+import Farewell from "./pages/Farewell";
 
 import Signup from "./pages/Signup";
 import Privacy from "./pages/Privacy";
