@@ -152,6 +152,7 @@ const CalendarViewPage = () => {
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
   const selectedEvents = eventsByDate[selectedDateStr] || [];
   const selectedRecords = recordsByDate[selectedDateStr] || [];
+  const selectedReservations = reservationsByDate[selectedDateStr] || [];
 
   const goToPrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
