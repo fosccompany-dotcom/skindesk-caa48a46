@@ -1,6 +1,6 @@
 {
-  "name": "피부 관리 매니저",
-  "short_name": "피부관리",
+  "name": "Bloomlog",
+  "short_name": "Bloomlog",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#f7f0f0",
