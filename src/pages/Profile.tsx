@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useRecords } from '@/context/RecordsContext';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, Star, ChevronDown, ChevronUp, Globe, LogOut, Plus, Trash2, Pencil, Check, Settings } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, Star, ChevronDown, ChevronUp, LogOut, Plus, Trash2, Pencil, Check, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import logoImg from '@/assets/logo.png';
 import { format, differenceInYears } from 'date-fns';
