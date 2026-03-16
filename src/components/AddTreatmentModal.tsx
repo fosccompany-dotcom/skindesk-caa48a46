@@ -11,12 +11,19 @@ import { supabase } from '@/integrations/supabase/client';
 
 type SL = 'epidermis' | 'dermis' | 'subcutaneous';
 
+interface DrugOption {
+  id: string;
+  name: string;
+  desc?: string;
+}
+
 interface TreatmentItem {
   id: string;
   name: string;
   desc?: string;
   skinLayer: SL;
   shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
+  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가 (보톡스용)
 }
 
 interface Category {
