@@ -90,6 +90,7 @@ const Index = () => {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [showActionPicker, setShowActionPicker] = useState(false);
   const [showHomeAddModal, setShowHomeAddModal] = useState(false);
+  const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
 
   // Bloom info
