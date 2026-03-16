@@ -319,6 +319,7 @@ interface Props {
 export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
   const { language } = useLanguage();
   const [step, setStep] = useState(1);
+  const [paymentShake, setPaymentShake] = useState(false);
   const [catId, setCatId] = useState<string | null>(null);
   const [itemId, setItemId] = useState<string | null>(null);
   const [shots, setShots] = useState<number | null>(null);
