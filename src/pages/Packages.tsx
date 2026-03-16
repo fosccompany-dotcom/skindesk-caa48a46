@@ -424,7 +424,7 @@ const Packages = () => {
                         </div>
                         <div className="flex items-start gap-1.5">
                           <div className="text-right shrink-0">
-                            <p className={`text-sm font-black ${normalizedMethod === 'charge' ? 'text-emerald-500' : ''}`}>
+                            <p className={`text-sm font-black ${normalizedMethod === 'charge' ? 'text-sage-dark' : ''}`}>
                               {normalizedMethod === 'charge' ? '+' : '-'}{p.amount.toLocaleString()}원
                             </p>
                             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
