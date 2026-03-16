@@ -55,7 +55,7 @@ const Signup = () => {
         navigate('/?onboarding=true');
       } else {
         toast({ title: '가입 확인 이메일을 보냈습니다. 이메일을 확인해주세요.' });
-        navigate('/login');
+        navigate('/');
       }
     }
   };
