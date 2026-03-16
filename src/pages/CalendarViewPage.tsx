@@ -227,6 +227,7 @@ const CalendarViewPage = () => {
                       return <div key={i} className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />;
                     })}
                     {hasRec && <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />}
+                    {(reservationsByDate[dateStr]?.length || 0) > 0 && <div className="w-1.5 h-1.5 rounded-full bg-info" />}
                   </div>
                 </button>
               );
