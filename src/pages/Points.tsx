@@ -319,15 +319,15 @@ const Points = () => {
                   </div>
                   {clinicList.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                      <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                         <Building2 className="w-3 h-3" /> 병원별 지출
                       </p>
                       {clinicList.map(({ name, amount, pct, isVance }) => (
                         <div key={name} className="mb-2">
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="text-gray-600 font-medium flex items-center gap-1">
+                            <span className="text-foreground font-medium flex items-center gap-1">
                               {name}
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${isVance ? 'bg-amber-100 text-amber-600' : 'bg-purple-100 text-purple-500'}`}>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${isVance ? 'bg-amber/10 text-amber' : 'bg-secondary/10 text-secondary'}`}>
                                 {isVance ? '밴스' : '타의원'}
                               </span>
                             </span>
