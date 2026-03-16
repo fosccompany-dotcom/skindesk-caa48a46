@@ -216,21 +216,21 @@ const Points = () => {
                       {mockPackages
                         .filter(p => p.clinic === clinic && p.totalSessions - p.usedSessions > 0)
                         .map(pkg => (
-                          <div key={pkg.id} className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2.5">
+                          <div key={pkg.id} className="flex items-center justify-between bg-muted rounded-xl px-3 py-2.5">
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-gray-800 font-medium truncate">{pkg.name}</p>
-                              <p className="text-[11px] text-gray-400 mt-0.5">만료 {pkg.expiryDate}</p>
+                              <p className="text-sm text-foreground font-medium truncate">{pkg.name}</p>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">만료 {pkg.expiryDate}</p>
                             </div>
                             <div className="text-right ml-3 shrink-0">
-                              <span className="text-sm font-bold text-gray-900">{pkg.totalSessions - pkg.usedSessions}회</span>
-                              <span className="text-[11px] text-gray-400"> / {pkg.totalSessions}회</span>
+                              <span className="text-sm font-bold text-foreground">{pkg.totalSessions - pkg.usedSessions}회</span>
+                              <span className="text-[11px] text-muted-foreground"> / {pkg.totalSessions}회</span>
                             </div>
                           </div>
                         ))
                       }
                       {mockPackages.filter(p => p.clinic === clinic && p.totalSessions - p.usedSessions > 0).length === 0 && (
-                        <div className="space-y-1.5 bg-gray-50 rounded-xl px-3 py-2.5">
-                          <p className="text-xs text-gray-400">잔여 시술권 없음</p>
+                        <div className="space-y-1.5 bg-muted rounded-xl px-3 py-2.5">
+                          <p className="text-xs text-muted-foreground">잔여 시술권 없음</p>
                         </div>
                       )}
                     </div>
