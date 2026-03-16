@@ -13,7 +13,7 @@ import FlowerLoader from '@/components/FlowerLoader';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { TreatmentCycle, TreatmentRecord } from '@/types/skin';
-import { differenceInDays, format, addDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
+import { differenceInDays, format, addDays, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, setMonth, setYear } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
