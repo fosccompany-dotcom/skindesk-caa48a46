@@ -220,7 +220,6 @@ const MyTreatmentHistory = () => {
         </Card>
       </div>
 
-      </div>
 
       {/* Row 1 — 기간 dropdown */}
       <div className="space-y-2">
