@@ -682,13 +682,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   className={cn(
                     'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
                     fillerDrugId === '__custom'
-                      ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
-                      : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                      ? 'border-amber bg-amber/5 ring-1 ring-amber/30'
+                      : 'border-border bg-muted hover:border-muted-foreground/40'
                   )}>
-                  <div className="text-sm text-gray-900 font-medium">
+                  <div className="text-sm text-foreground font-medium">
                     {language === 'en' ? 'Other (custom)' : language === 'zh' ? '其他（自定义）' : '기타 (직접입력)'}
                   </div>
-                  {fillerDrugId === '__custom' && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                  {fillerDrugId === '__custom' && <Check size={12} className="text-amber shrink-0" />}
                 </button>
               </div>
               {fillerDrugId === '__custom' && (
