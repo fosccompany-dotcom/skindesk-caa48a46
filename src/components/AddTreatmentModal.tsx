@@ -319,6 +319,7 @@ interface Props {
 export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
   const { language } = useLanguage();
   const [step, setStep] = useState(1);
+  const [paymentShake, setPaymentShake] = useState(false);
   const [catId, setCatId] = useState<string | null>(null);
   const [itemId, setItemId] = useState<string | null>(null);
   const [shots, setShots] = useState<number | null>(null);
@@ -552,6 +553,14 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const handleSave = () => {
     if (!isBotox && !isFiller && !selectedItem) return;
+    // 결제 수단 필수 검증 (시술권 미사용 시)
+    if (!selectedPkgId && !paymentMethod) {
+      setPaymentShake(true);
+      setTimeout(() => setPaymentShake(false), 600);
+      const el = document.getElementById('payment-method-section');
+      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
@@ -985,8 +994,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
               {/* 결제 수단 (시술권 미사용 시에만 표시) */}
               {!selectedPkgId && (
-                <div>
-                  <label className="text-xs text-gray-400 block mb-1.5">결제 수단 <span className="text-red-400">*</span></label>
+                <div id="payment-method-section" className={paymentShake ? 'animate-shake' : ''}>
+                  <label className={cn('text-xs block mb-1.5', paymentShake ? 'text-red-500 font-semibold' : 'text-gray-400')}>
+                    결제 수단 <span className="text-red-400">*</span>
+                    {paymentShake && <span className="ml-1 text-[10px]">필수 항목입니다</span>}
+                  </label>
                   <div className="grid grid-cols-2 gap-2">
                     {([
                       { key: 'card',    label: '카드 결제',    desc: '신용/체크카드 직접 결제', icon: CreditCard },
@@ -1072,7 +1084,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               다음 <ChevronRight size={15} className="ml-1" />
             </Button>
           ) : (
-            <Button onClick={handleSave} disabled={!date || !clinic || (!selectedPkgId && !paymentMethod)}
+            <Button onClick={handleSave}
               className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-25">
               <Check size={15} className="mr-1.5" /> 저장
             </Button>
