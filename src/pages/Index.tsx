@@ -214,13 +214,19 @@ const Index = () => {
               >
                 <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 등급 기준</p>
                 <ul className="space-y-1 text-[11px]">
-                  <li>🌱 씨앗 — 0일</li>
-                  <li>🌿 새싹 — 1~7일</li>
-                  <li>🌼 봉오리 — 8~30일</li>
-                  <li>🌸 반개화 — 31~90일</li>
-                  <li>🌺 Bloom — 91일+</li>
+                  {[
+                    { emoji: '🌱', name: '씨앗', range: '0건' },
+                    { emoji: '🌿', name: '새싹', range: '1~5건' },
+                    { emoji: '🌼', name: '봉오리', range: '6~15건' },
+                    { emoji: '🌸', name: '반개화', range: '16~29건' },
+                    { emoji: '✨', name: 'Bloom', range: '30건+' },
+                  ].map((s, idx) => (
+                    <li key={idx} className={bloom.stage === idx ? 'text-[#F2C94C] font-semibold' : ''}>
+                      {s.emoji} {s.name} — {s.range}
+                    </li>
+                  ))}
                 </ul>
-                <p className="mt-2 text-[10px] text-white/50">기록한 고유 날짜 수 기준</p>
+                <p className="mt-2 text-[10px] text-white/50">총 기록 수 기준</p>
               </PopoverContent>
             </Popover>
             <div className="flex-1 min-w-0">
