@@ -356,7 +356,9 @@ const Profile = () => {
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
       // current_season은 SeasonContext에서 관리하므로 여기서 로드하지 않음
-      if (data.name) setNickname(data.name); // context에도 반영
+      if (data.name) setNickname(data.name);
+      setBloomStage(data.bloom_stage || 1);
+      setTotalLogCount(data.total_log_count || 0);
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
       requestAnimationFrame(() => {profileLoaded.current = true;});
     };
