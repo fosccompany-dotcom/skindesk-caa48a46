@@ -1084,7 +1084,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               다음 <ChevronRight size={15} className="ml-1" />
             </Button>
           ) : (
-            <Button onClick={handleSave} disabled={!date || !clinic || (!selectedPkgId && !paymentMethod)}
+            <Button onClick={handleSave}
               className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-25">
               <Check size={15} className="mr-1.5" /> 저장
             </Button>
