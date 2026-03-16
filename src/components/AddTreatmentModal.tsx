@@ -487,9 +487,26 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const selectedDrug = BOTOX_DRUGS.find(d => d.id === drugId);
 
+  const getLocalizedName = (opt: any) => {
+    if (language === 'en') return opt.name_en || opt.name;
+    if (language === 'zh') return opt.name_zh || opt.name;
+    return opt.name;
+  };
+
+  const selectedFillerDrug = fillerDrugOptions.find(d => d.id === fillerDrugId);
+  const selectedFillerArea = fillerAreaOptions.find(a => a.id === fillerAreaId);
+
   const getTreatmentName = () => {
     if (isBotox) {
       return selectedDrug ? selectedDrug.name : '보톡스';
+    }
+    if (isFiller) {
+      const drugName = selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
+      const areaName = selectedFillerArea ? getLocalizedName(selectedFillerArea) : null;
+      if (drugName && areaName) return `${drugName} - ${areaName}`;
+      if (areaName) return `필러 - ${areaName}`;
+      if (drugName) return drugName;
+      return '필러';
     }
     if (itemId === '__custom') return customTreatmentName.trim() || '';
     if (!selectedItem) return '';
