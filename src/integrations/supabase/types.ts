@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           balance: number
           clinic: string
+          clinic_kakao_id: string | null
           id: string
           shop_category: string | null
           updated_at: string | null
@@ -26,6 +27,7 @@ export type Database = {
         Insert: {
           balance?: number
           clinic: string
+          clinic_kakao_id?: string | null
           id?: string
           shop_category?: string | null
           updated_at?: string | null
@@ -34,6 +36,7 @@ export type Database = {
         Update: {
           balance?: number
           clinic?: string
+          clinic_kakao_id?: string | null
           id?: string
           shop_category?: string | null
           updated_at?: string | null
@@ -44,28 +47,40 @@ export type Database = {
       package_options: {
         Row: {
           category: string
+          category_en: string | null
+          category_zh: string | null
           created_at: string | null
           id: string
           is_default: boolean
           name: string
+          name_en: string | null
+          name_zh: string | null
           package_id: string | null
           sort_order: number | null
         }
         Insert: {
           category: string
+          category_en?: string | null
+          category_zh?: string | null
           created_at?: string | null
           id?: string
           is_default?: boolean
           name: string
+          name_en?: string | null
+          name_zh?: string | null
           package_id?: string | null
           sort_order?: number | null
         }
         Update: {
           category?: string
+          category_en?: string | null
+          category_zh?: string | null
           created_at?: string | null
           id?: string
           is_default?: boolean
           name?: string
+          name_en?: string | null
+          name_zh?: string | null
           package_id?: string | null
           sort_order?: number | null
         }
@@ -393,6 +408,7 @@ export type Database = {
         Row: {
           avatar_color: string | null
           birth_date: string | null
+          bloom_stage: number
           concerns: string[] | null
           created_at: string | null
           current_season: string | null
@@ -404,11 +420,13 @@ export type Database = {
           regions: string[] | null
           skin_type: string | null
           target_areas: string[] | null
+          total_log_count: number
           updated_at: string | null
         }
         Insert: {
           avatar_color?: string | null
           birth_date?: string | null
+          bloom_stage?: number
           concerns?: string[] | null
           created_at?: string | null
           current_season?: string | null
@@ -420,11 +438,13 @@ export type Database = {
           regions?: string[] | null
           skin_type?: string | null
           target_areas?: string[] | null
+          total_log_count?: number
           updated_at?: string | null
         }
         Update: {
           avatar_color?: string | null
           birth_date?: string | null
+          bloom_stage?: number
           concerns?: string[] | null
           created_at?: string | null
           current_season?: string | null
@@ -436,6 +456,7 @@ export type Database = {
           regions?: string[] | null
           skin_type?: string | null
           target_areas?: string[] | null
+          total_log_count?: number
           updated_at?: string | null
         }
         Relationships: []
@@ -445,7 +466,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      compute_bloom_stage: { Args: { log_count: number }; Returns: number }
     }
     Enums: {
       [_ in never]: never
