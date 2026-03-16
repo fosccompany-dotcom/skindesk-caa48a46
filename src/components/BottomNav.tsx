@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Package, Calendar, User, ClipboardList } from 'lucide-react';
+import { Home, Package, User, ClipboardList } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
