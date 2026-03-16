@@ -679,6 +679,11 @@ function PaymentHistoryTab() {
         })}
         </div>
       }
+      <LoginRequiredSheet
+        open={payLoginSheet}
+        onClose={payLoginClose}
+        onLoginSuccess={payLoginSuccess}
+      />
     </div>);
 }
 
