@@ -3,14 +3,15 @@ import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star, Plus } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star, Plus, ClipboardList, CalendarPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
-
+import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { toast } from 'sonner';
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
   reminder:      { icon: Bell,         color: 'text-amber-600',  bg: 'bg-amber-50',     dotColor: 'bg-amber-400' },
@@ -54,6 +55,7 @@ const CalendarViewPage = () => {
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showActionPicker, setShowActionPicker] = useState(false);
   const { cycles } = useCycles();
   const { records, addRecord } = useRecords();
 
@@ -255,7 +257,7 @@ const CalendarViewPage = () => {
 
           {selectedRecords.length === 0 && selectedEvents.length === 0 && (
             <button
-              onClick={() => setShowAddModal(true)}
+              onClick={() => setShowActionPicker(true)}
               className="w-full text-left"
             >
               <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-6 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
@@ -264,13 +266,54 @@ const CalendarViewPage = () => {
                 </div>
                 <p className="text-sm font-semibold text-foreground mb-1">이 날짜에 일정이 없어요</p>
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  탭하여 <span className="font-bold text-primary">{format(selectedDate, 'M월 d일')}</span>에 시술을 등록하세요
+                  탭하여 <span className="font-bold text-primary">{format(selectedDate, 'M월 d일')}</span>에 추가하세요
                 </p>
               </div>
             </button>
           )}
         </div>
       </div>
+
+      {/* Action Picker Sheet */}
+      <Sheet open={showActionPicker} onOpenChange={setShowActionPicker}>
+        <SheetContent side="bottom" className="rounded-t-3xl px-5 pb-8 pt-4">
+          <div className="mx-auto w-10 h-1 rounded-full bg-muted-foreground/20 mb-5" />
+          <p className="text-center text-base font-semibold mb-1">
+            <span className="text-primary">{format(selectedDate, 'M월 d일')}</span>을 선택하셨어요
+          </p>
+          <p className="text-center text-sm text-muted-foreground mb-6">무엇을 추가하시겠어요?</p>
+
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => {
+                setShowActionPicker(false);
+                toast.info('예약 일정 기능은 준비 중이에요 🚧');
+              }}
+              className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 hover:bg-accent/50 active:scale-[0.97] transition-all"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-info/10">
+                <CalendarPlus className="h-6 w-6 text-info" />
+              </div>
+              <span className="text-sm font-semibold">예약 일정 추가</span>
+              <span className="text-[11px] text-muted-foreground leading-tight">앞으로의 예약을<br/>미리 등록해요</span>
+            </button>
+
+            <button
+              onClick={() => {
+                setShowActionPicker(false);
+                setShowAddModal(true);
+              }}
+              className="flex flex-col items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 hover:bg-primary/10 active:scale-[0.97] transition-all"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <ClipboardList className="h-6 w-6 text-primary" />
+              </div>
+              <span className="text-sm font-semibold">시술 내역 추가</span>
+              <span className="text-[11px] text-muted-foreground leading-tight">받은 시술을<br/>기록해요</span>
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
 
       <AddTreatmentModal
         open={showAddModal}
