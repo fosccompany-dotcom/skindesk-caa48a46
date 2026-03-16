@@ -31,10 +31,10 @@ const VANCE_CLINICS: string[] = [];
 type PointType = 'charge' | 'use' | 'referral' | 'bonus';
 
 const pointTypeConfig: Record<PointType, { icon: ElementType; label: string; color: string }> = {
-  charge:   { icon: ArrowUpCircle,   label: '충전',   color: 'text-emerald-500' },
-  use:      { icon: ArrowDownCircle, label: '사용',   color: 'text-rose-400' },
-  referral: { icon: Users,           label: '소개',   color: 'text-blue-400' },
-  bonus:    { icon: Gift,            label: '보너스', color: 'text-amber-400' },
+  charge:   { icon: ArrowUpCircle,   label: '충전',   color: 'text-sage-dark' },
+  use:      { icon: ArrowDownCircle, label: '사용',   color: 'text-rose' },
+  referral: { icon: Users,           label: '소개',   color: 'text-info' },
+  bonus:    { icon: Gift,            label: '보너스', color: 'text-amber' },
 };
 
 // ── 결제수단 배지 ─────────────────────────────────────────────────────
