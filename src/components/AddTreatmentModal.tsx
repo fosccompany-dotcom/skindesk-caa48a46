@@ -447,7 +447,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="space-y-1.5">
                 {selectedCat.items.map(item => (
                   <button key={item.id}
-                    onClick={() => { setItemId(item.id); setShots(null); }}
+                    onClick={() => { setItemId(item.id); setShots(null); setDrugId(null); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
                       itemId === item.id
