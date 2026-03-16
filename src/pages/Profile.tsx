@@ -458,7 +458,7 @@ const Profile = () => {
                       const nextT = idx < 4 ? STAGE_THRESHOLDS[idx + 1] - 1 : null;
                       const rangeText = idx === 0 ? '0건' : idx === 4 ? `${threshold}건+` : `${threshold}~${nextT}건`;
                       return (
-                        <li key={s.stage} className={bloomStage === s.stage ? 'text-[#F2C94C] font-semibold' : ''}>
+                      <li key={s.stage} className={bloomStage === s.stage ? 'text-accent font-semibold' : ''}>
                           {s.emoji} {name} — {rangeText}
                         </li>
                       );
