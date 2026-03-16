@@ -493,7 +493,7 @@ export const clinicBalances: Record<string, number> = {
 };
 
 // ─── 결제 내역 타입 ──────────────────────────────────────────────────
-export type PaymentMethod = '카드' | '현금' | '포인트충전' | '시술결제' | '서비스';
+export type PaymentMethod = 'card' | 'cash' | 'charge' | 'service' | 'point' | 'package';
 export type ClinicType = '밴스' | '타의원';
 
 export interface PaymentRecord {
