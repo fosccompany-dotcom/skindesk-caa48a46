@@ -556,6 +556,12 @@ const Index = () => {
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
 
       {/* Privacy Consent Modal for OAuth users */}
+      <LoginRequiredSheet
+        open={showLoginSheet}
+        onClose={handleLoginClose}
+        onLoginSuccess={handleLoginSuccess}
+      />
+
       {privacyConsentOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="bg-background rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-xl">

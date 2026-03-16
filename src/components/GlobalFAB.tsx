@@ -93,6 +93,13 @@ const GlobalFAB = () => {
         onClose={handleCloseCoach}
         onClickParse={handleCoachParse}
       />
+
+      {/* 로그인 필요 시트 */}
+      <LoginRequiredSheet
+        open={showLoginSheet}
+        onClose={handleLoginClose}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </>
   );
 };

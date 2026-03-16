@@ -332,6 +332,12 @@ const CalendarViewPage = () => {
         onClose={() => setShowReservationModal(false)}
         defaultDate={selectedDateStr}
       />
+
+      <LoginRequiredSheet
+        open={showLoginSheet}
+        onClose={handleLoginClose}
+        onLoginSuccess={handleLoginSuccess}
+      />
     </div>
   );
 };

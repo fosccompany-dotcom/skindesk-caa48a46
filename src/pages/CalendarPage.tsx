@@ -20,6 +20,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import AddPaymentModal from '@/components/AddPaymentModal';
+import LoginRequiredSheet from '@/components/LoginRequiredSheet';
+import { useLoginGuard } from '@/hooks/useLoginGuard';
 
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
