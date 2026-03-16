@@ -47,8 +47,8 @@ const methodStyle: Record<PaymentMethod, { bg: string; text: string; label: stri
 };
 
 const clinicTypeStyle: Record<ClinicType, { bg: string; text: string }> = {
-  '밴스':   { bg: 'bg-[#C9A96E]/10', text: 'text-[#C9A96E]' },
-  '타의원': { bg: 'bg-purple-50',    text: 'text-purple-500' },
+  '밴스':   { bg: 'bg-amber/10', text: 'text-amber' },
+  '타의원': { bg: 'bg-secondary/10',    text: 'text-secondary' },
 };
 
 // ── 병원별 잔여 시술권 그룹핑 ────────────────────────────────────────
