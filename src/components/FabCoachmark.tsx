@@ -166,7 +166,7 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
             )}
           </mask>
         </defs>
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.7)" mask="url(#fab-coach-mask)" />
+        <rect x="0" y="0" width="100%" height="100%" fill="hsl(var(--foreground) / 0.7)" mask="url(#fab-coach-mask)" />
       </svg>
 
       {/* Spotlight glow */}
