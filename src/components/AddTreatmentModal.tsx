@@ -520,7 +520,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       return selectedDrug ? selectedDrug.name : '보톡스';
     }
     if (isFiller) {
-      const drugName = selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
+      // 직접 입력한 약제명 우선 사용
+      const drugName = fillerDrugId === '__custom'
+        ? (customFillerDrug.trim() || null)
+        : selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
       const areaName = fillerAreaId === '__custom'
         ? (customFillerArea.trim() || null)
         : selectedFillerArea ? getLocalizedName(selectedFillerArea) : null;
