@@ -10,6 +10,7 @@ import { ko } from 'date-fns/locale';
 import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import AddReservationModal from '@/components/AddReservationModal';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 const eventTypeConfig = {
@@ -56,6 +57,7 @@ const CalendarViewPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showActionPicker, setShowActionPicker] = useState(false);
+  const [showReservationModal, setShowReservationModal] = useState(false);
   const { cycles } = useCycles();
   const { records, addRecord } = useRecords();
 
@@ -287,7 +289,7 @@ const CalendarViewPage = () => {
             <button
               onClick={() => {
                 setShowActionPicker(false);
-                toast.info('예약 일정 기능은 준비 중이에요 🚧');
+                setShowReservationModal(true);
               }}
               className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 hover:bg-accent/50 active:scale-[0.97] transition-all"
             >
@@ -319,6 +321,12 @@ const CalendarViewPage = () => {
         open={showAddModal}
         onClose={() => setShowAddModal(false)}
         onSave={addRecord}
+        defaultDate={selectedDateStr}
+      />
+
+      <AddReservationModal
+        open={showReservationModal}
+        onClose={() => setShowReservationModal(false)}
         defaultDate={selectedDateStr}
       />
     </div>

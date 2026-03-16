@@ -208,6 +208,54 @@ export type Database = {
           },
         ]
       }
+      reservations: {
+        Row: {
+          body_area: string | null
+          clinic: string
+          clinic_address: string | null
+          clinic_district: string | null
+          clinic_kakao_id: string | null
+          created_at: string | null
+          date: string
+          id: string
+          memo: string | null
+          skin_layer: string | null
+          time: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Insert: {
+          body_area?: string | null
+          clinic: string
+          clinic_address?: string | null
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
+          created_at?: string | null
+          date: string
+          id?: string
+          memo?: string | null
+          skin_layer?: string | null
+          time?: string | null
+          treatment_name: string
+          user_id: string
+        }
+        Update: {
+          body_area?: string | null
+          clinic?: string
+          clinic_address?: string | null
+          clinic_district?: string | null
+          clinic_kakao_id?: string | null
+          created_at?: string | null
+          date?: string
+          id?: string
+          memo?: string | null
+          skin_layer?: string | null
+          time?: string | null
+          treatment_name?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       treatment_cycles: {
         Row: {
           body_area: string | null
