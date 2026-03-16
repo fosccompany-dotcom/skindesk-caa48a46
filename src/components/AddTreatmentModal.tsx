@@ -340,6 +340,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [fillerAreaId, setFillerAreaId] = useState<string | null>(null);
   const [fillerDrugOptions, setFillerDrugOptions] = useState<any[]>([]);
   const [fillerAreaOptions, setFillerAreaOptions] = useState<any[]>([]);
+  const [customFillerArea, setCustomFillerArea] = useState('');
 
   // ── DB categories ──
   const [dbOptions, setDbOptions] = useState<any[]>([]);
@@ -368,7 +369,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setBodyArea('face'); setCustomBodyArea(''); setCustomTreatmentName('');
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
-    setFillerDrugId(null); setFillerAreaId(null);
+    setFillerDrugId(null); setFillerAreaId(null); setCustomFillerArea('');
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -519,7 +520,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     }
     if (isFiller) {
       const drugName = selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
-      const areaName = selectedFillerArea ? getLocalizedName(selectedFillerArea) : null;
+      const areaName = fillerAreaId === '__custom'
+        ? (customFillerArea.trim() || null)
+        : selectedFillerArea ? getLocalizedName(selectedFillerArea) : null;
       if (drugName && areaName) return `${drugName} - ${areaName}`;
       if (areaName) return `필러 - ${areaName}`;
       if (drugName) return drugName;
@@ -549,7 +552,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
-    const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
+    const resolvedBodyArea = isFiller
+      ? (fillerAreaId === '__custom' ? (customFillerArea.trim() || 'face') : (selectedFillerArea ? getLocalizedName(selectedFillerArea) : 'face'))
+      : bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
     const skinLayer = isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : (selectedItem?.skinLayer || 'dermis');
     onSave({
       date,
@@ -667,7 +672,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="grid grid-cols-3 gap-2">
                 {fillerAreaOptions.map(area => (
                   <button key={area.id}
-                    onClick={() => setFillerAreaId(prev => prev === area.id ? null : area.id)}
+                    onClick={() => { setFillerAreaId(prev => prev === area.id ? null : area.id); setCustomFillerArea(''); }}
                     className={cn(
                       'py-3 rounded-xl border text-sm font-medium transition-all',
                       fillerAreaId === area.id
@@ -677,7 +682,26 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     {getLocalizedName(area)}
                   </button>
                 ))}
+                <button
+                  onClick={() => setFillerAreaId(prev => prev === '__custom' ? null : '__custom')}
+                  className={cn(
+                    'py-3 rounded-xl border text-sm font-medium transition-all',
+                    fillerAreaId === '__custom'
+                      ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                      : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'
+                  )}>
+                  {language === 'en' ? 'Other' : language === 'zh' ? '其他' : '기타 (직접입력)'}
+                </button>
               </div>
+              {fillerAreaId === '__custom' && (
+                <input
+                  type="text"
+                  value={customFillerArea}
+                  onChange={e => setCustomFillerArea(e.target.value)}
+                  placeholder={language === 'en' ? 'Enter area' : language === 'zh' ? '请输入部位' : '부위를 입력하세요'}
+                  className="w-full mt-3 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                />
+              )}
             </div>
           )}
 
@@ -923,7 +947,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               {/* 결제 수단 (시술권 미사용 시에만 표시) */}
               {!selectedPkgId && (
                 <div>
-                  <label className="text-xs text-gray-400 block mb-1.5">결제 수단 (선택)</label>
+                  <label className="text-xs text-gray-400 block mb-1.5">결제 수단 <span className="text-red-400">*</span></label>
                   <div className="grid grid-cols-2 gap-2">
                     {([
                       { key: 'card',    label: '카드 결제',    desc: '신용/체크카드 직접 결제', icon: CreditCard },
@@ -948,7 +972,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   {/* 결제 금액 (서비스 제외) */}
                   {paymentMethod && paymentMethod !== 'service' && (
                     <div className="mt-3">
-                      <label className="text-xs text-gray-400 block mb-1.5">결제 금액 (선택)</label>
+                      <label className="text-xs text-gray-400 block mb-1.5">결제 금액</label>
                       <div className="relative">
                         <input
                           type="number"
@@ -1009,7 +1033,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               다음 <ChevronRight size={15} className="ml-1" />
             </Button>
           ) : (
-            <Button onClick={handleSave} disabled={!date || !clinic}
+            <Button onClick={handleSave} disabled={!date || !clinic || (!selectedPkgId && !paymentMethod)}
               className="flex-1 bg-[#C9A96E] hover:bg-[#b8935a] text-black font-semibold disabled:opacity-25">
               <Check size={15} className="mr-1.5" /> 저장
             </Button>
