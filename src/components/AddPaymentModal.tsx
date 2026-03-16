@@ -5,8 +5,10 @@ import { Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift, X } from
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import ClinicSearchInput from './ClinicSearchInput';
+import { PaymentMethodKey, getMethodLabel } from '@/lib/paymentMethodUtils';
+import { useLanguage } from '@/i18n/LanguageContext';
 
-type PayMethod = '포인트충전' | '카드' | '현금' | '서비스';
+type PayMethod = 'charge' | 'card' | 'cash' | 'service';
 type ClinicType = '밴스' | '타의원';
 
 interface Props {
@@ -15,19 +17,20 @@ interface Props {
   onSaved: () => void;
 }
 
-const METHOD_CONFIG: Record<PayMethod, { label: string; icon: any; lightColor: string; desc: string }> = {
-  '포인트충전': { label: '포인트 충전', icon: Coins,      lightColor: 'border-amber-300 bg-amber-50 text-amber-700',   desc: '밴스 등 선불 잔액 충전' },
-  '카드':       { label: '카드 결제',   icon: CreditCard, lightColor: 'border-blue-300 bg-blue-50 text-blue-700',       desc: '신용/체크카드 직접 결제' },
-  '현금':       { label: '현금 결제',   icon: Banknote,   lightColor: 'border-green-300 bg-green-50 text-green-700',    desc: '현금 직접 결제' },
-  '서비스':     { label: '서비스',      icon: Gift,       lightColor: 'border-gray-300 bg-gray-50 text-gray-600',       desc: '무료 제공' },
+const METHOD_CONFIG: Record<PayMethod, { icon: any; lightColor: string; descKo: string; descEn: string; descZh: string }> = {
+  charge:  { icon: Coins,      lightColor: 'border-amber-300 bg-amber-50 text-amber-700',   descKo: '밴스 등 선불 잔액 충전', descEn: 'Prepaid balance charge', descZh: '预付余额充值' },
+  card:    { icon: CreditCard, lightColor: 'border-blue-300 bg-blue-50 text-blue-700',       descKo: '신용/체크카드 직접 결제', descEn: 'Credit/debit card', descZh: '信用卡/借记卡' },
+  cash:    { icon: Banknote,   lightColor: 'border-green-300 bg-green-50 text-green-700',    descKo: '현금 직접 결제', descEn: 'Cash payment', descZh: '现金支付' },
+  service: { icon: Gift,       lightColor: 'border-gray-300 bg-gray-50 text-gray-600',       descKo: '무료 제공', descEn: 'Free service', descZh: '免费服务' },
 };
 
 export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
+  const { language } = useLanguage();
   const today = new Date().toISOString().split('T')[0];
   const [date, setDate]               = useState(today);
   const [clinic, setClinic]           = useState('');
   const [clinicType, setClinicType]   = useState<ClinicType>('밴스');
-  const [method, setMethod]           = useState<PayMethod>('포인트충전');
+  const [method, setMethod]           = useState<PayMethod>('charge');
   const [amount, setAmount]           = useState('');
   const [chargedAmount, setChargedAmount] = useState('');
   const [description, setDescription] = useState('');
@@ -37,7 +40,7 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
   const [error, setError]             = useState<string | null>(null);
 
   const reset = () => {
-    setDate(today); setClinic(''); setClinicType('밴스'); setMethod('포인트충전');
+    setDate(today); setClinic(''); setClinicType('밴스'); setMethod('charge');
     setAmount(''); setChargedAmount(''); setDescription(''); setMemo('');
     setSaving(false); setSaved(false); setError(null);
   };
@@ -46,7 +49,7 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
   const handleSave = async () => {
     if (!clinic.trim())       { setError('병원명을 입력해주세요.'); return; }
-    if (!amount && method !== '서비스') { setError('금액을 입력해주세요.'); return; }
+    if (!amount && method !== 'service') { setError('금액을 입력해주세요.'); return; }
 
     setSaving(true);
     setError(null);
@@ -55,26 +58,27 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('로그인이 필요합니다.');
 
-      const amountNum = method === '서비스' ? 0 : parseInt(amount.replace(/,/g, '')) || 0;
-      const chargedNum = method === '포인트충전'
+      const amountNum = method === 'service' ? 0 : parseInt(amount.replace(/,/g, '')) || 0;
+      const chargedNum = method === 'charge'
         ? (chargedAmount ? parseInt(chargedAmount.replace(/,/g, '')) || amountNum : amountNum)
         : amountNum;
 
+      // DB에 영문 key로 저장
       const { error: insertErr } = await supabase.from('payment_records').insert({
         user_id:        user.id,
         date,
         clinic:         clinic.trim(),
         clinic_type:    clinicType,
-        treatment_name: description.trim() || METHOD_CONFIG[method].label,
+        treatment_name: description.trim() || getMethodLabel(method, language),
         amount:         amountNum,
-        charged_amount: method === '포인트충전' ? chargedNum : null,
-        method,
+        charged_amount: method === 'charge' ? chargedNum : null,
+        method,          // English key: 'charge' | 'card' | 'cash' | 'service'
         memo:           memo.trim() || null,
       });
       if (insertErr) throw insertErr;
 
       const clinicKey = clinic.trim();
-      if (method === '포인트충전' && chargedNum > 0) {
+      if (method === 'charge' && chargedNum > 0) {
         const { data: existing } = await supabase
           .from('clinic_balances').select('balance')
           .eq('user_id', user.id).eq('clinic', clinicKey).single();
@@ -111,7 +115,7 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
           <div className="flex items-center justify-between">
             <DialogTitle className="text-base font-semibold flex items-center gap-2">
               <CreditCard size={16} className="text-primary" />
-              결제 내역 추가
+              {language === 'en' ? 'Add Payment' : language === 'zh' ? '添加支付记录' : '결제 내역 추가'}
             </DialogTitle>
             <button onClick={handleClose} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
               <X size={18} className="text-gray-400" />
@@ -123,25 +127,31 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
           {/* 날짜 */}
           <div>
-            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">날짜</label>
+            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">
+              {language === 'en' ? 'Date' : language === 'zh' ? '日期' : '날짜'}
+            </label>
             <input type="date" value={date} onChange={e => setDate(e.target.value)} className={inputClass} />
           </div>
 
           {/* 결제 유형 */}
           <div>
-            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">결제 유형</label>
+            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">
+              {language === 'en' ? 'Payment Type' : language === 'zh' ? '支付类型' : '결제 유형'}
+            </label>
             <div className="grid grid-cols-2 gap-2">
               {(Object.keys(METHOD_CONFIG) as PayMethod[]).map(m => {
                 const cfg = METHOD_CONFIG[m];
                 const Icon = cfg.icon;
+                const label = getMethodLabel(m, language);
+                const desc = language === 'en' ? cfg.descEn : language === 'zh' ? cfg.descZh : cfg.descKo;
                 return (
                   <button key={m} onClick={() => setMethod(m)}
                     className={cn('flex items-center gap-2 px-3 py-2.5 rounded-xl border text-left transition-all',
                       method === m ? cfg.lightColor : 'border-gray-200 bg-gray-50/50 text-muted-foreground')}>
                     <Icon size={14} className="shrink-0" />
                     <div>
-                      <p className="text-xs font-semibold">{cfg.label}</p>
-                      <p className="text-[9px] opacity-60">{cfg.desc}</p>
+                      <p className="text-xs font-semibold">{label}</p>
+                      <p className="text-[9px] opacity-60">{desc}</p>
                     </div>
                   </button>
                 );
@@ -152,14 +162,18 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
           {/* 병원 + 병원유형 */}
           <div className="grid grid-cols-3 gap-2">
             <div className="col-span-2">
-              <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">병원명</label>
+              <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">
+                {language === 'en' ? 'Clinic' : language === 'zh' ? '医院' : '병원명'}
+              </label>
               <ClinicSearchInput
                 value={clinic}
                 onChange={setClinic}
                 placeholder="미금 밴스의원" />
             </div>
             <div>
-              <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">구분</label>
+              <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">
+                {language === 'en' ? 'Type' : language === 'zh' ? '类型' : '구분'}
+              </label>
               <div className="flex flex-col gap-1">
                 {(['밴스', '타의원'] as ClinicType[]).map(t => (
                   <button key={t} onClick={() => setClinicType(t)}
@@ -176,44 +190,57 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
           {/* 내용 */}
           <div>
-            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">내용</label>
+            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">
+              {language === 'en' ? 'Description' : language === 'zh' ? '内容' : '내용'}
+            </label>
             <input type="text" value={description} onChange={e => setDescription(e.target.value)}
-              placeholder={method === '포인트충전' ? '신규충전' : '세르프 600샷'}
+              placeholder={method === 'charge' ? '신규충전' : '세르프 600샷'}
               className={inputClass} />
           </div>
 
           {/* 금액 */}
-          {method !== '서비스' && (
-            <div className={method === '포인트충전' ? 'grid grid-cols-2 gap-2' : ''}>
+          {method !== 'service' && (
+            <div className={method === 'charge' ? 'grid grid-cols-2 gap-2' : ''}>
               <div>
                 <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">
-                  {method === '포인트충전' ? '실결제금액 (원)' : '금액 (원)'}
+                  {method === 'charge'
+                    ? (language === 'en' ? 'Paid Amount (₩)' : language === 'zh' ? '实付金额 (元)' : '실결제금액 (원)')
+                    : (language === 'en' ? 'Amount (₩)' : language === 'zh' ? '金额 (元)' : '금액 (원)')}
                 </label>
                 <div className="relative">
                   <input type="text" value={amount} inputMode="numeric"
                     onChange={e => setAmount(formatAmount(e.target.value))}
                     placeholder="0"
                     className={cn(inputClass, 'pr-8')} />
-                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">원</span>
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                    {language === 'zh' ? '元' : '원'}
+                  </span>
                 </div>
               </div>
 
-              {method === '포인트충전' && (
+              {method === 'charge' && (
                 <div>
                   <label className="text-[11px] mb-1.5 block font-medium">
-                    <span className="text-emerald-600">충전금액 (원)</span>
-                    <span className="text-muted-foreground ml-1">잔액에 반영</span>
+                    <span className="text-emerald-600">
+                      {language === 'en' ? 'Charged Amount' : language === 'zh' ? '充值金额' : '충전금액 (원)'}
+                    </span>
+                    <span className="text-muted-foreground ml-1">
+                      {language === 'en' ? 'applied to balance' : language === 'zh' ? '计入余额' : '잔액에 반영'}
+                    </span>
                   </label>
                   <div className="relative">
                     <input type="text" value={chargedAmount} inputMode="numeric"
                       onChange={e => setChargedAmount(formatAmount(e.target.value))}
                       placeholder={amount || '0'}
                       className="w-full bg-emerald-50 border border-emerald-300 rounded-xl px-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-emerald-400 pr-8" />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">원</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                      {language === 'zh' ? '元' : '원'}
+                    </span>
                   </div>
                   {amount && chargedAmount && amount !== chargedAmount && (
                     <p className="text-[10px] text-emerald-600 mt-1 font-medium">
-                      +{(parseInt(chargedAmount.replace(/,/g,'')) - parseInt(amount.replace(/,/g,''))).toLocaleString()}원 보너스
+                      +{(parseInt(chargedAmount.replace(/,/g,'')) - parseInt(amount.replace(/,/g,''))).toLocaleString()}
+                      {language === 'en' ? ' bonus' : language === 'zh' ? '元 奖励' : '원 보너스'}
                     </p>
                   )}
                 </div>
@@ -223,9 +250,11 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
 
           {/* 메모 */}
           <div>
-            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">메모 (선택)</label>
+            <label className="text-[11px] text-muted-foreground mb-1.5 block font-medium">
+              {language === 'en' ? 'Memo (optional)' : language === 'zh' ? '备注 (可选)' : '메모 (선택)'}
+            </label>
             <input type="text" value={memo} onChange={e => setMemo(e.target.value)}
-              placeholder="이벤트 적용, 1+1 패키지 등"
+              placeholder={language === 'en' ? 'Event, 1+1 package, etc.' : '이벤트 적용, 1+1 패키지 등'}
               className={inputClass} />
           </div>
 
@@ -240,11 +269,15 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
           {saved ? (
             <div className="flex items-center justify-center gap-2 py-3 text-emerald-600">
               <CheckCircle size={18} />
-              <span className="font-semibold text-sm">저장 완료!</span>
+              <span className="font-semibold text-sm">
+                {language === 'en' ? 'Saved!' : language === 'zh' ? '已保存！' : '저장 완료!'}
+              </span>
             </div>
           ) : (
             <Button onClick={handleSave} disabled={saving} className="w-full rounded-xl h-12 text-sm font-bold gap-2">
-              {saving ? <><Loader2 size={16} className="animate-spin" /> 저장 중...</> : <><Plus size={16} /> 결제 내역 추가</>}
+              {saving
+                ? <><Loader2 size={16} className="animate-spin" /> {language === 'en' ? 'Saving...' : '저장 중...'}</>
+                : <><Plus size={16} /> {language === 'en' ? 'Add Payment' : language === 'zh' ? '添加支付记录' : '결제 내역 추가'}</>}
             </Button>
           )}
         </div>

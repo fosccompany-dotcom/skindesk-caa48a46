@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
+import { PaymentMethodKey, getMethodLabel, METHOD_STYLE, normalizeMethodKey } from '@/lib/paymentMethodUtils';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 // ── 타입 ──────────────────────────────────────────────────────────────
 interface TreatmentPackage {
@@ -22,25 +24,15 @@ interface TreatmentPackage {
   total_sessions: number; used_sessions: number;
   expiry_date: string | null;
 }
-type PaymentMethod = '포인트충전' | '포인트' | '시술결제' | '카드' | '현금' | '서비스';
-type ClinicType    = '밴스' | '타의원';
 interface PaymentRecord {
-  id: string; date: string; clinic: string; clinic_type: ClinicType;
-  treatment_name: string; amount: number; method: PaymentMethod; memo?: string;
+  id: string; date: string; clinic: string; clinic_type: string;
+  treatment_name: string; amount: number; method: string; memo?: string;
 }
 interface ClinicBalance { clinic: string; balance: number; }
 
-const methodStyle: Record<string, { bg: string; text: string }> = {
-  '포인트충전': { bg: 'bg-emerald-50', text: 'text-emerald-600' },
-  '포인트':     { bg: 'bg-orange-50',  text: 'text-orange-600' },
-  '시술결제':   { bg: 'bg-indigo-50',  text: 'text-indigo-600' },
-  '카드':       { bg: 'bg-sky-50',     text: 'text-sky-600' },
-  '현금':       { bg: 'bg-amber-50',   text: 'text-amber-600' },
-  '서비스':     { bg: 'bg-gray-100',   text: 'text-gray-500' },
-};
-
 // ─────────────────────────────────────────────────────────────────────
 const Packages = () => {
+  const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const { loading: recordsLoading } = useRecords();
   const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
@@ -117,7 +109,7 @@ const Packages = () => {
       supabase.from('payment_records').select('*').eq('user_id', user.id).order('date', { ascending: false }),
       supabase.from('clinic_balances').select('clinic, balance').eq('user_id', user.id),
     ]);
-    if (pRes.data)  setPayments(pRes.data.map(r => ({ ...r, method: (r.method || '카드') as PaymentMethod, clinic_type: (r.clinic_type || '타의원') as ClinicType })));
+    if (pRes.data)  setPayments(pRes.data.map(r => ({ ...r, method: normalizeMethodKey(r.method) || 'card', clinic_type: r.clinic_type || '타의원' })));
     if (bRes.data)  setBalances(bRes.data as ClinicBalance[]);
     setPayLoading(false);
   }, []);
@@ -207,8 +199,8 @@ const Packages = () => {
     : payments.filter(p => p.clinic === filterClinic);
 
   // 필터된 내역 기반으로 요약 계산
-  const totalCharged = filteredPayments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
-  const totalSpent   = filteredPayments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
+  const totalCharged = filteredPayments.filter(p => p.method === 'charge').reduce((s, p) => s + p.amount, 0);
+  const totalSpent   = filteredPayments.filter(p => p.method !== 'charge').reduce((s, p) => s + p.amount, 0);
   const totalBalance = totalCharged - totalSpent;
 
   if (recordsLoading) return <FlowerLoader />;
@@ -414,11 +406,13 @@ const Packages = () => {
                 </div>
               </div>
             ) : (() => {
-              const chargeRecords = filteredPayments.filter(p => p.method === '포인트충전');
-              const treatmentRecords = filteredPayments.filter(p => p.method !== '포인트충전');
+              const chargeRecords = filteredPayments.filter(p => p.method === 'charge');
+              const treatmentRecords = filteredPayments.filter(p => p.method !== 'charge');
 
               const renderPayCard = (p: PaymentRecord) => {
-                const style = methodStyle[p.method] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
+                const normalizedMethod = normalizeMethodKey(p.method) || 'card';
+                const style = METHOD_STYLE[normalizedMethod] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
+                const methodLabel = getMethodLabel(normalizedMethod, language);
                 return (
                   <Card key={p.id} className="glass-card">
                     <CardContent className="p-3.5">
@@ -430,11 +424,11 @@ const Packages = () => {
                         </div>
                         <div className="flex items-start gap-1.5">
                           <div className="text-right shrink-0">
-                            <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : ''}`}>
-                              {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
+                            <p className={`text-sm font-black ${normalizedMethod === 'charge' ? 'text-emerald-500' : ''}`}>
+                              {normalizedMethod === 'charge' ? '+' : '-'}{p.amount.toLocaleString()}원
                             </p>
                             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
-                              {p.method}
+                              {methodLabel}
                             </span>
                           </div>
                           <DropdownMenu>
@@ -541,7 +535,7 @@ const Packages = () => {
             <div>
               <Label className="text-xs">결제 종류</Label>
               <div className="grid grid-cols-5 gap-1.5 mt-1">
-                {(['포인트', '시술결제', '카드', '현금', '서비스'] as const).map(m => (
+                {(['point', 'service', 'card', 'cash', 'charge'] as const).map(m => (
                   <button
                     key={m}
                     type="button"
@@ -552,7 +546,7 @@ const Packages = () => {
                         : 'bg-muted text-muted-foreground border-transparent'
                     }`}
                   >
-                    {m}
+                    {getMethodLabel(m, language)}
                   </button>
                 ))}
               </div>

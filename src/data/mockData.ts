@@ -493,7 +493,7 @@ export const clinicBalances: Record<string, number> = {
 };
 
 // ─── 결제 내역 타입 ──────────────────────────────────────────────────
-export type PaymentMethod = '카드' | '현금' | '포인트충전' | '시술결제' | '서비스';
+export type PaymentMethod = 'card' | 'cash' | 'charge' | 'service' | 'point' | 'package';
 export type ClinicType = '밴스' | '타의원';
 
 export interface PaymentRecord {
@@ -521,7 +521,7 @@ export const mockPaymentRecords: PaymentRecord[] = [
     clinic: '밴스 미금',
     treatmentName: '포인트 신규충전',
     amount: 2000000,
-    method: '포인트충전',
+    method: 'charge',
     clinicType: '밴스',
     memo: '실결제 ₩2,000,000 | 증정 포인트 ₩860,000 포함 (총 ₩2,860,000 적립)',
   },
@@ -532,7 +532,7 @@ export const mockPaymentRecords: PaymentRecord[] = [
     clinic: '필로의원 정자',
     treatmentName: '티타늄 60kj + 슈링크 유니버스',
     amount: 0,
-    method: '서비스',
+    method: 'service',
     clinicType: '타의원',
     memo: '소개 적립금 사용 (서비스 시술)',
   },
@@ -543,7 +543,7 @@ export const mockPaymentRecords: PaymentRecord[] = [
     clinic: '뷰티라운지 판교',
     treatmentName: '슈링크 유니버스 300샷 + 인모드 FX 앞볼',
     amount: 0,
-    method: '시술결제',
+    method: 'service',
     clinicType: '타의원',
     memo: '금액 미입력 — 직접 추가 필요',
   },
