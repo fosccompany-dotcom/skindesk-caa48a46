@@ -802,7 +802,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           )}
 
           {/* ── 상세 입력 (마지막 단계) ── */}
-          {isDetailStep && (isBotox || selectedItem) && (
+          {isDetailStep && (isBotox || isFiller || selectedItem) && (
             <div className="space-y-4">
               {/* 선택 요약 */}
               <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
