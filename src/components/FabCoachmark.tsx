@@ -245,7 +245,7 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
             {isCTA ? (
               <div className="space-y-2">
                 <Button
-                  className="w-full rounded-xl h-10 text-sm font-bold bg-[#F2C94C] hover:bg-[#e0b83e] text-foreground"
+                  className="w-full rounded-xl h-10 text-sm font-bold bg-accent hover:bg-accent/90 text-accent-foreground"
                   onClick={() => {
                     onClose();
                     onClickParse();
