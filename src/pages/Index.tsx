@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check } from 'lucide-react';
+import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check, Plus, ClipboardList, CalendarPlus } from 'lucide-react';
 import BloomAvatar from '@/components/BloomAvatar';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
@@ -15,6 +16,7 @@ import { differenceInDays, format, addDays, startOfMonth, endOfMonth, startOfWee
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import AddReservationModal from '@/components/AddReservationModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,6 +25,17 @@ import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 import { useLoginGuard } from '@/hooks/useLoginGuard';
 import logoImg from '@/assets/logo.png';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
+
+interface Reservation {
+  id: string;
+  date: string;
+  time: string | null;
+  treatment_name: string;
+  clinic: string;
+  memo: string | null;
+  body_area: string | null;
+  skin_layer: string | null;
+}
 
 const SEASON_CONFIG: Record<SeasonKey, {emoji: string;title: string;sub: string;color: string;bg: string;}> = {
   reset: { emoji: '🌵', title: 'Reset Mode', sub: '피부 리셋 모드', color: '#7EC8A0', bg: 'bg-green-50' },
