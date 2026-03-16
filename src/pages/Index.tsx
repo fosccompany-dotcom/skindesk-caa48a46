@@ -146,8 +146,8 @@ const Index = () => {
   const activePackages = useMemo(() => packages.filter((p) => (p.total_sessions ?? 0) - (p.used_sessions ?? 0) > 0), [packages]);
   const totalRemainingSessions = useMemo(() => activePackages.reduce((s, p) => s + ((p.total_sessions ?? 0) - (p.used_sessions ?? 0)), 0), [activePackages]);
   const totalBalance = useMemo(() => {
-    const charged = clinicPayments.filter((p) => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
-    const spent = clinicPayments.filter((p) => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
+    const charged = clinicPayments.filter((p) => p.method === 'charge').reduce((s, p) => s + p.amount, 0);
+    const spent = clinicPayments.filter((p) => p.method !== 'charge').reduce((s, p) => s + p.amount, 0);
     return charged - spent;
   }, [clinicPayments]);
 

@@ -543,7 +543,7 @@ export const mockPaymentRecords: PaymentRecord[] = [
     clinic: '뷰티라운지 판교',
     treatmentName: '슈링크 유니버스 300샷 + 인모드 FX 앞볼',
     amount: 0,
-    method: '시술결제',
+    method: 'service',
     clinicType: '타의원',
     memo: '금액 미입력 — 직접 추가 필요',
   },
