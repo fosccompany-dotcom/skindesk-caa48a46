@@ -450,12 +450,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const canNext = () => {
     if (step === 1) return !!catId;
-    if (isBotox) {
-      // step 2 = drug (always allowed — can skip)
-      // step 3 = body area (always has default)
-      return true;
+    if (isBotox) return true;
+    if (step === 2) {
+      if (itemId === '__custom') return !!customTreatmentName.trim();
+      return !!itemId;
     }
-    if (step === 2) return !!itemId;
     if (step === shotsStep) return !!shots;
     return true;
   };
@@ -464,9 +463,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const getTreatmentName = () => {
     if (isBotox) {
-      const drug = selectedDrug ? selectedDrug.name : '보톡스';
-      return drug;
+      return selectedDrug ? selectedDrug.name : '보톡스';
     }
+    if (itemId === '__custom') return customTreatmentName.trim() || '';
     if (!selectedItem) return '';
     let name = selectedItem.name;
     if (shots) name += ` ${shots}샷`;
