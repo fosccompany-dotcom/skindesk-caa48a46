@@ -31,24 +31,24 @@ const VANCE_CLINICS: string[] = [];
 type PointType = 'charge' | 'use' | 'referral' | 'bonus';
 
 const pointTypeConfig: Record<PointType, { icon: ElementType; label: string; color: string }> = {
-  charge:   { icon: ArrowUpCircle,   label: '충전',   color: 'text-emerald-500' },
-  use:      { icon: ArrowDownCircle, label: '사용',   color: 'text-rose-400' },
-  referral: { icon: Users,           label: '소개',   color: 'text-blue-400' },
-  bonus:    { icon: Gift,            label: '보너스', color: 'text-amber-400' },
+  charge:   { icon: ArrowUpCircle,   label: '충전',   color: 'text-sage-dark' },
+  use:      { icon: ArrowDownCircle, label: '사용',   color: 'text-rose' },
+  referral: { icon: Users,           label: '소개',   color: 'text-info' },
+  bonus:    { icon: Gift,            label: '보너스', color: 'text-amber' },
 };
 
 // ── 결제수단 배지 ─────────────────────────────────────────────────────
 const methodStyle: Record<PaymentMethod, { bg: string; text: string; label: string }> = {
-  '포인트충전': { bg: 'bg-amber-50',  text: 'text-amber-600',  label: '포인트충전' },
-  '시술결제':   { bg: 'bg-blue-50',   text: 'text-blue-600',   label: '시술결제' },
-  '카드':       { bg: 'bg-sky-50',    text: 'text-sky-600',    label: '카드' },
-  '현금':       { bg: 'bg-green-50',  text: 'text-green-600',  label: '현금' },
-  '서비스':     { bg: 'bg-gray-100',  text: 'text-gray-500',   label: '서비스' },
+  '포인트충전': { bg: 'bg-amber-light',  text: 'text-amber',  label: '포인트충전' },
+  '시술결제':   { bg: 'bg-info-light',   text: 'text-info',   label: '시술결제' },
+  '카드':       { bg: 'bg-sage-light',    text: 'text-sage',    label: '카드' },
+  '현금':       { bg: 'bg-sage-light',  text: 'text-sage-dark',  label: '현금' },
+  '서비스':     { bg: 'bg-muted',  text: 'text-muted-foreground',   label: '서비스' },
 };
 
 const clinicTypeStyle: Record<ClinicType, { bg: string; text: string }> = {
-  '밴스':   { bg: 'bg-[#C9A96E]/10', text: 'text-[#C9A96E]' },
-  '타의원': { bg: 'bg-purple-50',    text: 'text-purple-500' },
+  '밴스':   { bg: 'bg-amber/10', text: 'text-amber' },
+  '타의원': { bg: 'bg-secondary/10',    text: 'text-secondary' },
 };
 
 // ── 병원별 잔여 시술권 그룹핑 ────────────────────────────────────────
@@ -121,7 +121,7 @@ const Points = () => {
       </div>
 
       {/* ── 탭 ── */}
-      <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4">
+      <div className="sticky top-0 z-10 bg-background border-b border-border px-4">
         <div className="flex">
           {([
             { key: 'remaining', label: '포인트 관리' },
@@ -131,7 +131,7 @@ const Points = () => {
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`flex-1 py-3 text-sm font-medium border-b-2 transition-colors ${
-                tab === t.key ? 'border-gray-900 text-gray-900' : 'border-transparent text-gray-400'
+                tab === t.key ? 'border-foreground text-foreground' : 'border-transparent text-muted-foreground'
               }`}
             >
               {t.label}
@@ -155,16 +155,16 @@ const Points = () => {
                     {/* 병원명 + 잔액 */}
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${isVance ? 'bg-[#C9A96E]' : 'bg-purple-400'}`} />
+                        <div className={`w-2 h-2 rounded-full ${isVance ? 'bg-amber' : 'bg-secondary'}`} />
                         <span className="font-semibold text-sm">{clinic}</span>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
-                          isVance ? 'bg-[#C9A96E]/10 text-[#C9A96E]' : 'bg-purple-50 text-purple-500'
+                          isVance ? 'bg-amber/10 text-amber' : 'bg-secondary/10 text-secondary'
                         }`}>
                           {isVance ? '밴스' : '타의원'}
                         </span>
                       </div>
                       {balance !== undefined && (
-                        <span className="text-sm font-bold text-[#C9A96E]">
+                        <span className="text-sm font-bold text-amber">
                           ₩{balance.toLocaleString()}
                         </span>
                       )}
@@ -173,14 +173,14 @@ const Points = () => {
                     {/* 잔여 시술권 목록 */}
                     <div className="space-y-2">
                       {items.map((item, i) => (
-                        <div key={i} className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2.5">
+                        <div key={i} className="flex items-center justify-between bg-muted rounded-xl px-3 py-2.5">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-800 font-medium truncate">{item.name}</p>
-                            <p className="text-[11px] text-gray-400 mt-0.5">만료 {item.expiry}</p>
+                            <p className="text-sm text-foreground font-medium truncate">{item.name}</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">만료 {item.expiry}</p>
                           </div>
                           <div className="text-right ml-3 shrink-0">
-                            <span className="text-sm font-bold text-gray-900">{item.remaining}회</span>
-                            <span className="text-[11px] text-gray-400"> / {item.total}회</span>
+                            <span className="text-sm font-bold text-foreground">{item.remaining}회</span>
+                            <span className="text-[11px] text-muted-foreground"> / {item.total}회</span>
                           </div>
                         </div>
                       ))}
@@ -188,7 +188,7 @@ const Points = () => {
 
                     {/* 잔액만 있고 시술권 없는 경우 (필로의원 등) */}
                     {items.length === 0 && balance !== undefined && (
-                      <p className="text-xs text-gray-400 text-center py-2">잔여 시술권 없음</p>
+                      <p className="text-xs text-muted-foreground text-center py-2">잔여 시술권 없음</p>
                     )}
                   </CardContent>
                 </Card>
@@ -203,34 +203,34 @@ const Points = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-purple-400" />
+                        <div className="w-2 h-2 rounded-full bg-secondary" />
                         <span className="font-semibold text-sm">{clinic}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-purple-50 text-purple-500">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-secondary/10 text-secondary">
                           타의원
                         </span>
                       </div>
-                      <span className="text-sm font-bold text-[#C9A96E]">₩{balance.toLocaleString()}</span>
+                      <span className="text-sm font-bold text-amber">₩{balance.toLocaleString()}</span>
                     </div>
                     {/* mockPackages에서 해당 병원 시술권 직접 렌더 */}
                     <div className="space-y-2">
                       {mockPackages
                         .filter(p => p.clinic === clinic && p.totalSessions - p.usedSessions > 0)
                         .map(pkg => (
-                          <div key={pkg.id} className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2.5">
+                          <div key={pkg.id} className="flex items-center justify-between bg-muted rounded-xl px-3 py-2.5">
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-gray-800 font-medium truncate">{pkg.name}</p>
-                              <p className="text-[11px] text-gray-400 mt-0.5">만료 {pkg.expiryDate}</p>
+                              <p className="text-sm text-foreground font-medium truncate">{pkg.name}</p>
+                              <p className="text-[11px] text-muted-foreground mt-0.5">만료 {pkg.expiryDate}</p>
                             </div>
                             <div className="text-right ml-3 shrink-0">
-                              <span className="text-sm font-bold text-gray-900">{pkg.totalSessions - pkg.usedSessions}회</span>
-                              <span className="text-[11px] text-gray-400"> / {pkg.totalSessions}회</span>
+                              <span className="text-sm font-bold text-foreground">{pkg.totalSessions - pkg.usedSessions}회</span>
+                              <span className="text-[11px] text-muted-foreground"> / {pkg.totalSessions}회</span>
                             </div>
                           </div>
                         ))
                       }
                       {mockPackages.filter(p => p.clinic === clinic && p.totalSessions - p.usedSessions > 0).length === 0 && (
-                        <div className="space-y-1.5 bg-gray-50 rounded-xl px-3 py-2.5">
-                          <p className="text-xs text-gray-400">잔여 시술권 없음</p>
+                        <div className="space-y-1.5 bg-muted rounded-xl px-3 py-2.5">
+                          <p className="text-xs text-muted-foreground">잔여 시술권 없음</p>
                         </div>
                       )}
                     </div>
@@ -240,19 +240,19 @@ const Points = () => {
 
             {/* 포인트 내역 요약 */}
             <div className="pt-2">
-              <p className="text-xs font-semibold text-gray-400 px-1 mb-2">밴스 포인트 내역</p>
+              <p className="text-xs font-semibold text-muted-foreground px-1 mb-2">밴스 포인트 내역</p>
               <Card className="glass-card">
                 <CardContent className="p-4">
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div className="bg-emerald-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-emerald-600 mb-1">총 적립</p>
-                      <p className="text-base font-bold text-emerald-700">
+                    <div className="bg-sage-light rounded-xl p-3 text-center">
+                      <p className="text-xs text-sage-dark mb-1">총 적립</p>
+                      <p className="text-base font-bold text-sage-dark">
                         {mockPoints.filter((t: any) => t.amount > 0).reduce((s: number, t: any) => s + t.amount, 0).toLocaleString()}원
                       </p>
                     </div>
-                    <div className="bg-rose-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-rose-500 mb-1">총 사용</p>
-                      <p className="text-base font-bold text-rose-600">
+                    <div className="bg-rose-light rounded-xl p-3 text-center">
+                      <p className="text-xs text-rose mb-1">총 사용</p>
+                      <p className="text-base font-bold text-rose">
                         {Math.abs(mockPoints.filter((t: any) => t.amount < 0).reduce((s: number, t: any) => s + t.amount, 0)).toLocaleString()}원
                       </p>
                     </div>
@@ -262,7 +262,7 @@ const Points = () => {
                     const config = pointTypeConfig[tx.type as PointType];
                     const Icon = config.icon;
                     return (
-                      <div key={tx.id} className="flex items-center gap-3 py-2.5 border-t border-gray-50 first:border-0">
+                      <div key={tx.id} className="flex items-center gap-3 py-2.5 border-t border-border first:border-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted">
                           <Icon className={`h-3.5 w-3.5 ${config.color}`} />
                         </div>
@@ -271,7 +271,7 @@ const Points = () => {
                           <p className="text-[10px] text-muted-foreground">{tx.date} · {config.label}</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className={`font-bold text-xs ${tx.amount > 0 ? 'text-emerald-500' : 'text-rose-400'}`}>
+                          <p className={`font-bold text-xs ${tx.amount > 0 ? 'text-sage-dark' : 'text-rose'}`}>
                             {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()}
                           </p>
                           <p className="text-[10px] text-muted-foreground">잔액 {tx.balance.toLocaleString()}</p>
@@ -288,15 +288,15 @@ const Points = () => {
         {/* ── 결제 내역 탭 ── */}
         {tab === 'payments' && (
           <>
-            <div className="mx-0 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-700 space-y-0.5">
-              <p className="font-semibold">💡 결제 내역 구조</p>
+            <div className="mx-0 rounded-xl bg-accent/10 border border-accent/20 px-4 py-3 text-xs text-accent-foreground space-y-0.5">
+              <p className="font-semibold">결제 내역 구조</p>
               <p>밴스 계열: 포인트 신규충전 = 실제 카드/현금 결제</p>
               <p>타의원: 시술 직접 결제 내역</p>
             </div>
 
             <button
               onClick={() => setShowStats(s => !s)}
-              className="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-600"
+              className="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-muted-foreground"
             >
               <span className="flex items-center gap-1.5"><TrendingDown className="w-4 h-4" /> 지출 분석</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${showStats ? 'rotate-180' : ''}`} />
@@ -311,30 +311,30 @@ const Points = () => {
                       { label: '밴스 충전', value: `${(vanceTotal / 10000).toFixed(0)}만원`, icon: Coins },
                       { label: '타의원', value: `${(otherTotal / 10000).toFixed(0)}만원`, icon: Banknote },
                     ].map(({ label, value }) => (
-                      <div key={label} className="bg-gray-50 rounded-xl p-2.5 text-center">
-                        <p className="text-xs text-gray-400 mb-0.5">{label}</p>
-                        <p className="text-sm font-bold text-gray-800">{value}</p>
+                      <div key={label} className="bg-muted rounded-xl p-2.5 text-center">
+                        <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+                        <p className="text-sm font-bold text-foreground">{value}</p>
                       </div>
                     ))}
                   </div>
                   {clinicList.length > 0 && (
                     <div>
-                      <p className="text-xs text-gray-400 mb-2 flex items-center gap-1">
+                      <p className="text-xs text-muted-foreground mb-2 flex items-center gap-1">
                         <Building2 className="w-3 h-3" /> 병원별 지출
                       </p>
                       {clinicList.map(({ name, amount, pct, isVance }) => (
                         <div key={name} className="mb-2">
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="text-gray-600 font-medium flex items-center gap-1">
+                            <span className="text-foreground font-medium flex items-center gap-1">
                               {name}
-                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${isVance ? 'bg-amber-100 text-amber-600' : 'bg-purple-100 text-purple-500'}`}>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${isVance ? 'bg-amber/10 text-amber' : 'bg-secondary/10 text-secondary'}`}>
                                 {isVance ? '밴스' : '타의원'}
                               </span>
                             </span>
-                            <span className="text-gray-800 font-semibold">{amount.toLocaleString()}원</span>
+                            <span className="text-foreground font-semibold">{amount.toLocaleString()}원</span>
                           </div>
-                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full transition-all ${isVance ? 'bg-amber-400' : 'bg-purple-400'}`} style={{ width: `${pct}%` }} />
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full transition-all ${isVance ? 'bg-amber' : 'bg-secondary'}`} style={{ width: `${pct}%` }} />
                           </div>
                         </div>
                       ))}
@@ -348,7 +348,7 @@ const Points = () => {
               {(['전체', '밴스', '타의원'] as const).map(f => (
                 <button key={f} onClick={() => setFilterType(f)}
                   className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                    filterType === f ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200'
+                    filterType === f ? 'bg-foreground text-background border-foreground' : 'bg-background text-muted-foreground border-border'
                   }`}>{f}</button>
               ))}
             </div>
@@ -366,13 +366,13 @@ const Points = () => {
                           <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${ms.bg} ${ms.text}`}>{ms.label}</span>
                           <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${cs.bg} ${cs.text}`}>{p.clinicType}</span>
                         </div>
-                        <p className="text-xs text-gray-400">{p.date.replace(/-/g, '.')} · {p.clinic}</p>
-                        {p.notes && <p className="text-[11px] text-gray-400 mt-0.5">{p.notes}</p>}
+                        <p className="text-xs text-muted-foreground">{p.date.replace(/-/g, '.')} · {p.clinic}</p>
+                        {p.notes && <p className="text-[11px] text-muted-foreground mt-0.5">{p.notes}</p>}
                       </div>
                       <div className="text-right shrink-0">
                         {p.amount > 0
-                          ? <p className="font-bold text-sm text-gray-900">{p.amount.toLocaleString()}원</p>
-                          : <p className="font-bold text-sm text-gray-400">서비스</p>
+                          ? <p className="font-bold text-sm text-foreground">{p.amount.toLocaleString()}원</p>
+                          : <p className="font-bold text-sm text-muted-foreground">서비스</p>
                         }
                       </div>
                     </div>

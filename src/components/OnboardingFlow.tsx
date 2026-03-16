@@ -192,7 +192,7 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
           y="0"
           width="100%"
           height="100%"
-          fill="rgba(0,0,0,0.75)"
+          fill="hsl(var(--foreground) / 0.75)"
           mask="url(#coachmark-mask)"
         />
       </svg>
@@ -236,7 +236,7 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === stepIdx ? 'w-6 bg-[#F2C94C]' : i < stepIdx ? 'w-1.5 bg-[#F2C94C]/50' : 'w-1.5 bg-muted'
+                  i === stepIdx ? 'w-6 bg-accent' : i < stepIdx ? 'w-1.5 bg-accent/50' : 'w-1.5 bg-muted'
                 }`}
               />
             ))}
@@ -244,7 +244,7 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
 
           <div className="px-5 pt-3 pb-4 text-center space-y-2">
             {isLast && (
-              <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-[#F2C94C] to-[#E87461] flex items-center justify-center shadow-lg mb-3">
+              <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg mb-3">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
             )}

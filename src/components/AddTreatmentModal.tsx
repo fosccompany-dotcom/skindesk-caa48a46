@@ -614,7 +614,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           <div className="flex gap-1 mt-2.5">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <div key={i} className={cn('h-0.5 flex-1 rounded-full transition-all',
-                i < step ? 'bg-[#C9A96E]' : 'bg-gray-200')} />
+                i < step ? 'bg-amber' : 'bg-muted')} />
             ))}
           </div>
         </DialogHeader>
@@ -624,7 +624,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              <p className="text-xs text-gray-400 mb-3">
+              <p className="text-xs text-muted-foreground mb-3">
                 {language === 'en' ? 'Select a treatment category' : language === 'zh' ? '选择治疗类别' : '시술 카테고리를 선택하세요'}
               </p>
               {dbLoading ? (
@@ -641,13 +641,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       className={cn(
                         'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
                         cat.color,
-                        catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-gray-400 border-gray-200'
+                        catId === cat.id ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
                       )}>
                       <span className="text-lg">{cat.emoji}</span>
                       <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
+                        <div className="text-xs font-medium text-foreground leading-tight">{cat.label}</div>
                       </div>
-                      {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                      {catId === cat.id && <Check size={12} className="text-amber shrink-0" />}
                     </button>
                   ))}
                 </div>
@@ -658,10 +658,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 2 (필러): 약제 선택 ── */}
           {step === 2 && isFiller && (
             <div>
-              <p className="text-xs text-gray-400 mb-1">
+              <p className="text-xs text-muted-foreground mb-1">
                 {language === 'en' ? 'Select filler product (optional)' : language === 'zh' ? '选择填充产品（可选）' : '필러 종류를 선택하세요 (선택사항)'}
               </p>
-              <p className="text-sm font-semibold text-gray-900 mb-4">🌙 {language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러·실리프팅'}</p>
+              <p className="text-sm font-semibold text-foreground mb-4">🌙 {language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러·실리프팅'}</p>
               <div className="space-y-1.5">
                 {fillerDrugOptions.map(drug => (
                   <button key={drug.id}
@@ -669,11 +669,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
                       fillerDrugId === drug.id
-                        ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
-                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                        ? 'border-amber bg-amber/5 ring-1 ring-amber/30'
+                        : 'border-border bg-muted hover:border-muted-foreground/40'
                     )}>
-                    <div className="text-sm text-gray-900 font-medium">{getLocalizedName(drug)}</div>
-                    {fillerDrugId === drug.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                    <div className="text-sm text-foreground font-medium">{getLocalizedName(drug)}</div>
+                    {fillerDrugId === drug.id && <Check size={12} className="text-amber shrink-0" />}
                   </button>
                 ))}
                 {/* 직접 입력 옵션 */}
@@ -682,13 +682,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   className={cn(
                     'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
                     fillerDrugId === '__custom'
-                      ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
-                      : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                      ? 'border-amber bg-amber/5 ring-1 ring-amber/30'
+                      : 'border-border bg-muted hover:border-muted-foreground/40'
                   )}>
-                  <div className="text-sm text-gray-900 font-medium">
+                  <div className="text-sm text-foreground font-medium">
                     {language === 'en' ? 'Other (custom)' : language === 'zh' ? '其他（自定义）' : '기타 (직접입력)'}
                   </div>
-                  {fillerDrugId === '__custom' && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                  {fillerDrugId === '__custom' && <Check size={12} className="text-amber shrink-0" />}
                 </button>
               </div>
               {fillerDrugId === '__custom' && (

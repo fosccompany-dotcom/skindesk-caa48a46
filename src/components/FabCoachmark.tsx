@@ -166,7 +166,7 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
             )}
           </mask>
         </defs>
-        <rect x="0" y="0" width="100%" height="100%" fill="rgba(0,0,0,0.7)" mask="url(#fab-coach-mask)" />
+        <rect x="0" y="0" width="100%" height="100%" fill="hsl(var(--foreground) / 0.7)" mask="url(#fab-coach-mask)" />
       </svg>
 
       {/* Spotlight glow */}
@@ -204,7 +204,7 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === stepIdx ? 'w-5 bg-[#F2C94C]' : i < stepIdx ? 'w-1.5 bg-[#F2C94C]/50' : 'w-1.5 bg-muted'
+                  i === stepIdx ? 'w-5 bg-accent' : i < stepIdx ? 'w-1.5 bg-accent/50' : 'w-1.5 bg-muted'
                 }`}
               />
             ))}
@@ -245,7 +245,7 @@ const FabCoachmark = ({ open, onClose, onClickParse }: Props) => {
             {isCTA ? (
               <div className="space-y-2">
                 <Button
-                  className="w-full rounded-xl h-10 text-sm font-bold bg-[#F2C94C] hover:bg-[#e0b83e] text-foreground"
+                  className="w-full rounded-xl h-10 text-sm font-bold bg-accent hover:bg-accent/90 text-accent-foreground"
                   onClick={() => {
                     onClose();
                     onClickParse();

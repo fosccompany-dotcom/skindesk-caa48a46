@@ -286,11 +286,11 @@ const Packages = () => {
                     시술권을 등록하면 남은 횟수와<br />다음 관리 시점을 자동으로 알려드려요
                   </p>
                   <div className="flex items-center justify-center gap-1.5 mt-4">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
-                      <span className="text-[#E87461] text-lg font-bold">+</span>
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent shadow-md">
+                      <span className="text-primary text-lg font-bold">+</span>
                     </span>
                     <p className="text-xs font-medium text-muted-foreground">
-                      우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
+                      우측 하단 <span className="font-bold text-primary">+</span> 버튼으로 바로 등록하세요
                     </p>
                   </div>
                 </div>
@@ -299,7 +299,7 @@ const Packages = () => {
               <>
                 {activePackages.length > 0 && (
                   <div>
-                    <p className="text-xs font-bold text-gray-500 mb-2">잔여 시술권 {activePackages.length}개</p>
+                    <p className="text-xs font-bold text-muted-foreground mb-2">잔여 시술권 {activePackages.length}개</p>
                     <div className="space-y-2.5">
                       {activePackages.map(pkg => (
                         <PackageCard key={pkg.id} pkg={pkg} onEdit={() => handleEditPkg(pkg)} onDelete={() => setDeleteTarget({ type: 'package', id: pkg.id, name: pkg.name })} />
@@ -309,7 +309,7 @@ const Packages = () => {
                 )}
                 {finishedPackages.length > 0 && (
                   <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 mt-4">완료 {finishedPackages.length}개</p>
+                    <p className="text-xs font-bold text-muted-foreground mb-2 mt-4">완료 {finishedPackages.length}개</p>
                     <div className="space-y-2.5 opacity-50">
                       {finishedPackages.map(pkg => (
                         <PackageCard key={pkg.id} pkg={pkg} onEdit={() => handleEditPkg(pkg)} onDelete={() => setDeleteTarget({ type: 'package', id: pkg.id, name: pkg.name })} />
@@ -338,7 +338,7 @@ const Packages = () => {
                 </div>
                 <div className="text-right">
                   <p className="text-[11px] text-muted-foreground">총 충전액</p>
-                  <p className="text-xl font-black text-emerald-500">{totalCharged.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
+                  <p className="text-xl font-black text-sage-dark">{totalCharged.toLocaleString()}<span className="text-sm font-normal ml-1">원</span></p>
                 </div>
               </CardContent>
             </Card>
@@ -380,8 +380,8 @@ const Packages = () => {
                           <p className="text-[11px] text-muted-foreground mt-0.5">2025.03.01 · 강남 피부과</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-sm font-black text-emerald-500">+500,000원</p>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-600">포인트충전</span>
+                          <p className="text-sm font-black text-sage-dark">+500,000원</p>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-sage-light text-sage-dark">포인트충전</span>
                         </div>
                       </div>
                     </CardContent>
@@ -396,11 +396,11 @@ const Packages = () => {
                     충전·결제 내역을 등록하면<br />병원별 잔액과 사용 현황을 관리할 수 있어요
                   </p>
                   <div className="flex items-center justify-center gap-1.5 mt-4">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
-                      <span className="text-[#E87461] text-lg font-bold">+</span>
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent shadow-md">
+                      <span className="text-primary text-lg font-bold">+</span>
                     </span>
                     <p className="text-xs font-medium text-muted-foreground">
-                      우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
+                      우측 하단 <span className="font-bold text-primary">+</span> 버튼으로 바로 등록하세요
                     </p>
                   </div>
                 </div>
@@ -411,7 +411,7 @@ const Packages = () => {
 
               const renderPayCard = (p: PaymentRecord) => {
                 const normalizedMethod = normalizeMethodKey(p.method) || 'card';
-                const style = METHOD_STYLE[normalizedMethod] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
+                const style = METHOD_STYLE[normalizedMethod] ?? { bg: 'bg-muted', text: 'text-muted-foreground' };
                 const methodLabel = getMethodLabel(normalizedMethod, language);
                 return (
                   <Card key={p.id} className="glass-card">
@@ -424,7 +424,7 @@ const Packages = () => {
                         </div>
                         <div className="flex items-start gap-1.5">
                           <div className="text-right shrink-0">
-                            <p className={`text-sm font-black ${normalizedMethod === 'charge' ? 'text-emerald-500' : ''}`}>
+                            <p className={`text-sm font-black ${normalizedMethod === 'charge' ? 'text-sage-dark' : ''}`}>
                               {normalizedMethod === 'charge' ? '+' : '-'}{p.amount.toLocaleString()}원
                             </p>
                             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
@@ -457,7 +457,7 @@ const Packages = () => {
                 <div className="space-y-4">
                   {chargeRecords.length > 0 && (
                     <div>
-                      <p className="text-xs font-bold text-emerald-600 mb-2">충전 내역 {chargeRecords.length}건</p>
+                      <p className="text-xs font-bold text-sage-dark mb-2">충전 내역 {chargeRecords.length}건</p>
                       <div className="space-y-2">{chargeRecords.map(renderPayCard)}</div>
                     </div>
                   )}

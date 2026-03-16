@@ -18,10 +18,10 @@ export default function BloomAvatar({ size = "sm", showDays = false }: BloomAvat
     <div className="inline-flex flex-col items-center gap-1">
       <div 
         className="relative inline-flex items-center justify-center rounded-full transition-all duration-700"
-        style={{ 
-          width: px, 
+        style={{
+          width: px,
           height: px,
-          backgroundColor: "#F2C94C",
+          backgroundColor: "hsl(var(--accent))",
         }}
       >
         {/* Centered emoji */}

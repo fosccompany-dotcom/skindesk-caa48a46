@@ -58,13 +58,13 @@ const GlobalFAB = () => {
         className={cn(
           'fixed z-40 right-5 bottom-[88px]',
           'w-14 h-14 rounded-full shadow-2xl',
-          'bg-[#F2C94C] hover:bg-[#e0b83e] active:scale-95',
+          'bg-accent hover:bg-accent/90 active:scale-95',
           'flex items-center justify-center',
           'transition-all duration-200',
           'max-[430px]:right-5'
         )}
         aria-label="시술 기록 추가">
-        <Plus className="text-[#E87461] stroke-[2.5] h-[27px] w-[27px]" />
+        <Plus className="text-primary stroke-[2.5] h-[27px] w-[27px]" />
       </button>
 
       {/* ParseTreatmentModal */}
