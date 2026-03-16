@@ -188,6 +188,32 @@ const Index = () => {
 
   // Records by date for calendar dots
   const recordDateSet = useMemo(() => new Set(records.map((r) => r.date.slice(0, 10))), [records]);
+  const reservationDateSet = useMemo(() => new Set(reservations.map((r) => r.date.slice(0, 10))), [reservations]);
+  // Records & reservations by date
+  const recordsByDate = useMemo(() => {
+    const map: Record<string, TreatmentRecord[]> = {};
+    records.forEach(r => { const d = r.date.slice(0, 10); if (!map[d]) map[d] = []; map[d].push(r); });
+    return map;
+  }, [records]);
+  const reservationsByDate = useMemo(() => {
+    const map: Record<string, Reservation[]> = {};
+    reservations.forEach(r => { const d = r.date.slice(0, 10); if (!map[d]) map[d] = []; map[d].push(r); });
+    return map;
+  }, [reservations]);
+
+  // Default selected date: most recent reservation or record date
+  const defaultInfoDate = useMemo(() => {
+    const recentReservation = reservations.find(r => r.date >= format(TODAY, 'yyyy-MM-dd'));
+    if (recentReservation) return recentReservation.date.slice(0, 10);
+    if (records.length > 0) return records[0].date.slice(0, 10);
+    return null;
+  }, [reservations, records]);
+
+  const activeSelectedDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : defaultInfoDate;
+  const selectedRecords = activeSelectedDate ? (recordsByDate[activeSelectedDate] || []) : [];
+  const selectedReservations = activeSelectedDate ? (reservationsByDate[activeSelectedDate] || []) : [];
+  const hasSelectedInfo = selectedRecords.length > 0 || selectedReservations.length > 0;
+
   // Upcoming cycle dates
   const cycleDateMap = useMemo(() => {
     const map = new Map<string, string>();
