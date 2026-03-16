@@ -396,11 +396,11 @@ const Packages = () => {
                     충전·결제 내역을 등록하면<br />병원별 잔액과 사용 현황을 관리할 수 있어요
                   </p>
                   <div className="flex items-center justify-center gap-1.5 mt-4">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
-                      <span className="text-[#E87461] text-lg font-bold">+</span>
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent shadow-md">
+                      <span className="text-primary text-lg font-bold">+</span>
                     </span>
                     <p className="text-xs font-medium text-muted-foreground">
-                      우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
+                      우측 하단 <span className="font-bold text-primary">+</span> 버튼으로 바로 등록하세요
                     </p>
                   </div>
                 </div>
