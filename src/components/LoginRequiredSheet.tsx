@@ -5,6 +5,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Link } from 'react-router-dom';
+import logoImg from '@/assets/logo_transparent.png';
 
 interface LoginRequiredSheetProps {
   open: boolean;
@@ -66,9 +67,13 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
   return (
     <Sheet open={open} onOpenChange={(v) => !v && handleClose()}>
       <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8 pt-6">
-        {/* Emoji */}
+        {/* Logo */}
         <div className="flex justify-center mb-4">
-          <span className="text-5xl">🌸</span>
+          <img
+            src={logoImg}
+            alt="Bloom"
+            className="w-20 h-20 animate-spin-slow opacity-90"
+          />
         </div>
 
         {/* Title */}
