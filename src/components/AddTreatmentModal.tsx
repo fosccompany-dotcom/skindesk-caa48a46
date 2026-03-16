@@ -17,13 +17,23 @@ interface DrugOption {
   desc?: string;
 }
 
+const BOTOX_DRUGS: DrugOption[] = [
+  { id: 'kr_botox',    name: '국산 보톡스',     desc: '보툴렉스·나보타 등 합리적 가격' },
+  { id: 'imp_botox',   name: '수입 보톡스',     desc: '레스틸렌·쥬비덤 등 수입 제품' },
+  { id: 'coretox',     name: '코어톡스',        desc: '내성 적은 국산 보톡스' },
+  { id: 'xeomin',      name: '제오민',          desc: '독일 · 순수 보톡스' },
+  { id: 'allergan',    name: '엘러간',          desc: '미국 · 프리미엄' },
+  { id: 'aquatoxin',   name: '아쿠아톡신',      desc: '피부 직접 주사 보톡스' },
+  { id: 'mesobotox',   name: '메조보톡스',      desc: '모공·피지 개선 보톡스' },
+];
+
 interface TreatmentItem {
   id: string;
   name: string;
   desc?: string;
   skinLayer: SL;
   shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
-  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가 (보톡스용)
+  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가
 }
 
 interface Category {
@@ -63,30 +73,9 @@ const CATEGORIES: Category[] = [
     label: '보톡스/윤곽주사',
     emoji: '💉',
     color: 'border-blue-300 bg-blue-50',
-    items: (() => {
-      const BOTOX_DRUGS: DrugOption[] = [
-        { id: 'botulax',    name: '보툴렉스',       desc: '국산 · 합리적인 가격' },
-        { id: 'nabota',     name: '나보타',          desc: '국산 · 자연스러운 효과' },
-        { id: 'coretox',    name: '코어톡스',        desc: '국산 · 내성 적음' },
-        { id: 'xeomin',     name: '제오민',          desc: '독일 · 순수 보톡스' },
-        { id: 'allergan',   name: '엘러간 보톡스',   desc: '미국 · 프리미엄' },
-      ];
-      return [
-        // 얼굴 보톡스
-        { id: 'botox_jaw',     name: '사각턱 보톡스',           desc: '교근 퇴축, 갸름한 V라인',           skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'botox_wrinkle', name: '주름 보톡스',             desc: '이마·눈가·미간 주름 개선',          skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        // 더모톡신 (피부 직접 주사)
-        { id: 'dermotoxin',    name: '더모톡신 (아쿠아톡신)',   desc: '피부에 직접 주사하는 보톡스 리프팅', skinLayer: 'dermis' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'mesobotox',     name: '메조보톡스',              desc: '모공·피지 개선 보톡스 리프팅',      skinLayer: 'dermis' as SL, drugOptions: BOTOX_DRUGS },
-        // 특수 부위
-        { id: 'botox_special', name: '특수부위 보톡스',         desc: '침샘·측두근·콧볼·입꼬리·거미스마일', skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'botox_hyperhid',name: '다한증 보톡스',           desc: '손·발·겨드랑이 땀분비 억제',        skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'botox_scalp',   name: '탈모 보톡스',             desc: '두피 혈류 개선·발모 촉진',          skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        // 윤곽/바디
-        { id: 'botox_body',    name: '바디 보톡스',             desc: '종아리·승모근·허벅지·팔뚝',         skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'contour',       name: '윤곽주사',                desc: '갸름한 얼굴라인을 위한 주사',       skinLayer: 'subcutaneous' as SL },
-      ];
-    })(),
+    items: [
+      { id: 'contour',       name: '윤곽주사',                desc: '갸름한 얼굴라인을 위한 주사',       skinLayer: 'subcutaneous' },
+    ],
   },
   {
     id: 'filler',
@@ -311,21 +300,23 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const handleClose = () => { reset(); onClose(); };
 
   const selectedCat = CATEGORIES.find(c => c.id === catId);
+  const isBotox = catId === 'botox';
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
-  const needsDrug = !!(selectedItem?.drugOptions?.length);
 
-  // 동적 단계 계산: 1(카테고리) → 2(시술) → [3:약물] → [N:샷수] → 마지막(상세)
-  const extraSteps = (needsDrug ? 1 : 0) + (needsShots ? 1 : 0);
-  const totalSteps = 3 + extraSteps;
-  const drugStep = needsDrug ? 3 : -1;
-  const shotsStep = needsShots ? (needsDrug ? 4 : 3) : -1;
-  const detailStep = 3 + extraSteps;
-  const isDetailStep = step === detailStep;
+  // ── 보톡스: 1(카테고리) → 2(약물) → 3(부위) → 4(상세)
+  // ── 기타:   1(카테고리) → 2(시술) → [3:샷수] → N(상세, 부위 포함)
+  const botoxTotalSteps = 4;
+  const normalExtraSteps = needsShots ? 1 : 0;
+  const normalTotalSteps = 3 + normalExtraSteps;
+  const totalSteps = isBotox ? botoxTotalSteps : normalTotalSteps;
+
+  const shotsStep = needsShots ? 3 : -1;
+  const isDetailStep = isBotox ? step === 4 : step === (needsShots ? 4 : 3);
 
   // 상세 단계 진입 시 사용 가능한 시술권 조회
   useEffect(() => {
-    if (!isDetailStep || !selectedItem) return;
+    if (!isDetailStep) return;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -341,24 +332,36 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         setAvailPkgs(active);
       }
     })();
-  }, [isDetailStep, selectedItem]);
+  }, [isDetailStep]);
 
   const canNext = () => {
     if (step === 1) return !!catId;
+    if (isBotox) {
+      // step 2 = drug (always allowed — can skip)
+      // step 3 = body area (always has default)
+      return true;
+    }
     if (step === 2) return !!itemId;
-    if (step === drugStep) return !!drugId;
     if (step === shotsStep) return !!shots;
     return true;
   };
 
-  const selectedDrug = selectedItem?.drugOptions?.find(d => d.id === drugId);
+  const selectedDrug = BOTOX_DRUGS.find(d => d.id === drugId);
 
   const getTreatmentName = () => {
+    if (isBotox) {
+      const drug = selectedDrug ? selectedDrug.name : '보톡스';
+      return drug;
+    }
     if (!selectedItem) return '';
     let name = selectedItem.name;
-    if (selectedDrug) name += ` (${selectedDrug.name})`;
     if (shots) name += ` ${shots}샷`;
     return name;
+  };
+
+  const getBotoxSkinLayer = (): SL => {
+    if (drugId === 'aquatoxin' || drugId === 'mesobotox') return 'dermis';
+    return 'subcutaneous';
   };
 
   // 결제 수단 → DB 값 매핑
@@ -368,17 +371,18 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   const handleSave = () => {
-    if (!selectedItem) return;
+    if (!isBotox && !selectedItem) return;
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
     const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
+    const skinLayer = isBotox ? getBotoxSkinLayer() : (selectedItem?.skinLayer || 'dermis');
     onSave({
       date,
       packageId:     selectedPkgId || '',
       treatmentName: getTreatmentName(),
-      skinLayer:     selectedItem.skinLayer,
+      skinLayer,
       bodyArea:      resolvedBodyArea,
       notes:         '',
       clinic,
@@ -437,8 +441,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 2: 시술 선택 ── */}
-          {step === 2 && selectedCat && (
+          {/* ── STEP 2: 시술 선택 (비보톡스) / 약물 선택 (보톡스) ── */}
+          {step === 2 && selectedCat && !isBotox && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
@@ -447,7 +451,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="space-y-1.5">
                 {selectedCat.items.map(item => (
                   <button key={item.id}
-                    onClick={() => { setItemId(item.id); setShots(null); setDrugId(null); }}
+                    onClick={() => { setItemId(item.id); setShots(null); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
                       itemId === item.id
@@ -475,13 +479,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── 약물 선택 (보톡스 카테고리) ── */}
-          {step === drugStep && needsDrug && selectedItem && (
+          {/* ── STEP 2 (보톡스): 약물 선택 ── */}
+          {step === 2 && isBotox && (
             <div>
               <p className="text-xs text-gray-400 mb-1">사용 약물을 선택하세요</p>
-              <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">💉 보톡스/윤곽주사</p>
               <div className="space-y-1.5">
-                {selectedItem.drugOptions!.map(drug => (
+                {BOTOX_DRUGS.map(drug => (
                   <button key={drug.id}
                     onClick={() => setDrugId(drug.id)}
                     className={cn(
@@ -498,10 +502,49 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   </button>
                 ))}
               </div>
+              <button
+                onClick={() => { setDrugId(null); setStep(3); }}
+                className="w-full mt-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors"
+              >
+                잘 모르겠어요 →
+              </button>
             </div>
           )}
 
-          {/* ── 샷수 선택 ── */}
+          {/* ── STEP 3 (보톡스): 부위 선택 ── */}
+          {step === 3 && isBotox && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">시술 부위를 선택하세요</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">
+                {selectedDrug ? `💉 ${selectedDrug.name}` : '💉 보톡스'}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
+                  <button key={opt.value}
+                    onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
+                    className={cn(
+                      'py-3 rounded-xl border text-sm font-medium transition-all',
+                      bodyArea === opt.value
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'
+                    )}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+              {bodyArea === '__other' && (
+                <input
+                  type="text"
+                  value={customBodyArea}
+                  onChange={e => setCustomBodyArea(e.target.value)}
+                  placeholder="부위를 입력하세요"
+                  className="w-full mt-3 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                />
+              )}
+            </div>
+          )}
+
+          {/* ── 샷수 선택 (비보톡스) ── */}
           {step === shotsStep && needsShots && selectedItem && (
             <div>
               <p className="text-xs text-gray-400 mb-1">샷수를 선택하세요</p>
@@ -525,16 +568,21 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           )}
 
           {/* ── 상세 입력 (마지막 단계) ── */}
-          {isDetailStep && selectedItem && (
+          {isDetailStep && (isBotox || selectedItem) && (
             <div className="space-y-4">
               {/* 선택 요약 */}
               <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
                 <div className="text-[11px] text-gray-400 mb-1">등록할 시술</div>
                 <div className="text-sm font-semibold text-[#C9A96E]">{getTreatmentName()}</div>
                 <div className="mt-1.5">
-                  <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[selectedItem.skinLayer])}>
-                    {SKIN_LAYER_LABEL[selectedItem.skinLayer]}
-                  </span>
+                  {(() => {
+                    const sl = isBotox ? getBotoxSkinLayer() : selectedItem!.skinLayer;
+                    return (
+                      <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[sl])}>
+                        {SKIN_LAYER_LABEL[sl]}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -556,33 +604,35 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   darkMode={false} />
               </div>
 
-              {/* 부위 선택 */}
-              <div>
-                <label className="text-xs text-gray-400 block mb-1.5">부위</label>
-                <div className="flex gap-1.5 flex-wrap">
-                  {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
-                    <button key={opt.value}
-                      onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
-                      className={cn(
-                        'px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                        bodyArea === opt.value
-                          ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
-                          : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'
-                      )}>
-                      {opt.label}
-                    </button>
-                  ))}
+              {/* 부위 선택 (비보톡스만 — 보톡스는 별도 단계에서 선택) */}
+              {!isBotox && (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1.5">부위</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
+                      <button key={opt.value}
+                        onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
+                        className={cn(
+                          'px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                          bodyArea === opt.value
+                            ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                            : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'
+                        )}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {bodyArea === '__other' && (
+                    <input
+                      type="text"
+                      value={customBodyArea}
+                      onChange={e => setCustomBodyArea(e.target.value)}
+                      placeholder="부위를 입력하세요"
+                      className="w-full mt-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                    />
+                  )}
                 </div>
-                {bodyArea === '__other' && (
-                  <input
-                    type="text"
-                    value={customBodyArea}
-                    onChange={e => setCustomBodyArea(e.target.value)}
-                    placeholder="부위를 입력하세요"
-                    className="w-full mt-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
-                  />
-                )}
-              </div>
+              )}
 
               {/* 시술권 연결 (보유 시술권이 있을 때만 표시) */}
               {availPkgs.length > 0 && (
