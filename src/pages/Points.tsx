@@ -173,14 +173,14 @@ const Points = () => {
                     {/* 잔여 시술권 목록 */}
                     <div className="space-y-2">
                       {items.map((item, i) => (
-                        <div key={i} className="flex items-center justify-between bg-gray-50 rounded-xl px-3 py-2.5">
+                        <div key={i} className="flex items-center justify-between bg-muted rounded-xl px-3 py-2.5">
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm text-gray-800 font-medium truncate">{item.name}</p>
-                            <p className="text-[11px] text-gray-400 mt-0.5">만료 {item.expiry}</p>
+                            <p className="text-sm text-foreground font-medium truncate">{item.name}</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">만료 {item.expiry}</p>
                           </div>
                           <div className="text-right ml-3 shrink-0">
-                            <span className="text-sm font-bold text-gray-900">{item.remaining}회</span>
-                            <span className="text-[11px] text-gray-400"> / {item.total}회</span>
+                            <span className="text-sm font-bold text-foreground">{item.remaining}회</span>
+                            <span className="text-[11px] text-muted-foreground"> / {item.total}회</span>
                           </div>
                         </div>
                       ))}
