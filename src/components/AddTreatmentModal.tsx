@@ -374,54 +374,72 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       });
   }, []);
 
-  // ── Build display categories from DB or fallback ──
+  // ── Build display categories: always show all 10 hardcoded + merge DB items ──
   const displayCategories: DisplayCategory[] = useMemo(() => {
     const customLabel = language === 'en' ? 'Custom Input'
                       : language === 'zh' ? '自定义输入'
                       : '직접 입력';
 
-    if (dbOptions.length === 0) {
-      return CATEGORIES.map(c => ({
-        id: c.id,
-        label: c.label,
-        emoji: c.emoji,
-        color: c.color,
-        items: [
-          ...c.items.map(i => ({ id: i.id, name: i.name, desc: i.desc, skinLayer: i.skinLayer, shotOptions: i.shotOptions })),
-          { id: '__custom', name: customLabel },
-        ],
-      }));
-    }
+    // DB category name → hardcoded category id mapping
+    const DB_TO_HARDCODED: Record<string, string> = {
+      '리프팅·보톡스': 'lifting',
+      '주사 관리': 'booster',
+      '피부 관리': 'skincare',
+      '여드름·흉터': 'acne',
+      '탈모·두피': 'iv',
+      '기타': 'fat',
+    };
 
-    const groups: Record<string, DisplayItem[]> = {};
-    const catLabels: Record<string, string> = {};
+    // Start with all 10 hardcoded categories
+    const result: DisplayCategory[] = CATEGORIES.map(c => ({
+      id: c.id,
+      label: c.label,
+      emoji: c.emoji,
+      color: c.color,
+      items: [
+        ...c.items.map(i => ({ id: i.id, name: i.name, desc: i.desc, skinLayer: i.skinLayer, shotOptions: i.shotOptions })),
+        { id: '__custom', name: customLabel },
+      ],
+    }));
 
-    for (const opt of dbOptions) {
-      const catKey = opt.category;
-      const catLabel = language === 'en' ? (opt.category_en || opt.category)
-                     : language === 'zh' ? (opt.category_zh || opt.category)
-                     : opt.category;
-      const itemName = language === 'en' ? (opt.name_en || opt.name)
-                     : language === 'zh' ? (opt.name_zh || opt.name)
-                     : opt.name;
+    // If DB has options, add any DB-only categories not already covered
+    if (dbOptions.length > 0) {
+      const groups: Record<string, DisplayItem[]> = {};
+      const catLabels: Record<string, string> = {};
 
-      if (!groups[catKey]) {
-        groups[catKey] = [];
-        catLabels[catKey] = catLabel;
+      for (const opt of dbOptions) {
+        const catKey = opt.category;
+        // Skip if this DB category maps to an existing hardcoded category
+        if (DB_TO_HARDCODED[catKey]) continue;
+
+        const catLabel = language === 'en' ? (opt.category_en || opt.category)
+                       : language === 'zh' ? (opt.category_zh || opt.category)
+                       : opt.category;
+        const itemName = language === 'en' ? (opt.name_en || opt.name)
+                       : language === 'zh' ? (opt.name_zh || opt.name)
+                       : opt.name;
+
+        if (!groups[catKey]) {
+          groups[catKey] = [];
+          catLabels[catKey] = catLabel;
+        }
+        groups[catKey].push({ id: opt.id, name: itemName });
       }
-      groups[catKey].push({ id: opt.id, name: itemName });
+
+      // Append any new DB-only categories
+      for (const [catKey, items] of Object.entries(groups)) {
+        const meta = CATEGORY_META[catKey] || DEFAULT_CAT_META;
+        result.push({
+          id: catKey,
+          label: catLabels[catKey],
+          emoji: meta.emoji,
+          color: meta.color,
+          items: [...items, { id: '__custom', name: customLabel }],
+        });
+      }
     }
 
-    return Object.entries(groups).map(([catKey, items]) => {
-      const meta = CATEGORY_META[catKey] || DEFAULT_CAT_META;
-      return {
-        id: catKey,
-        label: catLabels[catKey],
-        emoji: meta.emoji,
-        color: meta.color,
-        items: [...items, { id: '__custom', name: customLabel }],
-      };
-    });
+    return result;
   }, [dbOptions, language]);
 
   const selectedCat = displayCategories.find(c => c.id === catId);
