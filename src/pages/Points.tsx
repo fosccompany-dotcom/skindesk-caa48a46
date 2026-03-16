@@ -366,13 +366,13 @@ const Points = () => {
                           <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${ms.bg} ${ms.text}`}>{ms.label}</span>
                           <span className={`shrink-0 text-[10px] px-1.5 py-0.5 rounded-full font-medium ${cs.bg} ${cs.text}`}>{p.clinicType}</span>
                         </div>
-                        <p className="text-xs text-gray-400">{p.date.replace(/-/g, '.')} · {p.clinic}</p>
-                        {p.notes && <p className="text-[11px] text-gray-400 mt-0.5">{p.notes}</p>}
+                        <p className="text-xs text-muted-foreground">{p.date.replace(/-/g, '.')} · {p.clinic}</p>
+                        {p.notes && <p className="text-[11px] text-muted-foreground mt-0.5">{p.notes}</p>}
                       </div>
                       <div className="text-right shrink-0">
                         {p.amount > 0
-                          ? <p className="font-bold text-sm text-gray-900">{p.amount.toLocaleString()}원</p>
-                          : <p className="font-bold text-sm text-gray-400">서비스</p>
+                          ? <p className="font-bold text-sm text-foreground">{p.amount.toLocaleString()}원</p>
+                          : <p className="font-bold text-sm text-muted-foreground">서비스</p>
                         }
                       </div>
                     </div>
