@@ -335,6 +335,12 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [customTreatmentName, setCustomTreatmentName] = useState('');
 
+  // ── Filler state ──
+  const [fillerDrugId, setFillerDrugId] = useState<string | null>(null);
+  const [fillerAreaId, setFillerAreaId] = useState<string | null>(null);
+  const [fillerDrugOptions, setFillerDrugOptions] = useState<any[]>([]);
+  const [fillerAreaOptions, setFillerAreaOptions] = useState<any[]>([]);
+
   // ── DB categories ──
   const [dbOptions, setDbOptions] = useState<any[]>([]);
   const [dbLoading, setDbLoading] = useState(true);
