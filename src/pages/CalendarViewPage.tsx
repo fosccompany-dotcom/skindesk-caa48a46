@@ -62,6 +62,7 @@ const CalendarViewPage = () => {
   const [showReservationModal, setShowReservationModal] = useState(false);
   const { cycles } = useCycles();
   const { records, addRecord } = useRecords();
+  const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
 
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
