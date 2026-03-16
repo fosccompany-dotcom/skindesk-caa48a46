@@ -675,7 +675,7 @@ const Index = () => {
 
       <AddReservationModal
         open={showHomeReservationModal}
-        onClose={() => setShowHomeReservationModal(false)}
+        onClose={() => { setShowHomeReservationModal(false); setReservationRefresh(v => v + 1); }}
         defaultDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
       />
 
