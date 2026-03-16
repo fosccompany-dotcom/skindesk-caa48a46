@@ -248,7 +248,7 @@ const Index = () => {
           <div className="relative">
             <div
               className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 cursor-pointer active:bg-white/20 transition-colors"
-              onClick={() => setModeDropdownOpen((v) => !v)}>
+              onClick={() => guardAction(() => setModeDropdownOpen((v) => !v))}>
               
               <span className="text-lg">{seasonMeta?.emoji || '⚙️'}</span>
               <div className="flex-1 min-w-0">
