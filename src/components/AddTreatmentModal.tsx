@@ -670,7 +670,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="grid grid-cols-3 gap-2">
                 {fillerAreaOptions.map(area => (
                   <button key={area.id}
-                    onClick={() => setFillerAreaId(prev => prev === area.id ? null : area.id)}
+                    onClick={() => { setFillerAreaId(prev => prev === area.id ? null : area.id); setCustomFillerArea(''); }}
                     className={cn(
                       'py-3 rounded-xl border text-sm font-medium transition-all',
                       fillerAreaId === area.id
@@ -680,7 +680,26 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     {getLocalizedName(area)}
                   </button>
                 ))}
+                <button
+                  onClick={() => setFillerAreaId(prev => prev === '__custom' ? null : '__custom')}
+                  className={cn(
+                    'py-3 rounded-xl border text-sm font-medium transition-all',
+                    fillerAreaId === '__custom'
+                      ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                      : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'
+                  )}>
+                  {language === 'en' ? 'Other' : language === 'zh' ? '其他' : '기타 (직접입력)'}
+                </button>
               </div>
+              {fillerAreaId === '__custom' && (
+                <input
+                  type="text"
+                  value={customFillerArea}
+                  onChange={e => setCustomFillerArea(e.target.value)}
+                  placeholder={language === 'en' ? 'Enter area' : language === 'zh' ? '请输入部位' : '부위를 입력하세요'}
+                  className="w-full mt-3 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                />
+              )}
             </div>
           )}
 
