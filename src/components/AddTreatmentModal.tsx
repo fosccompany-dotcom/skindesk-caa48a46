@@ -970,7 +970,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   {/* 결제 금액 (서비스 제외) */}
                   {paymentMethod && paymentMethod !== 'service' && (
                     <div className="mt-3">
-                      <label className="text-xs text-gray-400 block mb-1.5">결제 금액 (선택)</label>
+                      <label className="text-xs text-gray-400 block mb-1.5">결제 금액</label>
                       <div className="relative">
                         <input
                           type="number"
