@@ -289,7 +289,7 @@ const CalendarViewPage = () => {
             <button
               onClick={() => {
                 setShowActionPicker(false);
-                toast.info('예약 일정 기능은 준비 중이에요 🚧');
+                setShowReservationModal(true);
               }}
               className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 hover:bg-accent/50 active:scale-[0.97] transition-all"
             >
