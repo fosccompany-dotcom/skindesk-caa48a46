@@ -280,18 +280,19 @@ const CalendarPage = () => {
     <div className="min-h-screen bg-background">
       {/* 헤더 */}
       <div className="relative safe-top overflow-hidden">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ clipPath: 'inset(0)' }} />
         <div className="absolute inset-0 bg-black/40" />
         <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-70 font-light">나의 피부관리 📅</p>
-              <h1 className="mt-0.5 text-xl font-bold">{format(currentMonth, 'yyyy년 M월', { locale: ko })}</h1>
+              <p className="text-sm opacity-70 font-light">나의 기록 ✍️</p>
+              <h1 className="mt-0.5 text-xl font-bold">시술내역</h1>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={goToToday} className="px-3 py-1.5 text-xs font-medium text-primary-foreground bg-white/15 rounded-full backdrop-blur-sm tap-target">오늘</button>
-              <button onClick={goToPrevMonth} className="p-2 hover:bg-white/10 rounded-full tap-target"><ChevronLeft className="h-5 w-5 text-primary-foreground/70" /></button>
-              <button onClick={goToNextMonth} className="p-2 hover:bg-white/10 rounded-full tap-target"><ChevronRight className="h-5 w-5 text-primary-foreground/70" /></button>
+              <span className="px-3 py-1.5 text-xs font-medium text-primary-foreground bg-white/15 rounded-full backdrop-blur-sm">
+                <ClipboardList className="h-3.5 w-3.5 inline mr-1" />
+                {records.length}건
+              </span>
             </div>
           </div>
         </div>
