@@ -268,9 +268,15 @@ const CATEGORIES: Category[] = [
 const CATEGORY_META: Record<string, { emoji: string; color: string }> = {
   // DB categories
   '리프팅·보톡스':     { emoji: '✨', color: 'border-purple-300 bg-purple-50' },
-  '주사 관리':         { emoji: '💉', color: 'border-cyan-300 bg-cyan-50' },
+  '필러·실리프팅':     { emoji: '🌙', color: 'border-indigo-300 bg-indigo-50' },
+  '스킨부스터':        { emoji: '💧', color: 'border-cyan-300 bg-cyan-50' },
   '피부 관리':         { emoji: '🌿', color: 'border-green-300 bg-green-50' },
+  '미백·색소':         { emoji: '⚡', color: 'border-amber-300 bg-amber-50' },
   '여드름·흉터':       { emoji: '🔬', color: 'border-rose-300 bg-rose-50' },
+  '지방분해':          { emoji: '🔥', color: 'border-orange-300 bg-orange-50' },
+  '제모':              { emoji: '🪄', color: 'border-slate-300 bg-slate-50' },
+  '수액·영양주사':     { emoji: '🌱', color: 'border-teal-300 bg-teal-50' },
+  '주사 관리':         { emoji: '💉', color: 'border-cyan-300 bg-cyan-50' },
   '탈모·두피':         { emoji: '🌱', color: 'border-teal-300 bg-teal-50' },
   '기타':              { emoji: '💊', color: 'border-gray-300 bg-gray-50' },
   // Fallback hardcoded category IDs
