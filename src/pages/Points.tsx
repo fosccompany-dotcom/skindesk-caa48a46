@@ -348,7 +348,7 @@ const Points = () => {
               {(['전체', '밴스', '타의원'] as const).map(f => (
                 <button key={f} onClick={() => setFilterType(f)}
                   className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
-                    filterType === f ? 'bg-gray-900 text-white border-gray-900' : 'bg-white text-gray-500 border-gray-200'
+                    filterType === f ? 'bg-foreground text-background border-foreground' : 'bg-background text-muted-foreground border-border'
                   }`}>{f}</button>
               ))}
             </div>
