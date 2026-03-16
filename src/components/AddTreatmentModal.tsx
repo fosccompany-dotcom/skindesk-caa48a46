@@ -810,7 +810,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 <div className="text-sm font-semibold text-[#C9A96E]">{getTreatmentName()}</div>
                 <div className="mt-1.5">
                   {(() => {
-                    const sl = isBotox ? getBotoxSkinLayer() : selectedItem!.skinLayer;
+                    const sl = isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : selectedItem!.skinLayer;
                     return (
                       <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[sl])}>
                         {SKIN_LAYER_LABEL[sl]}
