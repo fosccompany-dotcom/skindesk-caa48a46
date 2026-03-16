@@ -344,7 +344,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setStep(1); setCatId(null); setItemId(null); setShots(null); setDrugId(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
-    setBodyArea('face'); setCustomBodyArea('');
+    setBodyArea('face'); setCustomBodyArea(''); setCustomTreatmentName('');
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
   };
