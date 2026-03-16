@@ -419,7 +419,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map(cat => (
                   <button key={cat.id}
-                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); }}
+                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); }}
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
                       cat.color,
