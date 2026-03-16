@@ -288,8 +288,8 @@ const Points = () => {
         {/* ── 결제 내역 탭 ── */}
         {tab === 'payments' && (
           <>
-            <div className="mx-0 rounded-xl bg-amber-50 border border-amber-200 px-4 py-3 text-xs text-amber-700 space-y-0.5">
-              <p className="font-semibold">💡 결제 내역 구조</p>
+            <div className="mx-0 rounded-xl bg-accent/10 border border-accent/20 px-4 py-3 text-xs text-accent-foreground space-y-0.5">
+              <p className="font-semibold">결제 내역 구조</p>
               <p>밴스 계열: 포인트 신규충전 = 실제 카드/현금 결제</p>
               <p>타의원: 시술 직접 결제 내역</p>
             </div>
