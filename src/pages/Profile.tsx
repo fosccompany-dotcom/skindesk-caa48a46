@@ -727,20 +727,20 @@ const Profile = () => {
                       <button key={key} onClick={() => setSeasonGlobal(isSelected ? 'maintain' as SeasonKey : key as SeasonKey)}
                       className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
                       isSelected ?
-                      'border-[#C9A96E]/60 bg-[#C9A96E]/10' :
-                      'border-gray-100 bg-gray-50 hover:border-gray-200'}`
+                      'border-amber/60 bg-amber/10' :
+                      'border-border bg-muted hover:border-muted-foreground/40'}`
                       }>
                         <div className="flex items-center gap-2.5">
                           <span className="text-base shrink-0">{emoji}</span>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2">
-                              <span className={`text-xs font-bold ${isSelected ? 'text-[#C9A96E]' : 'text-gray-700'}`}>{title}</span>
-                              <span className="text-[10px] text-gray-400">{sub}</span>
+                              <span className={`text-xs font-bold ${isSelected ? 'text-amber' : 'text-foreground'}`}>{title}</span>
+                              <span className="text-[10px] text-muted-foreground">{sub}</span>
                             </div>
-                            <p className="text-[10px] text-gray-400 mt-0.5 leading-snug">{desc}</p>
+                            <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{desc}</p>
                           </div>
                           <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                          isSelected ? 'border-[#C9A96E] bg-[#C9A96E]' : 'border-gray-300'}`
+                          isSelected ? 'border-amber bg-amber' : 'border-muted-foreground/30'}`
                           }>
                             {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
                           </div>
