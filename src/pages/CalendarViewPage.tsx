@@ -11,6 +11,8 @@ import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
 import AddReservationModal from '@/components/AddReservationModal';
+import LoginRequiredSheet from '@/components/LoginRequiredSheet';
+import { useLoginGuard } from '@/hooks/useLoginGuard';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 const eventTypeConfig = {
