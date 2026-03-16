@@ -624,7 +624,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              <p className="text-xs text-gray-400 mb-3">
+              <p className="text-xs text-muted-foreground mb-3">
                 {language === 'en' ? 'Select a treatment category' : language === 'zh' ? '选择治疗类别' : '시술 카테고리를 선택하세요'}
               </p>
               {dbLoading ? (
