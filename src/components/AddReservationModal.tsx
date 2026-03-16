@@ -181,15 +181,14 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   };
 
   const handleSave = async () => {
-    const finalTreatment = treatmentName || customTreatmentName;
-    if (!finalTreatment.trim()) return;
+    if (treatments.length === 0) return;
 
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { toast.error('로그인이 필요합니다'); return; }
 
-      const { error } = await supabase.from('reservations').insert({
+      const rows = treatments.map(t => ({
         user_id: user.id,
         date,
         time,
@@ -197,12 +196,14 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
         clinic_kakao_id: clinicKakaoId,
         clinic_district: clinicDistrict,
         clinic_address: clinicAddress,
-        treatment_name: finalTreatment,
+        treatment_name: t,
         memo: memo || null,
-      });
+      }));
+
+      const { error } = await supabase.from('reservations').insert(rows);
 
       if (error) throw error;
-      toast.success('예약 일정이 등록되었어요 📅');
+      toast.success(`예약 일정 ${treatments.length}건이 등록되었어요 📅`);
       handleClose();
       onSaved?.();
     } catch (err: any) {
