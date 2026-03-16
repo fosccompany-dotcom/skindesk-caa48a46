@@ -473,7 +473,61 @@ function PaymentHistoryTab() {
         onSaved={() => {setShowAddModal(false);loadPayments();}} />
 
       {filteredPayments.length === 0 ?
-      <div className="text-center py-10 text-sm text-muted-foreground">결제 기록이 없습니다</div> :
+      <div className="space-y-3 mt-2">
+        {/* 예시 결제기록 카드 */}
+        <div className="relative opacity-60 pointer-events-none">
+          <div className="absolute -top-2 left-3 z-10">
+            <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">예시</span>
+          </div>
+          <Card className="glass-card border-dashed border-muted-foreground/30">
+            <CardContent className="p-3.5">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">울쎄라 리프팅</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">2026-03-05 · 청담 에스테틱</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-black text-foreground">-350,000원</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">카드</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="relative opacity-60 pointer-events-none">
+          <Card className="glass-card border-dashed border-muted-foreground/30">
+            <CardContent className="p-3.5">
+              <div className="flex items-start justify-between gap-2">
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground">보톡스 (턱)</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">2026-02-20 · 강남 피부과</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-black text-foreground">-120,000원</p>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">현금</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/50 p-6 text-center">
+          <CreditCard className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+          <p className="text-sm font-semibold text-muted-foreground mb-1">아직 결제 기록이 없어요</p>
+          <p className="text-xs text-muted-foreground/70 leading-relaxed">
+            결제 내역을 기록하면 병원별, 수단별로<br />지출 관리를 쉽게 할 수 있어요
+          </p>
+          <div className="flex items-center justify-center gap-1.5 mt-4">
+            <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
+              <span className="text-[#E87461] text-lg font-bold">+</span>
+            </span>
+            <p className="text-xs font-medium text-muted-foreground">
+              우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
+            </p>
+          </div>
+        </div>
+      </div> :
       <div className="space-y-2">
           {filteredPayments.map((p) => {
           const isExpanded = expandedId === p.id;
