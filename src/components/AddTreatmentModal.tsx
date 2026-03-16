@@ -350,13 +350,76 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
   const handleClose = () => { reset(); onClose(); };
 
-  const selectedCat = CATEGORIES.find(c => c.id === catId);
-  const isBotox = catId === 'botox';
+  // ── Fetch package_options from Supabase ──
+  useEffect(() => {
+    supabase
+      .from('package_options')
+      .select('id, category, name, category_en, name_en, category_zh, name_zh')
+      .is('package_id', null)
+      .eq('is_default', true)
+      .order('category')
+      .order('sort_order')
+      .then(({ data, error }) => {
+        if (!error && data?.length) setDbOptions(data);
+        setDbLoading(false);
+      });
+  }, []);
+
+  // ── Build display categories from DB or fallback ──
+  const displayCategories: DisplayCategory[] = useMemo(() => {
+    const customLabel = language === 'en' ? 'Custom Input'
+                      : language === 'zh' ? '自定义输入'
+                      : '직접 입력';
+
+    if (dbOptions.length === 0) {
+      return CATEGORIES.map(c => ({
+        id: c.id,
+        label: c.label,
+        emoji: c.emoji,
+        color: c.color,
+        items: [
+          ...c.items.map(i => ({ id: i.id, name: i.name, desc: i.desc, skinLayer: i.skinLayer, shotOptions: i.shotOptions })),
+          { id: '__custom', name: customLabel },
+        ],
+      }));
+    }
+
+    const groups: Record<string, DisplayItem[]> = {};
+    const catLabels: Record<string, string> = {};
+
+    for (const opt of dbOptions) {
+      const catKey = opt.category;
+      const catLabel = language === 'en' ? (opt.category_en || opt.category)
+                     : language === 'zh' ? (opt.category_zh || opt.category)
+                     : opt.category;
+      const itemName = language === 'en' ? (opt.name_en || opt.name)
+                     : language === 'zh' ? (opt.name_zh || opt.name)
+                     : opt.name;
+
+      if (!groups[catKey]) {
+        groups[catKey] = [];
+        catLabels[catKey] = catLabel;
+      }
+      groups[catKey].push({ id: opt.id, name: itemName });
+    }
+
+    return Object.entries(groups).map(([catKey, items]) => {
+      const meta = CATEGORY_META[catKey] || DEFAULT_CAT_META;
+      return {
+        id: catKey,
+        label: catLabels[catKey],
+        emoji: meta.emoji,
+        color: meta.color,
+        items: [...items, { id: '__custom', name: customLabel }],
+      };
+    });
+  }, [dbOptions, language]);
+
+  const selectedCat = displayCategories.find(c => c.id === catId);
+  const isBotox = catId === 'botox' || catId === '보톡스/윤곽주사';
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
 
-  // ── 보톡스: 1(카테고리) → 2(약물) → 3(부위) → 4(상세)
-  // ── 기타:   1(카테고리) → 2(시술) → [3:샷수] → N(상세, 부위 포함)
   const botoxTotalSteps = 4;
   const normalExtraSteps = needsShots ? 1 : 0;
   const normalTotalSteps = 3 + normalExtraSteps;
