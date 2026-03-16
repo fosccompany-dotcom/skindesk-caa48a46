@@ -111,7 +111,7 @@ const Index = () => {
       if (resRes.data) setReservations(resRes.data as Reservation[]);
     };
     loadDashboard();
-  }, [records]);
+  }, [records, reservationRefresh]);
 
   // Season change handler
   const handleSeasonChange = (season: SeasonKey) => {
