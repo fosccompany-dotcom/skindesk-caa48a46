@@ -521,7 +521,7 @@ export const mockPaymentRecords: PaymentRecord[] = [
     clinic: '밴스 미금',
     treatmentName: '포인트 신규충전',
     amount: 2000000,
-    method: '포인트충전',
+    method: 'charge',
     clinicType: '밴스',
     memo: '실결제 ₩2,000,000 | 증정 포인트 ₩860,000 포함 (총 ₩2,860,000 적립)',
   },
