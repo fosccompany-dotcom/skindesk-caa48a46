@@ -108,7 +108,7 @@ const Packages = () => {
       supabase.from('payment_records').select('*').eq('user_id', user.id).order('date', { ascending: false }),
       supabase.from('clinic_balances').select('clinic, balance').eq('user_id', user.id),
     ]);
-    if (pRes.data)  setPayments(pRes.data.map(r => ({ ...r, method: (r.method || '카드') as PaymentMethod, clinic_type: (r.clinic_type || '타의원') as ClinicType })));
+    if (pRes.data)  setPayments(pRes.data.map(r => ({ ...r, method: normalizeMethodKey(r.method) || 'card', clinic_type: r.clinic_type || '타의원' })));
     if (bRes.data)  setBalances(bRes.data as ClinicBalance[]);
     setPayLoading(false);
   }, []);
