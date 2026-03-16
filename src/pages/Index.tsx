@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check, Plus, ClipboardList, CalendarPlus, Globe } from 'lucide-react';
 import BloomAvatar from '@/components/BloomAvatar';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
