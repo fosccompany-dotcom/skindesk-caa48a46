@@ -95,6 +95,8 @@ const Index = () => {
   const [showHomeAddModal, setShowHomeAddModal] = useState(false);
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
+  const [calendarMonth, setCalendarMonth] = useState(TODAY);
+  const [yearMonthPickerOpen, setYearMonthPickerOpen] = useState(false);
 
   // 언어 드롭다운 외부 클릭 닫기
   useEffect(() => {
