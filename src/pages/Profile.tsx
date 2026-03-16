@@ -331,6 +331,8 @@ const Profile = () => {
   const [saved, setSaved] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const userIdRef = useRef<string | null>(null);
+  const [bloomStage, setBloomStage] = useState(1);
+  const [totalLogCount, setTotalLogCount] = useState(0);
 
   // ── Supabase 프로필 로드 ─────────────────────────────────────────────
   useEffect(() => {
