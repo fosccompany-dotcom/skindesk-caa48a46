@@ -29,20 +29,49 @@ const BOTOX_DRUGS: DrugOption[] = [
   { id: 'mesobotox',   name: '메조보톡스',      desc: '모공·피지 개선 보톡스' },
 ];
 
+const BOTOX_AREA_OPTIONS = [
+  { value: 'jaw',           label: '사각턱' },
+  { value: 'wrinkle',       label: '주름 (이마·눈가·미간)' },
+  { value: 'special',       label: '특수부위 (침샘·측두근·콧볼)' },
+  { value: 'trapezius',     label: '승모근' },
+  { value: 'calf',          label: '종아리' },
+  { value: 'thigh_arm',     label: '허벅지/팔뚝' },
+  { value: 'hyperhidrosis', label: '다한증' },
+  { value: 'hair_loss',     label: '탈모' },
+  { value: '__other',       label: '기타 (직접입력)' },
+];
+
+// ─── Display types (unified for DB & fallback) ──────────────────
+interface DisplayItem {
+  id: string;
+  name: string;
+  desc?: string;
+  skinLayer?: SL;
+  shotOptions?: number[];
+}
+
+interface DisplayCategory {
+  id: string;
+  label: string;
+  emoji: string;
+  color: string;
+  items: DisplayItem[];
+}
+
 interface TreatmentItem {
   id: string;
   name: string;
   desc?: string;
   skinLayer: SL;
-  shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
-  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가
+  shotOptions?: number[];
+  drugOptions?: DrugOption[];
 }
 
 interface Category {
   id: string;
   label: string;
   emoji: string;
-  color: string;          // tailwind border/bg 색상
+  color: string;
   items: TreatmentItem[];
 }
 
