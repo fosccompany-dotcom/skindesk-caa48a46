@@ -208,6 +208,49 @@ const CalendarViewPage = () => {
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToToday = () => { setCurrentMonth(today); setSelectedDate(today); };
 
+  // Delete handlers
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      if (deleteTarget.type === 'reservation') {
+        const { error } = await supabase.from('reservations').delete().eq('id', deleteTarget.id);
+        if (error) throw error;
+        await fetchReservations();
+        toast.success('예약이 삭제되었어요');
+      } else {
+        await deleteRecord(deleteTarget.id);
+        toast.success('시술 기록이 삭제되었어요');
+      }
+    } catch (err: any) {
+      toast.error('삭제 실패: ' + (err.message || '알 수 없는 오류'));
+    }
+    setDeleteTarget(null);
+  };
+
+  // Edit reservation handler
+  const handleEditReservationSave = async () => {
+    if (!editReservation) return;
+    try {
+      const { error } = await supabase
+        .from('reservations')
+        .update({
+          date: editReservation.date,
+          time: editReservation.time,
+          clinic: editReservation.clinic,
+          treatment_name: editReservation.treatment_name,
+          memo: editReservation.memo,
+        })
+        .eq('id', editReservation.id);
+      if (error) throw error;
+      await fetchReservations();
+      setEditReservationOpen(false);
+      setEditReservation(null);
+      toast.success('예약이 수정되었어요');
+    } catch (err: any) {
+      toast.error('수정 실패: ' + (err.message || '알 수 없는 오류'));
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="relative safe-top overflow-hidden">
