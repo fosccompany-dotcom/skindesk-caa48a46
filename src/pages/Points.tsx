@@ -296,7 +296,7 @@ const Points = () => {
 
             <button
               onClick={() => setShowStats(s => !s)}
-              className="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-gray-600"
+              className="w-full flex items-center justify-between px-4 py-2 text-sm font-medium text-muted-foreground"
             >
               <span className="flex items-center gap-1.5"><TrendingDown className="w-4 h-4" /> 지출 분석</span>
               <ChevronDown className={`w-4 h-4 transition-transform ${showStats ? 'rotate-180' : ''}`} />
