@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package, CreditCard, Coins, Banknote, Gift } from 'lucide-react';
@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import ClinicSearchInput from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
 
