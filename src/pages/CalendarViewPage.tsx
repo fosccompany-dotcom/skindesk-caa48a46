@@ -323,6 +323,12 @@ const CalendarViewPage = () => {
         onSave={addRecord}
         defaultDate={selectedDateStr}
       />
+
+      <AddReservationModal
+        open={showReservationModal}
+        onClose={() => setShowReservationModal(false)}
+        defaultDate={selectedDateStr}
+      />
     </div>
   );
 };
