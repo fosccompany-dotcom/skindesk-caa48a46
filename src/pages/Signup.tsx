@@ -7,7 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { supabase } from '@/integrations/supabase/client';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { toast } from '@/hooks/use-toast';
-import { Mail, Lock, User, Loader2, Eye, EyeOff, ExternalLink } from 'lucide-react';
+import { Mail, Lock, User, Loader2, Eye, EyeOff, ExternalLink, ArrowLeft } from 'lucide-react';
 
 const Signup = () => {
   const { t } = useLanguage();
@@ -75,9 +75,14 @@ const Signup = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-5">
       <div className="w-full max-w-[380px] space-y-6">
+        {/* Back button */}
+        <button onClick={() => navigate(-1)} className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          <ArrowLeft className="h-4 w-4" />
+          뒤로
+        </button>
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">{t('auth_signup_title')}</h1>
-          <p className="text-sm font-semibold tracking-[0.2em] text-[#C9A96E]">SKINDESK</p>
+          <p className="text-sm font-semibold tracking-[0.2em] text-[#C9A96E]">BLOOMLOG</p>
         </div>
 
         {/* Social */}

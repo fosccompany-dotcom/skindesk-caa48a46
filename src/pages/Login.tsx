@@ -99,7 +99,7 @@ const Login = () => {
         {/* Title */}
         <div className="text-center space-y-1">
           <h1 className="text-2xl font-bold tracking-tight">{t('auth_login_title')}</h1>
-          <p className="text-sm font-semibold tracking-[0.2em] text-[#C9A96E]">SKINDESK</p>
+          <p className="text-sm font-semibold tracking-[0.2em] text-[#C9A96E]">BLOOMLOG</p>
         </div>
 
         {/* Social Login */}
