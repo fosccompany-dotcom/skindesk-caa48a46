@@ -11,6 +11,7 @@ import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { TreatmentCycle, TreatmentRecord } from '@/types/skin';
 import { differenceInDays, format, addDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
