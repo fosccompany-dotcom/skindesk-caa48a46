@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from 'react';
-import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check, Plus, ClipboardList, CalendarPlus } from 'lucide-react';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check, Plus, ClipboardList, CalendarPlus, Globe } from 'lucide-react';
 import BloomAvatar from '@/components/BloomAvatar';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -11,6 +11,7 @@ import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
 import { useLanguage } from '@/i18n/LanguageContext';
+import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { TreatmentCycle, TreatmentRecord } from '@/types/skin';
 import { differenceInDays, format, addDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -74,7 +75,9 @@ const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { cycles } = useCycles();
   const { records, loading, addRecord, updateRecord, deleteRecord } = useRecords();
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
+  const [langOpen, setLangOpen] = useState(false);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
@@ -93,7 +96,17 @@ const Index = () => {
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
 
-  // Bloom info
+  // 언어 드롭다운 외부 클릭 닫기
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   const activeDays = getActiveDays(records);
   const bloom = getBloomInfo(activeDays);
 
@@ -250,6 +263,30 @@ const Index = () => {
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover overflow-hidden" style={{ clipPath: 'inset(0)' }} />
         <div className="absolute inset-0 bg-black/50" style={{ clipPath: 'inset(0)' }} />
         <div className="relative px-5 pt-10 pb-5 space-y-4">
+
+          {/* Language selector */}
+          <div className="absolute top-3 right-4 z-20" ref={langDropdownRef}>
+            <button
+              onClick={() => setLangOpen((prev) => !prev)}
+              className="h-8 w-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
+              <Globe className="h-4 w-4 text-white/80" />
+            </button>
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
+                {(['ko', 'en', 'zh'] as Language[]).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => { setLanguage(lang); setLangOpen(false); }}
+                    className={cn(
+                      'w-full text-left px-4 py-2.5 text-xs font-medium transition-colors',
+                      language === lang ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                    )}>
+                    {LANGUAGE_LABELS[lang]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
           {/* Row 1: Avatar + Nickname's Bloom Log */}
           <div className="flex items-center gap-3">

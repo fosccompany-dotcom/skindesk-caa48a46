@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useRecords } from '@/context/RecordsContext';
 import { SkinType, BodyArea, BODY_AREA_LABELS, SKIN_LAYER_LABELS } from '@/types/skin';
-import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, Star, ChevronDown, ChevronUp, Globe, LogOut, Plus, Trash2, Pencil, Check, Settings } from 'lucide-react';
+import { User, Target, AlertCircle, MapPin, Navigation, X, ClipboardList, Star, ChevronDown, ChevronUp, LogOut, Plus, Trash2, Pencil, Check, Settings } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import logoImg from '@/assets/logo.png';
 import { format, differenceInYears } from 'date-fns';
@@ -249,10 +249,8 @@ function StarRating({ value, onChange, readonly = false }: {value: number;onChan
 }
 
 const Profile = () => {
-  const { t, language, setLanguage } = useLanguage();
+  const { t, language } = useLanguage();
   const navigate = useNavigate();
-  const [langOpen, setLangOpen] = useState(false);
-  const langDropdownRef = useRef<HTMLDivElement>(null);
   const { nickname, setNickname } = useSeason();
   const [skinType, setSkinType] = useState<SkinType>('중성');
   const [birthDate, setBirthDate] = useState<Date | undefined>(
@@ -270,16 +268,6 @@ const Profile = () => {
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
 
-  // 언어 드롭다운 외부 클릭 닫기
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
-        setLangOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
 
   const sortedRecords = useMemo(() =>
   [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
@@ -413,32 +401,6 @@ const Profile = () => {
         <div className="absolute inset-0 bg-black/40" style={{ clipPath: 'inset(0)' }} />
         <div className="page-header-gradient relative z-10 flex items-center justify-between" style={{ background: 'transparent' }}>
         <h1 className="text-lg font-bold text-justify">{nickname ? `${nickname}님의 페이지` : t('my_page')}</h1>
-        <div className="relative" ref={langDropdownRef}>
-          <button
-              onClick={() => setLangOpen((prev) => !prev)}
-              className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
-              
-            <Globe className="h-4.5 w-4.5 text-muted-foreground" />
-          </button>
-          {langOpen &&
-            <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
-              {(['ko', 'en', 'zh'] as Language[]).map((lang) =>
-              <button
-                key={lang}
-                onClick={() => {setLanguage(lang);setLangOpen(false);}}
-                className={cn(
-                  'w-full text-left px-4 py-2.5 text-xs font-medium transition-colors',
-                  language === lang ?
-                  'bg-primary/10 text-primary' :
-                  'text-foreground hover:bg-muted'
-                )}>
-                
-                  {LANGUAGE_LABELS[lang]}
-                </button>
-              )}
-            </div>
-            }
-        </div>
         </div>
       </div>
 
