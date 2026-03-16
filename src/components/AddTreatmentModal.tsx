@@ -476,6 +476,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const canNext = () => {
     if (step === 1) return !!catId;
     if (isBotox) return true;
+    if (isFiller) return true;
     if (step === 2) {
       if (itemId === '__custom') return !!customTreatmentName.trim();
       return !!itemId;
