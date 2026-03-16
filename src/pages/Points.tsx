@@ -262,7 +262,7 @@ const Points = () => {
                     const config = pointTypeConfig[tx.type as PointType];
                     const Icon = config.icon;
                     return (
-                      <div key={tx.id} className="flex items-center gap-3 py-2.5 border-t border-gray-50 first:border-0">
+                      <div key={tx.id} className="flex items-center gap-3 py-2.5 border-t border-border first:border-0">
                         <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-muted">
                           <Icon className={`h-3.5 w-3.5 ${config.color}`} />
                         </div>
