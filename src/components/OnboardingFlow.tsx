@@ -244,7 +244,7 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
 
           <div className="px-5 pt-3 pb-4 text-center space-y-2">
             {isLast && (
-              <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-[#F2C94C] to-[#E87461] flex items-center justify-center shadow-lg mb-3">
+              <div className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-accent to-primary flex items-center justify-center shadow-lg mb-3">
                 <Sparkles className="w-6 h-6 text-white" />
               </div>
             )}
