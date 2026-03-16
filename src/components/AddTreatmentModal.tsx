@@ -694,7 +694,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 {language === 'en' ? 'Select treatment area' : language === 'zh' ? '选择治疗部位' : '시술 부위를 선택하세요'}
               </p>
               <p className="text-sm font-semibold text-gray-900 mb-4">
-                🌙 {selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : (language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러')}
+                🌙 {fillerDrugId === '__custom' && customFillerDrug.trim()
+                  ? customFillerDrug.trim()
+                  : selectedFillerDrug
+                    ? getLocalizedName(selectedFillerDrug)
+                    : (language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러')}
               </p>
               <div className="grid grid-cols-3 gap-2">
                 {fillerAreaOptions.map(area => (
