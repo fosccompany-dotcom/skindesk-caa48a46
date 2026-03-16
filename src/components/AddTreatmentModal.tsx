@@ -623,7 +623,6 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       <span className="text-lg">{cat.emoji}</span>
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
-                        <div className="text-[10px] text-gray-400 mt-0.5">{cat.items.filter(i => i.id !== '__custom').length}종</div>
                       </div>
                       {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
                     </button>
