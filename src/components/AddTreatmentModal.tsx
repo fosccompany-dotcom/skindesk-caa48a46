@@ -17,13 +17,23 @@ interface DrugOption {
   desc?: string;
 }
 
+const BOTOX_DRUGS: DrugOption[] = [
+  { id: 'kr_botox',    name: '국산 보톡스',     desc: '보툴렉스·나보타 등 합리적 가격' },
+  { id: 'imp_botox',   name: '수입 보톡스',     desc: '레스틸렌·쥬비덤 등 수입 제품' },
+  { id: 'coretox',     name: '코어톡스',        desc: '내성 적은 국산 보톡스' },
+  { id: 'xeomin',      name: '제오민',          desc: '독일 · 순수 보톡스' },
+  { id: 'allergan',    name: '엘러간',          desc: '미국 · 프리미엄' },
+  { id: 'aquatoxin',   name: '아쿠아톡신',      desc: '피부 직접 주사 보톡스' },
+  { id: 'mesobotox',   name: '메조보톡스',      desc: '모공·피지 개선 보톡스' },
+];
+
 interface TreatmentItem {
   id: string;
   name: string;
   desc?: string;
   skinLayer: SL;
   shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
-  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가 (보톡스용)
+  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가
 }
 
 interface Category {
