@@ -462,7 +462,7 @@ function PaymentHistoryTab() {
             </div>
           </div>
           <Button
-            onClick={() => setShowAddModal(true)}
+            onClick={() => payGuardAction(() => setShowAddModal(true))}
             className="w-full mt-3 rounded-xl text-xs gap-1.5"
             size="sm">
             <Plus className="h-3.5 w-3.5" />
