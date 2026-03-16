@@ -504,7 +504,7 @@ const Profile = () => {
                           'text-[9px] font-medium transition-colors whitespace-nowrap',
                           idx + 1 < bloomStage ? 'text-muted-foreground' :
                           idx + 1 === bloomStage ? 'font-bold' : 'text-muted-foreground/40'
-                        )} style={idx + 1 === bloomStage ? { color: '#FF7F7F' } : undefined}>
+                        )} style={idx + 1 === bloomStage ? { color: 'hsl(var(--rose))' } : undefined}>
                           {idx + 1 < bloomStage ? '✅' : s.emoji}{' '}{name}
                         </span>
                       );
