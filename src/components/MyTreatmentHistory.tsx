@@ -220,15 +220,6 @@ const MyTreatmentHistory = () => {
         </Card>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="시술명, 병원명 검색..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="pl-9 rounded-xl"
-        />
       </div>
 
       {/* Row 1 — 기간 dropdown */}
