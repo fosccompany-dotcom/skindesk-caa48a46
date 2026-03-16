@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft, Check, X, Clock, CalendarDays, Stethoscope, FileText } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, X, Clock, CalendarDays, Stethoscope, FileText, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
 import { supabase } from '@/integrations/supabase/client';
