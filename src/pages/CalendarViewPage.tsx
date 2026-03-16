@@ -317,7 +317,7 @@ const CalendarViewPage = () => {
             </div>
           )}
 
-          {selectedRecords.length === 0 && selectedEvents.length === 0 && (
+          {selectedRecords.length === 0 && selectedEvents.length === 0 && selectedReservations.length === 0 && (
             <button
               onClick={() => guardAction(() => setShowActionPicker(true))}
               className="w-full text-left"
