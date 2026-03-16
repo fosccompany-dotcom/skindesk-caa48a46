@@ -312,11 +312,12 @@ interface Props {
   onOpenParse?: () => void;
   onSave: (record: Omit<TreatmentRecord, 'id'>) => void;
   editRecord?: TreatmentRecord | null;
+  defaultDate?: string;
 }
 
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
-export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
+export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse, defaultDate }: Props) {
   const { language } = useLanguage();
   const [step, setStep] = useState(1);
   const [paymentShake, setPaymentShake] = useState(false);
@@ -324,7 +325,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [itemId, setItemId] = useState<string | null>(null);
   const [shots, setShots] = useState<number | null>(null);
   const [drugId, setDrugId] = useState<string | null>(null);
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(defaultDate || new Date().toISOString().split('T')[0]);
   const [clinic, setClinic] = useState('밴스 미금');
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
@@ -374,8 +375,12 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setFillerDrugId(null); setFillerAreaId(null); setCustomFillerArea(''); setCustomFillerDrug('');
   };
   const handleClose = () => { reset(); onClose(); };
+  // Sync defaultDate when modal opens
+  useEffect(() => {
+    if (open && defaultDate) setDate(defaultDate);
+  }, [open, defaultDate]);
 
-  // ── Fetch package_options from Supabase ──
+
   useEffect(() => {
     supabase
       .from('package_options')
