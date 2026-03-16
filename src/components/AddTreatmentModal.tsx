@@ -475,8 +475,34 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 3: 샷수 선택 ── */}
-          {step === 3 && needsShots && selectedItem && (
+          {/* ── 약물 선택 (보톡스 카테고리) ── */}
+          {step === drugStep && needsDrug && selectedItem && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">사용 약물을 선택하세요</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
+              <div className="space-y-1.5">
+                {selectedItem.drugOptions!.map(drug => (
+                  <button key={drug.id}
+                    onClick={() => setDrugId(drug.id)}
+                    className={cn(
+                      'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
+                      drugId === drug.id
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    )}>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-gray-900 font-medium">{drug.name}</div>
+                      {drug.desc && <div className="text-[11px] text-gray-400 mt-0.5">{drug.desc}</div>}
+                    </div>
+                    {drugId === drug.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── 샷수 선택 ── */}
+          {step === shotsStep && needsShots && selectedItem && (
             <div>
               <p className="text-xs text-gray-400 mb-1">샷수를 선택하세요</p>
               <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
