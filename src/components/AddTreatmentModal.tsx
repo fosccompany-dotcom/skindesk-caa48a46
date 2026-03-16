@@ -387,6 +387,23 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       });
   }, []);
 
+  // ── Fetch filler drug/area options from DB ──
+  useEffect(() => {
+    supabase
+      .from('package_options')
+      .select('id, name, name_en, name_zh, sub_type')
+      .eq('category', '필러·실리프팅')
+      .is('package_id', null)
+      .eq('is_default', true)
+      .order('sort_order')
+      .then(({ data }) => {
+        if (data) {
+          setFillerDrugOptions(data.filter((d: any) => d.sub_type === 'drug'));
+          setFillerAreaOptions(data.filter((d: any) => d.sub_type === 'area'));
+        }
+      });
+  }, []);
+
   // ── Build display categories: DB primary, hardcoded fallback ──
   const displayCategories: DisplayCategory[] = useMemo(() => {
     const customLabel = language === 'en' ? 'Custom Input'
