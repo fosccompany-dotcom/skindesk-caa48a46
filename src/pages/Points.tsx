@@ -203,13 +203,13 @@ const Points = () => {
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-purple-400" />
+                        <div className="w-2 h-2 rounded-full bg-secondary" />
                         <span className="font-semibold text-sm">{clinic}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-purple-50 text-purple-500">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-secondary/10 text-secondary">
                           타의원
                         </span>
                       </div>
-                      <span className="text-sm font-bold text-[#C9A96E]">₩{balance.toLocaleString()}</span>
+                      <span className="text-sm font-bold text-amber">₩{balance.toLocaleString()}</span>
                     </div>
                     {/* mockPackages에서 해당 병원 시술권 직접 렌더 */}
                     <div className="space-y-2">
