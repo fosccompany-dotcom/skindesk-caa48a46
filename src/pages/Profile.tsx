@@ -331,6 +331,8 @@ const Profile = () => {
   const [saved, setSaved] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const userIdRef = useRef<string | null>(null);
+  const [bloomStage, setBloomStage] = useState(1);
+  const [totalLogCount, setTotalLogCount] = useState(0);
 
   // ── Supabase 프로필 로드 ─────────────────────────────────────────────
   useEffect(() => {
@@ -354,7 +356,9 @@ const Profile = () => {
       if (data.target_areas) setTargetAreas(data.target_areas as BodyArea[]);
       if (data.regions) setRegions(data.regions as string[]);
       // current_season은 SeasonContext에서 관리하므로 여기서 로드하지 않음
-      if (data.name) setNickname(data.name); // context에도 반영
+      if (data.name) setNickname(data.name);
+      setBloomStage(data.bloom_stage || 1);
+      setTotalLogCount(data.total_log_count || 0);
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
       requestAnimationFrame(() => {profileLoaded.current = true;});
     };
@@ -438,28 +442,41 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* ── Bloom Journey Section ── */}
+      {/* ── Bloom Stage Badge ── */}
       {(() => {
-        const activeDays = getActiveDays(records);
-        const bloom = getBloomInfo(activeDays);
-        const JOURNEY = [
-        { name: '씨앗', emoji: '🌱' },
-        { name: '새싹', emoji: '🌿' },
-        { name: '봉오리', emoji: '🌼' },
-        { name: '반개화', emoji: '🌸' },
-        { name: 'Bloom', emoji: '🌺' }];
+        const BLOOM_STAGES = [
+          { stage: 1, emoji: '🌱', ko: '씨앗', en: 'Seed', zh: '种子', color: 'bg-gray-100 text-gray-600 border-gray-300' },
+          { stage: 2, emoji: '🌿', ko: '새싹', en: 'Sprout', zh: '嫩芽', color: 'bg-green-100 text-green-700 border-green-300' },
+          { stage: 3, emoji: '🌼', ko: '봉오리', en: 'Bud', zh: '花蕾', color: 'bg-yellow-100 text-yellow-700 border-yellow-300' },
+          { stage: 4, emoji: '🌸', ko: '반개화', en: 'Blooming', zh: '含苞待放', color: 'bg-pink-100 text-pink-700 border-pink-300' },
+          { stage: 5, emoji: '✨', ko: 'Bloom', en: 'Bloom', zh: '盛放', color: 'bg-amber-100 text-amber-700 border-amber-300' },
+        ];
+        const STAGE_THRESHOLDS = [0, 1, 6, 16, 30];
+        const current = BLOOM_STAGES[bloomStage - 1] || BLOOM_STAGES[0];
+        const stageName = language === 'en' ? current.en : language === 'zh' ? current.zh : current.ko;
 
-        const STAGE_MINS = [0, 1, 8, 31, 91];
-        const currentMin = STAGE_MINS[bloom.stage];
-        const nextMin = bloom.stage < 4 ? STAGE_MINS[bloom.stage + 1] : STAGE_MINS[4];
-        const progressInStage = bloom.stage >= 4 ?
-        100 :
-        Math.min((activeDays - currentMin) / (nextMin - currentMin) * 100, 100);
-        const daysToNext = bloom.nextMilestone ? bloom.nextMilestone - activeDays : 0;
+        const nextThreshold = bloomStage < 5 ? STAGE_THRESHOLDS[bloomStage] : null;
+        const remaining = nextThreshold !== null ? Math.max(0, nextThreshold - totalLogCount) : 0;
+
+        const recordingText = language === 'en' ? `Recording #${totalLogCount}`
+                            : language === 'zh' ? `第${totalLogCount}次记录`
+                            : `${totalLogCount}번째 기록 중`;
+
+        const maxText = language === 'en' ? 'Max Level Reached'
+                      : language === 'zh' ? '已达最高等级'
+                      : '최고 등급 달성';
+
+        const remainingText = language === 'en' ? `${remaining} more to next level`
+                            : language === 'zh' ? `距下一等级还需${remaining}条`
+                            : `다음 단계까지 ${remaining}건`;
+
+        const progressPct = bloomStage >= 5 ? 100
+          : nextThreshold !== null
+            ? Math.min((totalLogCount - STAGE_THRESHOLDS[bloomStage - 1]) / (nextThreshold - STAGE_THRESHOLDS[bloomStage - 1]) * 100, 100)
+            : 100;
 
         return (
           <div className="px-4 pt-3 pb-1 space-y-2">
-            {/* Avatar + Progress bar + Journey in same row layout */}
             <div className="flex items-start gap-3">
               <Popover>
                 <PopoverTrigger asChild>
@@ -467,65 +484,75 @@ const Profile = () => {
                     <BloomAvatar size="md" showDays={false} />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent 
+                <PopoverContent
                   className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
                   sideOffset={8}
                 >
                   <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 등급 기준</p>
                   <ul className="space-y-1 text-[11px]">
-                    <li className={activeDays === 0 ? 'text-[#F2C94C] font-semibold' : ''}>🌱 씨앗 — 0일</li>
-                    <li className={activeDays >= 1 && activeDays < 8 ? 'text-[#F2C94C] font-semibold' : ''}>🌿 새싹 — 1~7일</li>
-                    <li className={activeDays >= 8 && activeDays < 31 ? 'text-[#F2C94C] font-semibold' : ''}>🌼 봉오리 — 8~30일</li>
-                    <li className={activeDays >= 31 && activeDays < 91 ? 'text-[#F2C94C] font-semibold' : ''}>🌸 반개화 — 31~90일</li>
-                    <li className={activeDays >= 91 ? 'text-[#F2C94C] font-semibold' : ''}>🌺 Bloom — 91일+</li>
+                    {BLOOM_STAGES.map((s, idx) => {
+                      const name = language === 'en' ? s.en : language === 'zh' ? s.zh : s.ko;
+                      const threshold = STAGE_THRESHOLDS[idx];
+                      const nextT = idx < 4 ? STAGE_THRESHOLDS[idx + 1] - 1 : null;
+                      const rangeText = idx === 0 ? '0건' : idx === 4 ? `${threshold}건+` : `${threshold}~${nextT}건`;
+                      return (
+                        <li key={s.stage} className={bloomStage === s.stage ? 'text-[#F2C94C] font-semibold' : ''}>
+                          {s.emoji} {name} — {rangeText}
+                        </li>
+                      );
+                    })}
                   </ul>
-                  <p className="mt-2 text-[10px] text-white/50">기록한 고유 날짜 수 기준</p>
+                  <p className="mt-2 text-[10px] text-white/50">
+                    {language === 'en' ? 'Based on total records' : language === 'zh' ? '基于总记录数' : '총 기록 수 기준'}
+                  </p>
                 </PopoverContent>
               </Popover>
-              
+
               <div className="flex-1 space-y-2">
-                {/* Message */}
-                <p className="text-xs text-muted-foreground">{bloom.message}</p>
-                
-                {/* Progress bar with aligned stage names */}
+                {/* Badge + recording count */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className={cn('inline-flex items-center gap-1 px-2.5 py-1 rounded-full border text-xs font-semibold', current.color)}>
+                    {current.emoji} {stageName}
+                  </span>
+                  <span className="text-xs text-muted-foreground">{recordingText}</span>
+                </div>
+
+                {/* Progress */}
                 <div className="space-y-1">
-                  {bloom.stage < 4 &&
-                  <>
+                  {bloomStage < 5 ? (
+                    <>
                       <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-muted-foreground">다음 단계까지 {daysToNext}일</span>
-                        <span className="text-[10px] font-semibold text-muted-foreground">{activeDays}/{bloom.nextMilestone}</span>
+                        <span className="text-[10px] text-muted-foreground">{remainingText}</span>
+                        <span className="text-[10px] font-semibold text-muted-foreground">{totalLogCount}/{nextThreshold}</span>
                       </div>
-                      <Progress value={progressInStage} className="h-2" />
+                      <Progress value={progressPct} className="h-2" />
                     </>
-                  }
-                  {bloom.stage >= 4 &&
-                  <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
-                      🌺 Bloom 달성!
+                  ) : (
+                    <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
+                      ✨ {maxText}
                     </div>
-                  }
-                  
-                  {/* Journey line - aligned under progress bar */}
+                  )}
+
+                  {/* Journey line */}
                   <div className="flex items-center justify-between gap-0.5">
-                    {JOURNEY.map(({ name, emoji }, idx) =>
-                    <span key={name} className={cn(
-                      'text-[9px] font-medium transition-colors whitespace-nowrap',
-                      idx < bloom.stage ? 'text-muted-foreground' :
-                      idx === bloom.stage ? 'font-bold' : 'text-muted-foreground/40'
-                    )} style={idx === bloom.stage ? { color: '#FF7F7F' } : undefined}>
-                        {idx < bloom.stage ? '✅' : emoji}{' '}{name}
-                      </span>
-                    )}
+                    {BLOOM_STAGES.map((s, idx) => {
+                      const name = language === 'en' ? s.en : language === 'zh' ? s.zh : s.ko;
+                      return (
+                        <span key={s.stage} className={cn(
+                          'text-[9px] font-medium transition-colors whitespace-nowrap',
+                          idx + 1 < bloomStage ? 'text-muted-foreground' :
+                          idx + 1 === bloomStage ? 'font-bold' : 'text-muted-foreground/40'
+                        )} style={idx + 1 === bloomStage ? { color: '#FF7F7F' } : undefined}>
+                          {idx + 1 < bloomStage ? '✅' : s.emoji}{' '}{name}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Days count below */}
-            <p className="text-[10px] text-muted-foreground text-center">
-              {activeDays}일째 기록 중
-            </p>
-          </div>);
-
+          </div>
+        );
       })()}
 
       <div className="page-content pt-2">

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package, CreditCard, Coins, Banknote, Gift } from 'lucide-react';
@@ -6,6 +6,8 @@ import { cn } from '@/lib/utils';
 import ClinicSearchInput from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
 import { supabase } from '@/integrations/supabase/client';
+import { useLanguage } from '@/i18n/LanguageContext';
+import { Skeleton } from '@/components/ui/skeleton';
 
 // ─── 미금 밴스의원 실제 시술 데이터 ────────────────────────────────
 
@@ -27,20 +29,49 @@ const BOTOX_DRUGS: DrugOption[] = [
   { id: 'mesobotox',   name: '메조보톡스',      desc: '모공·피지 개선 보톡스' },
 ];
 
+const BOTOX_AREA_OPTIONS = [
+  { value: 'jaw',           label: '사각턱' },
+  { value: 'wrinkle',       label: '주름 (이마·눈가·미간)' },
+  { value: 'special',       label: '특수부위 (침샘·측두근·콧볼)' },
+  { value: 'trapezius',     label: '승모근' },
+  { value: 'calf',          label: '종아리' },
+  { value: 'thigh_arm',     label: '허벅지/팔뚝' },
+  { value: 'hyperhidrosis', label: '다한증' },
+  { value: 'hair_loss',     label: '탈모' },
+  { value: '__other',       label: '기타 (직접입력)' },
+];
+
+// ─── Display types (unified for DB & fallback) ──────────────────
+interface DisplayItem {
+  id: string;
+  name: string;
+  desc?: string;
+  skinLayer?: SL;
+  shotOptions?: number[];
+}
+
+interface DisplayCategory {
+  id: string;
+  label: string;
+  emoji: string;
+  color: string;
+  items: DisplayItem[];
+}
+
 interface TreatmentItem {
   id: string;
   name: string;
   desc?: string;
   skinLayer: SL;
-  shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
-  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가
+  shotOptions?: number[];
+  drugOptions?: DrugOption[];
 }
 
 interface Category {
   id: string;
   label: string;
   emoji: string;
-  color: string;          // tailwind border/bg 색상
+  color: string;
   items: TreatmentItem[];
 }
 
@@ -232,6 +263,21 @@ const CATEGORIES: Category[] = [
   },
 ];
 
+// ─── Category metadata (emoji/color per Korean category name) ───
+const CATEGORY_META: Record<string, { emoji: string; color: string }> = {
+  '레이저 리프팅':     { emoji: '✨', color: 'border-purple-300 bg-purple-50' },
+  '보톡스/윤곽주사':   { emoji: '💉', color: 'border-blue-300 bg-blue-50' },
+  '필러/실리프팅':     { emoji: '🌙', color: 'border-indigo-300 bg-indigo-50' },
+  '스킨부스터':        { emoji: '💧', color: 'border-cyan-300 bg-cyan-50' },
+  '피부관리/패키지':   { emoji: '🌿', color: 'border-green-300 bg-green-50' },
+  '미백/기미/색소':    { emoji: '⚡', color: 'border-amber-300 bg-amber-50' },
+  '여드름/점제거':     { emoji: '🔬', color: 'border-rose-300 bg-rose-50' },
+  '지방분해/윤곽주사': { emoji: '🔥', color: 'border-orange-300 bg-orange-50' },
+  '제모':              { emoji: '🪄', color: 'border-slate-300 bg-slate-50' },
+  '수액/영양주사':     { emoji: '🌱', color: 'border-teal-300 bg-teal-50' },
+};
+const DEFAULT_CAT_META = { emoji: '💊', color: 'border-gray-300 bg-gray-50' };
+
 // ─── 헬퍼 ──────────────────────────────────────────────────────────
 
 const SKIN_LAYER_LABEL: Record<SL, string> = {
@@ -256,6 +302,7 @@ interface Props {
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
 export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
+  const { language } = useLanguage();
   const [step, setStep] = useState(1);
   const [catId, setCatId] = useState<string | null>(null);
   const [itemId, setItemId] = useState<string | null>(null);
@@ -267,11 +314,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [memo, setMemo] = useState('');
   const [bodyArea, setBodyArea] = useState('face');
   const [customBodyArea, setCustomBodyArea] = useState('');
-  // 시술권 선택 (package_uuid — 플로우 3)
   const [availPkgs, setAvailPkgs] = useState<{ id: string; name: string; remaining: number }[]>([]);
-  const [selectedPkgId, setSelectedPkgId] = useState<string>(''); // '' = 시술권 미사용
+  const [selectedPkgId, setSelectedPkgId] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
+  const [customTreatmentName, setCustomTreatmentName] = useState('');
+
+  // ── DB categories ──
+  const [dbOptions, setDbOptions] = useState<any[]>([]);
+  const [dbLoading, setDbLoading] = useState(true);
 
   const BODY_AREA_OPTIONS_WITH_OTHER = [
     { value: 'face', label: '얼굴' },
@@ -293,19 +344,82 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setStep(1); setCatId(null); setItemId(null); setShots(null); setDrugId(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
-    setBodyArea('face'); setCustomBodyArea('');
+    setBodyArea('face'); setCustomBodyArea(''); setCustomTreatmentName('');
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
   };
   const handleClose = () => { reset(); onClose(); };
 
-  const selectedCat = CATEGORIES.find(c => c.id === catId);
-  const isBotox = catId === 'botox';
+  // ── Fetch package_options from Supabase ──
+  useEffect(() => {
+    supabase
+      .from('package_options')
+      .select('id, category, name, category_en, name_en, category_zh, name_zh')
+      .is('package_id', null)
+      .eq('is_default', true)
+      .order('category')
+      .order('sort_order')
+      .then(({ data, error }) => {
+        if (!error && data?.length) setDbOptions(data);
+        setDbLoading(false);
+      });
+  }, []);
+
+  // ── Build display categories from DB or fallback ──
+  const displayCategories: DisplayCategory[] = useMemo(() => {
+    const customLabel = language === 'en' ? 'Custom Input'
+                      : language === 'zh' ? '自定义输入'
+                      : '직접 입력';
+
+    if (dbOptions.length === 0) {
+      return CATEGORIES.map(c => ({
+        id: c.id,
+        label: c.label,
+        emoji: c.emoji,
+        color: c.color,
+        items: [
+          ...c.items.map(i => ({ id: i.id, name: i.name, desc: i.desc, skinLayer: i.skinLayer, shotOptions: i.shotOptions })),
+          { id: '__custom', name: customLabel },
+        ],
+      }));
+    }
+
+    const groups: Record<string, DisplayItem[]> = {};
+    const catLabels: Record<string, string> = {};
+
+    for (const opt of dbOptions) {
+      const catKey = opt.category;
+      const catLabel = language === 'en' ? (opt.category_en || opt.category)
+                     : language === 'zh' ? (opt.category_zh || opt.category)
+                     : opt.category;
+      const itemName = language === 'en' ? (opt.name_en || opt.name)
+                     : language === 'zh' ? (opt.name_zh || opt.name)
+                     : opt.name;
+
+      if (!groups[catKey]) {
+        groups[catKey] = [];
+        catLabels[catKey] = catLabel;
+      }
+      groups[catKey].push({ id: opt.id, name: itemName });
+    }
+
+    return Object.entries(groups).map(([catKey, items]) => {
+      const meta = CATEGORY_META[catKey] || DEFAULT_CAT_META;
+      return {
+        id: catKey,
+        label: catLabels[catKey],
+        emoji: meta.emoji,
+        color: meta.color,
+        items: [...items, { id: '__custom', name: customLabel }],
+      };
+    });
+  }, [dbOptions, language]);
+
+  const selectedCat = displayCategories.find(c => c.id === catId);
+  const isBotox = catId === 'botox' || catId === '보톡스/윤곽주사';
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
 
-  // ── 보톡스: 1(카테고리) → 2(약물) → 3(부위) → 4(상세)
-  // ── 기타:   1(카테고리) → 2(시술) → [3:샷수] → N(상세, 부위 포함)
   const botoxTotalSteps = 4;
   const normalExtraSteps = needsShots ? 1 : 0;
   const normalTotalSteps = 3 + normalExtraSteps;
@@ -336,12 +450,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const canNext = () => {
     if (step === 1) return !!catId;
-    if (isBotox) {
-      // step 2 = drug (always allowed — can skip)
-      // step 3 = body area (always has default)
-      return true;
+    if (isBotox) return true;
+    if (step === 2) {
+      if (itemId === '__custom') return !!customTreatmentName.trim();
+      return !!itemId;
     }
-    if (step === 2) return !!itemId;
     if (step === shotsStep) return !!shots;
     return true;
   };
@@ -350,9 +463,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const getTreatmentName = () => {
     if (isBotox) {
-      const drug = selectedDrug ? selectedDrug.name : '보톡스';
-      return drug;
+      return selectedDrug ? selectedDrug.name : '보톡스';
     }
+    if (itemId === '__custom') return customTreatmentName.trim() || '';
     if (!selectedItem) return '';
     let name = selectedItem.name;
     if (shots) name += ` ${shots}샷`;
@@ -419,29 +532,39 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              <p className="text-xs text-gray-400 mb-3">시술 카테고리를 선택하세요</p>
-              <div className="grid grid-cols-2 gap-2">
-                {CATEGORIES.map(cat => (
-                  <button key={cat.id}
-                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); }}
-                    className={cn(
-                      'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
-                      cat.color,
-                      catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-gray-400 border-gray-200'
-                    )}>
-                    <span className="text-lg">{cat.emoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">{cat.items.length}종</div>
-                    </div>
-                    {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs text-gray-400 mb-3">
+                {language === 'en' ? 'Select a treatment category' : language === 'zh' ? '选择治疗类别' : '시술 카테고리를 선택하세요'}
+              </p>
+              {dbLoading ? (
+                <div className="grid grid-cols-2 gap-2">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={i} className="h-16 rounded-xl" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {displayCategories.map(cat => (
+                    <button key={cat.id}
+                      onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
+                      className={cn(
+                        'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
+                        cat.color,
+                        catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-gray-400 border-gray-200'
+                      )}>
+                      <span className="text-lg">{cat.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">{cat.items.filter(i => i.id !== '__custom').length}종</div>
+                      </div>
+                      {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {/* ── STEP 2: 시술 선택 (비보톡스) / 약물 선택 (보톡스) ── */}
+          {/* ── STEP 2: 시술 선택 (비보톡스) ── */}
           {step === 2 && selectedCat && !isBotox && (
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -451,7 +574,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="space-y-1.5">
                 {selectedCat.items.map(item => (
                   <button key={item.id}
-                    onClick={() => { setItemId(item.id); setShots(null); }}
+                    onClick={() => { setItemId(item.id); setShots(null); if (item.id !== '__custom') setCustomTreatmentName(''); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
                       itemId === item.id
@@ -463,19 +586,30 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       {item.desc && <div className="text-[11px] text-gray-400 mt-0.5 truncate">{item.desc}</div>}
                     </div>
                     <div className="flex items-center gap-1.5 ml-2 shrink-0">
-                      <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[item.skinLayer])}>
-                        {SKIN_LAYER_LABEL[item.skinLayer].replace('조직','').replace('층','')}
-                      </span>
-                      {item.shotOptions?.length && (
+                      {item.skinLayer && (
+                        <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[item.skinLayer])}>
+                          {SKIN_LAYER_LABEL[item.skinLayer].replace('조직','').replace('층','')}
+                        </span>
+                      )}
+                      {item.shotOptions?.length ? (
                         <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
                           <Zap size={9} />샷
                         </span>
-                      )}
+                      ) : null}
                       {itemId === item.id && <Check size={12} className="text-[#C9A96E]" />}
                     </div>
                   </button>
                 ))}
               </div>
+              {itemId === '__custom' && (
+                <input
+                  type="text"
+                  value={customTreatmentName}
+                  onChange={e => setCustomTreatmentName(e.target.value)}
+                  placeholder={language === 'en' ? 'Enter treatment name' : language === 'zh' ? '请输入项目名称' : '시술명을 입력하세요'}
+                  className="w-full mt-3 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                />
+              )}
             </div>
           )}
 
