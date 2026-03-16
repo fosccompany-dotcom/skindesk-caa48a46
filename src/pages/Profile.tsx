@@ -391,7 +391,7 @@ const Profile = () => {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    navigate('/login');
+    navigate('/');
   };
 
   return (
@@ -857,7 +857,7 @@ const Profile = () => {
                   const { data: { session } } = await supabase.auth.getSession();
                   if (!session) {
                     console.error('세션이 없습니다.');
-                    navigate('/login');
+                    navigate('/');
                     return;
                   }
                   const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`, {
@@ -869,7 +869,7 @@ const Profile = () => {
                     throw new Error(errData.error || '탈퇴 처리 중 오류가 발생했습니다.');
                   }
                   await supabase.auth.signOut();
-                  navigate('/login');
+                  navigate('/farewell');
                 } catch (e: unknown) {
                   const message = e instanceof Error ? e.message : '탈퇴 처리 중 오류가 발생했습니다.';
                   console.error('탈퇴 실패', message);

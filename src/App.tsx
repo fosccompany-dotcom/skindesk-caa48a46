@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
 import Cycles from "./pages/Cycles";
 import StatusList from "./pages/StatusList";
+import Farewell from "./pages/Farewell";
 
 import Signup from "./pages/Signup";
 import Privacy from "./pages/Privacy";
@@ -46,6 +47,7 @@ const App = () => (
                   <Routes>
                     {/* 공개 라우트 */}
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/farewell" element={<Farewell />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
 
