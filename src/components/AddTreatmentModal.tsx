@@ -578,7 +578,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0">
+      <DialogContent className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] max-h-[88vh] overflow-y-auto p-0 [&>button:last-of-type]:hidden">
 
         {/* 헤더 */}
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -586,7 +586,16 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             <DialogTitle className="text-base font-semibold">
               {editRecord ? '시술 수정' : '시술 등록'}
             </DialogTitle>
-            <span className="text-xs text-gray-400">{step} / {totalSteps}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-400">{step} / {totalSteps}</span>
+              <button
+                onClick={handleClose}
+                className="rounded-full p-1 hover:bg-gray-100 transition-colors"
+                aria-label="닫기"
+              >
+                <X className="h-4 w-4 text-gray-500" />
+              </button>
+            </div>
           </div>
           <div className="flex gap-1 mt-2.5">
             {Array.from({ length: totalSteps }).map((_, i) => (
