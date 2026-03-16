@@ -375,8 +375,12 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setFillerDrugId(null); setFillerAreaId(null); setCustomFillerArea(''); setCustomFillerDrug('');
   };
   const handleClose = () => { reset(); onClose(); };
+  // Sync defaultDate when modal opens
+  useEffect(() => {
+    if (open && defaultDate) setDate(defaultDate);
+  }, [open, defaultDate]);
 
-  // ── Fetch package_options from Supabase ──
+
   useEffect(() => {
     supabase
       .from('package_options')

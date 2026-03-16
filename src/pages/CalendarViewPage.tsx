@@ -3,12 +3,13 @@ import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
+import AddTreatmentModal from '@/components/AddTreatmentModal';
 
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
@@ -52,8 +53,9 @@ const CalendarViewPage = () => {
   const today = new Date('2026-03-08');
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
+  const [showAddModal, setShowAddModal] = useState(false);
   const { cycles } = useCycles();
-  const { records } = useRecords();
+  const { records, addRecord } = useRecords();
 
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
@@ -84,9 +86,7 @@ const CalendarViewPage = () => {
     return events;
   }, [cycles, today]);
 
-  const allEvents = useMemo(() => {
-    return cycleEvents;
-  }, [cycleEvents]);
+  const allEvents = useMemo(() => cycleEvents, [cycleEvents]);
 
   const calendarDays = useMemo(() => {
     const monthStart = startOfMonth(currentMonth);
@@ -170,18 +170,20 @@ const CalendarViewPage = () => {
 
               return (
                 <button key={idx} onClick={() => setSelectedDate(day)}
-                  className={cn('relative flex flex-col items-center py-2 min-h-[52px] tap-target',
-                    !isCurrentMonth && 'opacity-30', isSelected && 'bg-primary/5')}
-                  style={heatmapOpacity > 0 && isCurrentMonth ? {
+                  className={cn('relative flex flex-col items-center py-2 min-h-[52px] tap-target transition-colors',
+                    !isCurrentMonth && 'opacity-30',
+                    isSelected && !isTodayDate && 'bg-primary/10')}
+                  style={heatmapOpacity > 0 && isCurrentMonth && !isSelected ? {
                     backgroundColor: `rgba(255, 127, 127, ${heatmapOpacity * 0.25})`,
                   } : undefined}
                 >
-                  <span className={cn('w-7 h-7 flex items-center justify-center text-sm rounded-full transition-colors',
-                    isTodayDate && 'bg-primary text-primary-foreground font-semibold',
-                    !isTodayDate && isSelected && 'bg-muted font-medium',
-                    !isTodayDate && !isSelected && dayOfWeek === 0 && 'text-rose',
-                    !isTodayDate && !isSelected && dayOfWeek === 6 && 'text-info',
-                    !isTodayDate && !isSelected && dayOfWeek !== 0 && dayOfWeek !== 6 && 'text-foreground')}>
+                  <span className={cn('w-7 h-7 flex items-center justify-center text-sm rounded-full transition-all',
+                    isSelected && isTodayDate && 'bg-primary text-primary-foreground font-bold ring-2 ring-primary/30 ring-offset-1',
+                    isSelected && !isTodayDate && 'bg-primary text-primary-foreground font-bold',
+                    !isSelected && isTodayDate && 'bg-primary/20 text-primary font-semibold',
+                    !isSelected && !isTodayDate && dayOfWeek === 0 && 'text-rose',
+                    !isSelected && !isTodayDate && dayOfWeek === 6 && 'text-info',
+                    !isSelected && !isTodayDate && dayOfWeek !== 0 && dayOfWeek !== 6 && 'text-foreground')}>
                     {format(day, 'd')}
                   </span>
                   <div className="flex gap-0.5 mt-0.5 h-2 items-center">
@@ -252,58 +254,30 @@ const CalendarViewPage = () => {
           )}
 
           {selectedRecords.length === 0 && selectedEvents.length === 0 && (
-            <div className="space-y-3">
-              {/* 예시 일정 카드 */}
-              <div className="relative opacity-60 pointer-events-none">
-                <div className="absolute -top-2 left-3 z-10">
-                  <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">예시</span>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="w-full text-left"
+            >
+              <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-6 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/10 mx-auto mb-3">
+                  <Plus className="h-6 w-6 text-primary" />
                 </div>
-                <Card className="glass-card border-dashed border-muted-foreground/30">
-                  <CardContent className="flex items-center gap-3 p-3.5">
-                    <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', 'bg-sage-light')}>
-                      <RotateCcw className={cn('h-4 w-4', 'text-sage-dark')} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold">울쎄라 리프팅 추천일</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">90일 주기 · 청담 에스테틱 · D-15</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="relative opacity-60 pointer-events-none">
-                <Card className="glass-card border-dashed border-muted-foreground/30">
-                  <CardContent className="flex items-center gap-3 p-3.5">
-                    <div className={cn('flex h-10 w-10 shrink-0 items-center justify-center rounded-xl', 'bg-primary/10')}>
-                      <Stethoscope className={cn('h-4 w-4', 'text-primary')} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-semibold">보톡스 (턱)</p>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">강남 피부과</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/50 p-6 text-center">
-                <CalendarDays className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                <p className="text-sm font-semibold text-muted-foreground mb-1">이 날짜에 일정이 없어요</p>
-                <p className="text-xs text-muted-foreground/70 leading-relaxed">
-                  시술을 기록하고 주기를 등록하면<br />캘린더에 추천 일정이 자동으로 표시돼요
+                <p className="text-sm font-semibold text-foreground mb-1">이 날짜에 일정이 없어요</p>
+                <p className="text-xs text-muted-foreground leading-relaxed">
+                  탭하여 <span className="font-bold text-primary">{format(selectedDate, 'M월 d일')}</span>에 시술을 등록하세요
                 </p>
-                <div className="flex items-center justify-center gap-1.5 mt-4">
-                  <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
-                    <span className="text-[#E87461] text-lg font-bold">+</span>
-                  </span>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
-                  </p>
-                </div>
               </div>
-            </div>
+            </button>
           )}
         </div>
       </div>
+
+      <AddTreatmentModal
+        open={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSave={addRecord}
+        defaultDate={selectedDateStr}
+      />
     </div>
   );
 };
