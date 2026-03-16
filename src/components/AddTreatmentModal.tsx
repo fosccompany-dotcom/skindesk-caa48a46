@@ -838,8 +838,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   darkMode={false} />
               </div>
 
-              {/* 부위 선택 (비보톡스만 — 보톡스는 별도 단계에서 선택) */}
-              {!isBotox && (
+              {/* 부위 선택 (비보톡스/비필러만 — 별도 단계에서 선택) */}
+              {!isBotox && !isFiller && (
                 <div>
                   <label className="text-xs text-gray-400 block mb-1.5">부위</label>
                   <div className="flex gap-1.5 flex-wrap">
