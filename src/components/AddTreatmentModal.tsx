@@ -302,6 +302,7 @@ interface Props {
 // ─── 컴포넌트 ──────────────────────────────────────────────────────
 
 export default function AddTreatmentModal({ open, onClose, onSave, editRecord, onOpenParse }: Props) {
+  const { language } = useLanguage();
   const [step, setStep] = useState(1);
   const [catId, setCatId] = useState<string | null>(null);
   const [itemId, setItemId] = useState<string | null>(null);
@@ -313,11 +314,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [memo, setMemo] = useState('');
   const [bodyArea, setBodyArea] = useState('face');
   const [customBodyArea, setCustomBodyArea] = useState('');
-  // 시술권 선택 (package_uuid — 플로우 3)
   const [availPkgs, setAvailPkgs] = useState<{ id: string; name: string; remaining: number }[]>([]);
-  const [selectedPkgId, setSelectedPkgId] = useState<string>(''); // '' = 시술권 미사용
+  const [selectedPkgId, setSelectedPkgId] = useState<string>('');
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
   const [paymentAmount, setPaymentAmount] = useState<string>('');
+  const [customTreatmentName, setCustomTreatmentName] = useState('');
+
+  // ── DB categories ──
+  const [dbOptions, setDbOptions] = useState<any[]>([]);
+  const [dbLoading, setDbLoading] = useState(true);
 
   const BODY_AREA_OPTIONS_WITH_OTHER = [
     { value: 'face', label: '얼굴' },
