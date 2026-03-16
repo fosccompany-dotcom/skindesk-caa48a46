@@ -57,6 +57,7 @@ export type Database = {
           name_zh: string | null
           package_id: string | null
           sort_order: number | null
+          sub_type: string | null
         }
         Insert: {
           category: string
@@ -70,6 +71,7 @@ export type Database = {
           name_zh?: string | null
           package_id?: string | null
           sort_order?: number | null
+          sub_type?: string | null
         }
         Update: {
           category?: string
@@ -83,6 +85,7 @@ export type Database = {
           name_zh?: string | null
           package_id?: string | null
           sort_order?: number | null
+          sub_type?: string | null
         }
         Relationships: [
           {
