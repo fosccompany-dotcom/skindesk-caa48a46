@@ -318,9 +318,73 @@ const MyTreatmentHistory = () => {
 
       {/* Records by month */}
       {Object.keys(grouped).length === 0 ? (
-        <div className="text-center py-16">
-          <Stethoscope className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
-          <p className="text-sm text-muted-foreground">시술 내역이 없습니다</p>
+        <div className="space-y-3 mt-2">
+          {/* 예시 시술내역 카드 */}
+          <div className="relative opacity-60 pointer-events-none">
+            <div className="absolute -top-2 left-3 z-10">
+              <span className="bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">예시</span>
+            </div>
+            <Card className="border-dashed border-muted-foreground/30">
+              <CardContent className="p-0">
+                <button className="w-full flex items-center gap-3 p-3 text-left">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">울쎄라 리프팅</p>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full border bg-violet-100 text-violet-700 border-violet-200 font-medium">피하조직</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[11px] text-muted-foreground">3.05 (수)</span>
+                      <span className="text-[11px] text-muted-foreground">·</span>
+                      <span className="text-[11px] text-muted-foreground">청담 에스테틱</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs font-bold text-foreground">350,000원</span>
+                  </div>
+                </button>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="relative opacity-60 pointer-events-none">
+            <Card className="border-dashed border-muted-foreground/30">
+              <CardContent className="p-0">
+                <button className="w-full flex items-center gap-3 p-3 text-left">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm font-semibold text-foreground">보톡스 (턱)</p>
+                      <span className="text-[9px] px-1.5 py-0.5 rounded-full border bg-sky-100 text-sky-700 border-sky-200 font-medium">진피층</span>
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-[11px] text-muted-foreground">2.20 (목)</span>
+                      <span className="text-[11px] text-muted-foreground">·</span>
+                      <span className="text-[11px] text-muted-foreground">강남 피부과</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-xs font-bold text-foreground">120,000원</span>
+                  </div>
+                </button>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* 안내 문구 */}
+          <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/50 p-6 text-center">
+            <Stethoscope className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
+            <p className="text-sm font-semibold text-muted-foreground mb-1">아직 시술 내역이 없어요</p>
+            <p className="text-xs text-muted-foreground/70 leading-relaxed">
+              시술을 기록하면 부위별, 기간별로<br />내 관리 히스토리를 한눈에 볼 수 있어요
+            </p>
+            <div className="flex items-center justify-center gap-1.5 mt-4">
+              <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
+                <span className="text-[#E87461] text-lg font-bold">+</span>
+              </span>
+              <p className="text-xs font-medium text-muted-foreground">
+                우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
+              </p>
+            </div>
+          </div>
         </div>
       ) : (
         Object.entries(grouped).map(([month, recs]) => (
