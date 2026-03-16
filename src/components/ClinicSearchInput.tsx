@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Search, X, MapPin } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ClinicPlace {
   name: string;
@@ -24,8 +25,6 @@ interface Props {
   className?: string;
   darkMode?: boolean;
 }
-
-const KAKAO_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
 
 export default function ClinicSearchInput({ value, onChange, onSelectPlace, placeholder = '병원명 검색', className = '', darkMode = false }: Props) {
   const [query, setQuery] = useState(value);
