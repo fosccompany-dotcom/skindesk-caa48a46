@@ -405,11 +405,13 @@ const Packages = () => {
                 </div>
               </div>
             ) : (() => {
-              const chargeRecords = filteredPayments.filter(p => p.method === '포인트충전');
-              const treatmentRecords = filteredPayments.filter(p => p.method !== '포인트충전');
+              const chargeRecords = filteredPayments.filter(p => p.method === 'charge');
+              const treatmentRecords = filteredPayments.filter(p => p.method !== 'charge');
 
               const renderPayCard = (p: PaymentRecord) => {
-                const style = methodStyle[p.method] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
+                const normalizedMethod = normalizeMethodKey(p.method) || 'card';
+                const style = METHOD_STYLE[normalizedMethod] ?? { bg: 'bg-gray-100', text: 'text-gray-500' };
+                const methodLabel = getMethodLabel(normalizedMethod, language);
                 return (
                   <Card key={p.id} className="glass-card">
                     <CardContent className="p-3.5">
@@ -421,11 +423,11 @@ const Packages = () => {
                         </div>
                         <div className="flex items-start gap-1.5">
                           <div className="text-right shrink-0">
-                            <p className={`text-sm font-black ${p.method === '포인트충전' ? 'text-emerald-500' : ''}`}>
-                              {p.method === '포인트충전' ? '+' : '-'}{p.amount.toLocaleString()}원
+                            <p className={`text-sm font-black ${normalizedMethod === 'charge' ? 'text-emerald-500' : ''}`}>
+                              {normalizedMethod === 'charge' ? '+' : '-'}{p.amount.toLocaleString()}원
                             </p>
                             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${style.bg} ${style.text}`}>
-                              {p.method}
+                              {methodLabel}
                             </span>
                           </div>
                           <DropdownMenu>
