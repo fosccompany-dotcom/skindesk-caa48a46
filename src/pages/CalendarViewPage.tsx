@@ -3,7 +3,7 @@ import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star, Plus, ClipboardList, CalendarPlus, Clock, MapPin } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star, Plus, ClipboardList, CalendarPlus, Clock, MapPin, Pencil, Trash2, MoreVertical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -13,9 +13,25 @@ import AddTreatmentModal from '@/components/AddTreatmentModal';
 import AddReservationModal from '@/components/AddReservationModal';
 import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 import { useLoginGuard } from '@/hooks/useLoginGuard';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
   reminder:      { icon: Bell,         color: 'text-amber-600',  bg: 'bg-amber-50',     dotColor: 'bg-amber-400' },
@@ -25,7 +41,7 @@ const eventTypeConfig = {
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-function RecordCard({ r }: { r: TreatmentRecord }) {
+function RecordCard({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit?: () => void; onDelete?: () => void }) {
   return (
     <Card className="glass-card">
       <CardContent className="p-3.5">
@@ -37,9 +53,32 @@ function RecordCard({ r }: { r: TreatmentRecord }) {
             <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
             <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
           </div>
-          <div className="flex flex-col gap-1 items-end shrink-0">
-            {r.bodyArea && <BodyAreaBadge area={r.bodyArea as BodyArea} />}
-            {r.skinLayer && <SkinLayerBadge layer={r.skinLayer} />}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex flex-col gap-1 items-end">
+              {r.bodyArea && <BodyAreaBadge area={r.bodyArea as BodyArea} />}
+              {r.skinLayer && <SkinLayerBadge layer={r.skinLayer} />}
+            </div>
+            {(onEdit || onDelete) && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-1 rounded-lg hover:bg-accent/50 transition-colors">
+                    <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  {onEdit && (
+                    <DropdownMenuItem onClick={onEdit} className="gap-2 text-sm">
+                      <Pencil className="h-3.5 w-3.5" /> 수정
+                    </DropdownMenuItem>
+                  )}
+                  {onDelete && (
+                    <DropdownMenuItem onClick={onDelete} className="gap-2 text-sm text-destructive focus:text-destructive">
+                      <Trash2 className="h-3.5 w-3.5" /> 삭제
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
         {r.satisfaction && (
@@ -62,8 +101,19 @@ const CalendarViewPage = () => {
   const [showActionPicker, setShowActionPicker] = useState(false);
   const [showReservationModal, setShowReservationModal] = useState(false);
   const { cycles } = useCycles();
-  const { records, addRecord } = useRecords();
+  const { records, addRecord, deleteRecord } = useRecords();
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
+
+  // Delete confirmation
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'record' | 'reservation'; id: string; name: string } | null>(null);
+
+  // Edit reservation
+  const [editReservation, setEditReservation] = useState<any | null>(null);
+  const [editReservationOpen, setEditReservationOpen] = useState(false);
+
+  // Edit record
+  const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
+  const [editRecordOpen, setEditRecordOpen] = useState(false);
 
   // Fetch reservations from Supabase
   const [reservations, setReservations] = useState<any[]>([]);
@@ -157,6 +207,49 @@ const CalendarViewPage = () => {
   const goToPrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToToday = () => { setCurrentMonth(today); setSelectedDate(today); };
+
+  // Delete handlers
+  const handleConfirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      if (deleteTarget.type === 'reservation') {
+        const { error } = await supabase.from('reservations').delete().eq('id', deleteTarget.id);
+        if (error) throw error;
+        await fetchReservations();
+        toast.success('예약이 삭제되었어요');
+      } else {
+        await deleteRecord(deleteTarget.id);
+        toast.success('시술 기록이 삭제되었어요');
+      }
+    } catch (err: any) {
+      toast.error('삭제 실패: ' + (err.message || '알 수 없는 오류'));
+    }
+    setDeleteTarget(null);
+  };
+
+  // Edit reservation handler
+  const handleEditReservationSave = async () => {
+    if (!editReservation) return;
+    try {
+      const { error } = await supabase
+        .from('reservations')
+        .update({
+          date: editReservation.date,
+          time: editReservation.time,
+          clinic: editReservation.clinic,
+          treatment_name: editReservation.treatment_name,
+          memo: editReservation.memo,
+        })
+        .eq('id', editReservation.id);
+      if (error) throw error;
+      await fetchReservations();
+      setEditReservationOpen(false);
+      setEditReservation(null);
+      toast.success('예약이 수정되었어요');
+    } catch (err: any) {
+      toast.error('수정 실패: ' + (err.message || '알 수 없는 오류'));
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -265,6 +358,21 @@ const CalendarViewPage = () => {
                         )}
                       </div>
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1 rounded-lg hover:bg-accent/50 transition-colors shrink-0">
+                          <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-32">
+                        <DropdownMenuItem onClick={() => { setEditReservation({ ...r }); setEditReservationOpen(true); }} className="gap-2 text-sm">
+                          <Pencil className="h-3.5 w-3.5" /> 수정
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setDeleteTarget({ type: 'reservation', id: r.id, name: r.treatment_name })} className="gap-2 text-sm text-destructive focus:text-destructive">
+                          <Trash2 className="h-3.5 w-3.5" /> 삭제
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </CardContent>
                 </Card>
               ))}
@@ -276,7 +384,14 @@ const CalendarViewPage = () => {
               <p className="text-xs font-semibold text-[#C9A96E] flex items-center gap-1.5 px-1">
                 <Stethoscope size={12} /> 시술 기록 ({selectedRecords.length})
               </p>
-              {selectedRecords.map(r => <RecordCard key={r.id} r={r} />)}
+              {selectedRecords.map(r => (
+                <RecordCard
+                  key={r.id}
+                  r={r}
+                  onEdit={() => { setEditRecord(r); setEditRecordOpen(true); }}
+                  onDelete={() => setDeleteTarget({ type: 'record', id: r.id, name: r.treatmentName })}
+                />
+              ))}
             </div>
           )}
 
@@ -378,10 +493,11 @@ const CalendarViewPage = () => {
       </Sheet>
 
       <AddTreatmentModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        open={showAddModal || editRecordOpen}
+        onClose={() => { setShowAddModal(false); setEditRecordOpen(false); setEditRecord(null); }}
         onSave={addRecord}
-        defaultDate={selectedDateStr}
+        defaultDate={editRecord?.date || selectedDateStr}
+        editRecord={editRecord || undefined}
       />
 
       <AddReservationModal
@@ -396,6 +512,90 @@ const CalendarViewPage = () => {
         onClose={handleLoginClose}
         onLoginSuccess={handleLoginSuccess}
       />
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>삭제 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-semibold text-foreground">{deleteTarget?.name}</span>
+              {deleteTarget?.type === 'reservation' ? ' 예약을' : ' 시술 기록을'} 삭제하시겠어요?
+              <br />이 작업은 되돌릴 수 없습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Reservation Sheet */}
+      <Sheet open={editReservationOpen} onOpenChange={(v) => { if (!v) { setEditReservationOpen(false); setEditReservation(null); } }}>
+        <SheetContent side="bottom" className="rounded-t-3xl px-5 pb-8 pt-4 max-h-[80vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-base font-semibold flex items-center gap-2">
+              <Pencil className="h-4 w-4 text-info" /> 예약 수정
+            </SheetTitle>
+          </SheetHeader>
+          {editReservation && (
+            <div className="space-y-4 mt-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">날짜</label>
+                <input
+                  type="date"
+                  value={editReservation.date}
+                  onChange={(e) => setEditReservation({ ...editReservation, date: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">시간</label>
+                <input
+                  type="time"
+                  value={editReservation.time || ''}
+                  onChange={(e) => setEditReservation({ ...editReservation, time: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">병원</label>
+                <input
+                  value={editReservation.clinic}
+                  onChange={(e) => setEditReservation({ ...editReservation, clinic: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">시술명</label>
+                <input
+                  value={editReservation.treatment_name}
+                  onChange={(e) => setEditReservation({ ...editReservation, treatment_name: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">메모</label>
+                <textarea
+                  value={editReservation.memo || ''}
+                  onChange={(e) => setEditReservation({ ...editReservation, memo: e.target.value })}
+                  rows={2}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <button
+                onClick={handleEditReservationSave}
+                className="w-full rounded-xl bg-info text-info-foreground py-3 text-sm font-semibold hover:bg-info/90 transition-colors active:scale-[0.98]"
+              >
+                수정 완료
+              </button>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
