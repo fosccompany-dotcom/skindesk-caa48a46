@@ -7,7 +7,7 @@ import Index from "./pages/Index";
 import Points from "./pages/Points";
 import Packages from "./pages/Packages";
 import CalendarPage from "./pages/CalendarPage";
-import CalendarViewPage from "./pages/CalendarViewPage";
+
 import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
 import Cycles from "./pages/Cycles";
