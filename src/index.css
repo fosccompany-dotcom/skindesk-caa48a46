@@ -141,6 +141,14 @@
     user-select: text;
     -webkit-user-select: text;
   }
+
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  *::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @layer utilities {
