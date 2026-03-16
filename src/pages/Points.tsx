@@ -244,15 +244,15 @@ const Points = () => {
               <Card className="glass-card">
                 <CardContent className="p-4">
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    <div className="bg-emerald-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-emerald-600 mb-1">총 적립</p>
-                      <p className="text-base font-bold text-emerald-700">
+                    <div className="bg-sage-light rounded-xl p-3 text-center">
+                      <p className="text-xs text-sage-dark mb-1">총 적립</p>
+                      <p className="text-base font-bold text-sage-dark">
                         {mockPoints.filter((t: any) => t.amount > 0).reduce((s: number, t: any) => s + t.amount, 0).toLocaleString()}원
                       </p>
                     </div>
-                    <div className="bg-rose-50 rounded-xl p-3 text-center">
-                      <p className="text-xs text-rose-500 mb-1">총 사용</p>
-                      <p className="text-base font-bold text-rose-600">
+                    <div className="bg-rose-light rounded-xl p-3 text-center">
+                      <p className="text-xs text-rose mb-1">총 사용</p>
+                      <p className="text-base font-bold text-rose">
                         {Math.abs(mockPoints.filter((t: any) => t.amount < 0).reduce((s: number, t: any) => s + t.amount, 0)).toLocaleString()}원
                       </p>
                     </div>
