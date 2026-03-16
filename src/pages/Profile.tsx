@@ -268,16 +268,6 @@ const Profile = () => {
   const [expandedRecord, setExpandedRecord] = useState<string | null>(null);
   const [editingMemo, setEditingMemo] = useState<Record<string, string>>({});
 
-  // 언어 드롭다운 외부 클릭 닫기
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
-        setLangOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
 
   const sortedRecords = useMemo(() =>
   [...records].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()),
