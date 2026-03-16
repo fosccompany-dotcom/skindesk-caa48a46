@@ -47,6 +47,7 @@ const App = () => (
                   <Routes>
                     {/* 공개 라우트 */}
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/farewell" element={<Farewell />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
 
