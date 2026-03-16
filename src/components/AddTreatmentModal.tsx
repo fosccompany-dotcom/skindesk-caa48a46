@@ -519,7 +519,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 {selectedDrug ? `💉 ${selectedDrug.name}` : '💉 보톡스'}
               </p>
               <div className="grid grid-cols-3 gap-2">
-                {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
+               {(isBotox ? BOTOX_AREA_OPTIONS : BODY_AREA_OPTIONS_WITH_OTHER).map(opt => (
                   <button key={opt.value}
                     onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
                     className={cn(
