@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ChevronRight, ChevronLeft, Check, X, Clock, CalendarDays, Stethoscope, FileText } from 'lucide-react';
+import { ChevronRight, ChevronLeft, Check, X, Clock, CalendarDays, Stethoscope, FileText, Plus, Trash2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
 import { supabase } from '@/integrations/supabase/client';
@@ -79,9 +79,9 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const [clinicDistrict, setClinicDistrict] = useState<string | null>(null);
   const [clinicAddress, setClinicAddress] = useState<string | null>(null);
 
-  // Step 3: Treatment
+  // Step 3: Treatments (multiple)
+  const [treatments, setTreatments] = useState<string[]>([]);
   const [catId, setCatId] = useState<string | null>(null);
-  const [treatmentName, setTreatmentName] = useState('');
   const [customTreatmentName, setCustomTreatmentName] = useState('');
 
   // Step 4: Memo
@@ -140,7 +140,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const reset = () => {
     setStep(1); setDate(defaultDate || new Date().toISOString().split('T')[0]); setTime(null);
     setClinic(''); setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
-    setCatId(null); setTreatmentName(''); setCustomTreatmentName(''); setMemo('');
+    setCatId(null); setTreatments([]); setCustomTreatmentName(''); setMemo('');
   };
 
   const handleClose = () => { reset(); onClose(); };
@@ -156,22 +156,39 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
     switch (step) {
       case 1: return !!date && !!time;
       case 2: return clinic.trim().length > 0;
-      case 3: return treatmentName.trim().length > 0 || customTreatmentName.trim().length > 0;
+      case 3: return treatments.length > 0;
       case 4: return true;
       default: return false;
     }
   };
 
+  const addTreatment = (name: string) => {
+    if (name && !treatments.includes(name)) {
+      setTreatments(prev => [...prev, name]);
+    }
+  };
+
+  const removeTreatment = (name: string) => {
+    setTreatments(prev => prev.filter(t => t !== name));
+  };
+
+  const addCustomTreatment = () => {
+    const trimmed = customTreatmentName.trim();
+    if (trimmed && !treatments.includes(trimmed)) {
+      setTreatments(prev => [...prev, trimmed]);
+      setCustomTreatmentName('');
+    }
+  };
+
   const handleSave = async () => {
-    const finalTreatment = treatmentName || customTreatmentName;
-    if (!finalTreatment.trim()) return;
+    if (treatments.length === 0) return;
 
     setSaving(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) { toast.error('로그인이 필요합니다'); return; }
 
-      const { error } = await supabase.from('reservations').insert({
+      const rows = treatments.map(t => ({
         user_id: user.id,
         date,
         time,
@@ -179,12 +196,14 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
         clinic_kakao_id: clinicKakaoId,
         clinic_district: clinicDistrict,
         clinic_address: clinicAddress,
-        treatment_name: finalTreatment,
+        treatment_name: t,
         memo: memo || null,
-      });
+      }));
+
+      const { error } = await supabase.from('reservations').insert(rows);
 
       if (error) throw error;
-      toast.success('예약 일정이 등록되었어요 📅');
+      toast.success(`예약 일정 ${treatments.length}건이 등록되었어요 📅`);
       handleClose();
       onSaved?.();
     } catch (err: any) {
@@ -283,73 +302,108 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
             </div>
           )}
 
-          {/* Step 3: Treatment selection */}
-          {step === 3 && !catId && (
+          {/* Step 3: Treatment selection (multi) */}
+          {step === 3 && (
             <div>
-              <label className="text-sm font-semibold text-foreground mb-3 block">시술 카테고리 선택</label>
-              {dbLoading ? (
-                <div className="grid grid-cols-3 gap-2">
-                  {Array.from({ length: 9 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
-                </div>
-              ) : (
-                <div className="grid grid-cols-3 gap-2">
-                  {displayCategories.map(cat => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setCatId(cat.id)}
-                      className={cn(
-                        'flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3 transition-all active:scale-95',
-                        cat.color
-                      )}
-                    >
-                      <span className="text-xl">{cat.emoji}</span>
-                      <span className="text-[11px] font-medium leading-tight text-center">{cat.label}</span>
-                    </button>
-                  ))}
+              {/* Selected treatments list */}
+              {treatments.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">선택된 시술 ({treatments.length}건)</p>
+                  <div className="flex flex-wrap gap-2">
+                    {treatments.map(t => (
+                      <span key={t} className="inline-flex items-center gap-1.5 rounded-full bg-info/10 border border-info/30 px-3 py-1.5 text-xs font-medium text-info">
+                        {t}
+                        <button onClick={() => removeTreatment(t)} className="hover:text-destructive transition-colors">
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
                 </div>
               )}
-            </div>
-          )}
 
-          {step === 3 && catId && selectedCat && (
-            <div>
-              <button onClick={() => { setCatId(null); setTreatmentName(''); }} className="text-xs text-info mb-3 flex items-center gap-1">
-                <ChevronLeft className="h-3 w-3" /> 카테고리로 돌아가기
-              </button>
-              <label className="text-sm font-semibold text-foreground mb-3 block">
-                {selectedCat.emoji} {selectedCat.label}
-              </label>
-              <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
-                {selectedCat.items.map(item => {
-                  if (item.id === '__custom') {
-                    return (
-                      <div key="__custom" className="mt-2">
-                        <input
-                          placeholder="시술명 직접 입력"
-                          value={customTreatmentName}
-                          onChange={e => { setCustomTreatmentName(e.target.value); setTreatmentName(''); }}
-                          className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
-                        />
-                      </div>
-                    );
-                  }
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => { setTreatmentName(item.name); setCustomTreatmentName(''); }}
-                      className={cn(
-                        'w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-all active:scale-[0.98]',
-                        treatmentName === item.name
-                          ? 'bg-info/10 border-info text-info font-semibold'
-                          : 'border-border bg-card hover:bg-accent/50'
-                      )}
-                    >
-                      <span>{item.name}</span>
-                      {treatmentName === item.name && <Check className="h-4 w-4" />}
-                    </button>
-                  );
-                })}
-              </div>
+              {!catId && (
+                <>
+                  <label className="text-sm font-semibold text-foreground mb-3 block">
+                    시술 카테고리 선택
+                    <span className="text-xs font-normal text-muted-foreground ml-2">여러 개 추가 가능</span>
+                  </label>
+                  {dbLoading ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      {Array.from({ length: 9 }).map((_, i) => <Skeleton key={i} className="h-20 rounded-xl" />)}
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-3 gap-2">
+                      {displayCategories.map(cat => (
+                        <button
+                          key={cat.id}
+                          onClick={() => setCatId(cat.id)}
+                          className={cn(
+                            'flex flex-col items-center justify-center gap-1.5 rounded-xl border p-3 transition-all active:scale-95',
+                            cat.color
+                          )}
+                        >
+                          <span className="text-xl">{cat.emoji}</span>
+                          <span className="text-[11px] font-medium leading-tight text-center">{cat.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {catId && selectedCat && (
+                <div>
+                  <button onClick={() => setCatId(null)} className="text-xs text-info mb-3 flex items-center gap-1">
+                    <ChevronLeft className="h-3 w-3" /> 카테고리로 돌아가기
+                  </button>
+                  <label className="text-sm font-semibold text-foreground mb-3 block">
+                    {selectedCat.emoji} {selectedCat.label}
+                  </label>
+                  <div className="space-y-1.5 max-h-[250px] overflow-y-auto">
+                    {selectedCat.items.map(item => {
+                      if (item.id === '__custom') {
+                        return (
+                          <div key="__custom" className="mt-2 flex gap-2">
+                            <input
+                              placeholder="시술명 직접 입력"
+                              value={customTreatmentName}
+                              onChange={e => setCustomTreatmentName(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addCustomTreatment(); } }}
+                              className="flex-1 rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                            />
+                            <Button
+                              size="icon"
+                              variant="outline"
+                              onClick={addCustomTreatment}
+                              disabled={!customTreatmentName.trim()}
+                              className="rounded-xl shrink-0"
+                            >
+                              <Plus className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        );
+                      }
+                      const isSelected = treatments.includes(item.name);
+                      return (
+                        <button
+                          key={item.id}
+                          onClick={() => isSelected ? removeTreatment(item.name) : addTreatment(item.name)}
+                          className={cn(
+                            'w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-all active:scale-[0.98]',
+                            isSelected
+                              ? 'bg-info/10 border-info text-info font-semibold'
+                              : 'border-border bg-card hover:bg-accent/50'
+                          )}
+                        >
+                          <span>{item.name}</span>
+                          {isSelected && <Check className="h-4 w-4" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -363,7 +417,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                 value={memo}
                 onChange={e => setMemo(e.target.value)}
                 placeholder="예약 관련 메모를 남겨보세요"
-                rows={4}
+                rows={3}
                 className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-info/40"
               />
 
@@ -378,9 +432,13 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                   <Stethoscope className="h-3.5 w-3.5 text-info shrink-0" />
                   <span>{clinic}</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className="text-info shrink-0">💉</span>
-                  <span>{treatmentName || customTreatmentName}</span>
+                <div className="flex items-start gap-2 text-sm">
+                  <span className="text-info shrink-0 mt-0.5">💉</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {treatments.map(t => (
+                      <span key={t} className="inline-block rounded-full bg-info/10 px-2.5 py-0.5 text-xs font-medium text-info">{t}</span>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
