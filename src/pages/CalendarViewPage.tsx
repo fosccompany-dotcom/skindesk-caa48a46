@@ -41,7 +41,7 @@ const eventTypeConfig = {
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
-function RecordCard({ r }: { r: TreatmentRecord }) {
+function RecordCard({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit?: () => void; onDelete?: () => void }) {
   return (
     <Card className="glass-card">
       <CardContent className="p-3.5">
@@ -53,9 +53,32 @@ function RecordCard({ r }: { r: TreatmentRecord }) {
             <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
             <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
           </div>
-          <div className="flex flex-col gap-1 items-end shrink-0">
-            {r.bodyArea && <BodyAreaBadge area={r.bodyArea as BodyArea} />}
-            {r.skinLayer && <SkinLayerBadge layer={r.skinLayer} />}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex flex-col gap-1 items-end">
+              {r.bodyArea && <BodyAreaBadge area={r.bodyArea as BodyArea} />}
+              {r.skinLayer && <SkinLayerBadge layer={r.skinLayer} />}
+            </div>
+            {(onEdit || onDelete) && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="p-1 rounded-lg hover:bg-accent/50 transition-colors">
+                    <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-32">
+                  {onEdit && (
+                    <DropdownMenuItem onClick={onEdit} className="gap-2 text-sm">
+                      <Pencil className="h-3.5 w-3.5" /> 수정
+                    </DropdownMenuItem>
+                  )}
+                  {onDelete && (
+                    <DropdownMenuItem onClick={onDelete} className="gap-2 text-sm text-destructive focus:text-destructive">
+                      <Trash2 className="h-3.5 w-3.5" /> 삭제
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
           </div>
         </div>
         {r.satisfaction && (
@@ -78,8 +101,19 @@ const CalendarViewPage = () => {
   const [showActionPicker, setShowActionPicker] = useState(false);
   const [showReservationModal, setShowReservationModal] = useState(false);
   const { cycles } = useCycles();
-  const { records, addRecord } = useRecords();
+  const { records, addRecord, deleteRecord } = useRecords();
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
+
+  // Delete confirmation
+  const [deleteTarget, setDeleteTarget] = useState<{ type: 'record' | 'reservation'; id: string; name: string } | null>(null);
+
+  // Edit reservation
+  const [editReservation, setEditReservation] = useState<any | null>(null);
+  const [editReservationOpen, setEditReservationOpen] = useState(false);
+
+  // Edit record
+  const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
+  const [editRecordOpen, setEditRecordOpen] = useState(false);
 
   // Fetch reservations from Supabase
   const [reservations, setReservations] = useState<any[]>([]);
