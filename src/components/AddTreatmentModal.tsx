@@ -263,14 +263,27 @@ const CATEGORIES: Category[] = [
   },
 ];
 
-// ─── Category metadata (emoji/color per DB category name) ───
+// ─── Category metadata (emoji/color) ───
+// Covers both DB category names and fallback hardcoded IDs
 const CATEGORY_META: Record<string, { emoji: string; color: string }> = {
-  '리프팅·보톡스':   { emoji: '✨', color: 'border-purple-300 bg-purple-50' },
-  '주사 관리':       { emoji: '💉', color: 'border-cyan-300 bg-cyan-50' },
-  '피부 관리':       { emoji: '🌿', color: 'border-green-300 bg-green-50' },
-  '여드름·흉터':     { emoji: '🔬', color: 'border-rose-300 bg-rose-50' },
-  '탈모·두피':       { emoji: '🌱', color: 'border-teal-300 bg-teal-50' },
-  '기타':            { emoji: '💊', color: 'border-gray-300 bg-gray-50' },
+  // DB categories
+  '리프팅·보톡스':     { emoji: '✨', color: 'border-purple-300 bg-purple-50' },
+  '주사 관리':         { emoji: '💉', color: 'border-cyan-300 bg-cyan-50' },
+  '피부 관리':         { emoji: '🌿', color: 'border-green-300 bg-green-50' },
+  '여드름·흉터':       { emoji: '🔬', color: 'border-rose-300 bg-rose-50' },
+  '탈모·두피':         { emoji: '🌱', color: 'border-teal-300 bg-teal-50' },
+  '기타':              { emoji: '💊', color: 'border-gray-300 bg-gray-50' },
+  // Fallback hardcoded category IDs
+  'lifting':           { emoji: '✨', color: 'border-purple-300 bg-purple-50' },
+  'botox':             { emoji: '💉', color: 'border-blue-300 bg-blue-50' },
+  'filler':            { emoji: '🌙', color: 'border-indigo-300 bg-indigo-50' },
+  'booster':           { emoji: '💧', color: 'border-cyan-300 bg-cyan-50' },
+  'skincare':          { emoji: '🌿', color: 'border-green-300 bg-green-50' },
+  'whitening':         { emoji: '⚡', color: 'border-amber-300 bg-amber-50' },
+  'acne':              { emoji: '🔬', color: 'border-rose-300 bg-rose-50' },
+  'fat':               { emoji: '🔥', color: 'border-orange-300 bg-orange-50' },
+  'hair_removal':      { emoji: '🪄', color: 'border-slate-300 bg-slate-50' },
+  'iv':                { emoji: '🌱', color: 'border-teal-300 bg-teal-50' },
 };
 const DEFAULT_CAT_META = { emoji: '💊', color: 'border-gray-300 bg-gray-50' };
 
