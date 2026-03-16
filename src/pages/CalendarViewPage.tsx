@@ -55,7 +55,7 @@ function RecordCard({ r }: { r: TreatmentRecord }) {
 }
 
 const CalendarViewPage = () => {
-  const today = new Date('2026-03-08');
+  const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -64,6 +64,30 @@ const CalendarViewPage = () => {
   const { cycles } = useCycles();
   const { records, addRecord } = useRecords();
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
+
+  // Fetch reservations from Supabase
+  const [reservations, setReservations] = useState<any[]>([]);
+  const fetchReservations = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('reservations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('date', { ascending: true });
+    if (!error && data) setReservations(data);
+  }, []);
+
+  useEffect(() => { fetchReservations(); }, [fetchReservations]);
+
+  const reservationsByDate = useMemo(() => {
+    const map: Record<string, any[]> = {};
+    reservations.forEach(r => {
+      if (!map[r.date]) map[r.date] = [];
+      map[r.date].push(r);
+    });
+    return map;
+  }, [reservations]);
 
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
