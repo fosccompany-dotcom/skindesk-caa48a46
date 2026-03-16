@@ -271,6 +271,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [catId, setCatId] = useState<string | null>(null);
   const [itemId, setItemId] = useState<string | null>(null);
   const [shots, setShots] = useState<number | null>(null);
+  const [drugId, setDrugId] = useState<string | null>(null);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [clinic, setClinic] = useState('밴스 미금');
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
@@ -300,7 +301,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   ];
 
   const reset = () => {
-    setStep(1); setCatId(null); setItemId(null); setShots(null);
+    setStep(1); setCatId(null); setItemId(null); setShots(null); setDrugId(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
     setBodyArea('face'); setCustomBodyArea('');
@@ -312,10 +313,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const selectedCat = CATEGORIES.find(c => c.id === catId);
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
+  const needsDrug = !!(selectedItem?.drugOptions?.length);
 
-  // 총 단계: 1(카테고리) → 2(시술) → 3(샷수, 해당시) → 마지막(상세)
-  const totalSteps = needsShots ? 4 : 3;
-  const isDetailStep = needsShots ? step === 4 : step === 3;
+  // 동적 단계 계산: 1(카테고리) → 2(시술) → [3:약물] → [N:샷수] → 마지막(상세)
+  const extraSteps = (needsDrug ? 1 : 0) + (needsShots ? 1 : 0);
+  const totalSteps = 3 + extraSteps;
+  const drugStep = needsDrug ? 3 : -1;
+  const shotsStep = needsShots ? (needsDrug ? 4 : 3) : -1;
+  const detailStep = 3 + extraSteps;
+  const isDetailStep = step === detailStep;
 
   // 상세 단계 진입 시 사용 가능한 시술권 조회
   useEffect(() => {
