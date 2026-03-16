@@ -380,8 +380,8 @@ const Packages = () => {
                           <p className="text-[11px] text-muted-foreground mt-0.5">2025.03.01 · 강남 피부과</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className="text-sm font-black text-emerald-500">+500,000원</p>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-emerald-50 text-emerald-600">포인트충전</span>
+                          <p className="text-sm font-black text-sage-dark">+500,000원</p>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium bg-sage-light text-sage-dark">포인트충전</span>
                         </div>
                       </div>
                     </CardContent>
