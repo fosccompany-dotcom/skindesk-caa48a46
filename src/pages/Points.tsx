@@ -331,10 +331,10 @@ const Points = () => {
                                 {isVance ? '밴스' : '타의원'}
                               </span>
                             </span>
-                            <span className="text-gray-800 font-semibold">{amount.toLocaleString()}원</span>
+                            <span className="text-foreground font-semibold">{amount.toLocaleString()}원</span>
                           </div>
-                          <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-                            <div className={`h-full rounded-full transition-all ${isVance ? 'bg-amber-400' : 'bg-purple-400'}`} style={{ width: `${pct}%` }} />
+                          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                            <div className={`h-full rounded-full transition-all ${isVance ? 'bg-amber' : 'bg-secondary'}`} style={{ width: `${pct}%` }} />
                           </div>
                         </div>
                       ))}
