@@ -532,7 +532,7 @@ export const mockPaymentRecords: PaymentRecord[] = [
     clinic: '필로의원 정자',
     treatmentName: '티타늄 60kj + 슈링크 유니버스',
     amount: 0,
-    method: '서비스',
+    method: 'service',
     clinicType: '타의원',
     memo: '소개 적립금 사용 (서비스 시술)',
   },
