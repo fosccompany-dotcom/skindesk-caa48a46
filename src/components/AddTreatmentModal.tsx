@@ -568,16 +568,21 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           )}
 
           {/* ── 상세 입력 (마지막 단계) ── */}
-          {isDetailStep && selectedItem && (
+          {isDetailStep && (isBotox || selectedItem) && (
             <div className="space-y-4">
               {/* 선택 요약 */}
               <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
                 <div className="text-[11px] text-gray-400 mb-1">등록할 시술</div>
                 <div className="text-sm font-semibold text-[#C9A96E]">{getTreatmentName()}</div>
                 <div className="mt-1.5">
-                  <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[selectedItem.skinLayer])}>
-                    {SKIN_LAYER_LABEL[selectedItem.skinLayer]}
-                  </span>
+                  {(() => {
+                    const sl = isBotox ? getBotoxSkinLayer() : selectedItem!.skinLayer;
+                    return (
+                      <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[sl])}>
+                        {SKIN_LAYER_LABEL[sl]}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -599,33 +604,35 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   darkMode={false} />
               </div>
 
-              {/* 부위 선택 */}
-              <div>
-                <label className="text-xs text-gray-400 block mb-1.5">부위</label>
-                <div className="flex gap-1.5 flex-wrap">
-                  {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
-                    <button key={opt.value}
-                      onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
-                      className={cn(
-                        'px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                        bodyArea === opt.value
-                          ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
-                          : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'
-                      )}>
-                      {opt.label}
-                    </button>
-                  ))}
+              {/* 부위 선택 (비보톡스만 — 보톡스는 별도 단계에서 선택) */}
+              {!isBotox && (
+                <div>
+                  <label className="text-xs text-gray-400 block mb-1.5">부위</label>
+                  <div className="flex gap-1.5 flex-wrap">
+                    {BODY_AREA_OPTIONS_WITH_OTHER.map(opt => (
+                      <button key={opt.value}
+                        onClick={() => { setBodyArea(opt.value); if (opt.value !== '__other') setCustomBodyArea(''); }}
+                        className={cn(
+                          'px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
+                          bodyArea === opt.value
+                            ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                            : 'border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300'
+                        )}>
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                  {bodyArea === '__other' && (
+                    <input
+                      type="text"
+                      value={customBodyArea}
+                      onChange={e => setCustomBodyArea(e.target.value)}
+                      placeholder="부위를 입력하세요"
+                      className="w-full mt-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                    />
+                  )}
                 </div>
-                {bodyArea === '__other' && (
-                  <input
-                    type="text"
-                    value={customBodyArea}
-                    onChange={e => setCustomBodyArea(e.target.value)}
-                    placeholder="부위를 입력하세요"
-                    className="w-full mt-2 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
-                  />
-                )}
-              </div>
+              )}
 
               {/* 시술권 연결 (보유 시술권이 있을 때만 표시) */}
               {availPkgs.length > 0 && (
