@@ -264,6 +264,30 @@ const Index = () => {
         <div className="absolute inset-0 bg-black/50" style={{ clipPath: 'inset(0)' }} />
         <div className="relative px-5 pt-10 pb-5 space-y-4">
 
+          {/* Language selector */}
+          <div className="absolute top-3 right-4 z-20" ref={langDropdownRef}>
+            <button
+              onClick={() => setLangOpen((prev) => !prev)}
+              className="h-8 w-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
+              <Globe className="h-4 w-4 text-white/80" />
+            </button>
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
+                {(['ko', 'en', 'zh'] as Language[]).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => { setLanguage(lang); setLangOpen(false); }}
+                    className={cn(
+                      'w-full text-left px-4 py-2.5 text-xs font-medium transition-colors',
+                      language === lang ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+                    )}>
+                    {LANGUAGE_LABELS[lang]}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
           {/* Row 1: Avatar + Nickname's Bloom Log */}
           <div className="flex items-center gap-3">
             <Popover>
