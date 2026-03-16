@@ -57,6 +57,7 @@ const CalendarViewPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showActionPicker, setShowActionPicker] = useState(false);
+  const [showReservationModal, setShowReservationModal] = useState(false);
   const { cycles } = useCycles();
   const { records, addRecord } = useRecords();
 
