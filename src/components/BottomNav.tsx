@@ -16,7 +16,7 @@ const BottomNav = () => {
   const [loginSheetOpen, setLoginSheetOpen] = useState(false);
   const [pendingPath, setPendingPath] = useState<string | null>(null);
 
-  if (['/login', '/signup'].includes(location.pathname)) return null;
+  if (['/signup'].includes(location.pathname)) return null;
 
   const navItems = [
     { path: '/', icon: Home, label: t('nav_home') },

@@ -45,7 +45,6 @@ const App = () => (
                 <div className="app-container min-h-screen bg-background relative">
                   <Routes>
                     {/* 공개 라우트 */}
-                    <Route path="/login"  element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />

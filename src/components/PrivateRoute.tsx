@@ -1,12 +1,14 @@
-import { Navigate } from 'react-router-dom';
+import { useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
+import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 
 const isPreview =
   window.location.hostname.includes('preview') ||
-  window.location.hostname.includes('lovableproject.com') 
+  window.location.hostname.includes('lovableproject.com');
 
 export function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
+  const [sheetOpen, setSheetOpen] = useState(true);
 
   // Preview 환경에서는 인증 없이 통과
   if (isPreview) {
@@ -22,7 +24,15 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return (
+      <>
+        {children}
+        <LoginRequiredSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+        />
+      </>
+    );
   }
 
   return <>{children}</>;
