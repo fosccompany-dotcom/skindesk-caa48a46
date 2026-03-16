@@ -140,7 +140,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const reset = () => {
     setStep(1); setDate(defaultDate || new Date().toISOString().split('T')[0]); setTime(null);
     setClinic(''); setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
-    setCatId(null); setTreatmentName(''); setCustomTreatmentName(''); setMemo('');
+    setCatId(null); setTreatments([]); setCustomTreatmentName(''); setMemo('');
   };
 
   const handleClose = () => { reset(); onClose(); };
