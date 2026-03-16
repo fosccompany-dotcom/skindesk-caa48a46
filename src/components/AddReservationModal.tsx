@@ -79,9 +79,9 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const [clinicDistrict, setClinicDistrict] = useState<string | null>(null);
   const [clinicAddress, setClinicAddress] = useState<string | null>(null);
 
-  // Step 3: Treatment
+  // Step 3: Treatments (multiple)
+  const [treatments, setTreatments] = useState<string[]>([]);
   const [catId, setCatId] = useState<string | null>(null);
-  const [treatmentName, setTreatmentName] = useState('');
   const [customTreatmentName, setCustomTreatmentName] = useState('');
 
   // Step 4: Memo
