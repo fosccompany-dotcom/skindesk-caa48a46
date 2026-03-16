@@ -614,7 +614,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           <div className="flex gap-1 mt-2.5">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <div key={i} className={cn('h-0.5 flex-1 rounded-full transition-all',
-                i < step ? 'bg-[#C9A96E]' : 'bg-gray-200')} />
+                i < step ? 'bg-amber' : 'bg-muted')} />
             ))}
           </div>
         </DialogHeader>
