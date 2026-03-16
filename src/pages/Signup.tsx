@@ -185,7 +185,7 @@ const Signup = () => {
         <div className="text-center">
           <p className="text-sm text-muted-foreground">
             {t('auth_has_account')}{' '}
-            <button className="text-primary font-semibold" onClick={() => navigate('/login')}>
+            <button className="text-primary font-semibold" onClick={() => navigate('/')}>
               {t('login')}
             </button>
           </p>
