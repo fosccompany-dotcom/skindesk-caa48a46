@@ -552,7 +552,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
-    const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
+    const resolvedBodyArea = isFiller
+      ? (fillerAreaId === '__custom' ? (customFillerArea.trim() || 'face') : (selectedFillerArea ? getLocalizedName(selectedFillerArea) : 'face'))
+      : bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
     const skinLayer = isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : (selectedItem?.skinLayer || 'dermis');
     onSave({
       date,
