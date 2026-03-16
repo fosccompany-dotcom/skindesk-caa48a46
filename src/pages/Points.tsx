@@ -39,11 +39,11 @@ const pointTypeConfig: Record<PointType, { icon: ElementType; label: string; col
 
 // ── 결제수단 배지 ─────────────────────────────────────────────────────
 const methodStyle: Record<PaymentMethod, { bg: string; text: string; label: string }> = {
-  '포인트충전': { bg: 'bg-amber-50',  text: 'text-amber-600',  label: '포인트충전' },
-  '시술결제':   { bg: 'bg-blue-50',   text: 'text-blue-600',   label: '시술결제' },
-  '카드':       { bg: 'bg-sky-50',    text: 'text-sky-600',    label: '카드' },
-  '현금':       { bg: 'bg-green-50',  text: 'text-green-600',  label: '현금' },
-  '서비스':     { bg: 'bg-gray-100',  text: 'text-gray-500',   label: '서비스' },
+  '포인트충전': { bg: 'bg-amber-light',  text: 'text-amber',  label: '포인트충전' },
+  '시술결제':   { bg: 'bg-info-light',   text: 'text-info',   label: '시술결제' },
+  '카드':       { bg: 'bg-sage-light',    text: 'text-sage',    label: '카드' },
+  '현금':       { bg: 'bg-sage-light',  text: 'text-sage-dark',  label: '현금' },
+  '서비스':     { bg: 'bg-muted',  text: 'text-muted-foreground',   label: '서비스' },
 };
 
 const clinicTypeStyle: Record<ClinicType, { bg: string; text: string }> = {
