@@ -511,6 +511,8 @@ const Index = () => {
                 <ChevronRight size={16} className="text-muted-foreground" />
               </button>
             </div>
+
+            <div className="grid grid-cols-7 mb-1">
               {WEEKDAYS.map((d) =>
               <div key={d} className="text-center text-[10px] text-muted-foreground font-medium py-1">{d}</div>
               )}
