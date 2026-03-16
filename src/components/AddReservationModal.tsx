@@ -156,9 +156,27 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
     switch (step) {
       case 1: return !!date && !!time;
       case 2: return clinic.trim().length > 0;
-      case 3: return treatmentName.trim().length > 0 || customTreatmentName.trim().length > 0;
+      case 3: return treatments.length > 0;
       case 4: return true;
       default: return false;
+    }
+  };
+
+  const addTreatment = (name: string) => {
+    if (name && !treatments.includes(name)) {
+      setTreatments(prev => [...prev, name]);
+    }
+  };
+
+  const removeTreatment = (name: string) => {
+    setTreatments(prev => prev.filter(t => t !== name));
+  };
+
+  const addCustomTreatment = () => {
+    const trimmed = customTreatmentName.trim();
+    if (trimmed && !treatments.includes(trimmed)) {
+      setTreatments(prev => [...prev, trimmed]);
+      setCustomTreatmentName('');
     }
   };
 
