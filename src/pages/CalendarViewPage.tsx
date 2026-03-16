@@ -1,9 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star, Plus, ClipboardList, CalendarPlus } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, Stethoscope, Star, Plus, ClipboardList, CalendarPlus, Clock, MapPin } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -15,6 +15,7 @@ import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 import { useLoginGuard } from '@/hooks/useLoginGuard';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { toast } from 'sonner';
+import { supabase } from '@/integrations/supabase/client';
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
   reminder:      { icon: Bell,         color: 'text-amber-600',  bg: 'bg-amber-50',     dotColor: 'bg-amber-400' },
@@ -54,7 +55,7 @@ function RecordCard({ r }: { r: TreatmentRecord }) {
 }
 
 const CalendarViewPage = () => {
-  const today = new Date('2026-03-08');
+  const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -63,6 +64,30 @@ const CalendarViewPage = () => {
   const { cycles } = useCycles();
   const { records, addRecord } = useRecords();
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
+
+  // Fetch reservations from Supabase
+  const [reservations, setReservations] = useState<any[]>([]);
+  const fetchReservations = useCallback(async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    const { data, error } = await supabase
+      .from('reservations')
+      .select('*')
+      .eq('user_id', user.id)
+      .order('date', { ascending: true });
+    if (!error && data) setReservations(data);
+  }, []);
+
+  useEffect(() => { fetchReservations(); }, [fetchReservations]);
+
+  const reservationsByDate = useMemo(() => {
+    const map: Record<string, any[]> = {};
+    reservations.forEach(r => {
+      if (!map[r.date]) map[r.date] = [];
+      map[r.date].push(r);
+    });
+    return map;
+  }, [reservations]);
 
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
@@ -127,6 +152,7 @@ const CalendarViewPage = () => {
   const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
   const selectedEvents = eventsByDate[selectedDateStr] || [];
   const selectedRecords = recordsByDate[selectedDateStr] || [];
+  const selectedReservations = reservationsByDate[selectedDateStr] || [];
 
   const goToPrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
@@ -201,6 +227,7 @@ const CalendarViewPage = () => {
                       return <div key={i} className={cn('w-1.5 h-1.5 rounded-full', config.dotColor)} />;
                     })}
                     {hasRec && <div className="w-1.5 h-1.5 rounded-full bg-[#C9A96E]" />}
+                    {(reservationsByDate[dateStr]?.length || 0) > 0 && <div className="w-1.5 h-1.5 rounded-full bg-info" />}
                   </div>
                 </button>
               );
@@ -213,6 +240,36 @@ const CalendarViewPage = () => {
             <CalendarDays className="h-3.5 w-3.5 text-info" />
             {format(selectedDate, 'M월 d일 EEEE', { locale: ko })}
           </h2>
+
+          {selectedReservations.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-xs font-semibold text-info flex items-center gap-1.5 px-1">
+                <CalendarPlus size={12} /> 예약 일정 ({selectedReservations.length})
+              </p>
+              {selectedReservations.map((r: any) => (
+                <Card key={r.id} className="glass-card">
+                  <CardContent className="flex items-center gap-3 p-3.5">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-info/10">
+                      <CalendarPlus className="h-4 w-4 text-info" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold truncate">{r.treatment_name}</p>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                          <MapPin className="h-3 w-3" /> {r.clinic}
+                        </span>
+                        {r.time && (
+                          <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                            <Clock className="h-3 w-3" /> {r.time}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
 
           {selectedRecords.length > 0 && (
             <div className="space-y-2">
@@ -260,7 +317,7 @@ const CalendarViewPage = () => {
             </div>
           )}
 
-          {selectedRecords.length === 0 && selectedEvents.length === 0 && (
+          {selectedRecords.length === 0 && selectedEvents.length === 0 && selectedReservations.length === 0 && (
             <button
               onClick={() => guardAction(() => setShowActionPicker(true))}
               className="w-full text-left"
@@ -331,6 +388,7 @@ const CalendarViewPage = () => {
         open={showReservationModal}
         onClose={() => setShowReservationModal(false)}
         defaultDate={selectedDateStr}
+        onSaved={fetchReservations}
       />
 
       <LoginRequiredSheet
