@@ -1,10 +1,11 @@
 import { useState, useMemo, useEffect } from 'react';
-import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check } from 'lucide-react';
+import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check, Plus, ClipboardList, CalendarPlus } from 'lucide-react';
 import BloomAvatar from '@/components/BloomAvatar';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
+import { Sheet, SheetContent } from '@/components/ui/sheet';
 
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
@@ -15,6 +16,7 @@ import { differenceInDays, format, addDays, startOfMonth, endOfMonth, startOfWee
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import AddReservationModal from '@/components/AddReservationModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import OnboardingFlow from '@/components/OnboardingFlow';
 import { supabase } from '@/integrations/supabase/client';
@@ -23,6 +25,17 @@ import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 import { useLoginGuard } from '@/hooks/useLoginGuard';
 import logoImg from '@/assets/logo.png';
 import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
+
+interface Reservation {
+  id: string;
+  date: string;
+  time: string | null;
+  treatment_name: string;
+  clinic: string;
+  memo: string | null;
+  body_area: string | null;
+  skin_layer: string | null;
+}
 
 const SEASON_CONFIG: Record<SeasonKey, {emoji: string;title: string;sub: string;color: string;bg: string;}> = {
   reset: { emoji: '🌵', title: 'Reset Mode', sub: '피부 리셋 모드', color: '#7EC8A0', bg: 'bg-green-50' },
@@ -73,6 +86,12 @@ const Index = () => {
   const [clinicPayments, setClinicPayments] = useState<{amount: number;method: string;}[]>([]);
   const [todayCondition, setTodayCondition] = useState<number | null>(null);
   const [conditionMemo, setConditionMemo] = useState('');
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showActionPicker, setShowActionPicker] = useState(false);
+  const [showHomeAddModal, setShowHomeAddModal] = useState(false);
+  const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
+  const [reservationRefresh, setReservationRefresh] = useState(0);
 
   // Bloom info
   const activeDays = getActiveDays(records);
@@ -82,15 +101,17 @@ const Index = () => {
     const loadDashboard = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const [payRes, pkgRes] = await Promise.all([
-      supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
-      supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id)]
-      );
+      const [payRes, pkgRes, resRes] = await Promise.all([
+        supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
+        supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
+        supabase.from('reservations').select('id,date,time,treatment_name,clinic,memo,body_area,skin_layer').eq('user_id', user.id).order('date', { ascending: false }),
+      ]);
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
+      if (resRes.data) setReservations(resRes.data as Reservation[]);
     };
     loadDashboard();
-  }, []);
+  }, [records, reservationRefresh]);
 
   // Season change handler
   const handleSeasonChange = (season: SeasonKey) => {
@@ -168,6 +189,32 @@ const Index = () => {
 
   // Records by date for calendar dots
   const recordDateSet = useMemo(() => new Set(records.map((r) => r.date.slice(0, 10))), [records]);
+  const reservationDateSet = useMemo(() => new Set(reservations.map((r) => r.date.slice(0, 10))), [reservations]);
+  // Records & reservations by date
+  const recordsByDate = useMemo(() => {
+    const map: Record<string, TreatmentRecord[]> = {};
+    records.forEach(r => { const d = r.date.slice(0, 10); if (!map[d]) map[d] = []; map[d].push(r); });
+    return map;
+  }, [records]);
+  const reservationsByDate = useMemo(() => {
+    const map: Record<string, Reservation[]> = {};
+    reservations.forEach(r => { const d = r.date.slice(0, 10); if (!map[d]) map[d] = []; map[d].push(r); });
+    return map;
+  }, [reservations]);
+
+  // Default selected date: most recent reservation or record date
+  const defaultInfoDate = useMemo(() => {
+    const recentReservation = reservations.find(r => r.date >= format(TODAY, 'yyyy-MM-dd'));
+    if (recentReservation) return recentReservation.date.slice(0, 10);
+    if (records.length > 0) return records[0].date.slice(0, 10);
+    return null;
+  }, [reservations, records]);
+
+  const activeSelectedDate = selectedDate ? format(selectedDate, 'yyyy-MM-dd') : defaultInfoDate;
+  const selectedRecords = activeSelectedDate ? (recordsByDate[activeSelectedDate] || []) : [];
+  const selectedReservations = activeSelectedDate ? (reservationsByDate[activeSelectedDate] || []) : [];
+  const hasSelectedInfo = selectedRecords.length > 0 || selectedReservations.length > 0;
+
   // Upcoming cycle dates
   const cycleDateMap = useMemo(() => {
     const map = new Map<string, string>();
@@ -386,60 +433,103 @@ const Index = () => {
                 const inMonth = isSameMonth(day, TODAY);
                 const isToday2 = isSameDay(day, TODAY);
                 const hasRecord = recordDateSet.has(dateStr);
+                const hasReservation = reservationDateSet.has(dateStr);
                 const cycleLabel = cycleDateMap.get(dateStr);
+                const isSelected = activeSelectedDate === dateStr;
 
                 return (
-                  <div key={i} className="flex flex-col items-center py-1">
+                  <button
+                    key={i}
+                    onClick={() => setSelectedDate(day)}
+                    className={cn(
+                      "flex flex-col items-center py-1 transition-colors",
+                      !inMonth && "opacity-30"
+                    )}
+                  >
                     <span className={cn(
-                      "w-7 h-7 flex items-center justify-center rounded-full text-xs",
-                      !inMonth && "opacity-30",
-                      isToday2 && "bg-primary text-primary-foreground font-bold",
-                      hasRecord && !isToday2 && "bg-[#FF7F7F]/40",
-                      cycleLabel && !isToday2 && !hasRecord && "ring-1 ring-primary/30"
+                      "w-7 h-7 flex items-center justify-center rounded-full text-xs transition-all",
+                      isSelected && "bg-primary text-primary-foreground font-bold",
+                      !isSelected && isToday2 && "bg-primary/20 text-primary font-semibold",
+                      !isSelected && hasRecord && !isToday2 && "bg-[#FF7F7F]/40",
+                      !isSelected && cycleLabel && !isToday2 && !hasRecord && "ring-1 ring-primary/30"
                     )}>
                       {format(day, 'd')}
                     </span>
-                    {cycleLabel && inMonth &&
-                    <div className="w-1 h-1 rounded-full bg-primary mt-0.5" />
-                    }
-                  </div>);
+                    <div className="flex gap-0.5 mt-0.5 h-1.5 items-center">
+                      {hasRecord && <div className="w-1 h-1 rounded-full bg-[#C9A96E]" />}
+                      {hasReservation && <div className="w-1 h-1 rounded-full bg-info" />}
+                      {cycleLabel && inMonth && !hasRecord && !hasReservation && <div className="w-1 h-1 rounded-full bg-primary" />}
+                    </div>
+                  </button>
+                );
               })}
             </div>
-
-            {upcomingIn2w.length > 0 ?
-            <div className="mt-3 space-y-1.5 border-t border-border/50 pt-3">
-                {upcomingIn2w.slice(0, 3).map(({ c, daysRemaining }) =>
-              <div key={c.id} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2 min-w-0">
-                      <div className={cn("h-2 w-2 rounded-full shrink-0",
-                  daysRemaining <= 7 ? 'bg-amber-400' : 'bg-primary'
-                  )} />
-                      <span className="text-xs font-medium truncate text-foreground">{c.treatmentName}</span>
-                    </div>
-                    <span className={cn("text-xs font-bold shrink-0",
-                daysRemaining <= 7 ? 'text-amber-500' : 'text-primary'
-                )}>
-                      {daysRemaining === 0 ? '오늘' : `D-${daysRemaining}`}
-                    </span>
-                  </div>
-              )}
-              </div> :
-            exampleUpcoming ?
-            <div className="mt-3 space-y-1.5 border-t border-border/50 pt-3 opacity-50">
-                {exampleUpcoming.map((item, i) =>
-              <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 rounded-full bg-primary" />
-                      <span className="text-xs font-medium text-foreground">{item.name}</span>
-                    </div>
-                    <span className="text-xs font-bold text-primary">D-{item.daysRemaining}</span>
-                  </div>
-              )}
-                <p className="text-[10px] text-muted-foreground">예시 · 시술을 기록하면 자동 생성돼요</p>
-              </div> :
-            null}
           </CardContent>
         </Card>
+
+        {/* ═══ Selected Date Info ═══ */}
+        {activeSelectedDate && (
+          <div className="space-y-2">
+            <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1">
+              <CalendarDays className="h-3.5 w-3.5 text-primary" />
+              {format(new Date(activeSelectedDate + 'T00:00:00'), 'M월 d일 (EEEE)', { locale: ko })}
+            </p>
+
+            {/* Reservations */}
+            {selectedReservations.map((res) => (
+              <Card key={res.id} className="border-0 shadow-sm">
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
+                    <CalendarPlus className="h-4 w-4 text-info" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{res.treatment_name}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                      {res.clinic}{res.time ? ` · ${res.time}` : ''}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-medium text-info bg-info/10 px-2 py-0.5 rounded-full shrink-0">예약</span>
+                </CardContent>
+              </Card>
+            ))}
+
+            {/* Treatment records */}
+            {selectedRecords.map((r) => (
+              <Card key={r.id} className="border-0 shadow-sm">
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    <Stethoscope className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
+                    <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
+                  </div>
+                  {r.satisfaction && (
+                    <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
+                      {'★'.repeat(r.satisfaction)}
+                    </span>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+
+            {/* Empty state for selected date */}
+            {!hasSelectedInfo && selectedDate && (
+              <button
+                onClick={() => guardAction(() => setShowActionPicker(true))}
+                className="w-full text-left"
+              >
+                <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-5 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
+                  <Plus className="h-5 w-5 text-primary mx-auto mb-2" />
+                  <p className="text-xs font-semibold text-foreground">이 날짜에 기록이 없어요</p>
+                  <p className="text-[10px] text-muted-foreground mt-0.5">
+                    탭하여 <span className="font-bold text-primary">{format(selectedDate, 'M월 d일')}</span>에 추가하세요
+                  </p>
+                </div>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* ═══ Today's Condition Log ═══ */}
         <Card className="border-0 shadow-sm">
@@ -544,6 +634,50 @@ const Index = () => {
           </div>
         }
       </div>
+
+      {/* Action Picker Sheet for home calendar */}
+      <Sheet open={showActionPicker} onOpenChange={setShowActionPicker}>
+        <SheetContent side="bottom" className="rounded-t-3xl px-5 pb-8 pt-4">
+          <div className="mx-auto w-10 h-1 rounded-full bg-muted-foreground/20 mb-5" />
+          <p className="text-center text-base font-semibold mb-1">
+            <span className="text-primary">{selectedDate ? format(selectedDate, 'M월 d일') : ''}</span>을 선택하셨어요
+          </p>
+          <p className="text-center text-sm text-muted-foreground mb-6">무엇을 추가하시겠어요?</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => { setShowActionPicker(false); setShowHomeReservationModal(true); }}
+              className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 hover:bg-accent/50 active:scale-[0.97] transition-all"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-info/10">
+                <CalendarPlus className="h-6 w-6 text-info" />
+              </div>
+              <span className="text-sm font-semibold">예약 일정 추가</span>
+            </button>
+            <button
+              onClick={() => { setShowActionPicker(false); setShowHomeAddModal(true); }}
+              className="flex flex-col items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 hover:bg-primary/10 active:scale-[0.97] transition-all"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <ClipboardList className="h-6 w-6 text-primary" />
+              </div>
+              <span className="text-sm font-semibold">시술 내역 추가</span>
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <AddTreatmentModal
+        open={showHomeAddModal}
+        onClose={() => setShowHomeAddModal(false)}
+        onSave={async (record) => { await addRecord(record); }}
+        defaultDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
+      />
+
+      <AddReservationModal
+        open={showHomeReservationModal}
+        onClose={() => { setShowHomeReservationModal(false); setReservationRefresh(v => v + 1); }}
+        defaultDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
+      />
 
       {parseModalOpen && <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />}
       <AddTreatmentModal
