@@ -10,7 +10,7 @@ import { ko } from 'date-fns/locale';
 import { CalendarEvent, TreatmentRecord, BodyArea } from '@/types/skin';
 import logoImg from '@/assets/logo.png';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
-import { Sheet, SheetContent } from '@/components/ui/sheet';
+import AddReservationModal from '@/components/AddReservationModal';
 import { toast } from 'sonner';
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
