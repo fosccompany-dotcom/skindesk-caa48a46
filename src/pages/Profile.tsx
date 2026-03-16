@@ -490,7 +490,7 @@ const Profile = () => {
                       <Progress value={progressPct} className="h-2" />
                     </>
                   ) : (
-                    <div className="text-[10px] font-semibold" style={{ color: '#FF7F7F' }}>
+                    <div className="text-[10px] font-semibold text-rose">
                       ✨ {maxText}
                     </div>
                   )}
