@@ -75,7 +75,9 @@ const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { cycles } = useCycles();
   const { records, loading, addRecord, updateRecord, deleteRecord } = useRecords();
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
+  const [langOpen, setLangOpen] = useState(false);
+  const langDropdownRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
