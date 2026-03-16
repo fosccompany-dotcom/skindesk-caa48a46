@@ -96,7 +96,17 @@ const Index = () => {
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
 
-  // Bloom info
+  // 언어 드롭다운 외부 클릭 닫기
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (langDropdownRef.current && !langDropdownRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   const activeDays = getActiveDays(records);
   const bloom = getBloomInfo(activeDays);
 
