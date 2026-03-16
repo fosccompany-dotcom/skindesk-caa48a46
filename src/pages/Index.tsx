@@ -521,7 +521,7 @@ const Index = () => {
             <div className="grid grid-cols-7">
               {calendarDays.map((day, i) => {
                 const dateStr = format(day, 'yyyy-MM-dd');
-                const inMonth = isSameMonth(day, TODAY);
+                const inMonth = isSameMonth(day, calendarMonth);
                 const isToday2 = isSameDay(day, TODAY);
                 const hasRecord = recordDateSet.has(dateStr);
                 const hasReservation = reservationDateSet.has(dateStr);
