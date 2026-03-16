@@ -493,10 +493,11 @@ const CalendarViewPage = () => {
       </Sheet>
 
       <AddTreatmentModal
-        open={showAddModal}
-        onClose={() => setShowAddModal(false)}
+        open={showAddModal || editRecordOpen}
+        onClose={() => { setShowAddModal(false); setEditRecordOpen(false); setEditRecord(null); }}
         onSave={addRecord}
-        defaultDate={selectedDateStr}
+        defaultDate={editRecord?.date || selectedDateStr}
+        editRecord={editRecord || undefined}
       />
 
       <AddReservationModal
@@ -511,6 +512,90 @@ const CalendarViewPage = () => {
         onClose={handleLoginClose}
         onLoginSuccess={handleLoginSuccess}
       />
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={!!deleteTarget} onOpenChange={(v) => !v && setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>삭제 확인</AlertDialogTitle>
+            <AlertDialogDescription>
+              <span className="font-semibold text-foreground">{deleteTarget?.name}</span>
+              {deleteTarget?.type === 'reservation' ? ' 예약을' : ' 시술 기록을'} 삭제하시겠어요?
+              <br />이 작업은 되돌릴 수 없습니다.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>취소</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Edit Reservation Sheet */}
+      <Sheet open={editReservationOpen} onOpenChange={(v) => { if (!v) { setEditReservationOpen(false); setEditReservation(null); } }}>
+        <SheetContent side="bottom" className="rounded-t-3xl px-5 pb-8 pt-4 max-h-[80vh] overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle className="text-base font-semibold flex items-center gap-2">
+              <Pencil className="h-4 w-4 text-info" /> 예약 수정
+            </SheetTitle>
+          </SheetHeader>
+          {editReservation && (
+            <div className="space-y-4 mt-4">
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">날짜</label>
+                <input
+                  type="date"
+                  value={editReservation.date}
+                  onChange={(e) => setEditReservation({ ...editReservation, date: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">시간</label>
+                <input
+                  type="time"
+                  value={editReservation.time || ''}
+                  onChange={(e) => setEditReservation({ ...editReservation, time: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">병원</label>
+                <input
+                  value={editReservation.clinic}
+                  onChange={(e) => setEditReservation({ ...editReservation, clinic: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">시술명</label>
+                <input
+                  value={editReservation.treatment_name}
+                  onChange={(e) => setEditReservation({ ...editReservation, treatment_name: e.target.value })}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium text-foreground mb-1.5 block">메모</label>
+                <textarea
+                  value={editReservation.memo || ''}
+                  onChange={(e) => setEditReservation({ ...editReservation, memo: e.target.value })}
+                  rows={2}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
+              </div>
+              <button
+                onClick={handleEditReservationSave}
+                className="w-full rounded-xl bg-info text-info-foreground py-3 text-sm font-semibold hover:bg-info/90 transition-colors active:scale-[0.98]"
+              >
+                수정 완료
+              </button>
+            </div>
+          )}
+        </SheetContent>
+      </Sheet>
     </div>
   );
 };
