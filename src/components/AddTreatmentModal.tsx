@@ -532,29 +532,39 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              <p className="text-xs text-gray-400 mb-3">시술 카테고리를 선택하세요</p>
-              <div className="grid grid-cols-2 gap-2">
-                {CATEGORIES.map(cat => (
-                  <button key={cat.id}
-                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); }}
-                    className={cn(
-                      'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
-                      cat.color,
-                      catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-gray-400 border-gray-200'
-                    )}>
-                    <span className="text-lg">{cat.emoji}</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
-                      <div className="text-[10px] text-gray-400 mt-0.5">{cat.items.length}종</div>
-                    </div>
-                    {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
-                  </button>
-                ))}
-              </div>
+              <p className="text-xs text-gray-400 mb-3">
+                {language === 'en' ? 'Select a treatment category' : language === 'zh' ? '选择治疗类别' : '시술 카테고리를 선택하세요'}
+              </p>
+              {dbLoading ? (
+                <div className="grid grid-cols-2 gap-2">
+                  {Array.from({ length: 6 }).map((_, i) => (
+                    <Skeleton key={i} className="h-16 rounded-xl" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2">
+                  {displayCategories.map(cat => (
+                    <button key={cat.id}
+                      onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
+                      className={cn(
+                        'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
+                        cat.color,
+                        catId === cat.id ? 'border-[#C9A96E] ring-1 ring-[#C9A96E]/40' : 'hover:border-gray-400 border-gray-200'
+                      )}>
+                      <span className="text-lg">{cat.emoji}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="text-xs font-medium text-gray-800 leading-tight">{cat.label}</div>
+                        <div className="text-[10px] text-gray-400 mt-0.5">{cat.items.filter(i => i.id !== '__custom').length}종</div>
+                      </div>
+                      {catId === cat.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          {/* ── STEP 2: 시술 선택 (비보톡스) / 약물 선택 (보톡스) ── */}
+          {/* ── STEP 2: 시술 선택 (비보톡스) ── */}
           {step === 2 && selectedCat && !isBotox && (
             <div>
               <div className="flex items-center gap-2 mb-3">
@@ -564,7 +574,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="space-y-1.5">
                 {selectedCat.items.map(item => (
                   <button key={item.id}
-                    onClick={() => { setItemId(item.id); setShots(null); }}
+                    onClick={() => { setItemId(item.id); setShots(null); if (item.id !== '__custom') setCustomTreatmentName(''); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
                       itemId === item.id
@@ -576,19 +586,30 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       {item.desc && <div className="text-[11px] text-gray-400 mt-0.5 truncate">{item.desc}</div>}
                     </div>
                     <div className="flex items-center gap-1.5 ml-2 shrink-0">
-                      <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[item.skinLayer])}>
-                        {SKIN_LAYER_LABEL[item.skinLayer].replace('조직','').replace('층','')}
-                      </span>
-                      {item.shotOptions?.length && (
+                      {item.skinLayer && (
+                        <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[item.skinLayer])}>
+                          {SKIN_LAYER_LABEL[item.skinLayer].replace('조직','').replace('층','')}
+                        </span>
+                      )}
+                      {item.shotOptions?.length ? (
                         <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
                           <Zap size={9} />샷
                         </span>
-                      )}
+                      ) : null}
                       {itemId === item.id && <Check size={12} className="text-[#C9A96E]" />}
                     </div>
                   </button>
                 ))}
               </div>
+              {itemId === '__custom' && (
+                <input
+                  type="text"
+                  value={customTreatmentName}
+                  onChange={e => setCustomTreatmentName(e.target.value)}
+                  placeholder={language === 'en' ? 'Enter treatment name' : language === 'zh' ? '请输入项目名称' : '시술명을 입력하세요'}
+                  className="w-full mt-3 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                />
+              )}
             </div>
           )}
 
