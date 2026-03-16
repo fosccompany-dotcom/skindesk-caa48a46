@@ -198,8 +198,8 @@ const Packages = () => {
     : payments.filter(p => p.clinic === filterClinic);
 
   // 필터된 내역 기반으로 요약 계산
-  const totalCharged = filteredPayments.filter(p => p.method === '포인트충전').reduce((s, p) => s + p.amount, 0);
-  const totalSpent   = filteredPayments.filter(p => p.method !== '포인트충전').reduce((s, p) => s + p.amount, 0);
+  const totalCharged = filteredPayments.filter(p => p.method === 'charge').reduce((s, p) => s + p.amount, 0);
+  const totalSpent   = filteredPayments.filter(p => p.method !== 'charge').reduce((s, p) => s + p.amount, 0);
   const totalBalance = totalCharged - totalSpent;
 
   if (recordsLoading) return <FlowerLoader />;
