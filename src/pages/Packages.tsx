@@ -286,11 +286,11 @@ const Packages = () => {
                     시술권을 등록하면 남은 횟수와<br />다음 관리 시점을 자동으로 알려드려요
                   </p>
                   <div className="flex items-center justify-center gap-1.5 mt-4">
-                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
-                      <span className="text-[#E87461] text-lg font-bold">+</span>
+                    <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-accent shadow-md">
+                      <span className="text-primary text-lg font-bold">+</span>
                     </span>
                     <p className="text-xs font-medium text-muted-foreground">
-                      우측 하단 <span className="font-bold text-[#E87461]">+</span> 버튼으로 바로 등록하세요
+                      우측 하단 <span className="font-bold text-primary">+</span> 버튼으로 바로 등록하세요
                     </p>
                   </div>
                 </div>
@@ -299,7 +299,7 @@ const Packages = () => {
               <>
                 {activePackages.length > 0 && (
                   <div>
-                    <p className="text-xs font-bold text-gray-500 mb-2">잔여 시술권 {activePackages.length}개</p>
+                    <p className="text-xs font-bold text-muted-foreground mb-2">잔여 시술권 {activePackages.length}개</p>
                     <div className="space-y-2.5">
                       {activePackages.map(pkg => (
                         <PackageCard key={pkg.id} pkg={pkg} onEdit={() => handleEditPkg(pkg)} onDelete={() => setDeleteTarget({ type: 'package', id: pkg.id, name: pkg.name })} />
