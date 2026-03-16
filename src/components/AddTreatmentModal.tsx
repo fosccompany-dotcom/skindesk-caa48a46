@@ -335,6 +335,12 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [paymentAmount, setPaymentAmount] = useState<string>('');
   const [customTreatmentName, setCustomTreatmentName] = useState('');
 
+  // ── Filler state ──
+  const [fillerDrugId, setFillerDrugId] = useState<string | null>(null);
+  const [fillerAreaId, setFillerAreaId] = useState<string | null>(null);
+  const [fillerDrugOptions, setFillerDrugOptions] = useState<any[]>([]);
+  const [fillerAreaOptions, setFillerAreaOptions] = useState<any[]>([]);
+
   // ── DB categories ──
   const [dbOptions, setDbOptions] = useState<any[]>([]);
   const [dbLoading, setDbLoading] = useState(true);
@@ -362,6 +368,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setBodyArea('face'); setCustomBodyArea(''); setCustomTreatmentName('');
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
+    setFillerDrugId(null); setFillerAreaId(null);
   };
   const handleClose = () => { reset(); onClose(); };
 
@@ -377,6 +384,23 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       .then(({ data, error }) => {
         if (!error && data?.length) setDbOptions(data);
         setDbLoading(false);
+      });
+  }, []);
+
+  // ── Fetch filler drug/area options from DB ──
+  useEffect(() => {
+    supabase
+      .from('package_options')
+      .select('id, name, name_en, name_zh, sub_type')
+      .eq('category', '필러·실리프팅')
+      .is('package_id', null)
+      .eq('is_default', true)
+      .order('sort_order')
+      .then(({ data }) => {
+        if (data) {
+          setFillerDrugOptions(data.filter((d: any) => d.sub_type === 'drug'));
+          setFillerAreaOptions(data.filter((d: any) => d.sub_type === 'area'));
+        }
       });
   }, []);
 
@@ -434,16 +458,17 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const selectedCat = displayCategories.find(c => c.id === catId);
   const isBotox = catId === 'botox' || catId === '보톡스/윤곽주사';
+  const isFiller = catId === 'filler' || catId === '필러·실리프팅';
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
 
   const botoxTotalSteps = 4;
   const normalExtraSteps = needsShots ? 1 : 0;
   const normalTotalSteps = 3 + normalExtraSteps;
-  const totalSteps = isBotox ? botoxTotalSteps : normalTotalSteps;
+  const totalSteps = isBotox ? botoxTotalSteps : isFiller ? 4 : normalTotalSteps;
 
   const shotsStep = needsShots ? 3 : -1;
-  const isDetailStep = isBotox ? step === 4 : step === (needsShots ? 4 : 3);
+  const isDetailStep = isBotox ? step === 4 : isFiller ? step === 4 : step === (needsShots ? 4 : 3);
 
   // 상세 단계 진입 시 사용 가능한 시술권 조회
   useEffect(() => {
@@ -468,6 +493,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const canNext = () => {
     if (step === 1) return !!catId;
     if (isBotox) return true;
+    if (isFiller) return true;
     if (step === 2) {
       if (itemId === '__custom') return !!customTreatmentName.trim();
       return !!itemId;
@@ -478,9 +504,26 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const selectedDrug = BOTOX_DRUGS.find(d => d.id === drugId);
 
+  const getLocalizedName = (opt: any) => {
+    if (language === 'en') return opt.name_en || opt.name;
+    if (language === 'zh') return opt.name_zh || opt.name;
+    return opt.name;
+  };
+
+  const selectedFillerDrug = fillerDrugOptions.find(d => d.id === fillerDrugId);
+  const selectedFillerArea = fillerAreaOptions.find(a => a.id === fillerAreaId);
+
   const getTreatmentName = () => {
     if (isBotox) {
       return selectedDrug ? selectedDrug.name : '보톡스';
+    }
+    if (isFiller) {
+      const drugName = selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
+      const areaName = selectedFillerArea ? getLocalizedName(selectedFillerArea) : null;
+      if (drugName && areaName) return `${drugName} - ${areaName}`;
+      if (areaName) return `필러 - ${areaName}`;
+      if (drugName) return drugName;
+      return '필러';
     }
     if (itemId === '__custom') return customTreatmentName.trim() || '';
     if (!selectedItem) return '';
@@ -501,13 +544,13 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   const handleSave = () => {
-    if (!isBotox && !selectedItem) return;
+    if (!isBotox && !isFiller && !selectedItem) return;
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
     const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
-    const skinLayer = isBotox ? getBotoxSkinLayer() : (selectedItem?.skinLayer || 'dermis');
+    const skinLayer = isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : (selectedItem?.skinLayer || 'dermis');
     onSave({
       date,
       packageId:     selectedPkgId || '',
@@ -581,8 +624,65 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 2: 시술 선택 (비보톡스) ── */}
-          {step === 2 && selectedCat && !isBotox && (
+          {/* ── STEP 2 (필러): 약제 선택 ── */}
+          {step === 2 && isFiller && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">
+                {language === 'en' ? 'Select filler product (optional)' : language === 'zh' ? '选择填充产品（可选）' : '필러 종류를 선택하세요 (선택사항)'}
+              </p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">🌙 {language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러·실리프팅'}</p>
+              <div className="space-y-1.5">
+                {fillerDrugOptions.map(drug => (
+                  <button key={drug.id}
+                    onClick={() => setFillerDrugId(prev => prev === drug.id ? null : drug.id)}
+                    className={cn(
+                      'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
+                      fillerDrugId === drug.id
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    )}>
+                    <div className="text-sm text-gray-900 font-medium">{getLocalizedName(drug)}</div>
+                    {fillerDrugId === drug.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => { setFillerDrugId(null); setStep(3); }}
+                className="w-full mt-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors"
+              >
+                {language === 'en' ? 'Skip →' : language === 'zh' ? '跳过 →' : '건너뛰기 →'}
+              </button>
+            </div>
+          )}
+
+          {/* ── STEP 3 (필러): 부위 선택 ── */}
+          {step === 3 && isFiller && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">
+                {language === 'en' ? 'Select treatment area' : language === 'zh' ? '选择治疗部位' : '시술 부위를 선택하세요'}
+              </p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">
+                🌙 {selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : (language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러')}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {fillerAreaOptions.map(area => (
+                  <button key={area.id}
+                    onClick={() => setFillerAreaId(prev => prev === area.id ? null : area.id)}
+                    className={cn(
+                      'py-3 rounded-xl border text-sm font-medium transition-all',
+                      fillerAreaId === area.id
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'
+                    )}>
+                    {getLocalizedName(area)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── STEP 2: 시술 선택 (비보톡스/비필러) ── */}
+          {step === 2 && selectedCat && !isBotox && !isFiller && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
@@ -719,7 +819,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           )}
 
           {/* ── 상세 입력 (마지막 단계) ── */}
-          {isDetailStep && (isBotox || selectedItem) && (
+          {isDetailStep && (isBotox || isFiller || selectedItem) && (
             <div className="space-y-4">
               {/* 선택 요약 */}
               <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-200">
@@ -727,7 +827,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 <div className="text-sm font-semibold text-[#C9A96E]">{getTreatmentName()}</div>
                 <div className="mt-1.5">
                   {(() => {
-                    const sl = isBotox ? getBotoxSkinLayer() : selectedItem!.skinLayer;
+                    const sl = isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : selectedItem!.skinLayer;
                     return (
                       <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', SKIN_LAYER_COLOR[sl])}>
                         {SKIN_LAYER_LABEL[sl]}
@@ -755,8 +855,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                   darkMode={false} />
               </div>
 
-              {/* 부위 선택 (비보톡스만 — 보톡스는 별도 단계에서 선택) */}
-              {!isBotox && (
+              {/* 부위 선택 (비보톡스/비필러만 — 별도 단계에서 선택) */}
+              {!isBotox && !isFiller && (
                 <div>
                   <label className="text-xs text-gray-400 block mb-1.5">부위</label>
                   <div className="flex gap-1.5 flex-wrap">
