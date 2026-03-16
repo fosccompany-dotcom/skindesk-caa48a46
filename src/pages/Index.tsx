@@ -100,15 +100,17 @@ const Index = () => {
     const loadDashboard = async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const [payRes, pkgRes] = await Promise.all([
-      supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
-      supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id)]
-      );
+      const [payRes, pkgRes, resRes] = await Promise.all([
+        supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
+        supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
+        supabase.from('reservations').select('id,date,time,treatment_name,clinic,memo,body_area,skin_layer').eq('user_id', user.id).order('date', { ascending: false }),
+      ]);
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
+      if (resRes.data) setReservations(resRes.data as Reservation[]);
     };
     loadDashboard();
-  }, []);
+  }, [records]);
 
   // Season change handler
   const handleSeasonChange = (season: SeasonKey) => {
