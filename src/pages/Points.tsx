@@ -271,7 +271,7 @@ const Points = () => {
                           <p className="text-[10px] text-muted-foreground">{tx.date} · {config.label}</p>
                         </div>
                         <div className="text-right shrink-0">
-                          <p className={`font-bold text-xs ${tx.amount > 0 ? 'text-emerald-500' : 'text-rose-400'}`}>
+                          <p className={`font-bold text-xs ${tx.amount > 0 ? 'text-sage-dark' : 'text-rose'}`}>
                             {tx.amount > 0 ? '+' : ''}{tx.amount.toLocaleString()}
                           </p>
                           <p className="text-[10px] text-muted-foreground">잔액 {tx.balance.toLocaleString()}</p>
