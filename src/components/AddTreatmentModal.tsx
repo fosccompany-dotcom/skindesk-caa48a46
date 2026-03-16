@@ -994,8 +994,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
               {/* 결제 수단 (시술권 미사용 시에만 표시) */}
               {!selectedPkgId && (
-                <div>
-                  <label className="text-xs text-gray-400 block mb-1.5">결제 수단 <span className="text-red-400">*</span></label>
+                <div id="payment-method-section" className={paymentShake ? 'animate-shake' : ''}>
+                  <label className={cn('text-xs block mb-1.5', paymentShake ? 'text-red-500 font-semibold' : 'text-gray-400')}>
+                    결제 수단 <span className="text-red-400">*</span>
+                    {paymentShake && <span className="ml-1 text-[10px]">필수 항목입니다</span>}
+                  </label>
                   <div className="grid grid-cols-2 gap-2">
                     {([
                       { key: 'card',    label: '카드 결제',    desc: '신용/체크카드 직접 결제', icon: CreditCard },
