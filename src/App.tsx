@@ -7,7 +7,7 @@ import Index from "./pages/Index";
 import Points from "./pages/Points";
 import Packages from "./pages/Packages";
 import CalendarPage from "./pages/CalendarPage";
-import CalendarViewPage from "./pages/CalendarViewPage";
+
 import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
 import Cycles from "./pages/Cycles";
@@ -58,7 +58,7 @@ const App = () => (
                     <Route path="/status"   element={<PrivateRoute><StatusList /></PrivateRoute>} />
                     <Route path="/packages" element={<PrivateRoute><Packages /></PrivateRoute>} />
                     <Route path="/calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
-                    <Route path="/calendar-view" element={<PrivateRoute><CalendarViewPage /></PrivateRoute>} />
+                    
                     <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
 
                     <Route path="*" element={<NotFound />} />

@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { ChevronRight, ChevronDown, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check, Plus, ClipboardList, CalendarPlus, Globe } from 'lucide-react';
+import { ChevronRight, ChevronDown, ChevronLeft, CalendarDays, Stethoscope, Hospital, Package, Wallet, Star, Trash2, Pencil, Check, Plus, ClipboardList, CalendarPlus, Globe } from 'lucide-react';
 import BloomAvatar from '@/components/BloomAvatar';
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover';
 import { useNavigate, useSearchParams } from 'react-router-dom';
@@ -13,7 +13,7 @@ import FlowerLoader from '@/components/FlowerLoader';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Language, LANGUAGE_LABELS } from '@/i18n/translations';
 import { TreatmentCycle, TreatmentRecord } from '@/types/skin';
-import { differenceInDays, format, addDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay } from 'date-fns';
+import { differenceInDays, format, addDays, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, setMonth, setYear } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
@@ -95,6 +95,8 @@ const Index = () => {
   const [showHomeAddModal, setShowHomeAddModal] = useState(false);
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
+  const [calendarMonth, setCalendarMonth] = useState(TODAY);
+  const [yearMonthPickerOpen, setYearMonthPickerOpen] = useState(false);
 
   // 언어 드롭다운 외부 클릭 닫기
   useEffect(() => {
@@ -189,8 +191,8 @@ const Index = () => {
   }, [clinicPayments]);
 
   // Mini calendar
-  const monthStart = startOfMonth(TODAY);
-  const monthEnd = endOfMonth(TODAY);
+  const monthStart = startOfMonth(calendarMonth);
+  const monthEnd = endOfMonth(calendarMonth);
   const calStart = startOfWeek(monthStart, { weekStartsOn: 0 });
   const calEnd = endOfWeek(monthEnd, { weekStartsOn: 0 });
   const calendarDays = useMemo(() => {
@@ -198,7 +200,7 @@ const Index = () => {
     let d = calStart;
     while (d <= calEnd) {days.push(d);d = addDays(d, 1);}
     return days;
-  }, []);
+  }, [calendarMonth]);
 
   // Records by date for calendar dots
   const recordDateSet = useMemo(() => new Set(records.map((r) => r.date.slice(0, 10))), [records]);
@@ -450,11 +452,63 @@ const Index = () => {
         <Card className="border-0 shadow-sm overflow-hidden">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-bold text-foreground">{format(TODAY, 'yyyy년 M월', { locale: ko })}</p>
               <button
-                onClick={() => navigate('/calendar')}
-                className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                전체보기 <ChevronRight size={10} />
+                onClick={() => setCalendarMonth(prev => subMonths(prev, 1))}
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+              >
+                <ChevronLeft size={16} className="text-muted-foreground" />
+              </button>
+
+              <div className="relative">
+                <button
+                  onClick={() => setYearMonthPickerOpen(v => !v)}
+                  className="text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1"
+                >
+                  {format(calendarMonth, 'yyyy년 M월', { locale: ko })}
+                  <ChevronDown size={12} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
+                </button>
+
+                {yearMonthPickerOpen && (
+                  <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-lg p-3 w-[260px]">
+                    {/* Year selector */}
+                    <div className="flex items-center justify-between mb-3">
+                      <button onClick={() => setCalendarMonth(prev => setYear(prev, prev.getFullYear() - 1))} className="p-1 rounded hover:bg-muted">
+                        <ChevronLeft size={14} />
+                      </button>
+                      <span className="text-sm font-bold">{calendarMonth.getFullYear()}년</span>
+                      <button onClick={() => setCalendarMonth(prev => setYear(prev, prev.getFullYear() + 1))} className="p-1 rounded hover:bg-muted">
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
+                    {/* Month grid */}
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setCalendarMonth(prev => setMonth(setYear(prev, calendarMonth.getFullYear()), i));
+                            setYearMonthPickerOpen(false);
+                          }}
+                          className={cn(
+                            "py-1.5 rounded-lg text-xs font-medium transition-colors",
+                            calendarMonth.getMonth() === i
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-muted text-foreground"
+                          )}
+                        >
+                          {i + 1}월
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => setCalendarMonth(prev => addMonths(prev, 1))}
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+              >
+                <ChevronRight size={16} className="text-muted-foreground" />
               </button>
             </div>
 
@@ -467,7 +521,7 @@ const Index = () => {
             <div className="grid grid-cols-7">
               {calendarDays.map((day, i) => {
                 const dateStr = format(day, 'yyyy-MM-dd');
-                const inMonth = isSameMonth(day, TODAY);
+                const inMonth = isSameMonth(day, calendarMonth);
                 const isToday2 = isSameDay(day, TODAY);
                 const hasRecord = recordDateSet.has(dateStr);
                 const hasReservation = reservationDateSet.has(dateStr);

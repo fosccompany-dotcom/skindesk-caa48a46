@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Home, Package, Calendar, User, ClipboardList } from 'lucide-react';
+import { Home, Package, User, ClipboardList } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
@@ -22,7 +22,6 @@ const BottomNav = () => {
     { path: '/', icon: Home, label: t('nav_home') },
     { path: '/calendar', icon: ClipboardList, label: t('nav_calendar') },
     { path: '/packages', icon: Package, label: t('nav_packages') },
-    { path: '/calendar-view', icon: Calendar, label: '캘린더' },
     { path: '/profile', icon: User, label: t('nav_my') },
   ];
 
