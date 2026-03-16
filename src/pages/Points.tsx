@@ -155,16 +155,16 @@ const Points = () => {
                     {/* 병원명 + 잔액 */}
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className={`w-2 h-2 rounded-full ${isVance ? 'bg-[#C9A96E]' : 'bg-purple-400'}`} />
+                        <div className={`w-2 h-2 rounded-full ${isVance ? 'bg-amber' : 'bg-secondary'}`} />
                         <span className="font-semibold text-sm">{clinic}</span>
                         <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${
-                          isVance ? 'bg-[#C9A96E]/10 text-[#C9A96E]' : 'bg-purple-50 text-purple-500'
+                          isVance ? 'bg-amber/10 text-amber' : 'bg-secondary/10 text-secondary'
                         }`}>
                           {isVance ? '밴스' : '타의원'}
                         </span>
                       </div>
                       {balance !== undefined && (
-                        <span className="text-sm font-bold text-[#C9A96E]">
+                        <span className="text-sm font-bold text-amber">
                           ₩{balance.toLocaleString()}
                         </span>
                       )}
