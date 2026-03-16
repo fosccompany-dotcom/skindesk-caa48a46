@@ -640,7 +640,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="space-y-1.5">
                 {fillerDrugOptions.map(drug => (
                   <button key={drug.id}
-                    onClick={() => setFillerDrugId(prev => prev === drug.id ? null : drug.id)}
+                    onClick={() => { setFillerDrugId(prev => prev === drug.id ? null : drug.id); setCustomFillerDrug(''); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
                       fillerDrugId === drug.id
@@ -651,9 +651,32 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                     {fillerDrugId === drug.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
                   </button>
                 ))}
+                {/* 직접 입력 옵션 */}
+                <button
+                  onClick={() => { setFillerDrugId('__custom'); setCustomFillerDrug(''); }}
+                  className={cn(
+                    'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
+                    fillerDrugId === '__custom'
+                      ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
+                      : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                  )}>
+                  <div className="text-sm text-gray-900 font-medium">
+                    {language === 'en' ? 'Other (custom)' : language === 'zh' ? '其他（自定义）' : '기타 (직접입력)'}
+                  </div>
+                  {fillerDrugId === '__custom' && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                </button>
               </div>
+              {fillerDrugId === '__custom' && (
+                <input
+                  type="text"
+                  value={customFillerDrug}
+                  onChange={e => setCustomFillerDrug(e.target.value)}
+                  placeholder={language === 'en' ? 'Enter filler name' : language === 'zh' ? '请输入填充剂名称' : '필러 이름을 입력하세요'}
+                  className="w-full mt-3 bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-[#C9A96E]/50"
+                />
+              )}
               <button
-                onClick={() => { setFillerDrugId(null); setStep(3); }}
+                onClick={() => { setFillerDrugId(null); setCustomFillerDrug(''); setStep(3); }}
                 className="w-full mt-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors"
               >
                 {language === 'en' ? 'Skip →' : language === 'zh' ? '跳过 →' : '건너뛰기 →'}
