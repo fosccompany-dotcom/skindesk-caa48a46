@@ -358,6 +358,21 @@ const CalendarViewPage = () => {
                         )}
                       </div>
                     </div>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <button className="p-1 rounded-lg hover:bg-accent/50 transition-colors shrink-0">
+                          <MoreVertical className="h-4 w-4 text-muted-foreground" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-32">
+                        <DropdownMenuItem onClick={() => { setEditReservation({ ...r }); setEditReservationOpen(true); }} className="gap-2 text-sm">
+                          <Pencil className="h-3.5 w-3.5" /> 수정
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setDeleteTarget({ type: 'reservation', id: r.id, name: r.treatment_name })} className="gap-2 text-sm text-destructive focus:text-destructive">
+                          <Trash2 className="h-3.5 w-3.5" /> 삭제
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </CardContent>
                 </Card>
               ))}
@@ -369,7 +384,14 @@ const CalendarViewPage = () => {
               <p className="text-xs font-semibold text-[#C9A96E] flex items-center gap-1.5 px-1">
                 <Stethoscope size={12} /> 시술 기록 ({selectedRecords.length})
               </p>
-              {selectedRecords.map(r => <RecordCard key={r.id} r={r} />)}
+              {selectedRecords.map(r => (
+                <RecordCard
+                  key={r.id}
+                  r={r}
+                  onEdit={() => { setEditRecord(r); setEditRecordOpen(true); }}
+                  onDelete={() => setDeleteTarget({ type: 'record', id: r.id, name: r.treatmentName })}
+                />
+              ))}
             </div>
           )}
 
