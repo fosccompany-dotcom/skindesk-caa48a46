@@ -311,9 +311,9 @@ const Points = () => {
                       { label: '밴스 충전', value: `${(vanceTotal / 10000).toFixed(0)}만원`, icon: Coins },
                       { label: '타의원', value: `${(otherTotal / 10000).toFixed(0)}만원`, icon: Banknote },
                     ].map(({ label, value }) => (
-                      <div key={label} className="bg-gray-50 rounded-xl p-2.5 text-center">
-                        <p className="text-xs text-gray-400 mb-0.5">{label}</p>
-                        <p className="text-sm font-bold text-gray-800">{value}</p>
+                      <div key={label} className="bg-muted rounded-xl p-2.5 text-center">
+                        <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+                        <p className="text-sm font-bold text-foreground">{value}</p>
                       </div>
                     ))}
                   </div>
