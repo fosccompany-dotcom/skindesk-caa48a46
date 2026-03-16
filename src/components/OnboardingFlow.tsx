@@ -192,7 +192,7 @@ const OnboardingFlow = ({ open, onClose }: Props) => {
           y="0"
           width="100%"
           height="100%"
-          fill="rgba(0,0,0,0.75)"
+          fill="hsl(var(--foreground) / 0.75)"
           mask="url(#coachmark-mask)"
         />
       </svg>
