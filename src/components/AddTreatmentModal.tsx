@@ -300,21 +300,23 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const handleClose = () => { reset(); onClose(); };
 
   const selectedCat = CATEGORIES.find(c => c.id === catId);
+  const isBotox = catId === 'botox';
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
-  const needsDrug = !!(selectedItem?.drugOptions?.length);
 
-  // 동적 단계 계산: 1(카테고리) → 2(시술) → [3:약물] → [N:샷수] → 마지막(상세)
-  const extraSteps = (needsDrug ? 1 : 0) + (needsShots ? 1 : 0);
-  const totalSteps = 3 + extraSteps;
-  const drugStep = needsDrug ? 3 : -1;
-  const shotsStep = needsShots ? (needsDrug ? 4 : 3) : -1;
-  const detailStep = 3 + extraSteps;
-  const isDetailStep = step === detailStep;
+  // ── 보톡스: 1(카테고리) → 2(약물) → 3(부위) → 4(상세)
+  // ── 기타:   1(카테고리) → 2(시술) → [3:샷수] → N(상세, 부위 포함)
+  const botoxTotalSteps = 4;
+  const normalExtraSteps = needsShots ? 1 : 0;
+  const normalTotalSteps = 3 + normalExtraSteps;
+  const totalSteps = isBotox ? botoxTotalSteps : normalTotalSteps;
+
+  const shotsStep = needsShots ? 3 : -1;
+  const isDetailStep = isBotox ? step === 4 : step === (needsShots ? 4 : 3);
 
   // 상세 단계 진입 시 사용 가능한 시술권 조회
   useEffect(() => {
-    if (!isDetailStep || !selectedItem) return;
+    if (!isDetailStep) return;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
@@ -330,24 +332,36 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         setAvailPkgs(active);
       }
     })();
-  }, [isDetailStep, selectedItem]);
+  }, [isDetailStep]);
 
   const canNext = () => {
     if (step === 1) return !!catId;
+    if (isBotox) {
+      // step 2 = drug (always allowed — can skip)
+      // step 3 = body area (always has default)
+      return true;
+    }
     if (step === 2) return !!itemId;
-    if (step === drugStep) return !!drugId;
     if (step === shotsStep) return !!shots;
     return true;
   };
 
-  const selectedDrug = selectedItem?.drugOptions?.find(d => d.id === drugId);
+  const selectedDrug = BOTOX_DRUGS.find(d => d.id === drugId);
 
   const getTreatmentName = () => {
+    if (isBotox) {
+      const drug = selectedDrug ? selectedDrug.name : '보톡스';
+      return drug;
+    }
     if (!selectedItem) return '';
     let name = selectedItem.name;
-    if (selectedDrug) name += ` (${selectedDrug.name})`;
     if (shots) name += ` ${shots}샷`;
     return name;
+  };
+
+  const getBotoxSkinLayer = (): SL => {
+    if (drugId === 'aquatoxin' || drugId === 'mesobotox') return 'dermis';
+    return 'subcutaneous';
   };
 
   // 결제 수단 → DB 값 매핑
@@ -357,17 +371,18 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   const handleSave = () => {
-    if (!selectedItem) return;
+    if (!isBotox && !selectedItem) return;
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
       : null;
     const resolvedBodyArea = bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
+    const skinLayer = isBotox ? getBotoxSkinLayer() : (selectedItem?.skinLayer || 'dermis');
     onSave({
       date,
       packageId:     selectedPkgId || '',
       treatmentName: getTreatmentName(),
-      skinLayer:     selectedItem.skinLayer,
+      skinLayer,
       bodyArea:      resolvedBodyArea,
       notes:         '',
       clinic,
