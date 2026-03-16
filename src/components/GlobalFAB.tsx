@@ -21,15 +21,17 @@ const GlobalFAB = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [parseModalOpen, setParseModalOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
+  const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
 
   if (HIDDEN_PATHS.includes(location.pathname)) return null;
 
   const handleFabClick = () => {
-    setModalOpen(true);
-    // 첫 FAB 클릭 시 코치마크 노출
-    if (!localStorage.getItem(FAB_COACH_KEY)) {
-      setTimeout(() => setCoachOpen(true), 300);
-    }
+    guardAction(() => {
+      setModalOpen(true);
+      if (!localStorage.getItem(FAB_COACH_KEY)) {
+        setTimeout(() => setCoachOpen(true), 300);
+      }
+    });
   };
 
   const handleCloseCoach = () => {
