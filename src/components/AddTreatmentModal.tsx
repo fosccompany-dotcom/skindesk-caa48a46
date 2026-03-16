@@ -368,6 +368,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setBodyArea('face'); setCustomBodyArea(''); setCustomTreatmentName('');
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
+    setFillerDrugId(null); setFillerAreaId(null);
   };
   const handleClose = () => { reset(); onClose(); };
 
