@@ -11,12 +11,19 @@ import { supabase } from '@/integrations/supabase/client';
 
 type SL = 'epidermis' | 'dermis' | 'subcutaneous';
 
+interface DrugOption {
+  id: string;
+  name: string;
+  desc?: string;
+}
+
 interface TreatmentItem {
   id: string;
   name: string;
   desc?: string;
   skinLayer: SL;
   shotOptions?: number[];   // 있으면 샷수 선택 단계 추가
+  drugOptions?: DrugOption[]; // 있으면 약물 선택 단계 추가 (보톡스용)
 }
 
 interface Category {
@@ -56,25 +63,30 @@ const CATEGORIES: Category[] = [
     label: '보톡스/윤곽주사',
     emoji: '💉',
     color: 'border-blue-300 bg-blue-50',
-    items: [
-      // 얼굴 보톡스
-      { id: 'botox_kr',      name: '국산 보톡스',             desc: '부담없는 가격의 국산 보톡스',       skinLayer: 'subcutaneous' },
-      { id: 'botox_core',    name: '코어톡스',                desc: '내성 적은 국산 보톡스',             skinLayer: 'subcutaneous' },
-      { id: 'botox_xeomin',  name: '제오민',                  desc: '내성 적은 독일 보톡스',             skinLayer: 'subcutaneous' },
-      { id: 'botox_alg',     name: '엘러간 (보톡스)',         desc: '미국 프리미엄 보톡스',              skinLayer: 'subcutaneous' },
-      { id: 'botox_jaw',     name: '사각턱 보톡스',           desc: '교근 퇴축, 갸름한 V라인',           skinLayer: 'subcutaneous' },
-      { id: 'botox_wrinkle', name: '주름 보톡스',             desc: '이마·눈가·미간 주름 개선',          skinLayer: 'subcutaneous' },
-      // 더모톡신 (피부 직접 주사)
-      { id: 'dermotoxin',    name: '더모톡신 (아쿠아톡신)',   desc: '피부에 직접 주사하는 보톡스 리프팅', skinLayer: 'dermis' },
-      { id: 'mesobotox',     name: '메조보톡스',              desc: '모공·피지 개선 보톡스 리프팅',      skinLayer: 'dermis' },
-      // 특수 부위
-      { id: 'botox_special', name: '특수부위 보톡스',         desc: '침샘·측두근·콧볼·입꼬리·거미스마일', skinLayer: 'subcutaneous' },
-      { id: 'botox_hyperhid',name: '다한증 보톡스',           desc: '손·발·겨드랑이 땀분비 억제',        skinLayer: 'subcutaneous' },
-      { id: 'botox_scalp',   name: '탈모 보톡스',             desc: '두피 혈류 개선·발모 촉진',          skinLayer: 'subcutaneous' },
-      // 윤곽/바디
-      { id: 'contour',       name: '윤곽주사',                desc: '갸름한 얼굴라인을 위한 주사',       skinLayer: 'subcutaneous' },
-      { id: 'botox_body',    name: '바디 보톡스',             desc: '종아리·승모근·허벅지·팔뚝',         skinLayer: 'subcutaneous' },
-    ],
+    items: (() => {
+      const BOTOX_DRUGS: DrugOption[] = [
+        { id: 'botulax',    name: '보툴렉스',       desc: '국산 · 합리적인 가격' },
+        { id: 'nabota',     name: '나보타',          desc: '국산 · 자연스러운 효과' },
+        { id: 'coretox',    name: '코어톡스',        desc: '국산 · 내성 적음' },
+        { id: 'xeomin',     name: '제오민',          desc: '독일 · 순수 보톡스' },
+        { id: 'allergan',   name: '엘러간 보톡스',   desc: '미국 · 프리미엄' },
+      ];
+      return [
+        // 얼굴 보톡스
+        { id: 'botox_jaw',     name: '사각턱 보톡스',           desc: '교근 퇴축, 갸름한 V라인',           skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
+        { id: 'botox_wrinkle', name: '주름 보톡스',             desc: '이마·눈가·미간 주름 개선',          skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
+        // 더모톡신 (피부 직접 주사)
+        { id: 'dermotoxin',    name: '더모톡신 (아쿠아톡신)',   desc: '피부에 직접 주사하는 보톡스 리프팅', skinLayer: 'dermis' as SL, drugOptions: BOTOX_DRUGS },
+        { id: 'mesobotox',     name: '메조보톡스',              desc: '모공·피지 개선 보톡스 리프팅',      skinLayer: 'dermis' as SL, drugOptions: BOTOX_DRUGS },
+        // 특수 부위
+        { id: 'botox_special', name: '특수부위 보톡스',         desc: '침샘·측두근·콧볼·입꼬리·거미스마일', skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
+        { id: 'botox_hyperhid',name: '다한증 보톡스',           desc: '손·발·겨드랑이 땀분비 억제',        skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
+        { id: 'botox_scalp',   name: '탈모 보톡스',             desc: '두피 혈류 개선·발모 촉진',          skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
+        // 윤곽/바디
+        { id: 'botox_body',    name: '바디 보톡스',             desc: '종아리·승모근·허벅지·팔뚝',         skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
+        { id: 'contour',       name: '윤곽주사',                desc: '갸름한 얼굴라인을 위한 주사',       skinLayer: 'subcutaneous' as SL },
+      ];
+    })(),
   },
   {
     id: 'filler',
@@ -259,6 +271,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [catId, setCatId] = useState<string | null>(null);
   const [itemId, setItemId] = useState<string | null>(null);
   const [shots, setShots] = useState<number | null>(null);
+  const [drugId, setDrugId] = useState<string | null>(null);
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [clinic, setClinic] = useState('밴스 미금');
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
@@ -288,7 +301,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   ];
 
   const reset = () => {
-    setStep(1); setCatId(null); setItemId(null); setShots(null);
+    setStep(1); setCatId(null); setItemId(null); setShots(null); setDrugId(null);
     setDate(new Date().toISOString().split('T')[0]);
     setClinic('밴스 미금'); setSatisfaction(4); setMemo('');
     setBodyArea('face'); setCustomBodyArea('');
@@ -300,10 +313,15 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const selectedCat = CATEGORIES.find(c => c.id === catId);
   const selectedItem = selectedCat?.items.find(i => i.id === itemId);
   const needsShots = !!(selectedItem?.shotOptions?.length);
+  const needsDrug = !!(selectedItem?.drugOptions?.length);
 
-  // 총 단계: 1(카테고리) → 2(시술) → 3(샷수, 해당시) → 마지막(상세)
-  const totalSteps = needsShots ? 4 : 3;
-  const isDetailStep = needsShots ? step === 4 : step === 3;
+  // 동적 단계 계산: 1(카테고리) → 2(시술) → [3:약물] → [N:샷수] → 마지막(상세)
+  const extraSteps = (needsDrug ? 1 : 0) + (needsShots ? 1 : 0);
+  const totalSteps = 3 + extraSteps;
+  const drugStep = needsDrug ? 3 : -1;
+  const shotsStep = needsShots ? (needsDrug ? 4 : 3) : -1;
+  const detailStep = 3 + extraSteps;
+  const isDetailStep = step === detailStep;
 
   // 상세 단계 진입 시 사용 가능한 시술권 조회
   useEffect(() => {
@@ -328,13 +346,19 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const canNext = () => {
     if (step === 1) return !!catId;
     if (step === 2) return !!itemId;
-    if (step === 3 && needsShots) return !!shots;
+    if (step === drugStep) return !!drugId;
+    if (step === shotsStep) return !!shots;
     return true;
   };
 
+  const selectedDrug = selectedItem?.drugOptions?.find(d => d.id === drugId);
+
   const getTreatmentName = () => {
     if (!selectedItem) return '';
-    return shots ? `${selectedItem.name} ${shots}샷` : selectedItem.name;
+    let name = selectedItem.name;
+    if (selectedDrug) name += ` (${selectedDrug.name})`;
+    if (shots) name += ` ${shots}샷`;
+    return name;
   };
 
   // 결제 수단 → DB 값 매핑
@@ -395,7 +419,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="grid grid-cols-2 gap-2">
                 {CATEGORIES.map(cat => (
                   <button key={cat.id}
-                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); }}
+                    onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); }}
                     className={cn(
                       'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
                       cat.color,
@@ -423,7 +447,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               <div className="space-y-1.5">
                 {selectedCat.items.map(item => (
                   <button key={item.id}
-                    onClick={() => { setItemId(item.id); setShots(null); }}
+                    onClick={() => { setItemId(item.id); setShots(null); setDrugId(null); }}
                     className={cn(
                       'w-full flex items-center justify-between px-4 py-3 rounded-xl border transition-all text-left',
                       itemId === item.id
@@ -451,8 +475,34 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 3: 샷수 선택 ── */}
-          {step === 3 && needsShots && selectedItem && (
+          {/* ── 약물 선택 (보톡스 카테고리) ── */}
+          {step === drugStep && needsDrug && selectedItem && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">사용 약물을 선택하세요</p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
+              <div className="space-y-1.5">
+                {selectedItem.drugOptions!.map(drug => (
+                  <button key={drug.id}
+                    onClick={() => setDrugId(drug.id)}
+                    className={cn(
+                      'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
+                      drugId === drug.id
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    )}>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm text-gray-900 font-medium">{drug.name}</div>
+                      {drug.desc && <div className="text-[11px] text-gray-400 mt-0.5">{drug.desc}</div>}
+                    </div>
+                    {drugId === drug.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── 샷수 선택 ── */}
+          {step === shotsStep && needsShots && selectedItem && (
             <div>
               <p className="text-xs text-gray-400 mb-1">샷수를 선택하세요</p>
               <p className="text-sm font-semibold text-gray-900 mb-4">{selectedItem.name}</p>
