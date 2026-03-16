@@ -634,6 +634,50 @@ const Index = () => {
         }
       </div>
 
+      {/* Action Picker Sheet for home calendar */}
+      <Sheet open={showActionPicker} onOpenChange={setShowActionPicker}>
+        <SheetContent side="bottom" className="rounded-t-3xl px-5 pb-8 pt-4">
+          <div className="mx-auto w-10 h-1 rounded-full bg-muted-foreground/20 mb-5" />
+          <p className="text-center text-base font-semibold mb-1">
+            <span className="text-primary">{selectedDate ? format(selectedDate, 'M월 d일') : ''}</span>을 선택하셨어요
+          </p>
+          <p className="text-center text-sm text-muted-foreground mb-6">무엇을 추가하시겠어요?</p>
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              onClick={() => { setShowActionPicker(false); setShowHomeReservationModal(true); }}
+              className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 hover:bg-accent/50 active:scale-[0.97] transition-all"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-info/10">
+                <CalendarPlus className="h-6 w-6 text-info" />
+              </div>
+              <span className="text-sm font-semibold">예약 일정 추가</span>
+            </button>
+            <button
+              onClick={() => { setShowActionPicker(false); setShowHomeAddModal(true); }}
+              className="flex flex-col items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 hover:bg-primary/10 active:scale-[0.97] transition-all"
+            >
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                <ClipboardList className="h-6 w-6 text-primary" />
+              </div>
+              <span className="text-sm font-semibold">시술 내역 추가</span>
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      <AddTreatmentModal
+        open={showHomeAddModal}
+        onClose={() => setShowHomeAddModal(false)}
+        onSave={async (record) => { await addRecord(record); }}
+        defaultDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
+      />
+
+      <AddReservationModal
+        open={showHomeReservationModal}
+        onClose={() => setShowHomeReservationModal(false)}
+        defaultDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
+      />
+
       {parseModalOpen && <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />}
       <AddTreatmentModal
         open={modalOpen}
