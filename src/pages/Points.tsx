@@ -188,7 +188,7 @@ const Points = () => {
 
                     {/* 잔액만 있고 시술권 없는 경우 (필로의원 등) */}
                     {items.length === 0 && balance !== undefined && (
-                      <p className="text-xs text-gray-400 text-center py-2">잔여 시술권 없음</p>
+                      <p className="text-xs text-muted-foreground text-center py-2">잔여 시술권 없음</p>
                     )}
                   </CardContent>
                 </Card>
