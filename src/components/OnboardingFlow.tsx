@@ -18,15 +18,6 @@ interface SpotlightRect {
 
 const STEPS = [
   {
-    key: 'fab',
-    selector: 'button[aria-label="시술 기록 추가"]',
-    title: '시술 기록 버튼',
-    desc: '이 버튼을 눌러\n시술 기록을 추가할 수 있어요',
-    position: 'top' as const,
-    padding: 10,
-    borderRadius: 9999,
-  },
-  {
     key: 'nav',
     selector: 'nav.fixed.bottom-0',
     title: '하단 네비게이션',
@@ -36,22 +27,22 @@ const STEPS = [
     borderRadius: 16,
   },
   {
-    key: 'nav-packages',
-    selector: 'nav.fixed.bottom-0 button:nth-child(3)',
-    title: '시술권 · 결제 관리',
-    desc: '시술권, 포인트, 결제 내역을\n한 곳에서 관리할 수 있어요',
+    key: 'nav-calendar',
+    selector: 'nav.fixed.bottom-0 button:nth-child(4)',
+    title: '예약 · 캘린더',
+    desc: '시술 예약을 등록하고\n캘린더에서 일정을 한눈에 확인해요',
     position: 'top' as const,
     padding: 8,
     borderRadius: 16,
   },
   {
-    key: 'nav-my',
-    selector: 'nav.fixed.bottom-0 button:last-child',
-    title: '마이 페이지',
-    desc: '피부 타입, 관리 목표, 시즌 등\n개인 설정을 관리해요',
+    key: 'fab',
+    selector: 'button[aria-label="시술 기록 추가"]',
+    title: '시술 기록 버튼',
+    desc: '이 버튼을 눌러\n시술 기록을 추가할 수 있어요',
     position: 'top' as const,
-    padding: 8,
-    borderRadius: 16,
+    padding: 10,
+    borderRadius: 9999,
   },
   {
     key: 'finish',
