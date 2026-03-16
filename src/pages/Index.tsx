@@ -452,15 +452,65 @@ const Index = () => {
         <Card className="border-0 shadow-sm overflow-hidden">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-sm font-bold text-foreground">{format(TODAY, 'yyyy년 M월', { locale: ko })}</p>
               <button
-                onClick={() => navigate('/calendar')}
-                className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                전체보기 <ChevronRight size={10} />
+                onClick={() => setCalendarMonth(prev => subMonths(prev, 1))}
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+              >
+                <ChevronLeft size={16} className="text-muted-foreground" />
+              </button>
+
+              <div className="relative">
+                <button
+                  onClick={() => setYearMonthPickerOpen(v => !v)}
+                  className="text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1"
+                >
+                  {format(calendarMonth, 'yyyy년 M월', { locale: ko })}
+                  <ChevronDown size={12} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
+                </button>
+
+                {yearMonthPickerOpen && (
+                  <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-lg p-3 w-[260px]">
+                    {/* Year selector */}
+                    <div className="flex items-center justify-between mb-3">
+                      <button onClick={() => setCalendarMonth(prev => setYear(prev, prev.getFullYear() - 1))} className="p-1 rounded hover:bg-muted">
+                        <ChevronLeft size={14} />
+                      </button>
+                      <span className="text-sm font-bold">{calendarMonth.getFullYear()}년</span>
+                      <button onClick={() => setCalendarMonth(prev => setYear(prev, prev.getFullYear() + 1))} className="p-1 rounded hover:bg-muted">
+                        <ChevronRight size={14} />
+                      </button>
+                    </div>
+                    {/* Month grid */}
+                    <div className="grid grid-cols-4 gap-1.5">
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setCalendarMonth(prev => setMonth(setYear(prev, calendarMonth.getFullYear()), i));
+                            setYearMonthPickerOpen(false);
+                          }}
+                          className={cn(
+                            "py-1.5 rounded-lg text-xs font-medium transition-colors",
+                            calendarMonth.getMonth() === i
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-muted text-foreground"
+                          )}
+                        >
+                          {i + 1}월
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => setCalendarMonth(prev => addMonths(prev, 1))}
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+              >
+                <ChevronRight size={16} className="text-muted-foreground" />
               </button>
             </div>
-
-            <div className="grid grid-cols-7 mb-1">
               {WEEKDAYS.map((d) =>
               <div key={d} className="text-center text-[10px] text-muted-foreground font-medium py-1">{d}</div>
               )}
