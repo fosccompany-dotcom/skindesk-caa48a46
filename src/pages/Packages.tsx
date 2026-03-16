@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
+import { PaymentMethodKey, getMethodLabel, METHOD_STYLE, normalizeMethodKey } from '@/lib/paymentMethodUtils';
+import { useLanguage } from '@/i18n/LanguageContext';
 
 // ── 타입 ──────────────────────────────────────────────────────────────
 interface TreatmentPackage {
@@ -22,22 +24,11 @@ interface TreatmentPackage {
   total_sessions: number; used_sessions: number;
   expiry_date: string | null;
 }
-type PaymentMethod = '포인트충전' | '포인트' | '시술결제' | '카드' | '현금' | '서비스';
-type ClinicType    = '밴스' | '타의원';
 interface PaymentRecord {
-  id: string; date: string; clinic: string; clinic_type: ClinicType;
-  treatment_name: string; amount: number; method: PaymentMethod; memo?: string;
+  id: string; date: string; clinic: string; clinic_type: string;
+  treatment_name: string; amount: number; method: string; memo?: string;
 }
 interface ClinicBalance { clinic: string; balance: number; }
-
-const methodStyle: Record<string, { bg: string; text: string }> = {
-  '포인트충전': { bg: 'bg-emerald-50', text: 'text-emerald-600' },
-  '포인트':     { bg: 'bg-orange-50',  text: 'text-orange-600' },
-  '시술결제':   { bg: 'bg-indigo-50',  text: 'text-indigo-600' },
-  '카드':       { bg: 'bg-sky-50',     text: 'text-sky-600' },
-  '현금':       { bg: 'bg-amber-50',   text: 'text-amber-600' },
-  '서비스':     { bg: 'bg-gray-100',   text: 'text-gray-500' },
-};
 
 // ─────────────────────────────────────────────────────────────────────
 const Packages = () => {
