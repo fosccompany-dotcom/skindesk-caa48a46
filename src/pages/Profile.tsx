@@ -413,32 +413,6 @@ const Profile = () => {
         <div className="absolute inset-0 bg-black/40" style={{ clipPath: 'inset(0)' }} />
         <div className="page-header-gradient relative z-10 flex items-center justify-between" style={{ background: 'transparent' }}>
         <h1 className="text-lg font-bold text-justify">{nickname ? `${nickname}님의 페이지` : t('my_page')}</h1>
-        <div className="relative" ref={langDropdownRef}>
-          <button
-              onClick={() => setLangOpen((prev) => !prev)}
-              className="h-9 w-9 rounded-full bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors">
-              
-            <Globe className="h-4.5 w-4.5 text-muted-foreground" />
-          </button>
-          {langOpen &&
-            <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
-              {(['ko', 'en', 'zh'] as Language[]).map((lang) =>
-              <button
-                key={lang}
-                onClick={() => {setLanguage(lang);setLangOpen(false);}}
-                className={cn(
-                  'w-full text-left px-4 py-2.5 text-xs font-medium transition-colors',
-                  language === lang ?
-                  'bg-primary/10 text-primary' :
-                  'text-foreground hover:bg-muted'
-                )}>
-                
-                  {LANGUAGE_LABELS[lang]}
-                </button>
-              )}
-            </div>
-            }
-        </div>
         </div>
       </div>
 
