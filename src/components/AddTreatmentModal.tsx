@@ -658,10 +658,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 2 (필러): 약제 선택 ── */}
           {step === 2 && isFiller && (
             <div>
-              <p className="text-xs text-gray-400 mb-1">
+              <p className="text-xs text-muted-foreground mb-1">
                 {language === 'en' ? 'Select filler product (optional)' : language === 'zh' ? '选择填充产品（可选）' : '필러 종류를 선택하세요 (선택사항)'}
               </p>
-              <p className="text-sm font-semibold text-gray-900 mb-4">🌙 {language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러·실리프팅'}</p>
+              <p className="text-sm font-semibold text-foreground mb-4">🌙 {language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러·실리프팅'}</p>
               <div className="space-y-1.5">
                 {fillerDrugOptions.map(drug => (
                   <button key={drug.id}
