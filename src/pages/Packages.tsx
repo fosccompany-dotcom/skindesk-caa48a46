@@ -309,7 +309,7 @@ const Packages = () => {
                 )}
                 {finishedPackages.length > 0 && (
                   <div>
-                    <p className="text-xs font-bold text-gray-400 mb-2 mt-4">완료 {finishedPackages.length}개</p>
+                    <p className="text-xs font-bold text-muted-foreground mb-2 mt-4">완료 {finishedPackages.length}개</p>
                     <div className="space-y-2.5 opacity-50">
                       {finishedPackages.map(pkg => (
                         <PackageCard key={pkg.id} pkg={pkg} onEdit={() => handleEditPkg(pkg)} onDelete={() => setDeleteTarget({ type: 'package', id: pkg.id, name: pkg.name })} />
