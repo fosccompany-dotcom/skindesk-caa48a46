@@ -388,6 +388,7 @@ const CalendarViewPage = () => {
         open={showReservationModal}
         onClose={() => setShowReservationModal(false)}
         defaultDate={selectedDateStr}
+        onSaved={fetchReservations}
       />
 
       <LoginRequiredSheet
