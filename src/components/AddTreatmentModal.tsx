@@ -520,7 +520,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     }
     if (isFiller) {
       const drugName = selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
-      const areaName = selectedFillerArea ? getLocalizedName(selectedFillerArea) : null;
+      const areaName = fillerAreaId === '__custom'
+        ? (customFillerArea.trim() || null)
+        : selectedFillerArea ? getLocalizedName(selectedFillerArea) : null;
       if (drugName && areaName) return `${drugName} - ${areaName}`;
       if (areaName) return `필러 - ${areaName}`;
       if (drugName) return drugName;
