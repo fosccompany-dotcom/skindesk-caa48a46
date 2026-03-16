@@ -63,30 +63,9 @@ const CATEGORIES: Category[] = [
     label: '보톡스/윤곽주사',
     emoji: '💉',
     color: 'border-blue-300 bg-blue-50',
-    items: (() => {
-      const BOTOX_DRUGS: DrugOption[] = [
-        { id: 'botulax',    name: '보툴렉스',       desc: '국산 · 합리적인 가격' },
-        { id: 'nabota',     name: '나보타',          desc: '국산 · 자연스러운 효과' },
-        { id: 'coretox',    name: '코어톡스',        desc: '국산 · 내성 적음' },
-        { id: 'xeomin',     name: '제오민',          desc: '독일 · 순수 보톡스' },
-        { id: 'allergan',   name: '엘러간 보톡스',   desc: '미국 · 프리미엄' },
-      ];
-      return [
-        // 얼굴 보톡스
-        { id: 'botox_jaw',     name: '사각턱 보톡스',           desc: '교근 퇴축, 갸름한 V라인',           skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'botox_wrinkle', name: '주름 보톡스',             desc: '이마·눈가·미간 주름 개선',          skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        // 더모톡신 (피부 직접 주사)
-        { id: 'dermotoxin',    name: '더모톡신 (아쿠아톡신)',   desc: '피부에 직접 주사하는 보톡스 리프팅', skinLayer: 'dermis' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'mesobotox',     name: '메조보톡스',              desc: '모공·피지 개선 보톡스 리프팅',      skinLayer: 'dermis' as SL, drugOptions: BOTOX_DRUGS },
-        // 특수 부위
-        { id: 'botox_special', name: '특수부위 보톡스',         desc: '침샘·측두근·콧볼·입꼬리·거미스마일', skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'botox_hyperhid',name: '다한증 보톡스',           desc: '손·발·겨드랑이 땀분비 억제',        skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'botox_scalp',   name: '탈모 보톡스',             desc: '두피 혈류 개선·발모 촉진',          skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        // 윤곽/바디
-        { id: 'botox_body',    name: '바디 보톡스',             desc: '종아리·승모근·허벅지·팔뚝',         skinLayer: 'subcutaneous' as SL, drugOptions: BOTOX_DRUGS },
-        { id: 'contour',       name: '윤곽주사',                desc: '갸름한 얼굴라인을 위한 주사',       skinLayer: 'subcutaneous' as SL },
-      ];
-    })(),
+    items: [
+      { id: 'contour',       name: '윤곽주사',                desc: '갸름한 얼굴라인을 위한 주사',       skinLayer: 'subcutaneous' },
+    ],
   },
   {
     id: 'filler',
