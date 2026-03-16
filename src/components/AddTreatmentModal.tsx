@@ -607,8 +607,65 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
-          {/* ── STEP 2: 시술 선택 (비보톡스) ── */}
-          {step === 2 && selectedCat && !isBotox && (
+          {/* ── STEP 2 (필러): 약제 선택 ── */}
+          {step === 2 && isFiller && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">
+                {language === 'en' ? 'Select filler product (optional)' : language === 'zh' ? '选择填充产品（可选）' : '필러 종류를 선택하세요 (선택사항)'}
+              </p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">🌙 {language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러·실리프팅'}</p>
+              <div className="space-y-1.5">
+                {fillerDrugOptions.map(drug => (
+                  <button key={drug.id}
+                    onClick={() => setFillerDrugId(prev => prev === drug.id ? null : drug.id)}
+                    className={cn(
+                      'w-full flex items-center justify-between px-4 py-3.5 rounded-xl border transition-all text-left',
+                      fillerDrugId === drug.id
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/5 ring-1 ring-[#C9A96E]/30'
+                        : 'border-gray-200 bg-gray-50 hover:border-gray-300'
+                    )}>
+                    <div className="text-sm text-gray-900 font-medium">{getLocalizedName(drug)}</div>
+                    {fillerDrugId === drug.id && <Check size={12} className="text-[#C9A96E] shrink-0" />}
+                  </button>
+                ))}
+              </div>
+              <button
+                onClick={() => { setFillerDrugId(null); setStep(3); }}
+                className="w-full mt-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-400 hover:bg-gray-50 hover:text-gray-600 transition-colors"
+              >
+                {language === 'en' ? 'Skip →' : language === 'zh' ? '跳过 →' : '건너뛰기 →'}
+              </button>
+            </div>
+          )}
+
+          {/* ── STEP 3 (필러): 부위 선택 ── */}
+          {step === 3 && isFiller && (
+            <div>
+              <p className="text-xs text-gray-400 mb-1">
+                {language === 'en' ? 'Select treatment area' : language === 'zh' ? '选择治疗部位' : '시술 부위를 선택하세요'}
+              </p>
+              <p className="text-sm font-semibold text-gray-900 mb-4">
+                🌙 {selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : (language === 'en' ? 'Filler' : language === 'zh' ? '填充剂' : '필러')}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {fillerAreaOptions.map(area => (
+                  <button key={area.id}
+                    onClick={() => setFillerAreaId(prev => prev === area.id ? null : area.id)}
+                    className={cn(
+                      'py-3 rounded-xl border text-sm font-medium transition-all',
+                      fillerAreaId === area.id
+                        ? 'border-[#C9A96E] bg-[#C9A96E]/10 text-[#C9A96E]'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:border-gray-300'
+                    )}>
+                    {getLocalizedName(area)}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* ── STEP 2: 시술 선택 (비보톡스/비필러) ── */}
+          {step === 2 && selectedCat && !isBotox && !isFiller && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
