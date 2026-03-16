@@ -86,6 +86,11 @@ const Index = () => {
   const [clinicPayments, setClinicPayments] = useState<{amount: number;method: string;}[]>([]);
   const [todayCondition, setTodayCondition] = useState<number | null>(null);
   const [conditionMemo, setConditionMemo] = useState('');
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [showActionPicker, setShowActionPicker] = useState(false);
+  const [showHomeAddModal, setShowHomeAddModal] = useState(false);
+  const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
 
   // Bloom info
   const activeDays = getActiveDays(records);
