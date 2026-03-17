@@ -452,7 +452,7 @@ const Profile = () => {
           className="page-header-gradient relative z-10 flex items-center justify-between"
           style={{ background: "transparent" }}
         >
-          <h1 className="text-lg font-bold text-justify">{nickname ? `${nickname}님의 페이지` : t("my_page")}</h1>
+          <h1 className="text-lg font-bold text-justify">{nickname ? `${nickname}님의 기본정보` : t("my_page")}</h1>
         </div>
       </div>
 
@@ -591,7 +591,9 @@ const Profile = () => {
                       const shareText = `${nickname || "사용자"}님의 관리 레벨: ${stageName} 🌸 피부과도 앱으로 관리하는 편 — Bloomlog`;
                       const shareData = { title: "Bloomlog 🌸", text: shareText, url: "https://bloomlog.kr" };
                       if (navigator.share) {
-                        try { await navigator.share(shareData); } catch {}
+                        try {
+                          await navigator.share(shareData);
+                        } catch {}
                       } else {
                         try {
                           await navigator.clipboard.writeText(`${shareText}\nhttps://bloomlog.kr`);
