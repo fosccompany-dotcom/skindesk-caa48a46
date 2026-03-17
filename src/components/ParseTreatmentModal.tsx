@@ -221,28 +221,43 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       const hasCharges   = data?.charges?.length  > 0;
       const hasPackages  = data?.packages?.length > 0;
 
-      // 잔여금액 감지 (client-side)
+      // 잔여금액 감지 (client-side + AI 응답)
       const inputText = body.text || text;
       // "남아있는/남아계신" 패턴 감지 → 시술권으로 저장
       const remainingPattern = /남아[있계]|남은\s*관리|잔여\s*시술|잔여\s*관리/;
       const textHasRemaining = remainingPattern.test(inputText);
-      // 이미지 모드에서도 감지: 잔여금액이 있고 records의 date가 모두 null이면 "남은 관리" 컨텍스트
-      const inferredRemaining = !textHasRemaining && hasRecords && data.records.every((r: any) => !r.date);
-      setIsRemainingContext(textHasRemaining || inferredRemaining);
-      const balanceMatch = inputText.match(/잔여금액\s*([\d,.\s]+)\s*원/);
+      // AI 응답에서 remaining context 감지 (이미지 모드 지원)
+      const aiHasRemaining = data?.is_remaining_context === true;
+      // 이미지 모드에서도 감지: records의 date가 모두 null이면 "남은 관리" 컨텍스트
+      const inferredRemaining = !textHasRemaining && !aiHasRemaining && hasRecords && data.records.every((r: any) => !r.date);
+      setIsRemainingContext(textHasRemaining || aiHasRemaining || inferredRemaining);
+
+      // 잔여금액: AI 응답 우선, 없으면 텍스트에서 추출
       let hasBalance = false;
-      if (balanceMatch) {
-        const balanceAmount = parseInt(balanceMatch[1].replace(/[,.\s]/g, '')) || 0;
-        if (balanceAmount > 0) {
-          const clinicFromData = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic || '';
-          const clinicFromText = inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
-          setBalanceInfo({
-            amount: balanceAmount,
-            clinic: clinicFromData || clinicFromText,
-            selected: true,
-            method: 'set',
-          });
-          hasBalance = true;
+      if (data?.balance?.amount > 0) {
+        const clinicFromData = data.balance.clinic || data?.records?.[0]?.clinic || '';
+        setBalanceInfo({
+          amount: data.balance.amount,
+          clinic: clinicFromData,
+          selected: true,
+          method: 'set',
+        });
+        hasBalance = true;
+      } else {
+        const balanceMatch = inputText.match(/잔여금액\s*([\d,.\s]+)\s*원/);
+        if (balanceMatch) {
+          const balanceAmount = parseInt(balanceMatch[1].replace(/[,.\s]/g, '')) || 0;
+          if (balanceAmount > 0) {
+            const clinicFromData = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic || '';
+            const clinicFromText = inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
+            setBalanceInfo({
+              amount: balanceAmount,
+              clinic: clinicFromData || clinicFromText,
+              selected: true,
+              method: 'set',
+            });
+            hasBalance = true;
+          }
         }
       }
 
