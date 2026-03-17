@@ -1078,10 +1078,12 @@ const Profile = () => {
                     navigate("/");
                     return;
                   }
-                  const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/delete-account`, {
-                    method: "POST",
+                  const { data, error: fnError } = await supabase.functions.invoke("delete-account", {
                     headers: { Authorization: `Bearer ${session.access_token}` },
                   });
+                  if (fnError) {
+                    throw new Error(fnError.message || "탈퇴 처리 중 오류가 발생했습니다.");
+                  }
                   if (!response.ok) {
                     const errData = await response.json().catch(() => ({}));
                     throw new Error(errData.error || "탈퇴 처리 중 오류가 발생했습니다.");
