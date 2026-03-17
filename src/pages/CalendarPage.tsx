@@ -301,18 +301,7 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-5 pt-4">
-        <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="history">시술내역</TabsTrigger>
-            <TabsTrigger value="payments">결제기록</TabsTrigger>
-          </TabsList>
-          <TabsContent value="history">
-            <MyTreatmentHistory />
-          </TabsContent>
-          <TabsContent value="payments">
-            <PaymentHistoryTab />
-          </TabsContent>
-        </Tabs>
+        <HistoryTabs defaultTab={defaultTab} />
       </div>
     </div>
   );
