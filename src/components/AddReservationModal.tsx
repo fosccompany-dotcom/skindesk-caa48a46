@@ -42,13 +42,29 @@ const DEFAULT_CAT_META = { emoji: "💊", color: "border-gray-300 bg-gray-50" };
 
 // ─── Category display order (same as AddTreatmentModal) ───
 const CATEGORY_ORDER: string[] = [
-  '리프팅·보톡스', '미백·색소', '스킨부스터', '피부 관리',
-  '필러·실리프팅', '수액·영양주사', '주사 관리', '여드름·흉터',
-  '지방분해', '제모', '탈모·두피', '기타',
+  "리프팅·보톡스",
+  "미백·색소",
+  "스킨부스터",
+  "피부 관리",
+  "필러·실리프팅",
+  "수액·영양주사",
+  "주사 관리",
+  "여드름·흉터",
+  "지방분해",
+  "제모",
+  "탈모·두피",
+  "기타",
   // fallback IDs
-  'lifting', 'whitening', 'booster', 'skincare',
-  'filler', 'iv', 'botox', 'acne',
-  'fat', 'hair_removal',
+  "lifting",
+  "whitening",
+  "booster",
+  "skincare",
+  "filler",
+  "iv",
+  "botox",
+  "acne",
+  "fat",
+  "hair_removal",
 ];
 const getCatOrder = (id: string) => {
   const idx = CATEGORY_ORDER.indexOf(id);
@@ -211,16 +227,18 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
       }
       groups[catKey].push({ id: opt.id, name: itemName });
     }
-    return Object.entries(groups).map(([catKey, items]) => {
-      const meta = CATEGORY_META[catKey] || DEFAULT_CAT_META;
-      return {
-        id: catKey,
-        label: catLabels[catKey],
-        emoji: meta.emoji,
-        color: meta.color,
-        items: [...items, { id: "__custom", name: customLabel }],
-      };
-    }).sort((a, b) => getCatOrder(a.id) - getCatOrder(b.id));
+    return Object.entries(groups)
+      .map(([catKey, items]) => {
+        const meta = CATEGORY_META[catKey] || DEFAULT_CAT_META;
+        return {
+          id: catKey,
+          label: catLabels[catKey],
+          emoji: meta.emoji,
+          color: meta.color,
+          items: [...items, { id: "__custom", name: customLabel }],
+        };
+      })
+      .sort((a, b) => getCatOrder(a.id) - getCatOrder(b.id));
   }, [dbOptions, language]);
 
   const selectedCat = displayCategories.find((c) => c.id === catId);
@@ -391,7 +409,9 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                   </SelectTrigger>
                   <SelectContent className="max-h-[240px]">
                     {TIME_SLOTS.map((t) => (
-                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                      <SelectItem key={t} value={t}>
+                        {t}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -472,7 +492,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
               {catId && selectedCat && (
                 <div>
                   <button onClick={() => setCatId(null)} className="text-xs text-info mb-3 flex items-center gap-1">
-                    <ChevronLeft className="h-3 w-3" /> 시술 추가하기
+                    <ChevronLeft className="h-3 w-3" /> 다른 시술 더 추가하기
                   </button>
                   <label className="text-sm font-semibold text-foreground mb-3 block">
                     {selectedCat.emoji} {selectedCat.label}
