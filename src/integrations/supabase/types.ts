@@ -462,7 +462,6 @@ export type Database = {
           bloom_stage: number
           concerns: string[] | null
           created_at: string | null
-          current_season: string | null
           deleted_at: string | null
           email: string | null
           goals: string[] | null
@@ -481,7 +480,6 @@ export type Database = {
           bloom_stage?: number
           concerns?: string[] | null
           created_at?: string | null
-          current_season?: string | null
           deleted_at?: string | null
           email?: string | null
           goals?: string[] | null
@@ -500,7 +498,6 @@ export type Database = {
           bloom_stage?: number
           concerns?: string[] | null
           created_at?: string | null
-          current_season?: string | null
           deleted_at?: string | null
           email?: string | null
           goals?: string[] | null
