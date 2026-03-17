@@ -137,7 +137,7 @@ interface Props {
 export default function AddReservationModal({ open, onClose, defaultDate, onSaved }: Props) {
   const { language } = useLanguage();
   const [step, setStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   // Step 1: Date & Time
   const [date, setDate] = useState(defaultDate || new Date().toISOString().split("T")[0]);
