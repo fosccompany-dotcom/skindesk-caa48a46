@@ -49,6 +49,7 @@ import { ko } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import AddTreatmentModal from "@/components/AddTreatmentModal";
 import AddReservationModal from "@/components/AddReservationModal";
+import EditReservationSheet from "@/components/EditReservationSheet";
 import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
