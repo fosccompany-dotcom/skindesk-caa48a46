@@ -323,7 +323,7 @@ const Profile = () => {
   const addRegion = () => {
     if (!selectedSido || !selectedGugun) return;
     const full = `${selectedSido} ${selectedGugun}`;
-    if (!regions.includes(full)) {
+    if (!regions.includes(full) && regions.length < 3) {
       setRegions([...regions, full]);
     }
     setSelectedSido("");
