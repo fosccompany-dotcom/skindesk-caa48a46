@@ -762,7 +762,7 @@ const Index = () => {
                     <p className="text-xs font-semibold text-foreground">이 날짜에 기록이 없어요</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       탭하여 <span className="font-bold text-primary">{format(selectedDate, "M월 d일")}</span>에
-                      추가하세요
+                      예약일정과 시술기록을 추가하세요
                     </p>
                   </div>
                 </button>
