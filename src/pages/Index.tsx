@@ -327,10 +327,10 @@ const Index = () => {
       <div className="safe-top relative">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover overflow-hidden" style={{ clipPath: 'inset(0)' }} />
         <div className="absolute inset-0 bg-black/50" style={{ clipPath: 'inset(0)' }} />
-        <div className="relative px-5 pt-10 pb-5 space-y-4">
+        <div className="relative px-5 pt-8 pb-3 space-y-2">
 
           {/* Language selector */}
-          <div className="absolute top-3 right-4 z-20" ref={langDropdownRef}>
+          <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
             <button
               onClick={() => setLangOpen((prev) => !prev)}
               className="h-8 w-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
@@ -389,47 +389,6 @@ const Index = () => {
                 {nickname || '회원'}님의 <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
             </div>
-          </div>
-
-
-          {/* Row 3: Management Mode selector */}
-          <div className="relative">
-            <div
-              className="flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 cursor-pointer active:bg-white/20 transition-colors"
-              onClick={() => guardAction(() => setModeDropdownOpen((v) => !v))}>
-              
-              <span className="text-lg">{seasonMeta?.emoji || '⚙️'}</span>
-              <div className="flex-1 min-w-0">
-                <p className="text-white/50 text-[10px]">관리 모드</p>
-                <p className="text-white text-xs font-semibold">
-                  {seasonMeta ? seasonMeta.title : '모드를 선택하세요'}
-                </p>
-              </div>
-              <ChevronDown size={14} className={cn("text-white/40 transition-transform", modeDropdownOpen && "rotate-180")} />
-            </div>
-
-            {/* Dropdown */}
-            {modeDropdownOpen &&
-            <div className="absolute left-0 right-0 top-full mt-1 bg-card/95 backdrop-blur-md rounded-xl shadow-lg border border-border/50 z-50 overflow-hidden">
-                {(Object.entries(SEASON_CONFIG) as [SeasonKey, typeof SEASON_CONFIG[SeasonKey]][]).map(([key, cfg]) =>
-              <button
-                key={key}
-                className={cn(
-                  "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50",
-                  currentSeason === key && "bg-muted"
-                )}
-                onClick={() => handleSeasonChange(key)}>
-                
-                    <span className="text-xl">{cfg.emoji}</span>
-                    <div className="flex-1">
-                      <p className="text-sm font-semibold text-foreground">{cfg.title}</p>
-                      <p className="text-[10px] text-muted-foreground">{cfg.sub}</p>
-                    </div>
-                    {currentSeason === key && <Check size={16} className="text-primary shrink-0" />}
-                  </button>
-              )}
-              </div>
-            }
           </div>
         </div>
       </div>
