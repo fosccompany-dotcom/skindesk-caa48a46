@@ -529,8 +529,8 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
             </div>
           )}
 
-          {/* Step 4: Memo */}
-          {step === 4 && (
+          {/* Step 3: Memo */}
+          {step === 3 && (
             <div>
               <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
                 <FileText className="h-3.5 w-3.5 text-info" /> 메모 (선택)
