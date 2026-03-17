@@ -619,6 +619,23 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           </div>
         </DialogHeader>
 
+        {/* AI 파싱 CTA — 상단 메인 */}
+        {onOpenParse && step === 1 && !editRecord && (
+          <button
+            onClick={() => { handleClose(); onOpenParse(); }}
+            className="mx-5 mt-3 flex items-center gap-3 px-4 py-3 rounded-2xl bg-primary text-primary-foreground shadow-md hover:opacity-90 active:scale-[0.98] transition-all"
+          >
+            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary-foreground/20">
+              <Sparkles size={18} />
+            </div>
+            <div className="flex-1 text-left">
+              <p className="text-sm font-bold">AI로 한 번에 등록</p>
+              <p className="text-[11px] opacity-75 mt-0.5">문자 · 카톡 · 이미지 붙여넣기</p>
+            </div>
+            <ChevronRight size={16} className="opacity-60" />
+          </button>
+        )}
+
         <div className="px-5 py-4">
 
           {/* ── STEP 1: 카테고리 선택 ── */}
@@ -1095,15 +1112,6 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </Button>
           )}
           </div>
-          {onOpenParse && (
-            <button
-              onClick={() => { handleClose(); onOpenParse(); }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-xs font-medium hover:bg-gray-50 hover:text-gray-600 transition-colors"
-            >
-              <Sparkles size={13} />
-              텍스트 · 이미지로 한 번에 등록하기
-            </button>
-          )}
         </div>
       </DialogContent>
     </Dialog>
