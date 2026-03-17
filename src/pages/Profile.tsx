@@ -854,7 +854,7 @@ const Profile = () => {
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
               onClick={async () => {
                 try {
-                  const { data: { session } } = await supabase.auth.getSession();
+                  const { data: { session } } = await supabase.auth.refreshSession();
                   if (!session) {
                     console.error('세션이 없습니다.');
                     navigate('/');
