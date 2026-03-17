@@ -118,7 +118,7 @@ const Index = () => {
       if (!user) return;
       const [payRes, pkgRes, resRes] = await Promise.all([
         supabase.from('payment_records').select('amount,method').eq('user_id', user.id),
-        supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic').eq('user_id', user.id),
+        supabase.from('treatment_packages').select('id,name,total_sessions,used_sessions,clinic,expiry_date').eq('user_id', user.id),
         supabase.from('reservations').select('id,date,time,treatment_name,clinic,memo,body_area,skin_layer').eq('user_id', user.id).order('date', { ascending: false }),
       ]);
       if (payRes.data) setClinicPayments(payRes.data);
