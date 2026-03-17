@@ -435,7 +435,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
     // If no DB data, fall back to hardcoded
     if (dbOptions.length === 0) {
-      return CATEGORIES.map(c => ({
+      const sorted = CATEGORIES.map(c => ({
         id: c.id,
         label: c.label,
         emoji: c.emoji,
@@ -445,6 +445,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           { id: '__custom', name: customLabel },
         ],
       }));
+      sorted.sort((a, b) => getCatOrder(a.id) - getCatOrder(b.id));
+      return sorted;
     }
 
     // Use DB data as primary source
