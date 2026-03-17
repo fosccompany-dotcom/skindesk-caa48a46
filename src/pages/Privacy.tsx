@@ -56,6 +56,18 @@ Anthropic Inc. — 영수증 AI 파싱 선택 기능 (처리 후 즉시 삭제)`
         heading: '10. 방침 변경',
         body: '변경 시 앱 내 공지 또는 이메일로 7일 전 고지.',
       },
+      {
+        heading: '11. 회원 탈퇴 및 개인정보 처리',
+        body: `회원이 탈퇴를 요청할 경우 다음과 같이 처리됩니다.
+
+즉시 처리: 이름, 이메일, 생년월일 등 개인식별정보는 즉시 삭제 또는 익명화 처리됩니다.
+
+30일 유예: 탈퇴 요청일로부터 30일간 계정 복구가 가능하며, 30일 경과 후 모든 데이터가 완전 삭제됩니다.
+
+결제 기록 보관: 전자상거래 등에서의 소비자 보호에 관한 법률에 따라 결제 관련 기록은 5년간 보관됩니다.
+
+익명화 데이터: 개인을 식별할 수 없는 형태로 익명화된 통계 데이터는 서비스 개선 목적으로 보관될 수 있습니다.`,
+      },
     ],
   },
   en: {
@@ -111,6 +123,18 @@ Deletion requests: My Page → Withdraw, or email fosccompany@gmail.com (process
         heading: '10. Policy Updates',
         body: 'Changes will be notified via in-app notice or email at least 7 days in advance.',
       },
+      {
+        heading: '11. Account Withdrawal & Data Processing',
+        body: `When a user requests account withdrawal, the following procedures apply.
+
+Immediate processing: Personal identifiable information such as name, email, and date of birth is immediately deleted or anonymized.
+
+30-day grace period: Account recovery is available for 30 days from the withdrawal request date. After 30 days, all data is permanently deleted.
+
+Payment record retention: Payment-related records are retained for 5 years in accordance with the Act on Consumer Protection in Electronic Commerce.
+
+Anonymized data: Statistical data anonymized in a form that cannot identify individuals may be retained for service improvement purposes.`,
+      },
     ],
   },
   zh: {
@@ -165,6 +189,18 @@ Anthropic Inc. — 可选AI收据解析功能（处理后立即删除）`,
       {
         heading: '10. 政策变更',
         body: '变更时将通过应用内通知或电子邮件提前7天告知。',
+      },
+      {
+        heading: '11. 账户注销及个人信息处理',
+        body: `会员申请注销时，将按以下方式处理。
+
+即时处理：姓名、电子邮件、出生日期等个人身份信息将立即删除或匿名化处理。
+
+30天缓冲期：自注销申请之日起30天内可恢复账户，30天后所有数据将被彻底删除。
+
+支付记录保留：根据《电子商务中消费者保护法》，支付相关记录将保留5年。
+
+匿名化数据：以无法识别个人身份的形式匿名化的统计数据可能会为改进服务而保留。`,
       },
     ],
   },

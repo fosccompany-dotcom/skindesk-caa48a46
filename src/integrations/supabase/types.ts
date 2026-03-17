@@ -463,6 +463,7 @@ export type Database = {
           concerns: string[] | null
           created_at: string | null
           current_season: string | null
+          deleted_at: string | null
           email: string | null
           goals: string[] | null
           id: string
@@ -481,6 +482,7 @@ export type Database = {
           concerns?: string[] | null
           created_at?: string | null
           current_season?: string | null
+          deleted_at?: string | null
           email?: string | null
           goals?: string[] | null
           id: string
@@ -499,6 +501,7 @@ export type Database = {
           concerns?: string[] | null
           created_at?: string | null
           current_season?: string | null
+          deleted_at?: string | null
           email?: string | null
           goals?: string[] | null
           id?: string
