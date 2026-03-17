@@ -244,6 +244,48 @@ const Index = () => {
   const isEmpty = cycles.length === 0 && records.length === 0;
   const exampleUpcoming = isEmpty ? [{ name: '울쎄라 리프팅', daysRemaining: 12 }] : null;
 
+  // Expiry reminder events: 30, 20, 10 days before expiry_date
+  const expiryEvents = useMemo(() => {
+    const events: { date: string; name: string; expiryDate: string; daysLeft: number }[] = [];
+    packages.forEach((pkg) => {
+      if (!pkg.expiry_date) return;
+      const remaining = (pkg.total_sessions ?? 0) - (pkg.used_sessions ?? 0);
+      if (remaining <= 0) return;
+      const expiry = new Date(pkg.expiry_date);
+      [30, 20, 10].forEach((daysBefore) => {
+        const reminderDate = addDays(expiry, -daysBefore);
+        if (reminderDate >= TODAY || daysBefore <= 10) {
+          const daysLeft = differenceInDays(expiry, TODAY);
+          if (daysLeft >= 0 && daysLeft <= 30) {
+            events.push({
+              date: format(reminderDate, 'yyyy-MM-dd'),
+              name: pkg.name,
+              expiryDate: format(expiry, 'M월 d일'),
+              daysLeft: daysBefore,
+            });
+          }
+        }
+      });
+    });
+    return events;
+  }, [packages]);
+
+  const expiryDateSet = useMemo(() => new Set(expiryEvents.map((e) => e.date)), [expiryEvents]);
+  const expiryByDate = useMemo(() => {
+    const map: Record<string, typeof expiryEvents> = {};
+    expiryEvents.forEach((e) => {
+      if (!map[e.date]) map[e.date] = [];
+      map[e.date].push(e);
+    });
+    return map;
+  }, [expiryEvents]);
+
+  // Example expiry for empty state
+  const exampleExpiryDate = useMemo(() => {
+    if (!isEmpty) return null;
+    return format(addDays(TODAY, 8), 'yyyy-MM-dd');
+  }, [isEmpty]);
+
   const handleSave = (record: Omit<TreatmentRecord, 'id'>) => {
     if (editRecord) {
       updateRecord(editRecord.id, record);
