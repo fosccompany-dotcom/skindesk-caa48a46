@@ -239,7 +239,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
         color: meta.color,
         items: [...items, { id: "__custom", name: customLabel }],
       };
-    });
+    }).sort((a, b) => getCatOrder(a.id) - getCatOrder(b.id));
   }, [dbOptions, language]);
 
   const selectedCat = displayCategories.find((c) => c.id === catId);
