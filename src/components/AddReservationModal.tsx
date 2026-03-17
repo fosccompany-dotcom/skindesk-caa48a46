@@ -551,20 +551,9 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
 
           {/* Step 3: Memo */}
           {step === 3 && (
-            <div>
-              <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
-                <FileText className="h-3.5 w-3.5 text-info" /> 메모 (선택)
-              </label>
-              <textarea
-                value={memo}
-                onChange={(e) => setMemo(e.target.value)}
-                placeholder="예약 관련 메모를 남겨보세요"
-                rows={3}
-                className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-info/40"
-              />
-
+            <div className="space-y-4">
               {/* Summary preview */}
-              <div className="mt-4 rounded-2xl bg-accent/30 p-4 space-y-2">
+              <div className="rounded-2xl bg-accent/30 p-4 space-y-2">
                 <p className="text-xs font-semibold text-muted-foreground mb-2">예약 요약</p>
                 <div className="flex items-center gap-2 text-sm">
                   <CalendarDays className="h-3.5 w-3.5 text-info shrink-0" />
@@ -589,6 +578,20 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                     ))}
                   </div>
                 </div>
+              </div>
+
+              {/* Memo */}
+              <div>
+                <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
+                  <FileText className="h-3.5 w-3.5 text-info" /> 메모 (선택)
+                </label>
+                <textarea
+                  value={memo}
+                  onChange={(e) => setMemo(e.target.value)}
+                  placeholder="예약 관련 메모를 남겨보세요"
+                  rows={3}
+                  className="w-full rounded-xl border border-border bg-card px-4 py-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-info/40"
+                />
               </div>
             </div>
           )}
