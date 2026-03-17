@@ -39,7 +39,7 @@ const Packages = () => {
   const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
   const defaultTab = searchParams.get('tab') || (savedTabOrder ? savedTabOrder[0] : 'packages');
 
-  // ── 탭 순서 커스텀 (드래그) ──
+  // ── 탭 순서 ──
   const TAB_ORDER_KEY = 'skindesk_tab_order';
   const [tabOrder, setTabOrder] = useState<('packages' | 'points')[]>(() => {
     try {
@@ -48,20 +48,12 @@ const Packages = () => {
     } catch {}
     return ['packages', 'points'];
   });
-  const [dragIdx, setDragIdx] = useState<number | null>(null);
 
-  const handleDragStart = (idx: number) => setDragIdx(idx);
-  const handleDragOver = (e: React.DragEvent, idx: number) => {
-    e.preventDefault();
-    if (dragIdx === null || dragIdx === idx) return;
-    const newOrder = [...tabOrder];
-    const [moved] = newOrder.splice(dragIdx, 1);
-    newOrder.splice(idx, 0, moved);
-    setTabOrder(newOrder);
-    localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(newOrder));
-    setDragIdx(idx);
+  const swapTabOrder = () => {
+    const swapped = [...tabOrder].reverse() as ('packages' | 'points')[];
+    setTabOrder(swapped);
+    localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(swapped));
   };
-  const handleDragEnd = () => setDragIdx(null);
 
   const tabConfig: Record<string, { icon: typeof Package; label: string }> = {
     packages: { icon: Package, label: '시술권 관리' },
@@ -218,44 +210,30 @@ const Packages = () => {
 
       <div className="page-content pb-28">
         <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="w-full relative mb-4 rounded-xl h-auto bg-muted p-1 grid grid-cols-[1fr_auto_1fr]">
-            {tabOrder.map((tabKey, idx) => {
-              const cfg = tabConfig[tabKey];
-              const Icon = cfg.icon;
-              const trigger = (
-                <TabsTrigger
-                  key={tabKey}
-                  value={tabKey}
-                  draggable
-                  onDragStart={() => handleDragStart(idx)}
-                  onDragOver={e => handleDragOver(e, idx)}
-                  onDragEnd={handleDragEnd}
-                  className="rounded-lg text-xs py-2 flex items-center gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm cursor-grab active:cursor-grabbing"
-                >
-                  <Icon className="h-3.5 w-3.5" /> {cfg.label}
-                </TabsTrigger>
-              );
-              if (idx === 0) {
+          <div className="flex items-center gap-1.5 mb-4">
+            <TabsList className="flex-1 rounded-xl h-auto bg-muted p-1 grid grid-cols-2">
+              {tabOrder.map((tabKey) => {
+                const cfg = tabConfig[tabKey];
+                const Icon = cfg.icon;
                 return (
-                  <React.Fragment key={tabKey}>
-                    {trigger}
-                    <button
-                      onClick={() => {
-                        const swapped = [...tabOrder].reverse() as ('packages' | 'points')[];
-                        setTabOrder(swapped);
-                        localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(swapped));
-                      }}
-                      className="flex items-center justify-center w-7 h-7 rounded-full bg-muted-foreground/10 hover:bg-muted-foreground/20 transition-colors self-center mx-0.5"
-                      title="탭 순서 변경"
-                    >
-                      <ArrowLeftRight className="h-3 w-3 text-muted-foreground" />
-                    </button>
-                  </React.Fragment>
+                  <TabsTrigger
+                    key={tabKey}
+                    value={tabKey}
+                    className="rounded-lg text-xs py-2 flex items-center gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm"
+                  >
+                    <Icon className="h-3.5 w-3.5" /> {cfg.label}
+                  </TabsTrigger>
                 );
-              }
-              return trigger;
-            })}
-          </TabsList>
+              })}
+            </TabsList>
+            <button
+              onClick={swapTabOrder}
+              className="flex items-center justify-center w-7 h-7 rounded-full bg-muted hover:bg-muted-foreground/20 transition-colors shrink-0"
+              title="탭 순서 변경"
+            >
+              <ArrowLeftRight className="h-3 w-3 text-muted-foreground" />
+            </button>
+          </div>
 
           {/* ══════════════ 시술권 관리 탭 ══════════════ */}
           <TabsContent value="packages" className="space-y-3 mt-0">
