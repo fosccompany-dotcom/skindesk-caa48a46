@@ -83,8 +83,8 @@ const GlobalFAB = () => {
         onSave={handleSave}
         editRecord={null}
         onOpenParse={() => {
-          setModalOpen(false);
           setParseModalOpen(true);
+          setModalOpen(false);
         }} />
 
       {/* FAB 코치마크 */}

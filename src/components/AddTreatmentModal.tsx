@@ -622,7 +622,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         {/* AI 파싱 CTA — 상단 메인 */}
         {onOpenParse && step === 1 && !editRecord && (
           <button
-            onClick={() => { handleClose(); onOpenParse(); }}
+            onClick={() => { reset(); onOpenParse(); }}
             className="mx-5 mt-3 flex items-center gap-3 px-4 py-3 rounded-2xl bg-primary text-primary-foreground shadow-md hover:opacity-90 active:scale-[0.98] transition-all"
           >
             <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary-foreground/20">
