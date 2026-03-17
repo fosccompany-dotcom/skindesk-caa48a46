@@ -391,7 +391,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* ── HEADER with logo background ── */}
-      <div className="relative safe-top overflow-hidden">
+      <div className="relative safe-top overflow-visible">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40" />
         <div className="page-header-gradient relative z-10 pt-4 space-y-2" style={{ background: "transparent" }}>
