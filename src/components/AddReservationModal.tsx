@@ -137,7 +137,7 @@ interface Props {
 export default function AddReservationModal({ open, onClose, defaultDate, onSaved }: Props) {
   const { language } = useLanguage();
   const [step, setStep] = useState(1);
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   // Step 1: Date & Time
   const [date, setDate] = useState(defaultDate || new Date().toISOString().split("T")[0]);
@@ -154,7 +154,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const [catId, setCatId] = useState<string | null>(null);
   const [customTreatmentName, setCustomTreatmentName] = useState("");
 
-  // Step 4: Memo
+  // Step 3: Memo
   const [memo, setMemo] = useState("");
 
   // DB categories
@@ -254,12 +254,10 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const canNext = () => {
     switch (step) {
       case 1:
-        return !!date && !!time;
+        return !!date && !!time && clinic.trim().length > 0;
       case 2:
-        return clinic.trim().length > 0;
-      case 3:
         return treatments.length > 0;
-      case 4:
+      case 3:
         return true;
       default:
         return false;
@@ -398,27 +396,24 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                   </SelectContent>
                 </Select>
               </div>
+
+              <div>
+                <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
+                  <Stethoscope className="h-3.5 w-3.5 text-info" /> 병원 선택
+                </label>
+                <ClinicSearchInput
+                  value={clinic}
+                  onChange={setClinic}
+                  onSelectPlace={handleSelectPlace}
+                  placeholder="병원명을 검색하세요"
+                />
+                {clinicAddress && <p className="text-xs text-muted-foreground mt-2 px-1">📍 {clinicAddress}</p>}
+              </div>
             </>
           )}
 
-          {/* Step 2: Clinic */}
+          {/* Step 2: Treatment selection (multi) */}
           {step === 2 && (
-            <div>
-              <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
-                <Stethoscope className="h-3.5 w-3.5 text-info" /> 병원 선택
-              </label>
-              <ClinicSearchInput
-                value={clinic}
-                onChange={setClinic}
-                onSelectPlace={handleSelectPlace}
-                placeholder="병원명을 검색하세요"
-              />
-              {clinicAddress && <p className="text-xs text-muted-foreground mt-2 px-1">📍 {clinicAddress}</p>}
-            </div>
-          )}
-
-          {/* Step 3: Treatment selection (multi) */}
-          {step === 3 && (
             <div>
               {/* Selected treatments list */}
               {treatments.length > 0 && (
@@ -534,8 +529,8 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
             </div>
           )}
 
-          {/* Step 4: Memo */}
-          {step === 4 && (
+          {/* Step 3: Memo */}
+          {step === 3 && (
             <div>
               <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
                 <FileText className="h-3.5 w-3.5 text-info" /> 메모 (선택)
