@@ -56,6 +56,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import LoginRequiredSheet from "@/components/LoginRequiredSheet";
 import { useLoginGuard } from "@/hooks/useLoginGuard";
+import { useAuth } from "@/context/AuthContext";
 import logoImg from "@/assets/logo.png";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 
@@ -200,11 +201,26 @@ const Index = () => {
     loadDashboard();
   }, [records, reservationRefresh]);
 
-  // Season change handler
+  // Season change handler — require login, then apply pending mode
+  const pendingSeasonRef = useRef<SeasonKey | null>(null);
+  const { user: authUser } = useAuth();
   const handleSeasonChange = (season: SeasonKey) => {
-    setCurrentSeason(season);
     setModeDropdownOpen(false);
+    if (!authUser) {
+      pendingSeasonRef.current = season;
+    }
+    guardAction(() => {
+      setCurrentSeason(season);
+    });
   };
+
+  // Apply pending season after login
+  useEffect(() => {
+    if (authUser && pendingSeasonRef.current) {
+      setCurrentSeason(pendingSeasonRef.current);
+      pendingSeasonRef.current = null;
+    }
+  }, [authUser, setCurrentSeason]);
 
   // Privacy consent for OAuth users
   const [privacyConsentOpen, setPrivacyConsentOpen] = useState(false);
@@ -516,7 +532,7 @@ const Index = () => {
         <div className="relative">
           <div
             className="flex items-center gap-2 bg-card border border-border rounded-xl px-3 py-2.5 cursor-pointer active:bg-muted/80 transition-colors shadow-sm"
-            onClick={() => guardAction(() => setModeDropdownOpen((v) => !v))}
+            onClick={() => setModeDropdownOpen((v) => !v)}
           >
             <span className="text-lg">{seasonMeta?.emoji || "⚙️"}</span>
             <div className="flex-1 min-w-0">
