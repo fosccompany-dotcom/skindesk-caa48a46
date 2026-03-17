@@ -49,6 +49,7 @@ import { ko } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import AddTreatmentModal from "@/components/AddTreatmentModal";
 import AddReservationModal from "@/components/AddReservationModal";
+import EditReservationSheet from "@/components/EditReservationSheet";
 import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
@@ -141,6 +142,7 @@ const Index = () => {
   const [showHomeAddModal, setShowHomeAddModal] = useState(false);
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
+  const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(TODAY);
   const [yearMonthPickerOpen, setYearMonthPickerOpen] = useState(false);
 
@@ -706,7 +708,11 @@ const Index = () => {
 
             {/* Reservations */}
             {selectedReservations.map((res) => (
-              <Card key={res.id} className="border-0 shadow-sm">
+              <Card
+                key={res.id}
+                className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+                onClick={() => setEditingReservation(res)}
+              >
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
                     <CalendarPlus className="h-4 w-4 text-info" />
@@ -1006,6 +1012,13 @@ const Index = () => {
           setReservationRefresh((v) => v + 1);
         }}
         defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined}
+      />
+
+      <EditReservationSheet
+        open={!!editingReservation}
+        onClose={() => setEditingReservation(null)}
+        reservation={editingReservation}
+        onSaved={() => setReservationRefresh((v) => v + 1)}
       />
 
       {parseModalOpen && <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />}
