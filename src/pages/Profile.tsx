@@ -869,7 +869,7 @@ const Profile = () => {
                       onClick={addRegion}
                       disabled={!selectedSido || !selectedGugun}
                     >
-                      + {t("add_region")} ({regions.length}/7)
+                      + {t("add_region")} ({regions.length}/3)
                     </Button>
                   </>
                 )}
