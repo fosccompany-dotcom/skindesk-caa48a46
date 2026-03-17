@@ -729,7 +729,7 @@ const Index = () => {
                   </span>
                 </CardContent>
               </Card>
-            ))
+            ))}
 
             {/* Treatment records */}
             {selectedRecords.map((r) => (
