@@ -123,6 +123,18 @@ Deletion requests: My Page → Withdraw, or email fosccompany@gmail.com (process
         heading: '10. Policy Updates',
         body: 'Changes will be notified via in-app notice or email at least 7 days in advance.',
       },
+      {
+        heading: '11. Account Withdrawal & Data Processing',
+        body: `When a user requests account withdrawal, the following procedures apply.
+
+Immediate processing: Personal identifiable information such as name, email, and date of birth is immediately deleted or anonymized.
+
+30-day grace period: Account recovery is available for 30 days from the withdrawal request date. After 30 days, all data is permanently deleted.
+
+Payment record retention: Payment-related records are retained for 5 years in accordance with the Act on Consumer Protection in Electronic Commerce.
+
+Anonymized data: Statistical data anonymized in a form that cannot identify individuals may be retained for service improvement purposes.`,
+      },
     ],
   },
   zh: {
