@@ -786,7 +786,7 @@ const Profile = () => {
                   </div>
                 )}
 
-                {regions.length < 7 && (
+                {regions.length < 3 && (
                   <>
                     <p className="text-[10px] text-muted-foreground px-0.5">{t("dense_areas")}</p>
                     <div className="flex flex-wrap gap-1.5">
