@@ -364,21 +364,20 @@ const Index = () => {
                 align="start"
                 className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
               >
-                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 등급 기준</p>
-                <ul className="space-y-1 text-[11px]">
-                  {[
-                    { emoji: '🌱', name: '씨앗', range: '0건' },
-                    { emoji: '🌿', name: '새싹', range: '1~5건' },
-                    { emoji: '🌼', name: '봉오리', range: '6~15건' },
-                    { emoji: '🌸', name: '반개화', range: '16~29건' },
-                    { emoji: '✨', name: 'Bloom', range: '30건+' },
-                  ].map((s, idx) => (
-                    <li key={idx} className={bloom.stage === idx ? 'text-[#F2C94C] font-semibold' : ''}>
-                      {s.emoji} {s.name} — {s.range}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-[10px] text-white/50">총 기록 수 기준</p>
+                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
+                <div className="space-y-1.5 text-[11px]">
+                  <p className="text-[#F2C94C] font-semibold">
+                    현재: {bloom.emoji} {bloom.name} ({activeDays}건)
+                  </p>
+                  {bloom.nextMilestone !== null && (
+                    <p className="text-white/90">
+                      다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
+                    </p>
+                  )}
+                  {bloom.nextMilestone === null && (
+                    <p className="text-white/90">✨ 최고 등급 달성!</p>
+                  )}
+                </div>
               </PopoverContent>
             </Popover>
             <div className="flex-1 min-w-0">
