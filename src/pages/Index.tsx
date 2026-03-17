@@ -771,6 +771,17 @@ const Index = () => {
               </Card>
             ))}
 
+            {/* Add button when there are existing items */}
+            {hasSelectedInfo && (
+              <button
+                onClick={() => guardAction(() => setShowActionPicker(true))}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]"
+              >
+                <Plus className="h-4 w-4" />
+                <span className="text-xs font-medium">추가</span>
+              </button>
+            )}
+
             {/* Empty state for selected date */}
             {!hasSelectedInfo &&
               selectedDate &&
