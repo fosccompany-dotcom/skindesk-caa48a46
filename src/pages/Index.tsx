@@ -214,10 +214,25 @@ const Index = () => {
   useEffect(() => {
     const checkPrivacyConsent = async () => {
       const {
-        data: { user },
+        data: { user: authUser },
       } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from("user_profiles").select("privacy_agreed_at").eq("id", user.id).maybeSingle();
+      if (!authUser) return;
+
+      // OAuth 가입 시 privacy_agreed=true 파라미터 처리
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('privacy_agreed') === 'true') {
+        await supabase.from('user_profiles').upsert({
+          id: authUser.id,
+          privacy_agreed_at: new Date().toISOString(),
+        });
+        // URL에서 파라미터 제거
+        params.delete('privacy_agreed');
+        const newSearch = params.toString();
+        window.history.replaceState({}, '', `${window.location.pathname}${newSearch ? '?' + newSearch : ''}`);
+        return;
+      }
+
+      const { data } = await supabase.from("user_profiles").select("privacy_agreed_at").eq("id", authUser.id).maybeSingle();
       if (!data?.privacy_agreed_at) {
         setPrivacyConsentOpen(true);
       }
