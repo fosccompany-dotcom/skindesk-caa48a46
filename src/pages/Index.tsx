@@ -142,6 +142,7 @@ const Index = () => {
   const [showHomeAddModal, setShowHomeAddModal] = useState(false);
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
+  const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(TODAY);
   const [yearMonthPickerOpen, setYearMonthPickerOpen] = useState(false);
 
