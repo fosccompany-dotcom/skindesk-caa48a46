@@ -1097,7 +1097,7 @@ const Profile = () => {
                 }
               }}
             >
-              {deletingAccount ? t("processing") || "처리 중..." : t("delete_account")}
+              {deletingAccount ? "처리 중..." : t("delete_account")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
