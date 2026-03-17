@@ -19,11 +19,11 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create client with user's token to get their ID
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+    // Verify user identity
     const userClient = createClient(supabaseUrl, supabaseAnonKey, {
       global: { headers: { Authorization: authHeader } },
     });
@@ -37,27 +37,71 @@ Deno.serve(async (req) => {
     }
 
     const userId = user.id;
-
-    // Use service role to delete all user data and auth record
     const adminClient = createClient(supabaseUrl, supabaseServiceKey);
+    const anonymousId = "00000000-0000-0000-0000-000000000000";
 
-    // Delete all user data from tables
-    const tables = [
-      "treatment_records",
-      "treatment_cycles",
-      "payment_records",
-      "point_transactions",
+    // 1) Anonymize treatment_records (keep data, remove user link)
+    await adminClient
+      .from("treatment_records")
+      .update({
+        user_id: anonymousId,
+        clinic_address: null,
+        memo: null,
+        notes: null,
+      })
+      .eq("user_id", userId);
+
+    // 2) Anonymize treatment_cycles
+    await adminClient
+      .from("treatment_cycles")
+      .update({ user_id: anonymousId, notes: null })
+      .eq("user_id", userId);
+
+    // 3) Anonymize payment_records — retain for 6 months (set deleted_at marker via memo)
+    //    Records stay with anonymized user_id; a scheduled job can purge after 6 months
+    const retainUntil = new Date();
+    retainUntil.setMonth(retainUntil.getMonth() + 6);
+    await adminClient
+      .from("payment_records")
+      .update({
+        user_id: anonymousId,
+        memo: `retain_until:${retainUntil.toISOString().split("T")[0]}`,
+      })
+      .eq("user_id", userId);
+
+    // 4) Anonymize point_transactions
+    await adminClient
+      .from("point_transactions")
+      .update({ user_id: anonymousId })
+      .eq("user_id", userId);
+
+    // 5) Delete non-essential user-specific data
+    const deleteTables = [
       "reservations",
       "clinic_balances",
       "treatment_packages",
-      "user_profiles",
     ];
-
-    for (const table of tables) {
+    for (const table of deleteTables) {
       await adminClient.from(table).delete().eq("user_id", userId);
     }
 
-    // Delete auth user
+    // 6) Mark profile as deleted (anonymize PII)
+    await adminClient
+      .from("user_profiles")
+      .update({
+        name: null,
+        email: null,
+        birth_date: null,
+        concerns: null,
+        goals: null,
+        regions: null,
+        target_areas: null,
+        skin_type: null,
+        deleted_at: new Date().toISOString(),
+      })
+      .eq("id", userId);
+
+    // 7) Delete auth user
     const { error: deleteError } = await adminClient.auth.admin.deleteUser(userId);
     if (deleteError) {
       console.error("Failed to delete auth user:", deleteError);
