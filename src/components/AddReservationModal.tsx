@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import ClinicSearchInput, { ClinicPlace } from "./ClinicSearchInput";
 import { supabase } from "@/integrations/supabase/client";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
@@ -119,32 +120,12 @@ interface DisplayCategory {
   items: DisplayItem[];
 }
 
-// Time slots
-const TIME_SLOTS = [
-  "09:00",
-  "09:30",
-  "10:00",
-  "10:30",
-  "11:00",
-  "11:30",
-  "12:00",
-  "12:30",
-  "13:00",
-  "13:30",
-  "14:00",
-  "14:30",
-  "15:00",
-  "15:30",
-  "16:00",
-  "16:30",
-  "17:00",
-  "17:30",
-  "18:00",
-  "18:30",
-  "19:00",
-  "19:30",
-  "20:00",
-];
+// Time slots 07:00–22:00, 30min intervals
+const TIME_SLOTS: string[] = [];
+for (let h = 7; h <= 22; h++) {
+  TIME_SLOTS.push(`${String(h).padStart(2, "0")}:00`);
+  if (h < 22) TIME_SLOTS.push(`${String(h).padStart(2, "0")}:30`);
+}
 
 interface Props {
   open: boolean;
@@ -406,22 +387,16 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                 <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
                   <Clock className="h-3.5 w-3.5 text-info" /> 예약 시간
                 </label>
-                <div className="grid grid-cols-4 gap-2 max-h-[240px] overflow-y-auto">
-                  {TIME_SLOTS.map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setTime(t)}
-                      className={cn(
-                        "rounded-xl border px-2 py-2.5 text-sm font-medium transition-all active:scale-95",
-                        time === t
-                          ? "bg-info text-info-foreground border-info shadow-sm"
-                          : "border-border bg-card hover:bg-accent/50",
-                      )}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
+                <Select value={time || ""} onValueChange={(v) => setTime(v)}>
+                  <SelectTrigger className="rounded-xl h-11">
+                    <SelectValue placeholder="시간을 선택하세요" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-[240px]">
+                    {TIME_SLOTS.map((t) => (
+                      <SelectItem key={t} value={t}>{t}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </>
           )}
