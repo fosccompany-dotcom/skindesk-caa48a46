@@ -16,6 +16,7 @@ import {
 import { cn } from "@/lib/utils";
 import ClinicSearchInput, { ClinicPlace } from "./ClinicSearchInput";
 import { supabase } from "@/integrations/supabase/client";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useLanguage } from "@/i18n/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
