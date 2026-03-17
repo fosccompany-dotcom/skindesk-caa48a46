@@ -38,6 +38,8 @@ import {
   Check,
   Settings,
   Share2,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
