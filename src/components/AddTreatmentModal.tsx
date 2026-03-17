@@ -469,7 +469,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       groups[catKey].push({ id: opt.id, name: itemName });
     }
 
-    return Object.entries(groups).map(([catKey, items]) => {
+    const result = Object.entries(groups).map(([catKey, items]) => {
       const meta = CATEGORY_META[catKey] || DEFAULT_CAT_META;
       return {
         id: catKey,
@@ -479,6 +479,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         items: [...items, { id: '__custom', name: customLabel }],
       };
     });
+    result.sort((a, b) => getCatOrder(a.id) - getCatOrder(b.id));
+    return result;
   }, [dbOptions, language]);
 
   const selectedCat = displayCategories.find(c => c.id === catId);
