@@ -208,30 +208,26 @@ const Packages = () => {
         </div>
       </div>
 
-      <div className="page-content pb-28">
+      <div className="page-content pb-28 pt-4">
         <Tabs defaultValue={defaultTab} className="w-full">
           <div className="flex items-center gap-1.5 mb-4">
-            <TabsList className="flex-1 rounded-xl h-auto bg-muted p-1 grid grid-cols-2">
+            <TabsList className="flex-1 grid grid-cols-2">
               {tabOrder.map((tabKey) => {
                 const cfg = tabConfig[tabKey];
                 const Icon = cfg.icon;
                 return (
-                  <TabsTrigger
-                    key={tabKey}
-                    value={tabKey}
-                    className="rounded-lg text-xs py-2 flex items-center gap-1.5 data-[state=active]:bg-card data-[state=active]:shadow-sm"
-                  >
-                    <Icon className="h-3.5 w-3.5" /> {cfg.label}
+                  <TabsTrigger key={tabKey} value={tabKey}>
+                    <Icon className="h-3.5 w-3.5 mr-1.5" /> {cfg.label}
                   </TabsTrigger>
                 );
               })}
             </TabsList>
             <button
               onClick={swapTabOrder}
-              className="flex items-center justify-center w-7 h-7 rounded-full bg-muted hover:bg-muted-foreground/20 transition-colors shrink-0"
-              title="탭 순서 변경"
+              className="w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors shrink-0"
+              aria-label="탭 순서 변경"
             >
-              <ArrowLeftRight className="h-3 w-3 text-muted-foreground" />
+              <ArrowLeftRight className="h-3 w-3" />
             </button>
           </div>
 
