@@ -1014,6 +1014,13 @@ const Index = () => {
         defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined}
       />
 
+      <EditReservationSheet
+        open={!!editingReservation}
+        onClose={() => setEditingReservation(null)}
+        reservation={editingReservation}
+        onSaved={() => setReservationRefresh((v) => v + 1)}
+      />
+
       {parseModalOpen && <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />}
       <AddTreatmentModal
         open={modalOpen}
