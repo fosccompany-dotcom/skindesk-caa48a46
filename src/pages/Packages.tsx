@@ -17,6 +17,7 @@ import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
 import { PaymentMethodKey, getMethodLabel, METHOD_STYLE, normalizeMethodKey } from '@/lib/paymentMethodUtils';
 import { useLanguage } from '@/i18n/LanguageContext';
+import logoImg from '@/assets/logo.png';
 
 // ── 타입 ──────────────────────────────────────────────────────────────
 interface TreatmentPackage {
