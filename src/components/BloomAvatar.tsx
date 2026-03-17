@@ -16,22 +16,12 @@ export default function BloomAvatar({ size = "sm", showDays = false }: BloomAvat
 
   return (
     <div className="inline-flex flex-col items-center gap-1">
-      <div 
-        className="relative inline-flex items-center justify-center rounded-full transition-all duration-700"
-        style={{
-          width: px,
-          height: px,
-          backgroundColor: "hsl(var(--accent))",
-        }}
+      <span
+        className="select-none pointer-events-none leading-none"
+        style={{ fontSize: emojiSize }}
       >
-        {/* Centered emoji */}
-        <span
-          className="select-none pointer-events-none"
-          style={{ fontSize: emojiSize }}
-        >
-          {bloom.emoji}
-        </span>
-      </div>
+        {bloom.emoji}
+      </span>
 
       {showDays && (
         <span className="text-[10px] text-muted-foreground font-medium">
