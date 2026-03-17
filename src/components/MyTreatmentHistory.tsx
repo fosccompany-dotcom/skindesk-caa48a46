@@ -44,6 +44,7 @@ const CATEGORY_OPTIONS: { value: string; label: string; keywords: string[] }[] =
   { value: 'acne', label: '여드름/점제거', keywords: ['점/','쥐젖','사마귀','검버섯','여드름','아크네','포텐자 얼굴','카프리'] },
   { value: 'fat', label: '지방분해/윤곽주사', keywords: ['지방분해','조각주사','브이올렛','제로핏','벨라콜린'] },
   { value: 'hair_removal', label: '제모', keywords: ['제모','젠틀맥스','아포지','다이오드','SHR'] },
+  { value: 'etc', label: '기타', keywords: [] },
 ];
 
 const PERIOD_OPTIONS = [
