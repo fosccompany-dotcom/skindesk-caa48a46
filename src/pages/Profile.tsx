@@ -803,7 +803,7 @@ const Profile = () => {
                             key={r}
                             variant="outline"
                             className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                            onClick={() => regions.length < 7 && setRegions([...regions, r])}
+                            onClick={() => regions.length < 3 && setRegions([...regions, r])}
                           >
                             {r.replace("특별시 ", " ").replace("광역시 ", " ").replace("도 ", " ")}
                           </Badge>
