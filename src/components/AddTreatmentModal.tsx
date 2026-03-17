@@ -1112,15 +1112,6 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </Button>
           )}
           </div>
-          {onOpenParse && (
-            <button
-              onClick={() => { handleClose(); onOpenParse(); }}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 text-gray-400 text-xs font-medium hover:bg-gray-50 hover:text-gray-600 transition-colors"
-            >
-              <Sparkles size={13} />
-              텍스트 · 이미지로 한 번에 등록하기
-            </button>
-          )}
         </div>
       </DialogContent>
     </Dialog>
