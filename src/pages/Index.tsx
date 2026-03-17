@@ -435,7 +435,84 @@ const Index = () => {
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-4 pt-4 pb-28">
+      <div className="page-content space-y-4 pt-4 pb-40">
+
+        {/* ═══ Bloom Progress Card ═══ */}
+        <Card className="border-0 shadow-sm overflow-hidden">
+          <CardContent className="p-4 space-y-3">
+            {/* Wilting or action message */}
+            {isWilting ? (
+              <p className="text-sm font-semibold text-center text-muted-foreground">
+                🥀 조금 시들고 있어요… 다시 기록해볼까요?
+              </p>
+            ) : remaining > 0 ? (
+              <p className="text-sm font-semibold text-center">
+                🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || 'Bloom'} 완성
+              </p>
+            ) : (
+              <p className="text-sm font-semibold text-center">
+                ✨ 축하해요! 최고 단계를 달성했어요
+              </p>
+            )}
+
+            {/* Stage indicators: current + next highlighted, rest dimmed */}
+            <div className="flex items-center justify-center gap-3">
+              {STAGES.map((s, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    "flex items-center gap-1 transition-all duration-300",
+                    idx === bloom.stage
+                      ? "opacity-100 scale-110"
+                      : idx === bloom.stage + 1
+                      ? "opacity-70"
+                      : "opacity-20"
+                  )}
+                >
+                  <span className={cn("text-base", idx === bloom.stage && "text-xl")}>{s.emoji}</span>
+                  {(idx === bloom.stage || idx === bloom.stage + 1) && (
+                    <span className={cn(
+                      "text-[10px]",
+                      idx === bloom.stage ? "font-bold text-foreground" : "font-medium text-muted-foreground"
+                    )}>
+                      {s.name}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Animated progress bar with glow */}
+            <div className="relative">
+              <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full transition-all duration-1000 ease-out"
+                  style={{
+                    width: `${progressPct}%`,
+                    background: 'linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))',
+                  }}
+                />
+                {/* Glow at Bloom endpoint */}
+                <div
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full animate-pulse"
+                  style={{ background: 'radial-gradient(circle, hsl(var(--primary)/0.5), transparent)' }}
+                />
+              </div>
+              {/* Current position dot */}
+              {progressPct < 100 && (
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 shadow-sm transition-all duration-1000 ease-out"
+                  style={{
+                    left: `calc(${progressPct}% - 6px)`,
+                    backgroundColor: 'hsl(var(--primary))',
+                    borderColor: 'hsl(var(--primary-foreground))',
+                    boxShadow: '0 0 6px hsl(var(--primary)/0.5)',
+                  }}
+                />
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
