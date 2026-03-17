@@ -39,7 +39,7 @@ const Packages = () => {
   const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
   const defaultTab = searchParams.get('tab') || (savedTabOrder ? savedTabOrder[0] : 'packages');
 
-  // ── 탭 순서 커스텀 (드래그) ──
+  // ── 탭 순서 ──
   const TAB_ORDER_KEY = 'skindesk_tab_order';
   const [tabOrder, setTabOrder] = useState<('packages' | 'points')[]>(() => {
     try {
@@ -48,20 +48,12 @@ const Packages = () => {
     } catch {}
     return ['packages', 'points'];
   });
-  const [dragIdx, setDragIdx] = useState<number | null>(null);
 
-  const handleDragStart = (idx: number) => setDragIdx(idx);
-  const handleDragOver = (e: React.DragEvent, idx: number) => {
-    e.preventDefault();
-    if (dragIdx === null || dragIdx === idx) return;
-    const newOrder = [...tabOrder];
-    const [moved] = newOrder.splice(dragIdx, 1);
-    newOrder.splice(idx, 0, moved);
-    setTabOrder(newOrder);
-    localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(newOrder));
-    setDragIdx(idx);
+  const swapTabOrder = () => {
+    const swapped = [...tabOrder].reverse() as ('packages' | 'points')[];
+    setTabOrder(swapped);
+    localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(swapped));
   };
-  const handleDragEnd = () => setDragIdx(null);
 
   const tabConfig: Record<string, { icon: typeof Package; label: string }> = {
     packages: { icon: Package, label: '시술권 관리' },
