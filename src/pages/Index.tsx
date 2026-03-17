@@ -628,10 +628,24 @@ const Index = () => {
                 const hasExpiry = expiryDateSet.has(dateStr) || (isEmpty && dateStr === exampleExpiryDate);
                 const isSelected = activeSelectedDate === dateStr;
 
+                const hasAnyData = hasRecord || hasReservation;
+                let longPressTimer: ReturnType<typeof setTimeout> | null = null;
+
                 return (
                   <button
                     key={i}
                     onClick={() => setSelectedDate(day)}
+                    onPointerDown={() => {
+                      if (hasAnyData && inMonth) {
+                        longPressTimer = setTimeout(() => {
+                          setSelectedDate(day);
+                          guardAction(() => setShowActionPicker(true));
+                        }, 500);
+                      }
+                    }}
+                    onPointerUp={() => { if (longPressTimer) clearTimeout(longPressTimer); }}
+                    onPointerLeave={() => { if (longPressTimer) clearTimeout(longPressTimer); }}
+                    onContextMenu={(e) => { if (hasAnyData && inMonth) e.preventDefault(); }}
                     className={cn("flex flex-col items-center py-1 transition-colors", !inMonth && "opacity-30")}
                   >
                     <span
