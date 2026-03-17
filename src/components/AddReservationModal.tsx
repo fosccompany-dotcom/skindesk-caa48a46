@@ -396,27 +396,24 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                   </SelectContent>
                 </Select>
               </div>
+
+              <div>
+                <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
+                  <Stethoscope className="h-3.5 w-3.5 text-info" /> 병원 선택
+                </label>
+                <ClinicSearchInput
+                  value={clinic}
+                  onChange={setClinic}
+                  onSelectPlace={handleSelectPlace}
+                  placeholder="병원명을 검색하세요"
+                />
+                {clinicAddress && <p className="text-xs text-muted-foreground mt-2 px-1">📍 {clinicAddress}</p>}
+              </div>
             </>
           )}
 
-          {/* Step 2: Clinic */}
+          {/* Step 2: Treatment selection (multi) */}
           {step === 2 && (
-            <div>
-              <label className="text-sm font-semibold text-foreground flex items-center gap-1.5 mb-2">
-                <Stethoscope className="h-3.5 w-3.5 text-info" /> 병원 선택
-              </label>
-              <ClinicSearchInput
-                value={clinic}
-                onChange={setClinic}
-                onSelectPlace={handleSelectPlace}
-                placeholder="병원명을 검색하세요"
-              />
-              {clinicAddress && <p className="text-xs text-muted-foreground mt-2 px-1">📍 {clinicAddress}</p>}
-            </div>
-          )}
-
-          {/* Step 3: Treatment selection (multi) */}
-          {step === 3 && (
             <div>
               {/* Selected treatments list */}
               {treatments.length > 0 && (
