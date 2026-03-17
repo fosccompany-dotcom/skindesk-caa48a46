@@ -38,6 +38,8 @@ import {
   Check,
   Settings,
   Share2,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -1008,6 +1010,47 @@ const Profile = () => {
                       {item}
                     </Badge>
                   ))}
+                </div>
+              </div>
+
+              {/* 테마 설정 */}
+              <div className="space-y-2">
+                <Label className="text-xs">화면 테마</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'light', label: '화이트', icon: Sun },
+                    { value: 'dark', label: '블랙', icon: Moon },
+                  ].map(({ value, label, icon: Icon }) => {
+                    const isActive =
+                      value === 'light'
+                        ? !document.documentElement.classList.contains('dark')
+                        : document.documentElement.classList.contains('dark');
+                    return (
+                      <button
+                        key={value}
+                        onClick={() => {
+                          if (value === 'dark') {
+                            document.documentElement.classList.add('dark');
+                          } else {
+                            document.documentElement.classList.remove('dark');
+                          }
+                          localStorage.setItem('skindesk_theme', value);
+                          // force re-render
+                          setSaved(true);
+                          setTimeout(() => setSaved(false), 800);
+                        }}
+                        className={cn(
+                          'flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
+                          isActive
+                            ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                            : 'bg-card border-border text-muted-foreground'
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </CardContent>
