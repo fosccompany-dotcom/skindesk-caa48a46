@@ -2,8 +2,9 @@ import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart, Plus } from 'lucide-react';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart, Plus, ScanText } from 'lucide-react';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
 import logoImg from '@/assets/logo.png';
@@ -162,6 +163,7 @@ const Treatments = () => {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [addRecordOpen, setAddRecordOpen] = useState(false);
   const [addRecordTreatment, setAddRecordTreatment] = useState<ClinicTreatment | null>(null);
+  const [parseModalOpen, setParseModalOpen] = useState(false);
   const { cycles, setCycles } = useCycles();
   const { addRecord, loading } = useRecords();
 
@@ -279,7 +281,21 @@ const Treatments = () => {
 
       <div className="page-content pt-4">
 
-      {/* Original list header */}
+      {/* AI 파싱 CTA */}
+      <button
+        onClick={() => setParseModalOpen(true)}
+        className="w-full mb-4 flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-primary text-primary-foreground shadow-lg active:scale-[0.98] transition-all"
+      >
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-primary-foreground/15 shrink-0">
+          <ScanText className="h-5 w-5" />
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-sm font-bold">AI로 시술 내역 한번에 등록</p>
+          <p className="text-xs opacity-80 mt-0.5">텍스트·이미지를 붙여넣으면 자동 인식해요</p>
+        </div>
+        <ChevronDown className="h-4 w-4 opacity-60 -rotate-90 shrink-0" />
+      </button>
+
       <div className="pb-3 px-1">
         <div className="flex items-center justify-between">
           <div>
@@ -685,6 +701,9 @@ const Treatments = () => {
           }}
           editRecord={null}
         />
+      )}
+      {parseModalOpen && (
+        <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />
       )}
       </div>
     </div>
