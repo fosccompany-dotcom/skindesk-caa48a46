@@ -1014,6 +1014,26 @@ const Index = () => {
           </div>
         </div>
       )}
+      {/* ═══ Sticky CTA ═══ */}
+      <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-2">
+        <button
+          onClick={() => guardAction(() => setModalOpen(true))}
+          className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-bold shadow-lg active:scale-[0.98] transition-all"
+          style={{ boxShadow: '0 -2px 20px hsl(var(--primary)/0.3)' }}
+        >
+          + 오늘의 Bloom 기록하기 🌱
+        </button>
+      </div>
+
+      {/* ═══ Reward Feedback Overlay ═══ */}
+      {showReward && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
+          <div className="bg-black/70 backdrop-blur-md text-white rounded-2xl px-8 py-6 text-center space-y-2 animate-scale-in">
+            <span className="text-4xl block animate-bounce">🌱</span>
+            <p className="text-sm font-semibold">좋아요, 한 걸음 더 🌱</p>
+          </div>
+        </div>
+      )}
     </div>);
 
 };
