@@ -1084,10 +1084,6 @@ const Profile = () => {
                   if (fnError) {
                     throw new Error(fnError.message || "탈퇴 처리 중 오류가 발생했습니다.");
                   }
-                  if (!response.ok) {
-                    const errData = await response.json().catch(() => ({}));
-                    throw new Error(errData.error || "탈퇴 처리 중 오류가 발생했습니다.");
-                  }
                   // User is already deleted; signOut may 403 — ignore the error
                   await supabase.auth.signOut().catch(() => {});
                   navigate("/farewell");
