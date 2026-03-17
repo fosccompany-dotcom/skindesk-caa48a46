@@ -305,13 +305,15 @@ const Index = () => {
     return format(addDays(TODAY, 8), 'yyyy-MM-dd');
   }, [isEmpty]);
 
-  const handleSave = (record: Omit<TreatmentRecord, 'id'>) => {
+  const handleSave = async (record: Omit<TreatmentRecord, 'id'>) => {
     if (editRecord) {
       updateRecord(editRecord.id, record);
     } else {
-      addRecord(record);
+      await addRecord(record);
     }
     setEditRecord(null);
+    setShowReward(true);
+    setTimeout(() => setShowReward(false), 2500);
   };
 
   const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
