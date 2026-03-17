@@ -391,7 +391,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* ── HEADER with logo background ── */}
-      <div className="relative safe-top overflow-hidden">
+      <div className="relative safe-top overflow-visible">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40" />
         <div className="page-header-gradient relative z-10 pt-4 space-y-2" style={{ background: "transparent" }}>
@@ -1077,16 +1077,6 @@ const Index = () => {
           </div>
         </div>
       )}
-      {/* ═══ Sticky CTA ═══ */}
-      <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-2">
-        <button
-          onClick={() => guardAction(() => setModalOpen(true))}
-          className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-bold shadow-lg active:scale-[0.98] transition-all"
-          style={{ boxShadow: "0 -2px 20px hsl(var(--primary)/0.3)" }}
-        >
-          + 오늘의 Bloomlog 기록하기 🌱
-        </button>
-      </div>
 
       {/* ═══ Reward Feedback Overlay ═══ */}
       {showReward && (
