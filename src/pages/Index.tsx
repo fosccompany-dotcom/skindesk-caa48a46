@@ -391,15 +391,10 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* ── HEADER with logo background ── */}
-      <div className="safe-top relative">
-        <img
-          src={logoImg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover overflow-hidden"
-          style={{ clipPath: "inset(0)" }}
-        />
-        <div className="absolute inset-0 bg-black/50" style={{ clipPath: "inset(0)" }} />
-        <div className="relative px-5 pt-8 pb-3 space-y-2">
+      <div className="relative safe-top overflow-hidden">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="page-header-gradient relative z-10 pt-4 space-y-2" style={{ background: 'transparent' }}>
           {/* Language selector */}
           <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
             <button
