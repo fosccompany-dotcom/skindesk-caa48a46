@@ -839,21 +839,22 @@ const Index = () => {
                 <button
                 className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
                 onClick={async () => {
-                  // Save as treatment record with type "condition"
-                  await addRecord({
-                    date: format(TODAY, 'yyyy-MM-dd'),
-                    treatmentName: '컨디션 기록',
-                    treatmentId: undefined,
-                    packageId: '',
-                    skinLayer: 'epidermis',
-                    bodyArea: 'face',
-                    clinic: '-',
-                    satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
-                    memo: conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                    notes: '일일 컨디션 기록'
-                  });
-                  setTodayCondition(null);
-                  setConditionMemo('');
+                   await addRecord({
+                     date: format(TODAY, 'yyyy-MM-dd'),
+                     treatmentName: '컨디션 기록',
+                     treatmentId: undefined,
+                     packageId: '',
+                     skinLayer: 'epidermis',
+                     bodyArea: 'face',
+                     clinic: '-',
+                     satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
+                     memo: conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
+                     notes: '일일 컨디션 기록'
+                   });
+                   setTodayCondition(null);
+                   setConditionMemo('');
+                   setShowReward(true);
+                   setTimeout(() => setShowReward(false), 2500);
                 }}>
                 
                   컨디션 기록하기
