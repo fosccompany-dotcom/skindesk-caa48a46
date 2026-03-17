@@ -873,7 +873,7 @@ const Profile = () => {
                     </Button>
                   </>
                 )}
-                {regions.length >= 7 && (
+                {regions.length >= 3 && (
                   <p className="text-[11px] text-muted-foreground text-center py-1">{t("max_region")}</p>
                 )}
               </div>
