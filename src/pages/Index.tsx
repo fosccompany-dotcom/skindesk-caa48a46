@@ -25,7 +25,7 @@ import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 import { useLoginGuard } from '@/hooks/useLoginGuard';
 import logoImg from '@/assets/logo.png';
-import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
+import { getBloomInfo, getActiveDays, STAGES } from '@/utils/bloomLevel';
 
 interface Reservation {
   id: string;
@@ -111,6 +111,25 @@ const Index = () => {
 
   const activeDays = getActiveDays(records);
   const bloom = getBloomInfo(activeDays);
+
+  // Wilting: 48h+ since last record
+  const lastRecordDateStr = records.length > 0
+    ? records.reduce((max, r) => (r.date > max ? r.date : max), records[0].date)
+    : null;
+  const isWilting = lastRecordDateStr
+    ? differenceInDays(TODAY, new Date(lastRecordDateStr)) >= 2
+    : false;
+
+  // Bloom progress
+  const remaining = bloom.nextMilestone ? bloom.nextMilestone - activeDays : 0;
+  const stageMin = STAGES[bloom.stage].min;
+  const stageMax = bloom.nextMilestone || stageMin;
+  const progressPct = stageMax > stageMin
+    ? Math.min(((activeDays - stageMin) / (stageMax - stageMin)) * 100, 100)
+    : 100;
+
+  // Reward feedback
+  const [showReward, setShowReward] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -286,13 +305,15 @@ const Index = () => {
     return format(addDays(TODAY, 8), 'yyyy-MM-dd');
   }, [isEmpty]);
 
-  const handleSave = (record: Omit<TreatmentRecord, 'id'>) => {
+  const handleSave = async (record: Omit<TreatmentRecord, 'id'>) => {
     if (editRecord) {
       updateRecord(editRecord.id, record);
     } else {
-      addRecord(record);
+      await addRecord(record);
     }
     setEditRecord(null);
+    setShowReward(true);
+    setTimeout(() => setShowReward(false), 2500);
   };
 
   const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
@@ -343,21 +364,20 @@ const Index = () => {
                 align="start"
                 className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
               >
-                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 등급 기준</p>
-                <ul className="space-y-1 text-[11px]">
-                  {[
-                    { emoji: '🌱', name: '씨앗', range: '0건' },
-                    { emoji: '🌿', name: '새싹', range: '1~5건' },
-                    { emoji: '🌼', name: '봉오리', range: '6~15건' },
-                    { emoji: '🌸', name: '반개화', range: '16~29건' },
-                    { emoji: '✨', name: 'Bloom', range: '30건+' },
-                  ].map((s, idx) => (
-                    <li key={idx} className={bloom.stage === idx ? 'text-[#F2C94C] font-semibold' : ''}>
-                      {s.emoji} {s.name} — {s.range}
-                    </li>
-                  ))}
-                </ul>
-                <p className="mt-2 text-[10px] text-white/50">총 기록 수 기준</p>
+                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
+                <div className="space-y-1.5 text-[11px]">
+                  <p className="text-[#F2C94C] font-semibold">
+                    현재: {bloom.emoji} {bloom.name} ({activeDays}건)
+                  </p>
+                  {bloom.nextMilestone !== null && (
+                    <p className="text-white/90">
+                      다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
+                    </p>
+                  )}
+                  {bloom.nextMilestone === null && (
+                    <p className="text-white/90">✨ 최고 등급 달성!</p>
+                  )}
+                </div>
               </PopoverContent>
             </Popover>
             <div className="flex-1 min-w-0">
@@ -415,7 +435,84 @@ const Index = () => {
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-4 pt-4 pb-28">
+      <div className="page-content space-y-4 pt-4 pb-40">
+
+        {/* ═══ Bloom Progress Card ═══ */}
+        <Card className="border-0 shadow-sm overflow-hidden">
+          <CardContent className="p-4 space-y-3">
+            {/* Wilting or action message */}
+            {isWilting ? (
+              <p className="text-sm font-semibold text-center text-muted-foreground">
+                🥀 조금 시들고 있어요… 다시 기록해볼까요?
+              </p>
+            ) : remaining > 0 ? (
+              <p className="text-sm font-semibold text-center">
+                🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || 'Bloom'} 완성
+              </p>
+            ) : (
+              <p className="text-sm font-semibold text-center">
+                ✨ 축하해요! 최고 단계를 달성했어요
+              </p>
+            )}
+
+            {/* Stage indicators: current + next highlighted, rest dimmed */}
+            <div className="flex items-center justify-center gap-3">
+              {STAGES.map((s, idx) => (
+                <div
+                  key={idx}
+                  className={cn(
+                    "flex items-center gap-1 transition-all duration-300",
+                    idx === bloom.stage
+                      ? "opacity-100 scale-110"
+                      : idx === bloom.stage + 1
+                      ? "opacity-70"
+                      : "opacity-20"
+                  )}
+                >
+                  <span className={cn("text-base", idx === bloom.stage && "text-xl")}>{s.emoji}</span>
+                  {(idx === bloom.stage || idx === bloom.stage + 1) && (
+                    <span className={cn(
+                      "text-[10px]",
+                      idx === bloom.stage ? "font-bold text-foreground" : "font-medium text-muted-foreground"
+                    )}>
+                      {s.name}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+
+            {/* Animated progress bar with glow */}
+            <div className="relative">
+              <div className="relative h-3 w-full overflow-hidden rounded-full bg-secondary">
+                <div
+                  className="h-full rounded-full transition-all duration-1000 ease-out"
+                  style={{
+                    width: `${progressPct}%`,
+                    background: 'linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))',
+                  }}
+                />
+                {/* Glow at Bloom endpoint */}
+                <div
+                  className="absolute right-0 top-1/2 -translate-y-1/2 w-4 h-4 rounded-full animate-pulse"
+                  style={{ background: 'radial-gradient(circle, hsl(var(--primary)/0.5), transparent)' }}
+                />
+              </div>
+              {/* Current position dot */}
+              {progressPct < 100 && (
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 w-3 h-3 rounded-full border-2 shadow-sm transition-all duration-1000 ease-out"
+                  style={{
+                    left: `calc(${progressPct}% - 6px)`,
+                    backgroundColor: 'hsl(var(--primary))',
+                    borderColor: 'hsl(var(--primary-foreground))',
+                    boxShadow: '0 0 6px hsl(var(--primary)/0.5)',
+                  }}
+                />
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
@@ -742,21 +839,22 @@ const Index = () => {
                 <button
                 className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
                 onClick={async () => {
-                  // Save as treatment record with type "condition"
-                  await addRecord({
-                    date: format(TODAY, 'yyyy-MM-dd'),
-                    treatmentName: '컨디션 기록',
-                    treatmentId: undefined,
-                    packageId: '',
-                    skinLayer: 'epidermis',
-                    bodyArea: 'face',
-                    clinic: '-',
-                    satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
-                    memo: conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                    notes: '일일 컨디션 기록'
-                  });
-                  setTodayCondition(null);
-                  setConditionMemo('');
+                   await addRecord({
+                     date: format(TODAY, 'yyyy-MM-dd'),
+                     treatmentName: '컨디션 기록',
+                     treatmentId: undefined,
+                     packageId: '',
+                     skinLayer: 'epidermis',
+                     bodyArea: 'face',
+                     clinic: '-',
+                     satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
+                     memo: conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
+                     notes: '일일 컨디션 기록'
+                   });
+                   setTodayCondition(null);
+                   setConditionMemo('');
+                   setShowReward(true);
+                   setTimeout(() => setShowReward(false), 2500);
                 }}>
                 
                   컨디션 기록하기
@@ -840,7 +938,7 @@ const Index = () => {
       <AddTreatmentModal
         open={showHomeAddModal}
         onClose={() => setShowHomeAddModal(false)}
-        onSave={async (record) => { await addRecord(record); }}
+        onSave={async (record) => { await addRecord(record); setShowReward(true); setTimeout(() => setShowReward(false), 2500); }}
         defaultDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
       />
 
@@ -913,6 +1011,26 @@ const Index = () => {
             >
               {t('privacy_start') || '동의하고 시작하기'}
             </button>
+          </div>
+        </div>
+      )}
+      {/* ═══ Sticky CTA ═══ */}
+      <div className="fixed bottom-20 left-0 right-0 z-40 px-4 pb-2">
+        <button
+          onClick={() => guardAction(() => setModalOpen(true))}
+          className="w-full py-3.5 rounded-2xl bg-primary text-primary-foreground text-sm font-bold shadow-lg active:scale-[0.98] transition-all"
+          style={{ boxShadow: '0 -2px 20px hsl(var(--primary)/0.3)' }}
+        >
+          + 오늘의 Bloom 기록하기 🌱
+        </button>
+      </div>
+
+      {/* ═══ Reward Feedback Overlay ═══ */}
+      {showReward && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
+          <div className="bg-black/70 backdrop-blur-md text-white rounded-2xl px-8 py-6 text-center space-y-2 animate-scale-in">
+            <span className="text-4xl block animate-bounce">🌱</span>
+            <p className="text-sm font-semibold">좋아요, 한 걸음 더 🌱</p>
           </div>
         </div>
       )}
