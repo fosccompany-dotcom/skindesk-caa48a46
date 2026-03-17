@@ -37,7 +37,9 @@ import {
   Pencil,
   Check,
   Settings,
+  Share2,
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import logoImg from "@/assets/logo.png";
 import { format, differenceInYears } from "date-fns";
@@ -582,6 +584,24 @@ const Profile = () => {
                     {current.emoji} {stageName}
                   </span>
                   <span className="text-xs text-muted-foreground">{recordingText}</span>
+                  <button
+                    type="button"
+                    className="ml-auto p-1.5 rounded-full hover:bg-muted transition-colors text-muted-foreground"
+                    onClick={async () => {
+                      const shareText = `${nickname || "사용자"}님의 관리 레벨: ${stageName} 🌸 피부과도 앱으로 관리하는 편 — Bloomlog`;
+                      const shareData = { title: "Bloomlog 🌸", text: shareText, url: "https://bloomlog.kr" };
+                      if (navigator.share) {
+                        try { await navigator.share(shareData); } catch {}
+                      } else {
+                        try {
+                          await navigator.clipboard.writeText(`${shareText}\nhttps://bloomlog.kr`);
+                          toast({ title: "복사됐어요!", duration: 1500 });
+                        } catch {}
+                      }
+                    }}
+                  >
+                    <Share2 className="h-4 w-4" />
+                  </button>
                 </div>
 
                 {/* Progress */}
