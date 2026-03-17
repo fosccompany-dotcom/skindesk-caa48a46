@@ -163,6 +163,7 @@ const Treatments = () => {
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [addRecordOpen, setAddRecordOpen] = useState(false);
   const [addRecordTreatment, setAddRecordTreatment] = useState<ClinicTreatment | null>(null);
+  const [parseModalOpen, setParseModalOpen] = useState(false);
   const { cycles, setCycles } = useCycles();
   const { addRecord, loading } = useRecords();
 
