@@ -394,7 +394,7 @@ const Index = () => {
       <div className="relative safe-top overflow-hidden">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40" />
-        <div className="page-header-gradient relative z-10 pt-4 space-y-2" style={{ background: 'transparent' }}>
+        <div className="page-header-gradient relative z-10 pt-4 space-y-2" style={{ background: "transparent" }}>
           {/* Language selector */}
           <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
             <button
@@ -472,13 +472,13 @@ const Index = () => {
             {isWilting ? (
               <p className="text-xs font-semibold text-muted-foreground">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p>
             ) : bloom.stage === 0 ? (
-              <p className="text-xs font-semibold">🌱 첫번째 기록을 완료하면 바로 새싹이 돋아나요!</p>
+              <p className="text-xs font-semibold">🌱 첫번째 기록 완료하고 새싹이로 업그레이드!</p>
             ) : remaining > 0 ? (
               <p className="text-xs font-semibold">
-                🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성
+                🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성!
               </p>
             ) : (
-              <p className="text-xs font-semibold">✨ 최고 단계 달성!</p>
+              <p className="text-xs font-semibold">✨ 최고 단계 달성!!!</p>
             )}
             <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
               <div
