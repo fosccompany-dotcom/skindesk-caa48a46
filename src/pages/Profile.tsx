@@ -840,7 +840,7 @@ const Profile = () => {
                             setSelectedGugun(v);
                             if (selectedSido && v) {
                               const full = `${selectedSido} ${v}`;
-                              if (!regions.includes(full) && regions.length < 7) {
+                              if (!regions.includes(full) && regions.length < 3) {
                                 setRegions((prev) => [...prev, full]);
                               }
                               setSelectedSido("");
