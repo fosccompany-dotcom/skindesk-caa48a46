@@ -225,7 +225,10 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       const inputText = body.text || text;
       // "남아있는/남아계신" 패턴 감지 → 시술권으로 저장
       const remainingPattern = /남아[있계]|남은\s*관리|잔여\s*시술|잔여\s*관리/;
-      setIsRemainingContext(remainingPattern.test(inputText));
+      const textHasRemaining = remainingPattern.test(inputText);
+      // 이미지 모드에서도 감지: 잔여금액이 있고 records의 date가 모두 null이면 "남은 관리" 컨텍스트
+      const inferredRemaining = !textHasRemaining && hasRecords && data.records.every((r: any) => !r.date);
+      setIsRemainingContext(textHasRemaining || inferredRemaining);
       const balanceMatch = inputText.match(/잔여금액\s*([\d,.\s]+)\s*원/);
       let hasBalance = false;
       if (balanceMatch) {
