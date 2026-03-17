@@ -254,12 +254,10 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const canNext = () => {
     switch (step) {
       case 1:
-        return !!date && !!time;
+        return !!date && !!time && clinic.trim().length > 0;
       case 2:
-        return clinic.trim().length > 0;
-      case 3:
         return treatments.length > 0;
-      case 4:
+      case 3:
         return true;
       default:
         return false;
