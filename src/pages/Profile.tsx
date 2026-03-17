@@ -359,6 +359,7 @@ const Profile = () => {
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [saved, setSaved] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
   const userIdRef = useRef<string | null>(null);
   const [bloomStage, setBloomStage] = useState(1);
   const [totalLogCount, setTotalLogCount] = useState(0);
@@ -1064,7 +1065,10 @@ const Profile = () => {
             <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={async () => {
+              disabled={deletingAccount}
+              onClick={async (e) => {
+                e.preventDefault();
+                setDeletingAccount(true);
                 try {
                   const {
                     data: { session },
@@ -1082,15 +1086,18 @@ const Profile = () => {
                     const errData = await response.json().catch(() => ({}));
                     throw new Error(errData.error || "탈퇴 처리 중 오류가 발생했습니다.");
                   }
-                  await supabase.auth.signOut();
+                  // User is already deleted; signOut may 403 — ignore the error
+                  await supabase.auth.signOut().catch(() => {});
                   navigate("/farewell");
                 } catch (e: unknown) {
                   const message = e instanceof Error ? e.message : "탈퇴 처리 중 오류가 발생했습니다.";
                   console.error("탈퇴 실패", message);
+                  toast({ title: message, variant: "destructive" });
+                  setDeletingAccount(false);
                 }
               }}
             >
-              {t("delete_account")}
+              {deletingAccount ? "처리 중..." : t("delete_account")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
