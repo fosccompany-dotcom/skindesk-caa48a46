@@ -635,6 +635,12 @@ const Index = () => {
                   <button
                     key={i}
                     onClick={() => setSelectedDate(day)}
+                    onDoubleClick={() => {
+                      if (hasAnyData && inMonth) {
+                        setSelectedDate(day);
+                        guardAction(() => setShowActionPicker(true));
+                      }
+                    }}
                     onPointerDown={() => {
                       if (hasAnyData && inMonth) {
                         longPressTimer = setTimeout(() => {
