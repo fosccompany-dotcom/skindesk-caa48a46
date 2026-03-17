@@ -238,31 +238,6 @@ const MyTreatmentHistory = () => {
           </div>
         </div>
 
-        {/* Row 3 — 부위 chips */}
-        {bodyAreaChips.length > 0 && (
-          <div>
-            <label className="text-[10px] text-muted-foreground mb-1 block">부위</label>
-            <div className="flex gap-1.5 flex-wrap">
-              <button
-                onClick={() => setBodyAreaFilter(null)}
-                className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                  !bodyAreaFilter ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
-              >
-                전체
-              </button>
-              {bodyAreaChips.map(chip => (
-                <button
-                  key={chip.key}
-                  onClick={() => setBodyAreaFilter(prev => prev === chip.key ? null : chip.key)}
-                  className={cn('px-3 py-1.5 rounded-full text-[11px] font-semibold border transition-all',
-                    bodyAreaFilter === chip.key ? 'bg-primary text-primary-foreground border-primary' : 'bg-card border-border/50 text-muted-foreground')}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Row 3 — 병원 chips */}
         {clinicChips.length > 0 && (
