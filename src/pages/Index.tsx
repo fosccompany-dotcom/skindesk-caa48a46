@@ -25,7 +25,7 @@ import { useSeason, SeasonKey } from '@/context/SeasonContext';
 import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 import { useLoginGuard } from '@/hooks/useLoginGuard';
 import logoImg from '@/assets/logo.png';
-import { getBloomInfo, getActiveDays } from '@/utils/bloomLevel';
+import { getBloomInfo, getActiveDays, STAGES } from '@/utils/bloomLevel';
 
 interface Reservation {
   id: string;
