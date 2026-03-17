@@ -315,6 +315,54 @@ interface PaymentRecord {
   charged_amount?: number;clinic_type?: string;
 }
 
+const HISTORY_TAB_CONFIG: Record<string, { value: string; label: string }> = {
+  history: { value: 'history', label: '시술내역' },
+  payments: { value: 'payments', label: '결제기록' },
+};
+
+function HistoryTabs({ defaultTab }: { defaultTab: string }) {
+  const [tabOrder, setTabOrder] = useState<('history' | 'payments')[]>(() => {
+    const saved = localStorage.getItem('skindesk_history_tab_order');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return ['history', 'payments'];
+  });
+
+  const swapTabOrder = () => {
+    const swapped = [...tabOrder].reverse() as ('history' | 'payments')[];
+    setTabOrder(swapped);
+    localStorage.setItem('skindesk_history_tab_order', JSON.stringify(swapped));
+  };
+
+  return (
+    <Tabs defaultValue={defaultTab || tabOrder[0]} className="w-full">
+      <div className="flex items-center gap-1.5 mb-4">
+        <TabsList className="flex-1 grid grid-cols-2">
+          {tabOrder.map((tabKey) => (
+            <TabsTrigger key={tabKey} value={HISTORY_TAB_CONFIG[tabKey].value}>
+              {HISTORY_TAB_CONFIG[tabKey].label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <button
+          onClick={swapTabOrder}
+          className="w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors shrink-0"
+          aria-label="탭 순서 변경"
+        >
+          <ArrowLeftRight className="h-3 w-3" />
+        </button>
+      </div>
+      <TabsContent value="history">
+        <MyTreatmentHistory />
+      </TabsContent>
+      <TabsContent value="payments">
+        <PaymentHistoryTab />
+      </TabsContent>
+    </Tabs>
+  );
+}
+
 interface MatchedTreatment {
   id: string;date: string;treatment_name: string;
   skin_layer?: string;body_area?: string;satisfaction?: number;memo?: string;
