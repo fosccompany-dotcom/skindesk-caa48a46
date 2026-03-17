@@ -445,6 +445,10 @@ const Index = () => {
               <p className="text-sm font-semibold text-center text-muted-foreground">
                 🥀 조금 시들고 있어요… 다시 기록해볼까요?
               </p>
+            ) : bloom.stage === 0 ? (
+              <p className="text-sm font-semibold text-center">
+                🌱 첫번째 기록을 완료하면 바로 새싹이 돋아나요!
+              </p>
             ) : remaining > 0 ? (
               <p className="text-sm font-semibold text-center">
                 🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || 'Bloom'} 완성
