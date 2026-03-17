@@ -39,6 +39,21 @@ const CATEGORY_META: Record<string, { emoji: string; color: string }> = {
 };
 const DEFAULT_CAT_META = { emoji: "💊", color: "border-gray-300 bg-gray-50" };
 
+// ─── Category display order (same as AddTreatmentModal) ───
+const CATEGORY_ORDER: string[] = [
+  '리프팅·보톡스', '미백·색소', '스킨부스터', '피부 관리',
+  '필러·실리프팅', '수액·영양주사', '주사 관리', '여드름·흉터',
+  '지방분해', '제모', '탈모·두피', '기타',
+  // fallback IDs
+  'lifting', 'whitening', 'booster', 'skincare',
+  'filler', 'iv', 'botox', 'acne',
+  'fat', 'hair_removal',
+];
+const getCatOrder = (id: string) => {
+  const idx = CATEGORY_ORDER.indexOf(id);
+  return idx === -1 ? 999 : idx;
+};
+
 // Hardcoded fallback categories
 const FALLBACK_CATEGORIES = [
   {
@@ -224,7 +239,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
         color: meta.color,
         items: [...items, { id: "__custom", name: customLabel }],
       };
-    });
+    }).sort((a, b) => getCatOrder(a.id) - getCatOrder(b.id));
   }, [dbOptions, language]);
 
   const selectedCat = displayCategories.find((c) => c.id === catId);
