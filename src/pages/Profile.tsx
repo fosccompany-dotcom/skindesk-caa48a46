@@ -449,7 +449,7 @@ const Profile = () => {
         />
         <div className="absolute inset-0 bg-black/40" style={{ clipPath: "inset(0)" }} />
         <div
-          className="page-header-gradient relative z-10 flex items-center justify-between"
+          className="page-header-gradient relative z-10 flex items-center justify-between pt-4"
           style={{ background: "transparent" }}
         >
           <h1 className="text-lg font-bold text-justify">{nickname ? `${nickname}님의 기본정보` : t("my_page")}</h1>
