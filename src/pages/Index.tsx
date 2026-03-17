@@ -417,80 +417,7 @@ const Index = () => {
       {/* ── CONTENT ── */}
       <div className="page-content space-y-4 pt-4 pb-28">
 
-        {/* ═══ Stat Cards — 2×2 above calendar ═══ */}
-        <div className="grid grid-cols-2 gap-3">
-          <Card
-            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate('/calendar?tab=history')}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(260,60%,94%)] flex items-center justify-center">
-                <span className="text-lg">💉</span>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">관리중인 시술</p>
-                <p className="text-lg font-black text-foreground leading-tight">
-                  {cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}
-                  <span className="text-xs font-medium text-muted-foreground ml-0.5">개</span>
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate('/calendar?tab=history')}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(150,50%,92%)] flex items-center justify-center">
-                <span className="text-lg">🏥</span>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">이용중인 병원</p>
-                <p className="text-lg font-black text-foreground leading-tight">
-                  {uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}
-                  <span className="text-xs font-medium text-muted-foreground ml-0.5">곳</span>
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <Card
-            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate('/packages?tab=packages')}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center">
-                <span className="text-lg">🎟️</span>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">남은 시술 횟수</p>
-                <p className="text-lg font-black text-foreground leading-tight">
-                  {totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}
-                  <span className="text-xs font-medium text-muted-foreground ml-0.5">회</span>
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card
-            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate('/packages?tab=points')}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(340,60%,92%)] flex items-center justify-center">
-                <span className="text-lg">💰</span>
-              </div>
-              <div>
-                <p className="text-[10px] text-muted-foreground">잔여 포인트</p>
-                <p className="text-lg font-black text-foreground leading-tight">
-                  {totalBalance > 0 ? `${totalBalance.toLocaleString()}` : <span className="opacity-40">0</span>}
-                  <span className="text-xs font-medium text-muted-foreground ml-0.5">원</span>
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ═══ Mini Calendar ═══ */}
+        {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
           <CardContent className="p-4">
             <div className="flex items-center justify-between mb-3">
@@ -568,6 +495,7 @@ const Index = () => {
                 const hasRecord = recordDateSet.has(dateStr);
                 const hasReservation = reservationDateSet.has(dateStr);
                 const cycleLabel = cycleDateMap.get(dateStr);
+                const hasExpiry = expiryDateSet.has(dateStr) || (isEmpty && dateStr === exampleExpiryDate);
                 const isSelected = activeSelectedDate === dateStr;
 
                 return (
@@ -584,14 +512,16 @@ const Index = () => {
                       isSelected && "bg-primary text-primary-foreground font-bold",
                       !isSelected && isToday2 && "bg-primary/20 text-primary font-semibold",
                       !isSelected && hasRecord && !isToday2 && "bg-[#FF7F7F]/40",
-                      !isSelected && cycleLabel && !isToday2 && !hasRecord && "ring-1 ring-primary/30"
+                      !isSelected && hasExpiry && !isToday2 && !hasRecord && "bg-[hsl(var(--destructive))]/15",
+                      !isSelected && cycleLabel && !isToday2 && !hasRecord && !hasExpiry && "ring-1 ring-primary/30"
                     )}>
                       {format(day, 'd')}
                     </span>
                     <div className="flex gap-0.5 mt-0.5 h-1.5 items-center">
                       {hasRecord && <div className="w-1 h-1 rounded-full bg-[#C9A96E]" />}
                       {hasReservation && <div className="w-1 h-1 rounded-full bg-info" />}
-                      {cycleLabel && inMonth && !hasRecord && !hasReservation && <div className="w-1 h-1 rounded-full bg-primary" />}
+                      {hasExpiry && <div className="w-1 h-1 rounded-full bg-destructive" />}
+                      {cycleLabel && inMonth && !hasRecord && !hasReservation && !hasExpiry && <div className="w-1 h-1 rounded-full bg-primary" />}
                     </div>
                   </button>
                 );
@@ -607,6 +537,41 @@ const Index = () => {
               <CalendarDays className="h-3.5 w-3.5 text-primary" />
               {format(new Date(activeSelectedDate + 'T00:00:00'), 'M월 d일 (EEEE)', { locale: ko })}
             </p>
+
+            {/* Expiry reminders */}
+            {(expiryByDate[activeSelectedDate] || []).map((ev, idx) => (
+              <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+                    <span className="text-base">⏰</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{ev.name}</p>
+                    <p className="text-[11px] text-destructive font-medium mt-0.5">
+                      {ev.expiryDate}에 유효기간 만료 (D-{ev.daysLeft})
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            {/* Example expiry for empty state */}
+            {isEmpty && activeSelectedDate === exampleExpiryDate && (
+              <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+                    <span className="text-base">⏰</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">시술권 유효기간이 곧 끝나요!</p>
+                    <p className="text-[11px] text-destructive font-medium mt-0.5">
+                      {format(addDays(TODAY, 8), 'M월 d일')}에 만료 예정 (예시)
+                    </p>
+                  </div>
+                  <span className="text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0">예시</span>
+                </CardContent>
+              </Card>
+            )}
 
             {/* Reservations */}
             {selectedReservations.map((res) => (
@@ -647,7 +612,7 @@ const Index = () => {
             ))}
 
             {/* Empty state for selected date */}
-            {!hasSelectedInfo && selectedDate && (
+            {!hasSelectedInfo && selectedDate && !expiryByDate[activeSelectedDate]?.length && !(isEmpty && activeSelectedDate === exampleExpiryDate) && (
               <button
                 onClick={() => guardAction(() => setShowActionPicker(true))}
                 className="w-full text-left"
@@ -663,6 +628,79 @@ const Index = () => {
             )}
           </div>
         )}
+
+        {/* ═══ Stat Cards — 2×2 below calendar ═══ */}
+        <div className="grid grid-cols-2 gap-3">
+          <Card
+            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => navigate('/calendar?tab=history')}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(260,60%,94%)] flex items-center justify-center">
+                <span className="text-lg">💉</span>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground">관리중인 시술</p>
+                <p className="text-lg font-black text-foreground leading-tight">
+                  {cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}
+                  <span className="text-xs font-medium text-muted-foreground ml-0.5">개</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => navigate('/calendar?tab=history')}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(150,50%,92%)] flex items-center justify-center">
+                <span className="text-lg">🏥</span>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground">이용중인 병원</p>
+                <p className="text-lg font-black text-foreground leading-tight">
+                  {uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}
+                  <span className="text-xs font-medium text-muted-foreground ml-0.5">곳</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <Card
+            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => navigate('/packages?tab=packages')}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center">
+                <span className="text-lg">🎟️</span>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground">남은 시술 횟수</p>
+                <p className="text-lg font-black text-foreground leading-tight">
+                  {totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}
+                  <span className="text-xs font-medium text-muted-foreground ml-0.5">회</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card
+            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+            onClick={() => navigate('/packages?tab=points')}>
+            <CardContent className="p-4 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(340,60%,92%)] flex items-center justify-center">
+                <span className="text-lg">💰</span>
+              </div>
+              <div>
+                <p className="text-[10px] text-muted-foreground">잔여 포인트</p>
+                <p className="text-lg font-black text-foreground leading-tight">
+                  {totalBalance > 0 ? `${totalBalance.toLocaleString()}` : <span className="opacity-40">0</span>}
+                  <span className="text-xs font-medium text-muted-foreground ml-0.5">원</span>
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* ═══ Today's Condition Log ═══ */}
         <Card className="border-0 shadow-sm">
