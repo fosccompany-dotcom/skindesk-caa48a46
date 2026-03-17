@@ -4,7 +4,8 @@ import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 
 const isPreview =
   window.location.hostname.includes('preview') ||
-  window.location.hostname.includes('lovableproject.com');
+  window.location.hostname.includes('lovableproject.com') ||
+  window.location.hostname.includes('lovable.app');
 
 export function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
