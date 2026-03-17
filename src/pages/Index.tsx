@@ -938,7 +938,7 @@ const Index = () => {
       <AddTreatmentModal
         open={showHomeAddModal}
         onClose={() => setShowHomeAddModal(false)}
-        onSave={async (record) => { await addRecord(record); }}
+        onSave={async (record) => { await addRecord(record); setShowReward(true); setTimeout(() => setShowReward(false), 2500); }}
         defaultDate={selectedDate ? format(selectedDate, 'yyyy-MM-dd') : undefined}
       />
 
