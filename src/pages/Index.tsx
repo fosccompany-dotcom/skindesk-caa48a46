@@ -112,6 +112,25 @@ const Index = () => {
   const activeDays = getActiveDays(records);
   const bloom = getBloomInfo(activeDays);
 
+  // Wilting: 48h+ since last record
+  const lastRecordDateStr = records.length > 0
+    ? records.reduce((max, r) => (r.date > max ? r.date : max), records[0].date)
+    : null;
+  const isWilting = lastRecordDateStr
+    ? differenceInDays(TODAY, new Date(lastRecordDateStr)) >= 2
+    : false;
+
+  // Bloom progress
+  const remaining = bloom.nextMilestone ? bloom.nextMilestone - activeDays : 0;
+  const stageMin = STAGES[bloom.stage].min;
+  const stageMax = bloom.nextMilestone || stageMin;
+  const progressPct = stageMax > stageMin
+    ? Math.min(((activeDays - stageMin) / (stageMax - stageMin)) * 100, 100)
+    : 100;
+
+  // Reward feedback
+  const [showReward, setShowReward] = useState(false);
+
   useEffect(() => {
     const loadDashboard = async () => {
       const { data: { user } } = await supabase.auth.getUser();
