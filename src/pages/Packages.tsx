@@ -203,7 +203,7 @@ const Packages = () => {
       <div className="relative safe-top overflow-hidden">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/40" />
-        <div className="page-header-gradient relative z-10 pt-4" style={{ background: 'transparent' }}>
+        <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
           <h1 className="text-lg font-bold">시술권 · 포인트</h1>
         </div>
       </div>
