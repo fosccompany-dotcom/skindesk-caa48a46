@@ -56,6 +56,10 @@ const PERIOD_OPTIONS = [
 
 const matchesCategory = (treatmentName: string, categoryValue: string): boolean => {
   if (categoryValue === 'all') return true;
+  if (categoryValue === 'etc') {
+    // Match records that don't belong to any other category
+    return !CATEGORY_OPTIONS.some(c => c.value !== 'all' && c.value !== 'etc' && c.keywords.length > 0 && c.keywords.some(kw => treatmentName.toLowerCase().includes(kw.toLowerCase())));
+  }
   const cat = CATEGORY_OPTIONS.find(c => c.value === categoryValue);
   if (!cat) return true;
   const name = treatmentName.toLowerCase();
