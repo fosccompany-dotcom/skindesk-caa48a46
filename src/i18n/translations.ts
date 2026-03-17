@@ -248,7 +248,7 @@ const ko: TranslationKeys = {
   age_prefix: "만 ",
   age_suffix: "세",
   active_regions: "주요 활동 지역",
-  region_desc: "병원 추천 시 활용됩니다 · 최대 7개",
+  region_desc: "병원 추천 시 활용됩니다 · 최대 3개",
   dense_areas: "피부과 밀집 지역",
   sido: "시/도",
   gugun: "시/군/구",
