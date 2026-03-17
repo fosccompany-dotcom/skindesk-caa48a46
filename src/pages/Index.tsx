@@ -353,39 +353,13 @@ const Index = () => {
             )}
           </div>
 
-          {/* Row 1: Avatar + Nickname's Bloom Log */}
-          <div className="flex items-center gap-3">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="focus:outline-none"><BloomAvatar size="md" showDays={false} /></button>
-              </PopoverTrigger>
-              <PopoverContent
-                side="bottom"
-                align="start"
-                className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
-              >
-                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
-                <div className="space-y-1.5 text-[11px]">
-                  <p className="text-[#F2C94C] font-semibold">
-                    현재: {bloom.emoji} {bloom.name} ({activeDays}건)
-                  </p>
-                  {bloom.nextMilestone !== null && (
-                    <p className="text-white/90">
-                      다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
-                    </p>
-                  )}
-                  {bloom.nextMilestone === null && (
-                    <p className="text-white/90">✨ 최고 등급 달성!</p>
-                  )}
-                </div>
-              </PopoverContent>
-            </Popover>
+          {/* Row 1: Nickname's Bloom Log (no avatar) */}
+          <div className="flex items-center">
             <div className="flex-1 min-w-0">
               <p className="text-white/60 text-[10px] tracking-wide">It's ​Blooming day!  </p>
               <h1
                 className="text-white text-lg font-bold tracking-tight leading-tight"
                 style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-                
                 {nickname || '회원'}님의 <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
             </div>
@@ -398,7 +372,31 @@ const Index = () => {
 
         {/* ═══ Bloom Progress Card ═══ */}
         <div className="flex items-center gap-3 px-1">
-          <BloomAvatar size="sm" />
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="focus:outline-none shrink-0"><BloomAvatar size="sm" showDays={false} /></button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="bottom"
+              align="start"
+              className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
+            >
+              <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
+              <div className="space-y-1.5 text-[11px]">
+                <p className="text-[#F2C94C] font-semibold">
+                  현재: {bloom.emoji} {bloom.name} ({activeDays}건)
+                </p>
+                {bloom.nextMilestone !== null && (
+                  <p className="text-white/90">
+                    다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
+                  </p>
+                )}
+                {bloom.nextMilestone === null && (
+                  <p className="text-white/90">✨ 최고 등급 달성!</p>
+                )}
+              </div>
+            </PopoverContent>
+          </Popover>
           <div className="flex-1 min-w-0 space-y-1">
             {isWilting ? (
               <p className="text-xs font-semibold text-muted-foreground">
@@ -425,7 +423,9 @@ const Index = () => {
               />
             </div>
           </div>
-          <span className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">{bloom.emoji} {bloom.name}</span>
+          <span className="text-lg shrink-0">
+            {bloom.nextMilestone !== null ? STAGES[bloom.stage + 1]?.emoji : '🌺'}
+          </span>
         </div>
 
         {/* ═══ Management Mode Selector ═══ */}
