@@ -253,7 +253,7 @@ const ko: TranslationKeys = {
   sido: "시/도",
   gugun: "시/군/구",
   add_region: "지역 추가",
-  max_region: "최대 5개 지역까지 등록할 수 있습니다",
+  max_region: "최대 3개 지역까지 등록할 수 있습니다",
   care_areas: "관리 부위",
   main_concerns: "주요 고민",
   care_goals: "관리 목표",
