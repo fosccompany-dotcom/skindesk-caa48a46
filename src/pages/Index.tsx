@@ -431,7 +431,7 @@ const Index = () => {
         {/* ═══ Management Mode Selector ═══ */}
         <div className="relative">
           <div
-            className="flex items-center gap-2 bg-muted/60 rounded-xl px-3 py-2 cursor-pointer active:bg-muted transition-colors"
+            className="flex items-center gap-2 bg-card border border-border rounded-xl px-3 py-2.5 cursor-pointer active:bg-muted/80 transition-colors shadow-sm"
             onClick={() => guardAction(() => setModeDropdownOpen((v) => !v))}>
             <span className="text-lg">{seasonMeta?.emoji || '⚙️'}</span>
             <div className="flex-1 min-w-0">
