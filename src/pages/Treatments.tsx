@@ -702,6 +702,9 @@ const Treatments = () => {
           editRecord={null}
         />
       )}
+      {parseModalOpen && (
+        <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />
+      )}
       </div>
     </div>
   );
