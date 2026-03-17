@@ -708,7 +708,11 @@ const Index = () => {
 
             {/* Reservations */}
             {selectedReservations.map((res) => (
-              <Card key={res.id} className="border-0 shadow-sm">
+              <Card
+                key={res.id}
+                className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+                onClick={() => setEditingReservation(res)}
+              >
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
                     <CalendarPlus className="h-4 w-4 text-info" />
@@ -725,7 +729,7 @@ const Index = () => {
                   </span>
                 </CardContent>
               </Card>
-            ))}
+            ))
 
             {/* Treatment records */}
             {selectedRecords.map((r) => (
