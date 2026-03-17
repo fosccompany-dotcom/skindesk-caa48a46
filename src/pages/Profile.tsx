@@ -323,7 +323,7 @@ const Profile = () => {
   const addRegion = () => {
     if (!selectedSido || !selectedGugun) return;
     const full = `${selectedSido} ${selectedGugun}`;
-    if (!regions.includes(full)) {
+    if (!regions.includes(full) && regions.length < 3) {
       setRegions([...regions, full]);
     }
     setSelectedSido("");
@@ -786,7 +786,7 @@ const Profile = () => {
                   </div>
                 )}
 
-                {regions.length < 7 && (
+                {regions.length < 3 && (
                   <>
                     <p className="text-[10px] text-muted-foreground px-0.5">{t("dense_areas")}</p>
                     <div className="flex flex-wrap gap-1.5">
@@ -803,7 +803,7 @@ const Profile = () => {
                             key={r}
                             variant="outline"
                             className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                            onClick={() => regions.length < 7 && setRegions([...regions, r])}
+                            onClick={() => regions.length < 3 && setRegions([...regions, r])}
                           >
                             {r.replace("특별시 ", " ").replace("광역시 ", " ").replace("도 ", " ")}
                           </Badge>
@@ -840,7 +840,7 @@ const Profile = () => {
                             setSelectedGugun(v);
                             if (selectedSido && v) {
                               const full = `${selectedSido} ${v}`;
-                              if (!regions.includes(full) && regions.length < 7) {
+                              if (!regions.includes(full) && regions.length < 3) {
                                 setRegions((prev) => [...prev, full]);
                               }
                               setSelectedSido("");
@@ -869,11 +869,11 @@ const Profile = () => {
                       onClick={addRegion}
                       disabled={!selectedSido || !selectedGugun}
                     >
-                      + {t("add_region")} ({regions.length}/7)
+                      + {t("add_region")} ({regions.length}/3)
                     </Button>
                   </>
                 )}
-                {regions.length >= 7 && (
+                {regions.length >= 3 && (
                   <p className="text-[11px] text-muted-foreground text-center py-1">{t("max_region")}</p>
                 )}
               </div>
