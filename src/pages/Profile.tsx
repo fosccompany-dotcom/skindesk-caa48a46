@@ -37,7 +37,9 @@ import {
   Pencil,
   Check,
   Settings,
+  Share2,
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
 import logoImg from "@/assets/logo.png";
 import { format, differenceInYears } from "date-fns";
