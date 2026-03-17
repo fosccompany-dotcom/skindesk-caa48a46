@@ -6,7 +6,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { useCycles } from '@/context/CyclesContext';
 import { useRecords } from '@/context/RecordsContext';
-import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope, ClipboardList, MoreVertical, Pencil, Trash2, CreditCard, Plus, Check } from 'lucide-react';
+import { CalendarDays, Bell, Sparkles, RotateCcw, ChevronLeft, ChevronRight, ChevronDown, ChevronUp, Star, Stethoscope, ClipboardList, MoreVertical, Pencil, Trash2, CreditCard, Plus, Check, ArrowLeftRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, endOfMonth, startOfWeek, endOfWeek, isSameMonth, isSameDay, isToday } from 'date-fns';
 import { ko } from 'date-fns/locale';
@@ -301,18 +301,7 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-5 pt-4">
-        <Tabs defaultValue={defaultTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
-            <TabsTrigger value="history">시술내역</TabsTrigger>
-            <TabsTrigger value="payments">결제기록</TabsTrigger>
-          </TabsList>
-          <TabsContent value="history">
-            <MyTreatmentHistory />
-          </TabsContent>
-          <TabsContent value="payments">
-            <PaymentHistoryTab />
-          </TabsContent>
-        </Tabs>
+        <HistoryTabs defaultTab={defaultTab} />
       </div>
     </div>
   );
@@ -324,6 +313,54 @@ interface PaymentRecord {
   id: string;date: string;clinic: string;
   treatment_name: string;amount: number;method: string;memo?: string;
   charged_amount?: number;clinic_type?: string;
+}
+
+const HISTORY_TAB_CONFIG: Record<string, { value: string; label: string }> = {
+  history: { value: 'history', label: '시술내역' },
+  payments: { value: 'payments', label: '결제기록' },
+};
+
+function HistoryTabs({ defaultTab }: { defaultTab: string }) {
+  const [tabOrder, setTabOrder] = useState<('history' | 'payments')[]>(() => {
+    const saved = localStorage.getItem('skindesk_history_tab_order');
+    if (saved) {
+      try { return JSON.parse(saved); } catch { /* ignore */ }
+    }
+    return ['history', 'payments'];
+  });
+
+  const swapTabOrder = () => {
+    const swapped = [...tabOrder].reverse() as ('history' | 'payments')[];
+    setTabOrder(swapped);
+    localStorage.setItem('skindesk_history_tab_order', JSON.stringify(swapped));
+  };
+
+  return (
+    <Tabs defaultValue={defaultTab || tabOrder[0]} className="w-full">
+      <div className="flex items-center gap-1.5 mb-4">
+        <TabsList className="flex-1 grid grid-cols-2">
+          {tabOrder.map((tabKey) => (
+            <TabsTrigger key={tabKey} value={HISTORY_TAB_CONFIG[tabKey].value}>
+              {HISTORY_TAB_CONFIG[tabKey].label}
+            </TabsTrigger>
+          ))}
+        </TabsList>
+        <button
+          onClick={swapTabOrder}
+          className="w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors shrink-0"
+          aria-label="탭 순서 변경"
+        >
+          <ArrowLeftRight className="h-3 w-3" />
+        </button>
+      </div>
+      <TabsContent value="history">
+        <MyTreatmentHistory />
+      </TabsContent>
+      <TabsContent value="payments">
+        <PaymentHistoryTab />
+      </TabsContent>
+    </Tabs>
+  );
 }
 
 interface MatchedTreatment {
