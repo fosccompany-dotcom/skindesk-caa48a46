@@ -11,7 +11,7 @@ import {
   Star,
   Trash2,
   Pencil,
-  Check,
+  
   Plus,
   ClipboardList,
   CalendarPlus,
@@ -53,10 +53,10 @@ import EditReservationSheet from "@/components/EditReservationSheet";
 import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
-import { useSeason, SeasonKey } from "@/context/SeasonContext";
+import { useSeason } from "@/context/SeasonContext";
 import LoginRequiredSheet from "@/components/LoginRequiredSheet";
 import { useLoginGuard } from "@/hooks/useLoginGuard";
-import { useAuth } from "@/context/AuthContext";
+
 import logoImg from "@/assets/logo.png";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 
@@ -71,19 +71,6 @@ interface Reservation {
   skin_layer: string | null;
 }
 
-const SEASON_CONFIG: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string }> = {
-  reset: { emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드", color: "hsl(var(--sage))", bg: "bg-sage-light" },
-  recovery: {
-    emoji: "🌿",
-    title: "Recovery Mode",
-    sub: "회복 모드",
-    color: "hsl(var(--sage-dark))",
-    bg: "bg-sage-light",
-  },
-  maintain: { emoji: "💜", title: "Maintain Mode", sub: "유지 모드", color: "hsl(var(--secondary))", bg: "bg-warm" },
-  boost: { emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드", color: "hsl(var(--rose))", bg: "bg-rose-light" },
-  special: { emoji: "🌸", title: "Special Mode", sub: "스페셜 모드", color: "hsl(var(--rose))", bg: "bg-warm" },
-};
 
 const TODAY = new Date("2026-03-10");
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
@@ -120,9 +107,8 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
-  const { currentSeason, setCurrentSeason } = useSeason();
   const { nickname } = useSeason();
-  const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
+  
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<
     {
@@ -210,25 +196,6 @@ const Index = () => {
   }, [records, reservationRefresh, dataRefresh]);
 
   // Season change handler — require login, then apply pending mode
-  const pendingSeasonRef = useRef<SeasonKey | null>(null);
-  const { user: authUser } = useAuth();
-  const handleSeasonChange = (season: SeasonKey) => {
-    setModeDropdownOpen(false);
-    if (!authUser) {
-      pendingSeasonRef.current = season;
-    }
-    guardAction(() => {
-      setCurrentSeason(season);
-    });
-  };
-
-  // Apply pending season after login
-  useEffect(() => {
-    if (authUser && pendingSeasonRef.current) {
-      setCurrentSeason(pendingSeasonRef.current);
-      pendingSeasonRef.current = null;
-    }
-  }, [authUser, setCurrentSeason]);
 
   // Privacy consent for OAuth users
   const [privacyConsentOpen, setPrivacyConsentOpen] = useState(false);
@@ -425,7 +392,7 @@ const Index = () => {
     setTimeout(() => setShowReward(false), 2500);
   };
 
-  const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
+  
 
   if (loading) return <FlowerLoader />;
 
@@ -536,47 +503,6 @@ const Index = () => {
           </span>
         </div>
 
-        {/* ═══ Management Mode Selector ═══ */}
-        <div className="relative">
-          <div
-            className="flex items-center gap-2 bg-card border border-border rounded-xl px-3 py-2.5 cursor-pointer active:bg-muted/80 transition-colors shadow-sm"
-            onClick={() => setModeDropdownOpen((v) => !v)}
-          >
-            <span className="text-lg">{seasonMeta?.emoji || "⚙️"}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-muted-foreground text-[10px]">관리 모드</p>
-              <p className="text-foreground text-xs font-semibold">
-                {seasonMeta ? seasonMeta.title : "모드를 선택하세요"}
-              </p>
-            </div>
-            <ChevronDown
-              size={14}
-              className={cn("text-muted-foreground transition-transform", modeDropdownOpen && "rotate-180")}
-            />
-          </div>
-
-          {modeDropdownOpen && (
-            <div className="absolute left-0 right-0 top-full mt-1 bg-card/95 backdrop-blur-md rounded-xl shadow-lg border border-border/50 z-50 overflow-hidden">
-              {(Object.entries(SEASON_CONFIG) as [SeasonKey, (typeof SEASON_CONFIG)[SeasonKey]][]).map(([key, cfg]) => (
-                <button
-                  key={key}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50",
-                    currentSeason === key && "bg-muted",
-                  )}
-                  onClick={() => handleSeasonChange(key)}
-                >
-                  <span className="text-xl">{cfg.emoji}</span>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">{cfg.title}</p>
-                    <p className="text-[10px] text-muted-foreground">{cfg.sub}</p>
-                  </div>
-                  {currentSeason === key && <Check size={16} className="text-primary shrink-0" />}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
 
         {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
