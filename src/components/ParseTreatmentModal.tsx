@@ -545,6 +545,9 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       });
     }
 
+    // 데이터 변경 이벤트 발행 → 다른 페이지에서 새로고침
+    window.dispatchEvent(new Event('skindesk:data-changed'));
+
     setSaving(false); setSaved(true);
     setTimeout(onClose, 1200);
   };
