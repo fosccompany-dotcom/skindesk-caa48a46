@@ -17,6 +17,10 @@ export interface ClinicMeta {
   clinicAddress: string | null;
 }
 
+// ── Session-level search cache (5 min TTL) ──
+const searchCache = new Map<string, { places: ClinicPlace[]; ts: number }>();
+const CACHE_TTL = 5 * 60 * 1000;
+
 interface Props {
   value: string;
   onChange: (value: string) => void;
@@ -32,6 +36,7 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -47,15 +52,30 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
   useEffect(() => { setQuery(value); }, [value]);
 
   const search = async (q: string) => {
-    if (!q.trim() || q.trim().length < 1) { setResults([]); setOpen(false); return; }
+    const trimmed = q.trim();
+    if (trimmed.length < 2) { setResults([]); setOpen(false); return; }
+
+    // Check cache
+    const cached = searchCache.get(trimmed);
+    if (cached && Date.now() - cached.ts < CACHE_TTL) {
+      setResults(cached.places);
+      setOpen(cached.places.length > 0);
+      return;
+    }
+
+    // Abort previous request
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
 
     setLoading(true);
     try {
       const session = (await supabase.auth.getSession()).data.session;
       const projectUrl = import.meta.env.VITE_SUPABASE_URL;
       const res = await fetch(
-        `${projectUrl}/functions/v1/search-clinic?query=${encodeURIComponent(q)}`,
+        `${projectUrl}/functions/v1/search-clinic?query=${encodeURIComponent(trimmed)}`,
         {
+          signal: controller.signal,
           headers: {
             Authorization: `Bearer ${session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
             apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
@@ -72,9 +92,12 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
         kakao_id: p.kakao_id,
         road_address: p.road_address,
       }));
+      // Store in cache
+      searchCache.set(trimmed, { places, ts: Date.now() });
       setResults(places);
       setOpen(places.length > 0);
-    } catch {
+    } catch (e: any) {
+      if (e.name === 'AbortError') return; // Cancelled, ignore
       setResults([]);
       setOpen(false);
     } finally {
