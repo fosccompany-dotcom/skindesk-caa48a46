@@ -429,8 +429,8 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* ── HEADER with logo background ── */}
       <div className="relative safe-top overflow-visible">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40" />
+        <img src={logoImg} alt="" className="absolute inset-0 w-full object-cover" style={{ height: 'calc(100% + 60px)' }} />
+        <div className="absolute inset-0 bg-black/55" style={{ height: 'calc(100% + 60px)' }} />
         <div className="page-header-gradient relative z-10 pt-4 space-y-2" style={{ background: "transparent" }}>
           {/* Language selector */}
           <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
