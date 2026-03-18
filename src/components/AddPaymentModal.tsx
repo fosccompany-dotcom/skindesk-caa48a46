@@ -44,7 +44,8 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
   const [error, setError]             = useState<string | null>(null);
 
   const reset = () => {
-    setDate(today); setClinic(''); setClinicType('밴스'); setMethod('charge');
+    setDate(today); setClinic(''); setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
+    setClinicType('밴스'); setMethod('charge');
     setAmount(''); setChargedAmount(''); setDescription(''); setMemo('');
     setSaving(false); setSaved(false); setError(null);
   };
