@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
-import logoImg from '@/assets/logo_transparent.png';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from "react";
+import logoImg from "@/assets/logo_transparent.png";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
 
 interface Petal {
   id: number;
@@ -46,7 +46,7 @@ export default function Farewell() {
           className="absolute pointer-events-none select-none"
           style={{
             left: `${p.left}%`,
-            top: '-60px',
+            top: "-60px",
             width: `${p.size}px`,
             height: `${p.size}px`,
             opacity: p.opacity,
@@ -58,31 +58,17 @@ export default function Farewell() {
       {/* Farewell message */}
       <div
         className={`relative z-10 flex flex-col items-center gap-6 px-8 text-center transition-all duration-1000 ${
-          showText ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'
+          showText ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
         }`}
       >
-        <img
-          src={logoImg}
-          alt="Bloom"
-          className="w-20 h-20 animate-spin-slow opacity-80"
-        />
+        <img src={logoImg} alt="Bloom" className="w-20 h-20 animate-spin-slow opacity-80" />
         <div className="space-y-3">
-          <p className="text-xl font-semibold text-foreground">
-            당신의 씨앗을 잘 품고 있을게요
-          </p>
-          <p className="text-lg text-muted-foreground">
-            언제든지 돌아와요
-          </p>
-          <p className="text-lg font-medium text-primary">
-            기다릴게요 !
-          </p>
+          <p className="text-xl font-semibold text-foreground">당신의 씨앗을 잘 품고 있을게요</p>
+          <p className="text-lg text-muted-foreground">언제든지 돌아와요</p>
+          <p className="text-lg font-medium text-primary">Bloomlog가 기다릴게요 !</p>
         </div>
 
-        <Button
-          variant="outline"
-          className="mt-8"
-          onClick={() => navigate('/signup')}
-        >
+        <Button variant="outline" className="mt-8" onClick={() => navigate("/signup")}>
           돌아가기
         </Button>
       </div>
