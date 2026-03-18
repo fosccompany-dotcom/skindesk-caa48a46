@@ -388,6 +388,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     setAvailPkgs([]); setSelectedPkgId('');
     setPaymentMethod(null); setPaymentAmount('');
     setFillerDrugId(null); setFillerAreaId(null); setCustomFillerArea(''); setCustomFillerDrug('');
+    setSearchQuery('');
   };
   const handleClose = () => { reset(); onClose(); };
   // Sync defaultDate when modal opens
