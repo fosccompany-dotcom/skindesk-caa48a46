@@ -706,49 +706,7 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* ── [3] 내 피부족 ── */}
-          <Card className="glass-card">
-            <CardContent className="p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.emoji ?? '⚖️') : '⚖️'}</span>
-                  <div>
-                    <p className="text-xs text-muted-foreground">내 피부족</p>
-                    <p className="text-sm font-bold text-foreground">
-                      {skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.name ?? '복합 균형족') : '아직 결과 없음'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {skinTribe && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs text-muted-foreground h-8"
-                      onClick={() => navigate('/quiz-result')}
-                    >
-                      결과 보기
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8"
-                    onClick={async () => {
-                      const userId = userIdRef.current;
-                      if (!userId) return;
-                      await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
-                      navigate('/quiz');
-                    }}
-                  >
-                    {skinTribe ? '다시 하기' : '퀴즈 시작'}
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* ── [4] 관리 세팅 ── */}
+          {/* ── [3+4] 관리 세팅 (내 피부족 포함) ── */}
           <Card className="glass-card">
             <CardContent className="p-4 space-y-4">
               <div className="flex items-center gap-2">
@@ -758,21 +716,37 @@ const Profile = () => {
                 <h2 className="font-bold text-sm">관리 세팅</h2>
               </div>
 
-              {/* 피부 타입 */}
+              {/* 내 피부족 */}
               <div className="space-y-2">
-                <Label className="text-xs">{t("skin_type")}</Label>
-                <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
-                  <SelectTrigger className="rounded-xl">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skinTypes.map((st) => (
-                      <SelectItem key={st} value={st}>
-                        {st}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-xs">내 피부족</Label>
+                <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-3 py-2.5">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.emoji ?? '⚖️') : '⚖️'}</span>
+                    <p className="text-sm font-semibold text-foreground">
+                      {skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.name ?? '복합 균형족') : '아직 결과 없음'}
+                    </p>
+                  </div>
+                  <div className="flex gap-1.5">
+                    {skinTribe && (
+                      <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 px-2" onClick={() => navigate('/quiz-result')}>
+                        결과 보기
+                      </Button>
+                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-7 px-2"
+                      onClick={async () => {
+                        const userId = userIdRef.current;
+                        if (!userId) return;
+                        await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
+                        navigate('/quiz');
+                      }}
+                    >
+                      {skinTribe ? '다시 하기' : '퀴즈 시작'}
+                    </Button>
+                  </div>
+                </div>
               </div>
 
               {/* 주요 관심사 */}
