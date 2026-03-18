@@ -469,7 +469,10 @@ export type Database = {
           id: string
           name: string | null
           privacy_agreed_at: string | null
+          quiz_completed_at: string | null
           regions: string[] | null
+          skin_goal: string | null
+          skin_tribe: string | null
           skin_type: string | null
           target_areas: string[] | null
           total_log_count: number
@@ -488,7 +491,10 @@ export type Database = {
           id: string
           name?: string | null
           privacy_agreed_at?: string | null
+          quiz_completed_at?: string | null
           regions?: string[] | null
+          skin_goal?: string | null
+          skin_tribe?: string | null
           skin_type?: string | null
           target_areas?: string[] | null
           total_log_count?: number
@@ -507,7 +513,10 @@ export type Database = {
           id?: string
           name?: string | null
           privacy_agreed_at?: string | null
+          quiz_completed_at?: string | null
           regions?: string[] | null
+          skin_goal?: string | null
+          skin_tribe?: string | null
           skin_type?: string | null
           target_areas?: string[] | null
           total_log_count?: number
