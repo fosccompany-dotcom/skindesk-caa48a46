@@ -260,12 +260,24 @@ const Index = () => {
     setPrivacyConsentOpen(false);
   };
 
-  // Onboarding
-  const [onboardingOpen, setOnboardingOpen] = useState(() => {
-    if (searchParams.get("onboarding") === "true") return true;
+  // Onboarding — only show after quiz is completed (logged-in users only)
+  const [onboardingOpen, setOnboardingOpen] = useState(false);
+  useEffect(() => {
+    if (!user) return;
     const done = localStorage.getItem("skindesk_onboarding_done");
-    return !done;
-  });
+    if (done) return;
+    // Check if quiz is completed before showing onboarding
+    supabase
+      .from('user_profiles')
+      .select('quiz_completed_at')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data?.quiz_completed_at) {
+          setOnboardingOpen(true);
+        }
+      });
+  }, [user]);
   const handleCloseOnboarding = () => {
     setOnboardingOpen(false);
     localStorage.setItem("skindesk_onboarding_done", "true");

@@ -18,24 +18,6 @@ interface SpotlightRect {
 
 const STEPS = [
   {
-    key: 'nav',
-    selector: 'nav.fixed.bottom-0',
-    title: '하단 네비게이션',
-    desc: '홈 · 리스트 · 시술권 · 캘린더 · 마이\n탭을 눌러 주요 기능을 이동해요',
-    position: 'top' as const,
-    padding: 6,
-    borderRadius: 16,
-  },
-  {
-    key: 'nav-calendar',
-    selector: 'nav.fixed.bottom-0 button:nth-child(4)',
-    title: '예약 · 캘린더',
-    desc: '시술 예약을 등록하고\n캘린더에서 일정을 한눈에 확인해요',
-    position: 'top' as const,
-    padding: 8,
-    borderRadius: 16,
-  },
-  {
     key: 'fab',
     selector: 'button[aria-label="시술 기록 추가"]',
     title: '시술 기록 버튼',
