@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import ClinicSearchInput from './ClinicSearchInput';
+import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
+import { extractDistrict } from '@/lib/utils';
 import { PaymentMethodKey, getMethodLabel } from '@/lib/paymentMethodUtils';
 import { useLanguage } from '@/i18n/LanguageContext';
 
