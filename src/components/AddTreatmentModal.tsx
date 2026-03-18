@@ -3,9 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { ChevronRight, ChevronLeft, Check, Zap, Sparkles, Package, CreditCard, Coins, Banknote, Gift, X, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import ClinicSearchInput from './ClinicSearchInput';
+import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
 import { TreatmentRecord } from '@/types/skin';
 import { supabase } from '@/integrations/supabase/client';
+import { extractDistrict } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { Skeleton } from '@/components/ui/skeleton';
 
