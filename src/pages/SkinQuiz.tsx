@@ -274,7 +274,9 @@ export default function SkinQuiz() {
         {/* Options */}
         <div className="space-y-3">
           {currentQ.options.map((opt) => {
-            const isSelected = selectedValue === opt.key;
+            const isSelected = isMultiSelect
+              ? q5Selections.includes(opt.key)
+              : selectedValue === opt.key;
             return (
               <button
                 key={opt.key}
