@@ -582,7 +582,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   const handleSave = () => {
-    if (!isBotox && !isFiller && !selectedItem) return;
+    if (!isDirectInput && !isBotox && !isFiller && !selectedItem) return;
     // 결제 수단은 선택사항 (필수 아님)
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
