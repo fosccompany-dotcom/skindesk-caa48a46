@@ -343,6 +343,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const [drugId, setDrugId] = useState<string | null>(null);
   const [date, setDate] = useState(defaultDate || new Date().toISOString().split('T')[0]);
   const [clinic, setClinic] = useState('밴스 미금');
+  const [clinicKakaoId, setClinicKakaoId] = useState<string | null>(null);
+  const [clinicDistrict, setClinicDistrict] = useState<string | null>(null);
+  const [clinicAddress, setClinicAddress] = useState<string | null>(null);
   const [satisfaction, setSatisfaction] = useState<1 | 2 | 3 | 4 | 5>(4);
   const [memo, setMemo] = useState('');
   const [bodyArea, setBodyArea] = useState('face');
