@@ -431,7 +431,7 @@ const Index = () => {
       <div className="relative safe-top overflow-visible">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/55" />
-        <div className="relative z-10 pt-4 px-5 pb-5 space-y-4">
+        <div className="relative z-10 pt-14 px-5 pb-8 space-y-4">
           {/* Language selector */}
           <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
             <button
