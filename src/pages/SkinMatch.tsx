@@ -152,8 +152,8 @@ export default function SkinMatch() {
         <Card className="border-border rounded-2xl overflow-hidden">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-amber-100 flex items-center justify-center">
-                <AlertTriangle className="h-4 w-4 text-amber-600" />
+              <div className="h-7 w-7 rounded-lg bg-destructive/15 flex items-center justify-center">
+                <AlertTriangle className="h-4 w-4 text-destructive" />
               </div>
               <h2 className="text-sm font-bold text-foreground">신중하게</h2>
             </div>
