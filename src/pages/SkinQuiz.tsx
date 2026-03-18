@@ -52,7 +52,8 @@ const QUESTIONS = [
   },
   {
     id: 'q5' as const,
-    question: '피부과 가는 주된 이유는?',
+    question: '피부과 가는 주된 이유는? (복수 선택 가능)',
+    multiSelect: true,
     options: [
       { key: 'A' as const, label: '탄력·리프팅·노화 관리' },
       { key: 'B' as const, label: '기미·잡티·피부톤' },
@@ -64,12 +65,12 @@ const QUESTIONS = [
     id: 'q6' as const,
     question: '태어난 연도는?',
     options: [
-      { key: '2000', label: '2000년대' },
-      { key: '1995', label: '1995년대' },
-      { key: '1990', label: '1990년대' },
-      { key: '1985', label: '1985년대' },
-      { key: '1980', label: '1980년대' },
-      { key: '1970', label: '1970년대 이전' },
+      { key: '2000', label: '2000년 이후 출생' },
+      { key: '1995', label: '1995~1999년 출생' },
+      { key: '1990', label: '1990~1994년 출생' },
+      { key: '1985', label: '1985~1989년 출생' },
+      { key: '1980', label: '1980~1984년 출생' },
+      { key: '1970', label: '1979년 이전 출생' },
     ],
   },
 ] as const;
@@ -85,6 +86,7 @@ export default function SkinQuiz() {
   const [answers, setAnswers] = useState<QuizAnswers>({
     q1: null, q2: null, q3: null, q4: null, q5: null, q6: null,
   });
+  const [q5Selections, setQ5Selections] = useState<string[]>([]);
   const [hasBirthDate, setHasBirthDate] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const [result, setResult] = useState<SkinTribe | null>(null);
@@ -137,13 +139,43 @@ export default function SkinQuiz() {
     [user, hasBirthDate],
   );
 
+  const isMultiSelect = 'multiSelect' in currentQ && (currentQ as any).multiSelect;
+
   const handleSelect = (key: string) => {
     if (transitioning) return;
     const qId = currentQ.id as keyof QuizAnswers;
+
+    // Q5 multi-select: toggle selection, don't auto-advance
+    if (isMultiSelect) {
+      setQ5Selections(prev =>
+        prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+      );
+      return;
+    }
+
     const updated = { ...answers, [qId]: key };
     setAnswers(updated);
 
     // Auto-advance after 0.3s
+    setTransitioning(true);
+    setTimeout(async () => {
+      if (isLast) {
+        const tribe = classifySkinTribe(updated);
+        await saveResults(tribe, updated);
+        navigate('/quiz-result', { replace: true });
+      } else {
+        setStep((s) => s + 1);
+      }
+      setTransitioning(false);
+    }, 300);
+  };
+
+  const handleQ5Next = async () => {
+    if (q5Selections.length === 0) return;
+    // Save first selection as primary goal
+    const updated = { ...answers, q5: q5Selections[0] as any };
+    setAnswers(updated);
+
     setTransitioning(true);
     setTimeout(async () => {
       if (isLast) {
@@ -203,7 +235,12 @@ export default function SkinQuiz() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-[calc(var(--safe-top)+12px)] pb-2">
-        <div className="w-10" /> {/* spacer */}
+        <button
+          onClick={() => step > 0 ? handleBack() : navigate(-1)}
+          className="p-1 text-muted-foreground hover:text-foreground"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
         <span className="text-xs text-muted-foreground font-medium">
           {step + 1} / {effectiveQuestions.length}
         </span>
@@ -237,7 +274,9 @@ export default function SkinQuiz() {
         {/* Options */}
         <div className="space-y-3">
           {currentQ.options.map((opt) => {
-            const isSelected = selectedValue === opt.key;
+            const isSelected = isMultiSelect
+              ? q5Selections.includes(opt.key)
+              : selectedValue === opt.key;
             return (
               <button
                 key={opt.key}
@@ -256,6 +295,17 @@ export default function SkinQuiz() {
             );
           })}
         </div>
+        {isMultiSelect && q5Selections.length > 0 && (
+          <div className="mt-4">
+            <Button
+              className="w-full rounded-xl h-12 font-bold bg-accent text-accent-foreground hover:bg-accent/90"
+              onClick={handleQ5Next}
+              disabled={transitioning}
+            >
+              다음 ({q5Selections.length}개 선택)
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Back button */}
