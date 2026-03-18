@@ -477,7 +477,7 @@ const Index = () => {
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-4 pt-4 pb-40">
+      <div className="page-content space-y-4 pt-4 pb-40 relative z-10 bg-background rounded-t-2xl -mt-2">
         {/* ═══ Bloom Progress Card ═══ */}
         <div className="flex items-center gap-3 px-1">
           <Popover>
