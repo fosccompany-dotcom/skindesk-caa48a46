@@ -543,11 +543,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const selectedFillerArea = fillerAreaOptions.find(a => a.id === fillerAreaId);
 
   const getTreatmentName = () => {
+    if (isDirectInput) return customTreatmentName.trim() || '';
     if (isBotox) {
       return selectedDrug ? selectedDrug.name : '보톡스';
     }
     if (isFiller) {
-      // 직접 입력한 약제명 우선 사용
       const drugName = fillerDrugId === '__custom'
         ? (customFillerDrug.trim() || null)
         : selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
@@ -560,6 +560,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       return '필러';
     }
     if (itemId === '__custom') return customTreatmentName.trim() || '';
+    if (!selectedItem) return '';
+    let name = selectedItem.name;
+    if (shots) name += ` ${shots}샷`;
+    return name;
     if (!selectedItem) return '';
     let name = selectedItem.name;
     if (shots) name += ` ${shots}샷`;
