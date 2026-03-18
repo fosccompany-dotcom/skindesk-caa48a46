@@ -805,8 +805,31 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
+          {/* ── STEP 2 (직접 입력): 시술명 입력 ── */}
+          {step === 2 && isDirectInput && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">✏️</span>
+                <p className="text-sm font-semibold text-foreground">
+                  {language === 'en' ? 'Custom Input' : language === 'zh' ? '自定义输入' : '직접 입력'}
+                </p>
+              </div>
+              <label className="text-xs text-muted-foreground block mb-1.5">
+                {language === 'en' ? 'Treatment name' : language === 'zh' ? '项目名称' : '시술명'}
+              </label>
+              <input
+                type="text"
+                autoFocus
+                value={customTreatmentName}
+                onChange={e => setCustomTreatmentName(e.target.value)}
+                placeholder={language === 'en' ? 'Enter treatment name' : language === 'zh' ? '请输入项目名称' : '시술명을 입력하세요'}
+                className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber/50"
+              />
+            </div>
+          )}
+
           {/* ── STEP 2: 시술 선택 (비보톡스/비필러) ── */}
-          {step === 2 && selectedCat && !isBotox && !isFiller && (
+          {step === 2 && selectedCat && !isBotox && !isFiller && !isDirectInput && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
