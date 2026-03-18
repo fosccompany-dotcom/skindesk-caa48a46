@@ -483,6 +483,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     return result;
   }, [dbOptions, language]);
 
+  const isDirectInput = catId === '__direct';
   const selectedCat = displayCategories.find(c => c.id === catId);
   const isBotox = catId === 'botox' || catId === '보톡스/윤곽주사';
   const isFiller = catId === 'filler' || catId === '필러·실리프팅';
@@ -492,10 +493,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const botoxTotalSteps = 4;
   const normalExtraSteps = needsShots ? 1 : 0;
   const normalTotalSteps = 3 + normalExtraSteps;
-  const totalSteps = isBotox ? botoxTotalSteps : isFiller ? 4 : normalTotalSteps;
+  const totalSteps = isDirectInput ? 2 : isBotox ? botoxTotalSteps : isFiller ? 4 : normalTotalSteps;
 
   const shotsStep = needsShots ? 3 : -1;
-  const isDetailStep = isBotox ? step === 4 : isFiller ? step === 4 : step === (needsShots ? 4 : 3);
+  const isDetailStep = isDirectInput ? step === 2 : isBotox ? step === 4 : isFiller ? step === 4 : step === (needsShots ? 4 : 3);
 
   // 상세 단계 진입 시 사용 가능한 시술권 조회
   useEffect(() => {
@@ -519,6 +520,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const canNext = () => {
     if (step === 1) return !!catId;
+    if (isDirectInput) return !!customTreatmentName.trim();
     if (isBotox) return true;
     if (isFiller) return true;
     if (step === 2) {
@@ -541,11 +543,11 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const selectedFillerArea = fillerAreaOptions.find(a => a.id === fillerAreaId);
 
   const getTreatmentName = () => {
+    if (isDirectInput) return customTreatmentName.trim() || '';
     if (isBotox) {
       return selectedDrug ? selectedDrug.name : '보톡스';
     }
     if (isFiller) {
-      // 직접 입력한 약제명 우선 사용
       const drugName = fillerDrugId === '__custom'
         ? (customFillerDrug.trim() || null)
         : selectedFillerDrug ? getLocalizedName(selectedFillerDrug) : null;
@@ -576,7 +578,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   };
 
   const handleSave = () => {
-    if (!isBotox && !isFiller && !selectedItem) return;
+    if (!isDirectInput && !isBotox && !isFiller && !selectedItem) return;
     // 결제 수단은 선택사항 (필수 아님)
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
@@ -585,7 +587,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     const resolvedBodyArea = isFiller
       ? (fillerAreaId === '__custom' ? (customFillerArea.trim() || 'face') : (selectedFillerArea ? getLocalizedName(selectedFillerArea) : 'face'))
       : bodyArea === '__other' ? (customBodyArea.trim() || 'other') : bodyArea;
-    const skinLayer = isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : (selectedItem?.skinLayer || 'dermis');
+    const skinLayer = isDirectInput ? 'dermis' as SL : isBotox ? getBotoxSkinLayer() : isFiller ? 'dermis' as SL : (selectedItem?.skinLayer || 'dermis');
     onSave({
       date,
       packageId:     selectedPkgId || '',
@@ -664,7 +666,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  {displayCategories.map(cat => (
+                  {displayCategories.filter(cat => cat.id !== '기타' && cat.id !== 'other').map(cat => (
                     <button key={cat.id}
                       onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
                       className={cn(
@@ -679,6 +681,22 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       {catId === cat.id && <Check size={12} className="text-amber shrink-0" />}
                     </button>
                   ))}
+                  {/* 직접 입력 버튼 */}
+                  <button
+                    onClick={() => { setCatId('__direct'); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
+                    className={cn(
+                      'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
+                      'border-gray-300 bg-gray-50',
+                      catId === '__direct' ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
+                    )}>
+                    <span className="text-lg">✏️</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-foreground leading-tight">
+                        {language === 'en' ? 'Custom Input' : language === 'zh' ? '自定义输入' : '직접 입력'}
+                      </div>
+                    </div>
+                    {catId === '__direct' && <Check size={12} className="text-amber shrink-0" />}
+                  </button>
                 </div>
               )}
             </div>
@@ -787,8 +805,31 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
             </div>
           )}
 
+          {/* ── STEP 2 (직접 입력): 시술명 입력 ── */}
+          {step === 2 && isDirectInput && (
+            <div>
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">✏️</span>
+                <p className="text-sm font-semibold text-foreground">
+                  {language === 'en' ? 'Custom Input' : language === 'zh' ? '自定义输入' : '직접 입력'}
+                </p>
+              </div>
+              <label className="text-xs text-muted-foreground block mb-1.5">
+                {language === 'en' ? 'Treatment name' : language === 'zh' ? '项目名称' : '시술명'}
+              </label>
+              <input
+                type="text"
+                autoFocus
+                value={customTreatmentName}
+                onChange={e => setCustomTreatmentName(e.target.value)}
+                placeholder={language === 'en' ? 'Enter treatment name' : language === 'zh' ? '请输入项目名称' : '시술명을 입력하세요'}
+                className="w-full bg-white border border-border rounded-xl px-4 py-3 text-sm text-foreground focus:outline-none focus:border-amber/50"
+              />
+            </div>
+          )}
+
           {/* ── STEP 2: 시술 선택 (비보톡스/비필러) ── */}
-          {step === 2 && selectedCat && !isBotox && !isFiller && (
+          {step === 2 && selectedCat && !isBotox && !isFiller && !isDirectInput && (
             <div>
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-lg">{selectedCat.emoji}</span>
