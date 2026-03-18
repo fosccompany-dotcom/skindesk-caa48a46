@@ -306,6 +306,7 @@ export default function SkinQuiz() {
             </Button>
           </div>
         )}
+      </div>
 
       {/* Back button */}
       <div className="px-6 pb-[calc(var(--safe-bottom)+24px)] pt-4">

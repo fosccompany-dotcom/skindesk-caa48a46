@@ -110,8 +110,16 @@ export default function QuizResult() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col pb-24">
+      {/* Header */}
+      <div className="flex items-center px-4 pt-[calc(var(--safe-top)+12px)] pb-3">
+        <button onClick={() => navigate('/')} className="p-1 text-muted-foreground hover:text-foreground">
+          <ChevronLeft className="w-5 h-5" />
+        </button>
+        <h1 className="flex-1 text-center text-sm font-bold text-foreground pr-6">퀴즈 결과</h1>
+      </div>
+
       {/* Hero */}
-      <div className="flex flex-col items-center pt-16 pb-8 px-6 text-center">
+      <div className="flex flex-col items-center pt-8 pb-8 px-6 text-center">
         <div className="text-6xl mb-5">{info.emoji}</div>
         <p className="text-sm text-muted-foreground mb-1">나의 피부족은</p>
         <h1 className="text-2xl font-extrabold text-foreground mb-4">{info.name}</h1>
