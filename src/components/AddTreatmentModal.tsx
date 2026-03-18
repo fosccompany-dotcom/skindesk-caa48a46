@@ -681,49 +681,112 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              <p className="text-xs text-muted-foreground mb-3">
-                {language === 'en' ? 'Select a treatment category' : language === 'zh' ? '选择治疗类别' : '시술 카테고리를 선택하세요'}
-              </p>
-              {dbLoading ? (
-                <div className="grid grid-cols-2 gap-2">
-                  {Array.from({ length: 6 }).map((_, i) => (
-                    <Skeleton key={i} className="h-16 rounded-xl" />
-                  ))}
+              {/* 통합 검색창 */}
+              <div className="relative mb-3">
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={e => { setSearchQuery(e.target.value); setCatId(null); setItemId(null); }}
+                  placeholder={language === 'en' ? 'Search treatments (e.g. Botox, Filler, drug name)' : language === 'zh' ? '搜索项目（如：肉毒素、填充剂等）' : '시술명 검색 (예: 보톡스, 필러, 약제명 등)'}
+                  className="w-full bg-muted border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber/50 focus:ring-1 focus:ring-amber/30"
+                />
+                {searchQuery && (
+                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X size={14} />
+                  </button>
+                )}
+              </div>
+
+              {/* 검색 결과 */}
+              {searchQuery.trim() ? (
+                <div className="space-y-1.5 max-h-[50vh] overflow-y-auto">
+                  {searchResults.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-6">
+                      {language === 'en' ? 'No results found' : language === 'zh' ? '未找到结果' : '검색 결과가 없습니다'}
+                    </p>
+                  ) : (
+                    searchResults.map(r => (
+                      <button
+                        key={`${r.catId}-${r.item.id}`}
+                        onClick={() => {
+                          // Set category & item, then jump to detail step
+                          setCatId(r.catId);
+                          setItemId(r.item.id);
+                          setShots(null);
+                          setDrugId(r.catId === 'botox' || r.catId === '보톡스/윤곽주사' ? r.item.id : null);
+                          setSearchQuery('');
+                          // For botox drugs, skip to detail step
+                          const isBotoxCat = r.catId === 'botox' || r.catId === '보톡스/윤곽주사';
+                          const isFillerCat = r.catId === 'filler' || r.catId === '필러·실리프팅';
+                          if (isBotoxCat) {
+                            setStep(4); // botox detail step
+                          } else if (isFillerCat) {
+                            setStep(4); // filler detail step
+                          } else {
+                            // normal: skip to detail step (step 3)
+                            setStep(3);
+                          }
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-3 rounded-xl border border-border bg-muted hover:border-muted-foreground/40 transition-all text-left"
+                      >
+                        <span className="text-base shrink-0">{r.catEmoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-sm font-medium text-foreground">{r.item.name}</div>
+                          {r.item.desc && <div className="text-[11px] text-muted-foreground mt-0.5 truncate">{r.item.desc}</div>}
+                        </div>
+                        <span className="text-[10px] text-muted-foreground shrink-0">{r.catLabel}</span>
+                      </button>
+                    ))
+                  )}
                 </div>
               ) : (
-                <div className="grid grid-cols-2 gap-2">
-                  {displayCategories.filter(cat => cat.id !== '기타' && cat.id !== 'other').map(cat => (
-                    <button key={cat.id}
-                      onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
-                      className={cn(
-                        'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
-                        cat.color,
-                        catId === cat.id ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
-                      )}>
-                      <span className="text-lg">{cat.emoji}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs font-medium text-foreground leading-tight">{cat.label}</div>
-                      </div>
-                      {catId === cat.id && <Check size={12} className="text-amber shrink-0" />}
-                    </button>
-                  ))}
-                  {/* 직접 입력 버튼 */}
-                  <button
-                    onClick={() => { setCatId('__direct'); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
-                    className={cn(
-                      'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
-                      'border-gray-300 bg-gray-50',
-                      catId === '__direct' ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
-                    )}>
-                    <span className="text-lg">✏️</span>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-xs font-medium text-foreground leading-tight">
-                        {language === 'en' ? 'Custom Input' : language === 'zh' ? '自定义输入' : '직접 입력'}
-                      </div>
+                <>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    {language === 'en' ? 'Select a treatment category' : language === 'zh' ? '选择治疗类别' : '시술 카테고리를 선택하세요'}
+                  </p>
+                  {dbLoading ? (
+                    <div className="grid grid-cols-2 gap-2">
+                      {Array.from({ length: 6 }).map((_, i) => (
+                        <Skeleton key={i} className="h-16 rounded-xl" />
+                      ))}
                     </div>
-                    {catId === '__direct' && <Check size={12} className="text-amber shrink-0" />}
-                  </button>
-                </div>
+                  ) : (
+                    <div className="grid grid-cols-2 gap-2">
+                      {displayCategories.filter(cat => cat.id !== '기타' && cat.id !== 'other').map(cat => (
+                        <button key={cat.id}
+                          onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
+                          className={cn(
+                            'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
+                            cat.color,
+                            catId === cat.id ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
+                          )}>
+                          <span className="text-lg">{cat.emoji}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-xs font-medium text-foreground leading-tight">{cat.label}</div>
+                          </div>
+                          {catId === cat.id && <Check size={12} className="text-amber shrink-0" />}
+                        </button>
+                      ))}
+                      {/* 직접 입력 버튼 */}
+                      <button
+                        onClick={() => { setCatId('__direct'); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
+                        className={cn(
+                          'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
+                          'border-gray-300 bg-gray-50',
+                          catId === '__direct' ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
+                        )}>
+                        <span className="text-lg">✏️</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs font-medium text-foreground leading-tight">
+                            {language === 'en' ? 'Custom Input' : language === 'zh' ? '自定义输入' : '직접 입력'}
+                          </div>
+                        </div>
+                        {catId === '__direct' && <Check size={12} className="text-amber shrink-0" />}
+                      </button>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
