@@ -207,7 +207,7 @@ const Index = () => {
       if (resRes.data) setReservations(resRes.data as Reservation[]);
     };
     loadDashboard();
-  }, [records, reservationRefresh]);
+  }, [records, reservationRefresh, dataRefresh]);
 
   // Season change handler — require login, then apply pending mode
   const pendingSeasonRef = useRef<SeasonKey | null>(null);
