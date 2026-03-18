@@ -92,6 +92,7 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
         await supabase.from('clinic_balances').upsert({
           user_id:    user.id,
           clinic:     clinicKey,
+          clinic_kakao_id: clinicKakaoId,
           balance:    (existing?.balance || 0) + chargedNum,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,clinic' });
