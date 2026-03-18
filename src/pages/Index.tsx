@@ -429,15 +429,14 @@ const Index = () => {
     <div className="min-h-screen bg-background">
       {/* ── HEADER with logo background ── */}
       <div className="relative safe-top overflow-visible">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full object-cover" style={{ height: 'calc(100% + 60px)' }} />
-        <div className="absolute inset-0 bg-transparent" style={{ height: 'calc(100% + 60px)' }} />
-        <div className="page-header-gradient relative z-10 pt-4 space-y-2" style={{ background: "transparent" }}>
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="relative z-10 pt-4 px-5 pb-5 space-y-4">
           {/* Language selector */}
           <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
             <button
               onClick={() => setLangOpen((prev) => !prev)}
               className="h-8 w-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
-              
               <Globe className="h-4 w-4 text-white/80" />
             </button>
             {langOpen &&
@@ -453,7 +452,6 @@ const Index = () => {
                   "w-full text-left px-4 py-2.5 text-xs font-medium transition-colors",
                   language === lang ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
                 )}>
-                
                     {LANGUAGE_LABELS[lang]}
                   </button>
               )}
@@ -461,76 +459,73 @@ const Index = () => {
             }
           </div>
 
-          {/* Row 1: Nickname's Bloom Log (no avatar) */}
+          {/* Row 1: Nickname's Bloom Log */}
           <div className="flex items-center">
             <div className="flex-1 min-w-0">
               <p className="text-white/60 tracking-wide text-xs font-sans font-extrabold">It's ​Blooming day! </p>
               <h1
-                className="text-lg font-bold tracking-tight leading-tight text-primary"
+                className="text-lg font-bold tracking-tight leading-tight text-white"
                 style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-                
                 {nickname || "회원"}님의 <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
             </div>
+          </div>
+
+          {/* ═══ Bloom Progress (inside header) ═══ */}
+          <div className="flex items-center gap-3 px-1">
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="focus:outline-none shrink-0">
+                  <BloomAvatar size="sm" showDays={false} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                side="bottom"
+                align="start"
+                className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
+                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
+                <div className="space-y-1.5 text-[11px]">
+                  <p className="text-[#F2C94C] font-semibold">
+                    현재: {bloom.emoji} {bloom.name} ({activeDays}건)
+                  </p>
+                  {bloom.nextMilestone !== null &&
+                  <p className="text-white/90">
+                      다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
+                    </p>
+                  }
+                  {bloom.nextMilestone === null && <p className="text-white/90">✨ 최고 등급 달성!</p>}
+                </div>
+              </PopoverContent>
+            </Popover>
+            <div className="flex-1 min-w-0 space-y-1">
+              {isWilting ?
+              <p className="text-xs font-semibold text-white/70">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p> :
+              bloom.stage === 0 ?
+              <p className="text-xs font-semibold text-white">🌱 첫번째 기록 완료하고 새싹이로 업그레이드!</p> :
+              remaining > 0 ?
+              <p className="text-xs font-semibold text-white">
+                  🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성!
+                </p> :
+              <p className="text-xs font-semibold text-white">✨ 최고 단계 달성!!!</p>
+              }
+              <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/20">
+                <div
+                  className="h-full rounded-full transition-all duration-1000 ease-out"
+                  style={{
+                    width: `${progressPct}%`,
+                    background: "linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))"
+                  }} />
+              </div>
+            </div>
+            <span className="text-lg shrink-0">
+              {bloom.nextMilestone !== null ? STAGES[bloom.stage + 1]?.emoji : "🌺"}
+            </span>
           </div>
         </div>
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-4 pt-4 pb-40 relative z-10 bg-background rounded-t-2xl -mt-2">
-        {/* ═══ Bloom Progress Card ═══ */}
-        <div className="flex items-center gap-3 px-1">
-          <Popover>
-            <PopoverTrigger asChild>
-              <button className="focus:outline-none shrink-0">
-                <BloomAvatar size="sm" showDays={false} />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              side="bottom"
-              align="start"
-              className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
-              
-              <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
-              <div className="space-y-1.5 text-[11px]">
-                <p className="text-[#F2C94C] font-semibold">
-                  현재: {bloom.emoji} {bloom.name} ({activeDays}건)
-                </p>
-                {bloom.nextMilestone !== null &&
-                <p className="text-white/90">
-                    다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
-                  </p>
-                }
-                {bloom.nextMilestone === null && <p className="text-white/90">✨ 최고 등급 달성!</p>}
-              </div>
-            </PopoverContent>
-          </Popover>
-          <div className="flex-1 min-w-0 space-y-1">
-            {isWilting ?
-            <p className="text-xs font-semibold text-muted-foreground">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p> :
-            bloom.stage === 0 ?
-            <p className="text-xs font-semibold">🌱 첫번째 기록 완료하고 새싹이로 업그레이드!</p> :
-            remaining > 0 ?
-            <p className="text-xs font-semibold">
-                🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성!
-              </p> :
-
-            <p className="text-xs font-semibold">✨ 최고 단계 달성!!!</p>
-            }
-            <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full transition-all duration-1000 ease-out"
-                style={{
-                  width: `${progressPct}%`,
-                  background: "linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))"
-                }} />
-              
-            </div>
-          </div>
-          <span className="text-lg shrink-0">
-            {bloom.nextMilestone !== null ? STAGES[bloom.stage + 1]?.emoji : "🌺"}
-          </span>
-        </div>
+      <div className="page-content space-y-4 pt-4 pb-40">
 
 
         {/* ═══ Today's Condition Log ═══ */}
