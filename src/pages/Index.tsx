@@ -71,19 +71,6 @@ interface Reservation {
   skin_layer: string | null;
 }
 
-const SEASON_CONFIG: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string }> = {
-  reset: { emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드", color: "hsl(var(--sage))", bg: "bg-sage-light" },
-  recovery: {
-    emoji: "🌿",
-    title: "Recovery Mode",
-    sub: "회복 모드",
-    color: "hsl(var(--sage-dark))",
-    bg: "bg-sage-light",
-  },
-  maintain: { emoji: "💜", title: "Maintain Mode", sub: "유지 모드", color: "hsl(var(--secondary))", bg: "bg-warm" },
-  boost: { emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드", color: "hsl(var(--rose))", bg: "bg-rose-light" },
-  special: { emoji: "🌸", title: "Special Mode", sub: "스페셜 모드", color: "hsl(var(--rose))", bg: "bg-warm" },
-};
 
 const TODAY = new Date("2026-03-10");
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
