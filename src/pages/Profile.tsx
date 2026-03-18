@@ -970,7 +970,58 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* Logout */}
+          {/* ── 현재 관리 모드 ── */}
+          <Card className="glass-card">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
+                  <Target className="h-4 w-4 text-accent-foreground" />
+                </div>
+                <h2 className="font-bold text-sm">현재 관리 모드</h2>
+              </div>
+              <div className="grid grid-cols-1 gap-2">
+                {(
+                  [
+                    { key: "reset", emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드", desc: "최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복." },
+                    { key: "recovery", emoji: "🌿", title: "Recovery Mode", sub: "회복 모드", desc: "시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계." },
+                    { key: "maintain", emoji: "💜", title: "Maintain Mode", sub: "유지 모드", desc: "현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계." },
+                    { key: "boost", emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드", desc: "피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계." },
+                    { key: "special", emoji: "🌸", title: "Special Mode", sub: "스페셜 모드", desc: "웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계." },
+                  ] as const
+                ).map(({ key, emoji, title, sub, desc }) => {
+                  const isSelected = currentSeason === key;
+                  return (
+                    <button
+                      key={key}
+                      onClick={() => setSeasonGlobal(isSelected ? ("maintain" as SeasonKey) : (key as SeasonKey))}
+                      className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
+                        isSelected
+                          ? "border-amber/60 bg-amber/10"
+                          : "border-border bg-muted hover:border-muted-foreground/40"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-base shrink-0">{emoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold ${isSelected ? "text-amber" : "text-foreground"}`}>{title}</span>
+                            <span className="text-[10px] text-muted-foreground">{sub}</span>
+                          </div>
+                          <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{desc}</p>
+                        </div>
+                        <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
+                          isSelected ? "border-amber bg-amber" : "border-muted-foreground/30"
+                        }`}>
+                          {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+
           <Button
             variant="ghost"
             className="w-full rounded-xl text-sm text-muted-foreground gap-2"
