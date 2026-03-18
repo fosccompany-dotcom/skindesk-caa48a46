@@ -24,17 +24,8 @@ export function PrivateRoute({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!user) {
-    return (
-      <>
-        {children}
-        <LoginRequiredSheet
-          open={sheetOpen}
-          onClose={() => setSheetOpen(false)}
-        />
-      </>
-    );
-  }
+  // 비로그인 사용자도 페이지 열람 허용 (로그인은 특정 액션 시 요청)
+
 
   return <>{children}</>;
 }
