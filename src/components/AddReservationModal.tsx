@@ -548,34 +548,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                     {selectedCat.emoji} {selectedCat.label}
                   </label>
                   <div className="space-y-1.5 max-h-[250px] overflow-y-auto">
-                    {selectedCat.items.map((item) => {
-                      if (item.id === "__custom") {
-                        return (
-                          <div key="__custom" className="mt-2 flex gap-2">
-                            <input
-                              placeholder="시술명 직접 입력"
-                              value={customTreatmentName}
-                              onChange={(e) => setCustomTreatmentName(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                  e.preventDefault();
-                                  addCustomTreatment();
-                                }
-                              }}
-                              className="flex-1 rounded-xl border border-border bg-card px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
-                            />
-                            <Button
-                              size="icon"
-                              variant="outline"
-                              onClick={addCustomTreatment}
-                              disabled={!customTreatmentName.trim()}
-                              className="rounded-xl shrink-0"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        );
-                      }
+                    {selectedCat.items.filter((item) => item.id !== "__custom").map((item) => {
                       const isSelected = treatments.includes(item.name);
                       return (
                         <button
