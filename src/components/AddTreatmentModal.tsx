@@ -631,6 +631,9 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
       memo,
       payment_method: pm,
       payment_amount: amt,
+      clinic_kakao_id: clinicKakaoId,
+      clinic_district: clinicDistrict,
+      clinic_address: clinicAddress,
     });
     handleClose();
   };
