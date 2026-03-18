@@ -973,6 +973,48 @@ const Profile = () => {
             </CardContent>
           </Card>
 
+          {/* ── 내 피부족 ── */}
+          <Card className="glass-card">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.emoji ?? '⚖️') : '⚖️'}</span>
+                  <div>
+                    <p className="text-xs text-muted-foreground">내 피부족</p>
+                    <p className="text-sm font-bold text-foreground">
+                      {skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.name ?? '복합 균형족') : '아직 결과 없음'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {skinTribe && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-muted-foreground h-8"
+                      onClick={() => navigate('/quiz-result')}
+                    >
+                      결과 보기
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-8"
+                    onClick={async () => {
+                      const userId = userIdRef.current;
+                      if (!userId) return;
+                      await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
+                      navigate('/skin-quiz');
+                    }}
+                  >
+                    {skinTribe ? '다시 하기' : '퀴즈 시작'}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
           {/* ── 현재 관리 모드 ── */}
           <Card className="glass-card">
             <CardContent className="p-4 space-y-3">
