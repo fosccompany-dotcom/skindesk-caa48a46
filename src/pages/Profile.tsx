@@ -54,6 +54,7 @@ import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import { useNavigate, Link } from "react-router-dom";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
+import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
 import { Progress } from "@/components/ui/progress";
 
 const skinTypes: SkinType[] = ["건성", "지성", "복합성", "민감성", "중성"];
