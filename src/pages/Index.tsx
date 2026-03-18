@@ -1092,7 +1092,8 @@ const Index = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
           <div className="bg-black/70 backdrop-blur-md text-white rounded-2xl px-8 py-6 text-center space-y-2 animate-scale-in">
             <span className="text-4xl block animate-bounce">🌱</span>
-            <p className="text-sm font-semibold">좋아요, 한 걸음 더 🌱</p>
+            <p className="text-sm font-semibold">첫 업그레이드를 축하해요!</p>
+            <p className="text-xs text-white/80">씨앗에서 새싹이 되었어요! 🌱</p>
           </div>
         </div>
       )}
