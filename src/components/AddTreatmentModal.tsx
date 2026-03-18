@@ -564,10 +564,6 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     let name = selectedItem.name;
     if (shots) name += ` ${shots}샷`;
     return name;
-    if (!selectedItem) return '';
-    let name = selectedItem.name;
-    if (shots) name += ` ${shots}샷`;
-    return name;
   };
 
   const getBotoxSkinLayer = (): SL => {
