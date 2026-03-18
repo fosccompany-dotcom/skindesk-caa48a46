@@ -436,6 +436,23 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
           {/* Step 2: Treatment selection (multi) */}
           {step === 2 && (
             <div>
+              {/* Treatment search */}
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <input
+                  className="w-full border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-xl pl-8 pr-8 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
+                  placeholder="시술명 통합검색"
+                  value={treatmentSearch}
+                  onChange={(e) => { setTreatmentSearch(e.target.value); setCatId(null); }}
+                  autoComplete="off"
+                />
+                {treatmentSearch && (
+                  <button onClick={() => setTreatmentSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100">
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
+
               {/* Selected treatments list */}
               {treatments.length > 0 && (
                 <div className="mb-4">
@@ -458,7 +475,38 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                 </div>
               )}
 
-              {!catId && (
+              {/* Search results */}
+              {treatmentSearch.trim() ? (
+                <div className="space-y-1.5 max-h-[300px] overflow-y-auto">
+                  {displayCategories.flatMap((cat) =>
+                    cat.items
+                      .filter((item) => item.id !== "__custom" && item.name.toLowerCase().includes(treatmentSearch.trim().toLowerCase()))
+                      .map((item) => {
+                        const isSelected = treatments.includes(item.name);
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => { if (!isSelected) { setTreatments((prev) => [...prev, item.name]); } else { removeTreatment(item.name); } }}
+                            className={cn(
+                              "w-full flex items-center justify-between rounded-xl border px-4 py-3 text-sm transition-all active:scale-[0.98]",
+                              isSelected ? "border-info/40 bg-info/5 text-info font-semibold" : "border-border bg-card hover:border-info/30",
+                            )}
+                          >
+                            <span className="flex items-center gap-2">
+                              <span className="text-xs text-muted-foreground">{cat.emoji}</span>
+                              {item.name}
+                            </span>
+                            {isSelected && <Check className="h-4 w-4 text-info" />}
+                          </button>
+                        );
+                      })
+                  )}
+                  {displayCategories.flatMap((cat) => cat.items.filter((item) => item.id !== "__custom" && item.name.toLowerCase().includes(treatmentSearch.trim().toLowerCase()))).length === 0 && (
+                    <p className="text-xs text-muted-foreground text-center py-6">검색 결과가 없습니다</p>
+                  )}
+                </div>
+              ) : (
+              <>
                 <>
                   <label className="text-sm font-semibold text-foreground mb-3 block">
                     시술 카테고리 선택
