@@ -485,6 +485,31 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   }, [dbOptions, language]);
 
   const isDirectInput = catId === '__direct';
+
+  // ── 통합 검색 결과 ──
+  const searchResults = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    if (!q) return [];
+    const results: { catId: string; catLabel: string; catEmoji: string; item: DisplayItem }[] = [];
+    for (const cat of displayCategories) {
+      for (const item of cat.items) {
+        if (item.id === '__custom') continue;
+        if (item.name.toLowerCase().includes(q) || (item.desc && item.desc.toLowerCase().includes(q))) {
+          results.push({ catId: cat.id, catLabel: cat.label, catEmoji: cat.emoji, item });
+        }
+      }
+    }
+    // Also search hardcoded BOTOX_DRUGS
+    for (const drug of BOTOX_DRUGS) {
+      if (drug.name.toLowerCase().includes(q) || (drug.desc && drug.desc.toLowerCase().includes(q))) {
+        const existing = results.find(r => r.item.name === drug.name);
+        if (!existing) {
+          results.push({ catId: 'botox', catLabel: '보톡스/윤곽주사', catEmoji: '💉', item: { id: drug.id, name: drug.name, desc: drug.desc } });
+        }
+      }
+    }
+    return results;
+  }, [searchQuery, displayCategories]);
   const selectedCat = displayCategories.find(c => c.id === catId);
   const isBotox = catId === 'botox' || catId === '보톡스/윤곽주사';
   const isFiller = catId === 'filler' || catId === '필러·실리프팅';
