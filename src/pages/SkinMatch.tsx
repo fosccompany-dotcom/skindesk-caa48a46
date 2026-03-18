@@ -188,8 +188,17 @@ export default function SkinMatch() {
         </Button>
       </div>
 
+      {parseModalOpen && (
+        <ParseTreatmentModal onClose={() => { setParseModalOpen(false); setAddModalOpen(false); }} />
+      )}
+
       {addModalOpen && (
-        <AddTreatmentModal open={addModalOpen} onClose={() => setAddModalOpen(false)} onSave={() => setAddModalOpen(false)} />
+        <AddTreatmentModal
+          open={addModalOpen}
+          onClose={() => setAddModalOpen(false)}
+          onSave={() => setAddModalOpen(false)}
+          onOpenParse={() => { setParseModalOpen(true); setAddModalOpen(false); }}
+        />
       )}
     </div>
   );
