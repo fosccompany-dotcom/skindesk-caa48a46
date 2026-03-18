@@ -93,7 +93,7 @@ export default function QuizResult() {
       .from('user_profiles')
       .update({ quiz_completed_at: null })
       .eq('id', user.id);
-    navigate('/skin-quiz', { replace: true });
+    navigate('/quiz', { replace: true });
   };
 
   if (loading) {

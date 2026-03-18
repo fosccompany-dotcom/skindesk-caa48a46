@@ -111,7 +111,7 @@ const Index = () => {
     single().
     then(({ data }) => {
       if (data && !data.quiz_completed_at) {
-        navigate('/skin-quiz', { replace: true });
+        navigate('/quiz', { replace: true });
       }
     });
   }, [user, navigate]);
