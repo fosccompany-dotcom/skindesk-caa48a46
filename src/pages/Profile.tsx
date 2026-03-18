@@ -302,6 +302,7 @@ const Profile = () => {
   const [regions, setRegions] = useState<string[]>([]);
   const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState("");
+  const [skinTribe, setSkinTribe] = useState<string | null>(null);
   const [selectedGugun, setSelectedGugun] = useState("");
 
   const { records, updateRecord } = useRecords();
