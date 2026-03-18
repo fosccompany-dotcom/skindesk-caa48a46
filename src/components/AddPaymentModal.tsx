@@ -74,10 +74,12 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
         date,
         clinic:         clinic.trim(),
         clinic_type:    clinicType,
+        clinic_kakao_id: clinicKakaoId,
+        clinic_district: clinicDistrict,
         treatment_name: description.trim() || getMethodLabel(method, language),
         amount:         amountNum,
         charged_amount: method === 'charge' ? chargedNum : null,
-        method,          // English key: 'charge' | 'card' | 'cash' | 'service'
+        method,
         memo:           memo.trim() || null,
       });
       if (insertErr) throw insertErr;
