@@ -11,7 +11,7 @@ import {
   Star,
   Trash2,
   Pencil,
-  Check,
+  
   Plus,
   ClipboardList,
   CalendarPlus,
