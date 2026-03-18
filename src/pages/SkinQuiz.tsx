@@ -235,7 +235,12 @@ export default function SkinQuiz() {
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-[calc(var(--safe-top)+12px)] pb-2">
-        <div className="w-10" /> {/* spacer */}
+        <button
+          onClick={() => step > 0 ? handleBack() : navigate(-1)}
+          className="p-1 text-muted-foreground hover:text-foreground"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </button>
         <span className="text-xs text-muted-foreground font-medium">
           {step + 1} / {effectiveQuestions.length}
         </span>
