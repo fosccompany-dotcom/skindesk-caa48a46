@@ -139,8 +139,8 @@ export default function SkinMatch() {
         <Card className="border-border rounded-2xl overflow-hidden">
           <CardContent className="p-4 space-y-2">
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 rounded-lg bg-emerald-100 flex items-center justify-center">
-                <Check className="h-4 w-4 text-emerald-600" />
+              <div className="h-7 w-7 rounded-lg bg-accent/20 flex items-center justify-center">
+                <Check className="h-4 w-4 text-accent-foreground" />
               </div>
               <h2 className="text-sm font-bold text-foreground">잘 맞는 시술</h2>
             </div>
