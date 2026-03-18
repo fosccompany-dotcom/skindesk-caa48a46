@@ -139,13 +139,43 @@ export default function SkinQuiz() {
     [user, hasBirthDate],
   );
 
+  const isMultiSelect = 'multiSelect' in currentQ && (currentQ as any).multiSelect;
+
   const handleSelect = (key: string) => {
     if (transitioning) return;
     const qId = currentQ.id as keyof QuizAnswers;
+
+    // Q5 multi-select: toggle selection, don't auto-advance
+    if (isMultiSelect) {
+      setQ5Selections(prev =>
+        prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+      );
+      return;
+    }
+
     const updated = { ...answers, [qId]: key };
     setAnswers(updated);
 
     // Auto-advance after 0.3s
+    setTransitioning(true);
+    setTimeout(async () => {
+      if (isLast) {
+        const tribe = classifySkinTribe(updated);
+        await saveResults(tribe, updated);
+        navigate('/quiz-result', { replace: true });
+      } else {
+        setStep((s) => s + 1);
+      }
+      setTransitioning(false);
+    }, 300);
+  };
+
+  const handleQ5Next = async () => {
+    if (q5Selections.length === 0) return;
+    // Save first selection as primary goal
+    const updated = { ...answers, q5: q5Selections[0] as any };
+    setAnswers(updated);
+
     setTransitioning(true);
     setTimeout(async () => {
       if (isLast) {
