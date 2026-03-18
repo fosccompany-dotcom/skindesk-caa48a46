@@ -483,6 +483,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
     return result;
   }, [dbOptions, language]);
 
+  const isDirectInput = catId === '__direct';
   const selectedCat = displayCategories.find(c => c.id === catId);
   const isBotox = catId === 'botox' || catId === '보톡스/윤곽주사';
   const isFiller = catId === 'filler' || catId === '필러·실리프팅';
@@ -492,10 +493,10 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
   const botoxTotalSteps = 4;
   const normalExtraSteps = needsShots ? 1 : 0;
   const normalTotalSteps = 3 + normalExtraSteps;
-  const totalSteps = isBotox ? botoxTotalSteps : isFiller ? 4 : normalTotalSteps;
+  const totalSteps = isDirectInput ? 2 : isBotox ? botoxTotalSteps : isFiller ? 4 : normalTotalSteps;
 
   const shotsStep = needsShots ? 3 : -1;
-  const isDetailStep = isBotox ? step === 4 : isFiller ? step === 4 : step === (needsShots ? 4 : 3);
+  const isDetailStep = isDirectInput ? step === 2 : isBotox ? step === 4 : isFiller ? step === 4 : step === (needsShots ? 4 : 3);
 
   // 상세 단계 진입 시 사용 가능한 시술권 조회
   useEffect(() => {
