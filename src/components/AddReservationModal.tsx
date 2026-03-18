@@ -349,7 +349,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
         if (!v) handleClose();
       }}
     >
-      <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto p-0 rounded-2xl overflow-hidden max-h-[85vh] flex flex-col [&>button:last-of-type]:hidden">
+      <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto p-0 rounded-2xl overflow-hidden h-[85vh] flex flex-col [&>button:last-of-type]:hidden">
         {/* Header */}
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-border sticky top-0 bg-background z-10">
           <div className="flex items-center justify-between">
