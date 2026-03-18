@@ -187,7 +187,7 @@ export default function SkinMatch() {
       </div>
 
       {addModalOpen && (
-        <AddTreatmentModal open={addModalOpen} onClose={() => setAddModalOpen(false)} />
+        <AddTreatmentModal open={addModalOpen} onClose={() => setAddModalOpen(false)} onSave={() => setAddModalOpen(false)} />
       )}
     </div>
   );

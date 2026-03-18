@@ -18,6 +18,8 @@ import Signup from "./pages/Signup";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import SkinQuiz from "./pages/SkinQuiz";
+import QuizResult from "./pages/QuizResult";
+import SkinMatch from "./pages/SkinMatch";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
