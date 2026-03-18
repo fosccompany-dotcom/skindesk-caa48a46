@@ -11,7 +11,7 @@ import {
   Star,
   Trash2,
   Pencil,
-  
+  Check,
   Plus,
   ClipboardList,
   CalendarPlus,
@@ -53,10 +53,10 @@ import EditReservationSheet from "@/components/EditReservationSheet";
 import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
-import { useSeason } from "@/context/SeasonContext";
+import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import LoginRequiredSheet from "@/components/LoginRequiredSheet";
 import { useLoginGuard } from "@/hooks/useLoginGuard";
-
+import { useAuth } from "@/context/AuthContext";
 import logoImg from "@/assets/logo.png";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 
@@ -71,16 +71,29 @@ interface Reservation {
   skin_layer: string | null;
 }
 
+const SEASON_CONFIG: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string }> = {
+  reset: { emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드", color: "hsl(var(--sage))", bg: "bg-sage-light" },
+  recovery: {
+    emoji: "🌿",
+    title: "Recovery Mode",
+    sub: "회복 모드",
+    color: "hsl(var(--sage-dark))",
+    bg: "bg-sage-light",
+  },
+  maintain: { emoji: "💜", title: "Maintain Mode", sub: "유지 모드", color: "hsl(var(--secondary))", bg: "bg-warm" },
+  boost: { emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드", color: "hsl(var(--rose))", bg: "bg-rose-light" },
+  special: { emoji: "🌸", title: "Special Mode", sub: "스페셜 모드", color: "hsl(var(--rose))", bg: "bg-warm" },
+};
 
 const TODAY = new Date("2026-03-10");
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const CONDITION_OPTIONS = [
-  { emoji: "🏭", label: "기름", value: 5 },
-  { emoji: "🌊", label: "촉촉", value: 4 },
-  { emoji: "🌤️", label: "맑음", value: 3 },
-  { emoji: "🌵", label: "건조", value: 2 },
-  { emoji: "🏜️", label: "사막", value: 1 },
+  { emoji: "✨", label: "좋음", value: 5 },
+  { emoji: "😊", label: "보통", value: 4 },
+  { emoji: "😐", label: "그저그럭", value: 3 },
+  { emoji: "😣", label: "별로", value: 2 },
+  { emoji: "😰", label: "안좋음", value: 1 },
 ];
 
 function getCycleStatus(cycle: TreatmentCycle) {
@@ -107,8 +120,9 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
+  const { currentSeason, setCurrentSeason } = useSeason();
   const { nickname } = useSeason();
-  
+  const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<
     {
@@ -136,9 +150,9 @@ const Index = () => {
 
   // AI 파싱 등 외부 데이터 변경 시 새로고침
   useEffect(() => {
-    const handler = () => setDataRefresh(v => v + 1);
-    window.addEventListener('skindesk:data-changed', handler);
-    return () => window.removeEventListener('skindesk:data-changed', handler);
+    const handler = () => setDataRefresh((v) => v + 1);
+    window.addEventListener("skindesk:data-changed", handler);
+    return () => window.removeEventListener("skindesk:data-changed", handler);
   }, []);
 
   // 언어 드롭다운 외부 클릭 닫기
@@ -196,6 +210,25 @@ const Index = () => {
   }, [records, reservationRefresh, dataRefresh]);
 
   // Season change handler — require login, then apply pending mode
+  const pendingSeasonRef = useRef<SeasonKey | null>(null);
+  const { user: authUser } = useAuth();
+  const handleSeasonChange = (season: SeasonKey) => {
+    setModeDropdownOpen(false);
+    if (!authUser) {
+      pendingSeasonRef.current = season;
+    }
+    guardAction(() => {
+      setCurrentSeason(season);
+    });
+  };
+
+  // Apply pending season after login
+  useEffect(() => {
+    if (authUser && pendingSeasonRef.current) {
+      setCurrentSeason(pendingSeasonRef.current);
+      pendingSeasonRef.current = null;
+    }
+  }, [authUser, setCurrentSeason]);
 
   // Privacy consent for OAuth users
   const [privacyConsentOpen, setPrivacyConsentOpen] = useState(false);
@@ -211,19 +244,23 @@ const Index = () => {
 
       // OAuth 가입 시 privacy_agreed=true 파라미터 처리
       const params = new URLSearchParams(window.location.search);
-      if (params.get('privacy_agreed') === 'true') {
-        await supabase.from('user_profiles').upsert({
+      if (params.get("privacy_agreed") === "true") {
+        await supabase.from("user_profiles").upsert({
           id: authUser.id,
           privacy_agreed_at: new Date().toISOString(),
         });
         // URL에서 파라미터 제거
-        params.delete('privacy_agreed');
+        params.delete("privacy_agreed");
         const newSearch = params.toString();
-        window.history.replaceState({}, '', `${window.location.pathname}${newSearch ? '?' + newSearch : ''}`);
+        window.history.replaceState({}, "", `${window.location.pathname}${newSearch ? "?" + newSearch : ""}`);
         return;
       }
 
-      const { data } = await supabase.from("user_profiles").select("privacy_agreed_at").eq("id", authUser.id).maybeSingle();
+      const { data } = await supabase
+        .from("user_profiles")
+        .select("privacy_agreed_at")
+        .eq("id", authUser.id)
+        .maybeSingle();
       if (!data?.privacy_agreed_at) {
         setPrivacyConsentOpen(true);
       }
@@ -392,7 +429,7 @@ const Index = () => {
     setTimeout(() => setShowReward(false), 2500);
   };
 
-  
+  const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
 
   if (loading) return <FlowerLoader />;
 
@@ -503,68 +540,47 @@ const Index = () => {
           </span>
         </div>
 
+        {/* ═══ Management Mode Selector ═══ */}
+        <div className="relative">
+          <div
+            className="flex items-center gap-2 bg-card border border-border rounded-xl px-3 py-2.5 cursor-pointer active:bg-muted/80 transition-colors shadow-sm"
+            onClick={() => setModeDropdownOpen((v) => !v)}
+          >
+            <span className="text-lg">{seasonMeta?.emoji || "⚙️"}</span>
+            <div className="flex-1 min-w-0">
+              <p className="text-muted-foreground text-[10px]">관리 모드</p>
+              <p className="text-foreground text-xs font-semibold">
+                {seasonMeta ? seasonMeta.title : "모드를 선택하세요"}
+              </p>
+            </div>
+            <ChevronDown
+              size={14}
+              className={cn("text-muted-foreground transition-transform", modeDropdownOpen && "rotate-180")}
+            />
+          </div>
 
-        {/* ═══ Today's Condition Log ═══ */}
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <p className="text-sm font-bold text-foreground mb-3">오늘의 컨디션 기록</p>
-            <p className="text-[10px] text-muted-foreground mb-3">
-              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
-            </p>
-            <div className="flex items-center justify-between gap-1 mb-3">
-              {CONDITION_OPTIONS.map((opt) => (
+          {modeDropdownOpen && (
+            <div className="absolute left-0 right-0 top-full mt-1 bg-card/95 backdrop-blur-md rounded-xl shadow-lg border border-border/50 z-50 overflow-hidden">
+              {(Object.entries(SEASON_CONFIG) as [SeasonKey, (typeof SEASON_CONFIG)[SeasonKey]][]).map(([key, cfg]) => (
                 <button
-                  key={opt.value}
+                  key={key}
                   className={cn(
-                    "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all text-center",
-                    todayCondition === opt.value
-                      ? "bg-primary/10 ring-2 ring-primary/30 scale-105"
-                      : "bg-muted/50 hover:bg-muted",
+                    "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50",
+                    currentSeason === key && "bg-muted",
                   )}
-                  onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}
+                  onClick={() => handleSeasonChange(key)}
                 >
-                  <span className="text-xl">{opt.emoji}</span>
-                  <span className="text-[10px] font-medium text-foreground">{opt.label}</span>
+                  <span className="text-xl">{cfg.emoji}</span>
+                  <div className="flex-1">
+                    <p className="text-sm font-semibold text-foreground">{cfg.title}</p>
+                    <p className="text-[10px] text-muted-foreground">{cfg.sub}</p>
+                  </div>
+                  {currentSeason === key && <Check size={16} className="text-primary shrink-0" />}
                 </button>
               ))}
             </div>
-            {todayCondition && (
-              <div className="space-y-2">
-                <textarea
-                  className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
-                  placeholder="오늘 피부 상태 메모 (선택)"
-                  rows={2}
-                  value={conditionMemo}
-                  onChange={(e) => setConditionMemo(e.target.value)}
-                />
-                <button
-                  className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
-                  onClick={async () => {
-                    await addRecord({
-                      date: format(TODAY, "yyyy-MM-dd"),
-                      treatmentName: "컨디션 기록",
-                      treatmentId: undefined,
-                      packageId: "",
-                      skinLayer: "epidermis",
-                      bodyArea: "face",
-                      clinic: "-",
-                      satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
-                      memo:
-                        conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                      notes: "일일 컨디션 기록",
-                    });
-                    setTodayCondition(null);
-                    setConditionMemo("");
-                    setShowReward(true);
-                    setTimeout(() => setShowReward(false), 2500);
-                  }}
-                >
-                  컨디션 기록하기
-                </button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          )}
+        </div>
 
         {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
@@ -676,9 +692,15 @@ const Index = () => {
                         }, 500);
                       }
                     }}
-                    onPointerUp={() => { if (longPressTimer) clearTimeout(longPressTimer); }}
-                    onPointerLeave={() => { if (longPressTimer) clearTimeout(longPressTimer); }}
-                    onContextMenu={(e) => { if (hasAnyData && inMonth) e.preventDefault(); }}
+                    onPointerUp={() => {
+                      if (longPressTimer) clearTimeout(longPressTimer);
+                    }}
+                    onPointerLeave={() => {
+                      if (longPressTimer) clearTimeout(longPressTimer);
+                    }}
+                    onContextMenu={(e) => {
+                      if (hasAnyData && inMonth) e.preventDefault();
+                    }}
                     className={cn("flex flex-col items-center py-1 transition-colors", !inMonth && "opacity-30")}
                   >
                     <span
@@ -783,9 +805,7 @@ const Index = () => {
               <Card key={r.id} className="border-0 shadow-sm">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    {r.treatmentName === "컨디션 기록" && r.satisfaction
-                      ? <span className="text-lg">{CONDITION_OPTIONS.find(o => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span>
-                      : <Stethoscope className="h-4 w-4 text-primary" />}
+                    <Stethoscope className="h-4 w-4 text-primary" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
@@ -897,7 +917,7 @@ const Index = () => {
                 <span className="text-lg">💰</span>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground">잔여 포인트</p>
+                <p className="text-[10px] text-muted-foreground">잔여 금액</p>
                 <p className="text-lg font-black text-foreground leading-tight">
                   {totalBalance > 0 ? `${totalBalance.toLocaleString()}` : <span className="opacity-40">0</span>}
                   <span className="text-xs font-medium text-muted-foreground ml-0.5">원</span>
@@ -907,8 +927,72 @@ const Index = () => {
           </Card>
         </div>
 
+        {/* ═══ Today's Condition Log ═══ */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4">
+            <p className="text-sm font-bold text-foreground mb-3">오늘의 컨디션 기록</p>
+            <p className="text-[10px] text-muted-foreground mb-3">
+              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
+            </p>
 
+            {/* Condition emoji selector */}
+            <div className="flex items-center justify-between gap-1 mb-3">
+              {CONDITION_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  className={cn(
+                    "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all text-center",
+                    todayCondition === opt.value
+                      ? "bg-primary/10 ring-2 ring-primary/30 scale-105"
+                      : "bg-muted/50 hover:bg-muted",
+                  )}
+                  onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}
+                >
+                  <span className="text-xl">{opt.emoji}</span>
+                  <span className="text-[10px] font-medium text-foreground">{opt.label}</span>
+                </button>
+              ))}
+            </div>
 
+            {/* Memo + Save */}
+            {todayCondition && (
+              <div className="space-y-2">
+                <textarea
+                  className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  placeholder="오늘 피부 상태 메모 (선택)"
+                  rows={2}
+                  value={conditionMemo}
+                  onChange={(e) => setConditionMemo(e.target.value)}
+                />
+
+                <button
+                  className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
+                  onClick={async () => {
+                    await addRecord({
+                      date: format(TODAY, "yyyy-MM-dd"),
+                      treatmentName: "컨디션 기록",
+                      treatmentId: undefined,
+                      packageId: "",
+                      skinLayer: "epidermis",
+                      bodyArea: "face",
+                      clinic: "-",
+                      satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
+                      memo:
+                        conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
+                      notes: "일일 컨디션 기록",
+                    });
+                    setTodayCondition(null);
+                    setConditionMemo("");
+                    setShowReward(true);
+                    setTimeout(() => setShowReward(false), 2500);
+                  }}
+                >
+                  컨디션 기록하기
+                </button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* ═══ Recent Records ═══ */}
         {records.length > 0 && (
@@ -1092,8 +1176,7 @@ const Index = () => {
         <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
           <div className="bg-black/70 backdrop-blur-md text-white rounded-2xl px-8 py-6 text-center space-y-2 animate-scale-in">
             <span className="text-4xl block animate-bounce">🌱</span>
-            <p className="text-sm font-semibold">첫 업그레이드를 축하해요!</p>
-            <p className="text-xs text-white/80">씨앗에서 새싹이 되었어요! 🌱</p>
+            <p className="text-sm font-semibold">좋아요, 한 걸음 더 🌱</p>
           </div>
         </div>
       )}
