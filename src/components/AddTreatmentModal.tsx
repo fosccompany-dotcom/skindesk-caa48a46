@@ -1101,7 +1101,19 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 <label className="text-xs text-gray-400 block mb-1.5">병원</label>
                 <ClinicSearchInput
                   value={clinic}
-                  onChange={setClinic}
+                  onChange={(val) => {
+                    setClinic(val);
+                    // Clear meta when user manually types (not from select)
+                    setClinicKakaoId(null);
+                    setClinicDistrict(null);
+                    setClinicAddress(null);
+                  }}
+                  onSelectPlace={(place) => {
+                    setClinic(place.name);
+                    setClinicKakaoId(place.kakao_id || null);
+                    setClinicAddress(place.road_address || place.address || null);
+                    setClinicDistrict(extractDistrict(place.road_address || place.address || '') || null);
+                  }}
                   placeholder="병원명 검색 (예: 밴스 미금, 강남 피부과)"
                   darkMode={false} />
               </div>
