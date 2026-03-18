@@ -52,7 +52,8 @@ const QUESTIONS = [
   },
   {
     id: 'q5' as const,
-    question: '피부과 가는 주된 이유는?',
+    question: '피부과 가는 주된 이유는? (복수 선택 가능)',
+    multiSelect: true,
     options: [
       { key: 'A' as const, label: '탄력·리프팅·노화 관리' },
       { key: 'B' as const, label: '기미·잡티·피부톤' },
@@ -64,12 +65,12 @@ const QUESTIONS = [
     id: 'q6' as const,
     question: '태어난 연도는?',
     options: [
-      { key: '2000', label: '2000년대' },
-      { key: '1995', label: '1995년대' },
-      { key: '1990', label: '1990년대' },
-      { key: '1985', label: '1985년대' },
-      { key: '1980', label: '1980년대' },
-      { key: '1970', label: '1970년대 이전' },
+      { key: '2000', label: '2000년 이후 출생' },
+      { key: '1995', label: '1995~1999년 출생' },
+      { key: '1990', label: '1990~1994년 출생' },
+      { key: '1985', label: '1985~1989년 출생' },
+      { key: '1980', label: '1980~1984년 출생' },
+      { key: '1970', label: '1979년 이전 출생' },
     ],
   },
 ] as const;
