@@ -632,7 +632,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] h-[88vh] overflow-y-auto p-0 [&>button:last-of-type]:hidden">
+      <DialogContent className="bg-white border border-gray-200 text-gray-900 max-w-md w-[92vw] h-[88vh] overflow-hidden p-0 flex flex-col [&>button:last-of-type]:hidden">
 
         {/* 헤더 */}
         <DialogHeader className="px-5 pt-5 pb-3 border-b border-gray-200 sticky top-0 bg-white z-10">
@@ -659,44 +659,51 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           </div>
         </DialogHeader>
 
-        {/* AI 파싱 CTA — 상단 메인 */}
+        {/* AI 파싱 CTA — 상단 고정 */}
         {onOpenParse && step === 1 && !editRecord && (
-          <button
-            onClick={() => { reset(); onOpenParse(); }}
-            className="mx-5 mt-3 flex items-center gap-3 px-4 py-3 rounded-2xl bg-primary text-primary-foreground shadow-md hover:opacity-90 active:scale-[0.98] transition-all"
-          >
-            <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary-foreground/20">
-              <Sparkles size={18} />
-            </div>
-            <div className="flex-1 text-left">
-              <p className="text-sm font-bold">AI로 한 번에 등록</p>
-              <p className="text-[11px] opacity-75 mt-0.5">문자 · 카톡 · 이미지 붙여넣기</p>
-            </div>
-            <ChevronRight size={16} className="opacity-60" />
-          </button>
+          <div className="shrink-0">
+            <button
+              onClick={() => { reset(); onOpenParse(); }}
+              className="mx-5 mt-3 flex items-center gap-3 px-4 py-3 rounded-2xl bg-primary text-primary-foreground shadow-md hover:opacity-90 active:scale-[0.98] transition-all"
+            >
+              <div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary-foreground/20">
+                <Sparkles size={18} />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-sm font-bold">AI로 한 번에 등록</p>
+                <p className="text-[11px] opacity-75 mt-0.5">문자 · 카톡 · 이미지 붙여넣기</p>
+              </div>
+              <ChevronRight size={16} className="opacity-60" />
+            </button>
+          </div>
         )}
 
-        <div className="px-5 py-4">
+        {/* 검색창 — 상단 고정 */}
+        {step === 1 && (
+          <div className="shrink-0 px-5 pt-3">
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={e => { setSearchQuery(e.target.value); setCatId(null); setItemId(null); }}
+                placeholder={language === 'en' ? 'Search treatments (e.g. Botox, Filler, drug name)' : language === 'zh' ? '搜索项目（如：肉毒素、填充剂等）' : '시술명 검색 (예: 보톡스, 필러, 약제명 등)'}
+                className="w-full bg-muted border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber/50 focus:ring-1 focus:ring-amber/30"
+              />
+              {searchQuery && (
+                <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                  <X size={14} />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className="flex-1 overflow-y-auto px-5 py-4">
 
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              {/* 통합 검색창 */}
-              <div className="relative mb-3">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => { setSearchQuery(e.target.value); setCatId(null); setItemId(null); }}
-                  placeholder={language === 'en' ? 'Search treatments (e.g. Botox, Filler, drug name)' : language === 'zh' ? '搜索项目（如：肉毒素、填充剂等）' : '시술명 검색 (예: 보톡스, 필러, 약제명 등)'}
-                  className="w-full bg-muted border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber/50 focus:ring-1 focus:ring-amber/30"
-                />
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                    <X size={14} />
-                  </button>
-                )}
-              </div>
 
               {/* 검색 결과 */}
               {searchQuery.trim() ? (
@@ -1233,7 +1240,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         </div>
 
         {/* 하단 버튼 */}
-        <div className="px-5 pb-5 sticky bottom-0 bg-white pt-3 border-t border-gray-100 space-y-2">
+        <div className="shrink-0 px-5 pb-5 bg-white pt-3 border-t border-gray-100 space-y-2">
           <div className="flex gap-3">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(s => s - 1)}
