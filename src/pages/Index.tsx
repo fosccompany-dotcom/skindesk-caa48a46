@@ -56,6 +56,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSeason } from "@/context/SeasonContext";
 import LoginRequiredSheet from "@/components/LoginRequiredSheet";
 import { useLoginGuard } from "@/hooks/useLoginGuard";
+import { useAuth } from "@/context/AuthContext";
 
 import logoImg from "@/assets/logo.png";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
@@ -98,6 +99,22 @@ function getCycleStatus(cycle: TreatmentCycle) {
 
 const Index = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  
+  // quiz_completed_at이 NULL이면 퀴즈로 리다이렉트
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('user_profiles')
+      .select('quiz_completed_at')
+      .eq('id', user.id)
+      .single()
+      .then(({ data }) => {
+        if (data && !data.quiz_completed_at) {
+          navigate('/skin-quiz', { replace: true });
+        }
+      });
+  }, [user, navigate]);
   const [searchParams, setSearchParams] = useSearchParams();
   const { cycles } = useCycles();
   const { records, loading, addRecord, updateRecord, deleteRecord } = useRecords();
