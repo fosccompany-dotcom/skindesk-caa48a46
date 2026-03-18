@@ -109,6 +109,13 @@ const Packages = () => {
 
   useEffect(() => { loadPayments(); }, [loadPayments]);
 
+  // AI 파싱 등 외부 데이터 변경 시 새로고침
+  useEffect(() => {
+    const handleDataChanged = () => { loadPackages(); loadPayments(); };
+    window.addEventListener('skindesk:data-changed', handleDataChanged);
+    return () => window.removeEventListener('skindesk:data-changed', handleDataChanged);
+  }, [loadPackages, loadPayments]);
+
   // ── 시술권 수정 ──
   const handleEditPkg = (pkg: TreatmentPackage) => {
     setEditPkgForm({
