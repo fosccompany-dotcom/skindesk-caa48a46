@@ -127,7 +127,7 @@ export default function ClinicSearchInput({ value, onChange, onSelectPlace, plac
       </div>
 
       {open && results.length > 0 && (
-        <div className={`absolute top-full left-0 right-0 mt-1 z-50 rounded-xl shadow-xl overflow-hidden border max-h-52 overflow-y-auto ${
+        <div className={`absolute bottom-full left-0 right-0 mb-1 z-50 rounded-xl shadow-xl overflow-hidden border max-h-52 overflow-y-auto ${
           darkMode ? 'bg-[#1a1a1a] border-white/15' : 'bg-popover border-border'
         }`}>
           {results.map((p, i) => (
