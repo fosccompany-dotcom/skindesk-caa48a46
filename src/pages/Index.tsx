@@ -393,7 +393,7 @@ const Index = () => {
     setTimeout(() => setShowReward(false), 2500);
   };
 
-  const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
+  
 
   if (loading) return <FlowerLoader />;
 
