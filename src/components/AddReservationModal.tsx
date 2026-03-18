@@ -12,6 +12,7 @@ import {
   FileText,
   Plus,
   Trash2,
+  Search,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ClinicSearchInput, { ClinicPlace } from "./ClinicSearchInput";
