@@ -20,6 +20,7 @@ import Terms from "./pages/Terms";
 import SkinQuiz from "./pages/SkinQuiz";
 import QuizResult from "./pages/QuizResult";
 import SkinMatch from "./pages/SkinMatch";
+import ResetPassword from "./pages/ResetPassword";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
@@ -53,6 +54,7 @@ const App = () => (
                     <Route path="/farewell" element={<Farewell />} />
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/skin-quiz" element={<PrivateRoute><SkinQuiz /></PrivateRoute>} />
                     <Route path="/quiz-result" element={<PrivateRoute><QuizResult /></PrivateRoute>} />
                     <Route path="/skin-match" element={<PrivateRoute><SkinMatch /></PrivateRoute>} />

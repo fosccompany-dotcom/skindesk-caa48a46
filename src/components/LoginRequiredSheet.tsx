@@ -4,6 +4,7 @@ import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useLanguage } from '@/i18n/LanguageContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
@@ -27,6 +28,10 @@ const texts = {
     kakao: '카카오톡으로 로그인',
     signup: '회원가입',
     noAccount: '계정이 없으신가요?',
+    forgotPassword: '비밀번호를 잊으셨나요?',
+    resetTitle: '비밀번호 재설정',
+    resetSubmit: '재설정 링크 발송',
+    resetSent: '이메일을 확인해주세요',
   },
   en: {
     title: 'Login Required',
@@ -38,6 +43,10 @@ const texts = {
     kakao: 'Login with Kakao',
     signup: 'Sign Up',
     noAccount: "Don't have an account?",
+    forgotPassword: 'Forgot password?',
+    resetTitle: 'Reset Password',
+    resetSubmit: 'Send reset link',
+    resetSent: 'Check your email',
   },
   zh: {
     title: '需要登录',
@@ -49,6 +58,10 @@ const texts = {
     kakao: '使用Kakao登录',
     signup: '注册',
     noAccount: '没有账号？',
+    forgotPassword: '忘记密码？',
+    resetTitle: '重置密码',
+    resetSubmit: '发送重置链接',
+    resetSent: '请检查您的邮箱',
   },
 };
 
@@ -60,6 +73,9 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +110,9 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
   };
 
   return (
+    <>
     <Sheet open={open} onOpenChange={(v) => !v && handleClose()}>
+
       <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8 pt-6 max-h-[90vh] overflow-y-auto">
         {/* Logo */}
         <div className="flex justify-center mb-3">
@@ -150,6 +168,17 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
           </Button>
         </form>
 
+        {/* Forgot Password */}
+        <div className="text-center mt-2">
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:underline underline-offset-2"
+            onClick={() => setResetOpen(true)}
+          >
+            {t.forgotPassword}
+          </button>
+        </div>
+
         {/* Divider */}
         <div className="flex items-center gap-3 my-4">
           <div className="flex-1 h-px bg-border" />
@@ -187,5 +216,49 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
         </div>
       </SheetContent>
     </Sheet>
+
+    {/* Reset Password Modal */}
+    <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+      <DialogContent className="max-w-[340px] rounded-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-lg">{t.resetTitle}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={async (e) => {
+          e.preventDefault();
+          setResetLoading(true);
+          const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+            redirectTo: window.location.origin + '/reset-password',
+          });
+          setResetLoading(false);
+          if (error) {
+            toast({ title: error.message, variant: 'destructive' });
+          } else {
+            toast({ title: t.resetSent });
+            setResetOpen(false);
+            setResetEmail('');
+          }
+        }} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t.email}</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="email"
+                value={resetEmail}
+                onChange={e => setResetEmail(e.target.value)}
+                className="pl-10 h-11 rounded-xl"
+                placeholder="email@example.com"
+                required
+              />
+            </div>
+          </div>
+          <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold" disabled={resetLoading}>
+            {resetLoading && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+            {t.resetSubmit}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
