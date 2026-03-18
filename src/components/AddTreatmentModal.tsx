@@ -1240,7 +1240,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         </div>
 
         {/* 하단 버튼 */}
-        <div className="px-5 pb-5 sticky bottom-0 bg-white pt-3 border-t border-gray-100 space-y-2">
+        <div className="shrink-0 px-5 pb-5 bg-white pt-3 border-t border-gray-100 space-y-2">
           <div className="flex gap-3">
           {step > 1 && (
             <Button variant="outline" onClick={() => setStep(s => s - 1)}
