@@ -169,6 +169,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const [treatments, setTreatments] = useState<string[]>([]);
   const [catId, setCatId] = useState<string | null>(null);
   const [customTreatmentName, setCustomTreatmentName] = useState("");
+  const [treatmentSearch, setTreatmentSearch] = useState("");
 
   // Step 3: Memo
   const [memo, setMemo] = useState("");
