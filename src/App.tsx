@@ -56,6 +56,7 @@ const App = () => (
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/reset-password" element={<ResetPassword />} />
                     <Route path="/skin-quiz" element={<PrivateRoute><SkinQuiz /></PrivateRoute>} />
+                    <Route path="/quiz" element={<PrivateRoute><SkinQuiz /></PrivateRoute>} />
                     <Route path="/quiz-result" element={<PrivateRoute><QuizResult /></PrivateRoute>} />
                     <Route path="/skin-match" element={<PrivateRoute><SkinMatch /></PrivateRoute>} />
 
