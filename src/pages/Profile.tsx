@@ -659,7 +659,183 @@ const Profile = () => {
 
       <div className="page-content pt-2">
         <div className="space-y-3">
-          {/* ── 기본 정보 ── */}
+
+          {/* ── [2] 현재 관리 모드 (드롭다운) ── */}
+          <Card className="glass-card">
+            <CardContent className="p-4 space-y-2">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
+                  <Target className="h-4 w-4 text-accent-foreground" />
+                </div>
+                <h2 className="font-bold text-sm">현재 관리 모드</h2>
+              </div>
+              {(() => {
+                const modes = [
+                  { key: "reset", emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드" },
+                  { key: "recovery", emoji: "🌿", title: "Recovery Mode", sub: "회복 모드" },
+                  { key: "maintain", emoji: "💜", title: "Maintain Mode", sub: "유지 모드" },
+                  { key: "boost", emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드" },
+                  { key: "special", emoji: "🌸", title: "Special Mode", sub: "스페셜 모드" },
+                ] as const;
+                const current = modes.find(m => m.key === currentSeason) || modes[2];
+                return (
+                  <Select value={currentSeason || 'maintain'} onValueChange={(v) => setSeasonGlobal(v as SeasonKey)}>
+                    <SelectTrigger className="rounded-xl text-sm h-11">
+                      <SelectValue>
+                        <span className="flex items-center gap-2">
+                          <span>{current.emoji}</span>
+                          <span className="font-semibold">{current.title}</span>
+                          <span className="text-muted-foreground text-xs">— {current.sub}</span>
+                        </span>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent>
+                      {modes.map(({ key, emoji, title, sub }) => (
+                        <SelectItem key={key} value={key} className="text-sm py-2.5">
+                          <span className="flex items-center gap-2">
+                            <span>{emoji}</span>
+                            <span className="font-semibold">{title}</span>
+                            <span className="text-muted-foreground text-xs">— {sub}</span>
+                          </span>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                );
+              })()}
+            </CardContent>
+          </Card>
+
+          {/* ── [3] 내 피부족 ── */}
+          <Card className="glass-card">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.emoji ?? '⚖️') : '⚖️'}</span>
+                  <div>
+                    <p className="text-xs text-muted-foreground">내 피부족</p>
+                    <p className="text-sm font-bold text-foreground">
+                      {skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.name ?? '복합 균형족') : '아직 결과 없음'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {skinTribe && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-muted-foreground h-8"
+                      onClick={() => navigate('/quiz-result')}
+                    >
+                      결과 보기
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-8"
+                    onClick={async () => {
+                      const userId = userIdRef.current;
+                      if (!userId) return;
+                      await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
+                      navigate('/quiz');
+                    }}
+                  >
+                    {skinTribe ? '다시 하기' : '퀴즈 시작'}
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ── [4] 관리 세팅 ── */}
+          <Card className="glass-card">
+            <CardContent className="p-4 space-y-4">
+              <div className="flex items-center gap-2">
+                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
+                  <Settings className="h-4 w-4 text-accent-foreground" />
+                </div>
+                <h2 className="font-bold text-sm">관리 세팅</h2>
+              </div>
+
+              {/* 피부 타입 */}
+              <div className="space-y-2">
+                <Label className="text-xs">{t("skin_type")}</Label>
+                <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
+                  <SelectTrigger className="rounded-xl">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {skinTypes.map((st) => (
+                      <SelectItem key={st} value={st}>
+                        {st}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* 주요 관심사 */}
+              <div className="space-y-2">
+                <Label className="text-xs">주요 관심사</Label>
+                <p className="text-[10px] text-muted-foreground -mt-1">관리하고 싶은 피부 고민을 선택하세요</p>
+                <div className="flex flex-wrap gap-2">
+                  {skinCareInterests.map((item) => (
+                    <Badge
+                      key={item}
+                      variant={concerns.includes(item) ? "default" : "outline"}
+                      className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
+                      onClick={() => toggleItem(concerns, item, setConcerns)}
+                    >
+                      {item}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* 테마 설정 */}
+              <div className="space-y-2">
+                <Label className="text-xs">화면 테마</Label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { value: 'light', label: '화이트', icon: Sun },
+                    { value: 'dark', label: '블랙', icon: Moon },
+                  ].map(({ value, label, icon: Icon }) => {
+                    const isActive =
+                      value === 'light'
+                        ? !document.documentElement.classList.contains('dark')
+                        : document.documentElement.classList.contains('dark');
+                    return (
+                      <button
+                        key={value}
+                        onClick={() => {
+                          if (value === 'dark') {
+                            document.documentElement.classList.add('dark');
+                          } else {
+                            document.documentElement.classList.remove('dark');
+                          }
+                          localStorage.setItem('skindesk_theme', value);
+                          setSaved(true);
+                          setTimeout(() => setSaved(false), 800);
+                        }}
+                        className={cn(
+                          'flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
+                          isActive
+                            ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                            : 'bg-card border-border text-muted-foreground'
+                        )}
+                      >
+                        <Icon className="h-3.5 w-3.5" />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ── [5] 프로필 ── */}
           <Card className="glass-card">
             <CardContent className="p-4 space-y-4">
               <div className="flex items-center gap-2">
@@ -881,190 +1057,6 @@ const Profile = () => {
                 {regions.length >= 3 && (
                   <p className="text-[11px] text-muted-foreground text-center py-1">{t("max_region")}</p>
                 )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* ── 내 피부족 ── */}
-          <Card className="glass-card">
-            <CardContent className="p-4 space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">{skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.emoji ?? '⚖️') : '⚖️'}</span>
-                  <div>
-                    <p className="text-xs text-muted-foreground">내 피부족</p>
-                    <p className="text-sm font-bold text-foreground">
-                      {skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.name ?? '복합 균형족') : '아직 결과 없음'}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  {skinTribe && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs text-muted-foreground h-8"
-                      onClick={() => navigate('/quiz-result')}
-                    >
-                      결과 보기
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-xs h-8"
-                    onClick={async () => {
-                      const userId = userIdRef.current;
-                      if (!userId) return;
-                      await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
-                      navigate('/quiz');
-                    }}
-                  >
-                    {skinTribe ? '다시 하기' : '퀴즈 시작'}
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* ── 관리 세팅 ── */}
-          <Card className="glass-card">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
-                  <Settings className="h-4 w-4 text-accent-foreground" />
-                </div>
-                <h2 className="font-bold text-sm">관리 세팅</h2>
-              </div>
-
-              {/* 피부 타입 */}
-              <div className="space-y-2">
-                <Label className="text-xs">{t("skin_type")}</Label>
-                <Select value={skinType} onValueChange={(v) => setSkinType(v as SkinType)}>
-                  <SelectTrigger className="rounded-xl">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {skinTypes.map((st) => (
-                      <SelectItem key={st} value={st}>
-                        {st}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* 주요 관심사 (고민 + 목표 통합, MECE) */}
-              <div className="space-y-2">
-                <Label className="text-xs">주요 관심사</Label>
-                <p className="text-[10px] text-muted-foreground -mt-1">관리하고 싶은 피부 고민을 선택하세요</p>
-                <div className="flex flex-wrap gap-2">
-                  {skinCareInterests.map((item) => (
-                    <Badge
-                      key={item}
-                      variant={concerns.includes(item) ? "default" : "outline"}
-                      className="cursor-pointer transition-all tap-target rounded-full px-3 py-1.5 text-xs"
-                      onClick={() => toggleItem(concerns, item, setConcerns)}
-                    >
-                      {item}
-                    </Badge>
-                  ))}
-                </div>
-              </div>
-
-              {/* 테마 설정 */}
-              <div className="space-y-2">
-                <Label className="text-xs">화면 테마</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { value: 'light', label: '화이트', icon: Sun },
-                    { value: 'dark', label: '블랙', icon: Moon },
-                  ].map(({ value, label, icon: Icon }) => {
-                    const isActive =
-                      value === 'light'
-                        ? !document.documentElement.classList.contains('dark')
-                        : document.documentElement.classList.contains('dark');
-                    return (
-                      <button
-                        key={value}
-                        onClick={() => {
-                          if (value === 'dark') {
-                            document.documentElement.classList.add('dark');
-                          } else {
-                            document.documentElement.classList.remove('dark');
-                          }
-                          localStorage.setItem('skindesk_theme', value);
-                          // force re-render
-                          setSaved(true);
-                          setTimeout(() => setSaved(false), 800);
-                        }}
-                        className={cn(
-                          'flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
-                          isActive
-                            ? 'bg-primary text-primary-foreground border-primary shadow-sm'
-                            : 'bg-card border-border text-muted-foreground'
-                        )}
-                      >
-                        <Icon className="h-3.5 w-3.5" />
-                        {label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-
-
-          {/* ── 현재 관리 모드 ── */}
-          <Card className="glass-card">
-            <CardContent className="p-4 space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
-                  <Target className="h-4 w-4 text-accent-foreground" />
-                </div>
-                <h2 className="font-bold text-sm">현재 관리 모드</h2>
-              </div>
-              <div className="grid grid-cols-1 gap-2">
-                {(
-                  [
-                    { key: "reset", emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드", desc: "최근 시술이 많았거나 피부를 쉬게 하고 싶을 때. 홈케어 중심으로 피부 균형 회복." },
-                    { key: "recovery", emoji: "🌿", title: "Recovery Mode", sub: "회복 모드", desc: "시술 후 예민해진 피부를 진정시키고 피부 장벽을 회복하는 관리 단계." },
-                    { key: "maintain", emoji: "💜", title: "Maintain Mode", sub: "유지 모드", desc: "현재 피부 컨디션을 안정적으로 유지하기 위한 기본 관리 단계." },
-                    { key: "boost", emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드", desc: "피부톤, 탄력, 수분 등 피부 상태를 한 단계 끌어올리는 집중 관리 단계." },
-                    { key: "special", emoji: "🌸", title: "Special Mode", sub: "스페셜 모드", desc: "웨딩, 촬영, 중요한 모임 등 특별한 이벤트를 위한 최고 집중 관리 단계." },
-                  ] as const
-                ).map(({ key, emoji, title, sub, desc }) => {
-                  const isSelected = currentSeason === key;
-                  return (
-                    <button
-                      key={key}
-                      onClick={() => setSeasonGlobal(isSelected ? ("maintain" as SeasonKey) : (key as SeasonKey))}
-                      className={`w-full text-left px-3.5 py-3 rounded-xl border transition-all ${
-                        isSelected
-                          ? "border-amber/60 bg-amber/10"
-                          : "border-border bg-muted hover:border-muted-foreground/40"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className="text-base shrink-0">{emoji}</span>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-xs font-bold ${isSelected ? "text-amber" : "text-foreground"}`}>{title}</span>
-                            <span className="text-[10px] text-muted-foreground">{sub}</span>
-                          </div>
-                          <p className="text-[10px] text-muted-foreground mt-0.5 leading-snug">{desc}</p>
-                        </div>
-                        <div className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center transition-all ${
-                          isSelected ? "border-amber bg-amber" : "border-muted-foreground/30"
-                        }`}>
-                          {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
               </div>
             </CardContent>
           </Card>
