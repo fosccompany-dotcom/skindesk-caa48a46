@@ -30,6 +30,9 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
   const today = new Date().toISOString().split('T')[0];
   const [date, setDate]               = useState(today);
   const [clinic, setClinic]           = useState('');
+  const [clinicKakaoId, setClinicKakaoId] = useState<string | null>(null);
+  const [clinicDistrict, setClinicDistrict] = useState<string | null>(null);
+  const [clinicAddress, setClinicAddress] = useState<string | null>(null);
   const [clinicType, setClinicType]   = useState<ClinicType>('밴스');
   const [method, setMethod]           = useState<PayMethod>('charge');
   const [amount, setAmount]           = useState('');
