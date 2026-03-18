@@ -197,25 +197,6 @@ const Index = () => {
   }, [records, reservationRefresh, dataRefresh]);
 
   // Season change handler — require login, then apply pending mode
-  const pendingSeasonRef = useRef<SeasonKey | null>(null);
-  const { user: authUser } = useAuth();
-  const handleSeasonChange = (season: SeasonKey) => {
-    setModeDropdownOpen(false);
-    if (!authUser) {
-      pendingSeasonRef.current = season;
-    }
-    guardAction(() => {
-      setCurrentSeason(season);
-    });
-  };
-
-  // Apply pending season after login
-  useEffect(() => {
-    if (authUser && pendingSeasonRef.current) {
-      setCurrentSeason(pendingSeasonRef.current);
-      pendingSeasonRef.current = null;
-    }
-  }, [authUser, setCurrentSeason]);
 
   // Privacy consent for OAuth users
   const [privacyConsentOpen, setPrivacyConsentOpen] = useState(false);
