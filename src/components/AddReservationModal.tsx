@@ -268,7 +268,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const handleSelectPlace = (place: ClinicPlace) => {
     setClinic(place.name);
     setClinicKakaoId(place.kakao_id || null);
-    setClinicDistrict(place.road_address?.split(" ").slice(0, 2).join(" ") || null);
+    setClinicDistrict(extractDistrict(place.road_address || place.address || '') || null);
     setClinicAddress(place.road_address || place.address || null);
   };
 
