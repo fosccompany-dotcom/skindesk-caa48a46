@@ -666,7 +666,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2">
-                  {displayCategories.map(cat => (
+                  {displayCategories.filter(cat => cat.id !== '기타' && cat.id !== 'other').map(cat => (
                     <button key={cat.id}
                       onClick={() => { setCatId(cat.id); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
                       className={cn(
@@ -681,6 +681,22 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
                       {catId === cat.id && <Check size={12} className="text-amber shrink-0" />}
                     </button>
                   ))}
+                  {/* 직접 입력 버튼 */}
+                  <button
+                    onClick={() => { setCatId('__direct'); setItemId(null); setShots(null); setDrugId(null); setCustomTreatmentName(''); }}
+                    className={cn(
+                      'flex items-center gap-2.5 px-3 py-3 rounded-xl border text-left transition-all',
+                      'border-gray-300 bg-gray-50',
+                      catId === '__direct' ? 'border-amber ring-1 ring-amber/40' : 'hover:border-muted-foreground/40 border-border'
+                    )}>
+                    <span className="text-lg">✏️</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-xs font-medium text-foreground leading-tight">
+                        {language === 'en' ? 'Custom Input' : language === 'zh' ? '自定义输入' : '직접 입력'}
+                      </div>
+                    </div>
+                    {catId === '__direct' && <Check size={12} className="text-amber shrink-0" />}
+                  </button>
                 </div>
               )}
             </div>
