@@ -54,6 +54,7 @@ import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import { useNavigate, Link } from "react-router-dom";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
+import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
 import { Progress } from "@/components/ui/progress";
 
 const skinTypes: SkinType[] = ["건성", "지성", "복합성", "민감성", "중성"];
@@ -302,6 +303,7 @@ const Profile = () => {
   const [regions, setRegions] = useState<string[]>([]);
   const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState("");
+  const [skinTribe, setSkinTribe] = useState<string | null>(null);
   const [selectedGugun, setSelectedGugun] = useState("");
 
   const { records, updateRecord } = useRecords();
@@ -389,6 +391,7 @@ const Profile = () => {
       if (data.name) setNickname(data.name);
       setBloomStage(data.bloom_stage || 1);
       setTotalLogCount(data.total_log_count || 0);
+      setSkinTribe(data.skin_tribe ?? null);
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
       requestAnimationFrame(() => {
         profileLoaded.current = true;
@@ -965,6 +968,48 @@ const Profile = () => {
                       </button>
                     );
                   })}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* ── 내 피부족 ── */}
+          <Card className="glass-card">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">{skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.emoji ?? '⚖️') : '⚖️'}</span>
+                  <div>
+                    <p className="text-xs text-muted-foreground">내 피부족</p>
+                    <p className="text-sm font-bold text-foreground">
+                      {skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.name ?? '복합 균형족') : '아직 결과 없음'}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  {skinTribe && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-xs text-muted-foreground h-8"
+                      onClick={() => navigate('/quiz-result')}
+                    >
+                      결과 보기
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs h-8"
+                    onClick={async () => {
+                      const userId = userIdRef.current;
+                      if (!userId) return;
+                      await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
+                      navigate('/skin-quiz');
+                    }}
+                  >
+                    {skinTribe ? '다시 하기' : '퀴즈 시작'}
+                  </Button>
                 </div>
               </div>
             </CardContent>

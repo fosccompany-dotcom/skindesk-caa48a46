@@ -145,12 +145,11 @@ export default function SkinQuiz() {
 
     // Auto-advance after 0.3s
     setTransitioning(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       if (isLast) {
-        // Classify & show result
         const tribe = classifySkinTribe(updated);
-        setResult(tribe);
-        saveResults(tribe, updated);
+        await saveResults(tribe, updated);
+        navigate('/quiz-result', { replace: true });
       } else {
         setStep((s) => s + 1);
       }
