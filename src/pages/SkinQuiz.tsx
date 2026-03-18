@@ -295,7 +295,17 @@ export default function SkinQuiz() {
             );
           })}
         </div>
-      </div>
+        {isMultiSelect && q5Selections.length > 0 && (
+          <div className="mt-4">
+            <Button
+              className="w-full rounded-xl h-12 font-bold bg-accent text-accent-foreground hover:bg-accent/90"
+              onClick={handleQ5Next}
+              disabled={transitioning}
+            >
+              다음 ({q5Selections.length}개 선택)
+            </Button>
+          </div>
+        )}
 
       {/* Back button */}
       <div className="px-6 pb-[calc(var(--safe-bottom)+24px)] pt-4">
