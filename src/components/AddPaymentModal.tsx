@@ -4,7 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Plus, Loader2, CheckCircle, CreditCard, Coins, Banknote, Gift, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
-import ClinicSearchInput from './ClinicSearchInput';
+import ClinicSearchInput, { ClinicPlace } from './ClinicSearchInput';
+import { extractDistrict } from '@/lib/utils';
 import { PaymentMethodKey, getMethodLabel } from '@/lib/paymentMethodUtils';
 import { useLanguage } from '@/i18n/LanguageContext';
 
@@ -29,6 +30,9 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
   const today = new Date().toISOString().split('T')[0];
   const [date, setDate]               = useState(today);
   const [clinic, setClinic]           = useState('');
+  const [clinicKakaoId, setClinicKakaoId] = useState<string | null>(null);
+  const [clinicDistrict, setClinicDistrict] = useState<string | null>(null);
+  const [clinicAddress, setClinicAddress] = useState<string | null>(null);
   const [clinicType, setClinicType]   = useState<ClinicType>('밴스');
   const [method, setMethod]           = useState<PayMethod>('charge');
   const [amount, setAmount]           = useState('');
@@ -40,7 +44,8 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
   const [error, setError]             = useState<string | null>(null);
 
   const reset = () => {
-    setDate(today); setClinic(''); setClinicType('밴스'); setMethod('charge');
+    setDate(today); setClinic(''); setClinicKakaoId(null); setClinicDistrict(null); setClinicAddress(null);
+    setClinicType('밴스'); setMethod('charge');
     setAmount(''); setChargedAmount(''); setDescription(''); setMemo('');
     setSaving(false); setSaved(false); setError(null);
   };
@@ -69,10 +74,12 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
         date,
         clinic:         clinic.trim(),
         clinic_type:    clinicType,
+        clinic_kakao_id: clinicKakaoId,
+        clinic_district: clinicDistrict,
         treatment_name: description.trim() || getMethodLabel(method, language),
         amount:         amountNum,
         charged_amount: method === 'charge' ? chargedNum : null,
-        method,          // English key: 'charge' | 'card' | 'cash' | 'service'
+        method,
         memo:           memo.trim() || null,
       });
       if (insertErr) throw insertErr;
@@ -85,6 +92,7 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
         await supabase.from('clinic_balances').upsert({
           user_id:    user.id,
           clinic:     clinicKey,
+          clinic_kakao_id: clinicKakaoId,
           balance:    (existing?.balance || 0) + chargedNum,
           updated_at: new Date().toISOString(),
         }, { onConflict: 'user_id,clinic' });
@@ -167,7 +175,18 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
               </label>
               <ClinicSearchInput
                 value={clinic}
-                onChange={setClinic}
+                onChange={(val) => {
+                  setClinic(val);
+                  setClinicKakaoId(null);
+                  setClinicDistrict(null);
+                  setClinicAddress(null);
+                }}
+                onSelectPlace={(place) => {
+                  setClinic(place.name);
+                  setClinicKakaoId(place.kakao_id || null);
+                  setClinicAddress(place.road_address || place.address || null);
+                  setClinicDistrict(extractDistrict(place.road_address || place.address || '') || null);
+                }}
                 placeholder="미금 밴스의원" />
             </div>
             <div>

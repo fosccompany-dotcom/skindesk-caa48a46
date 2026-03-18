@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { extractDistrict } from "@/lib/utils";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -267,7 +268,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
   const handleSelectPlace = (place: ClinicPlace) => {
     setClinic(place.name);
     setClinicKakaoId(place.kakao_id || null);
-    setClinicDistrict(place.road_address?.split(" ").slice(0, 2).join(" ") || null);
+    setClinicDistrict(extractDistrict(place.road_address || place.address || '') || null);
     setClinicAddress(place.road_address || place.address || null);
   };
 
@@ -425,7 +426,12 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                 </label>
                 <ClinicSearchInput
                   value={clinic}
-                  onChange={setClinic}
+                  onChange={(val) => {
+                    setClinic(val);
+                    setClinicKakaoId(null);
+                    setClinicDistrict(null);
+                    setClinicAddress(null);
+                  }}
                   onSelectPlace={handleSelectPlace}
                   placeholder="병원명을 검색하세요"
                 />
