@@ -505,8 +505,7 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                     <p className="text-xs text-muted-foreground text-center py-6">검색 결과가 없습니다</p>
                   )}
                 </div>
-              ) : (
-              <>
+              ) : !catId ? (
                 <>
                   <label className="text-sm font-semibold text-foreground mb-3 block">
                     시술 카테고리 선택
@@ -536,11 +535,9 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                     </div>
                   )}
                 </>
-              )}
+              ) : null}
 
               {!treatmentSearch.trim() && catId && selectedCat && (
-
-              {catId && selectedCat && (
                 <div>
                   <button onClick={() => setCatId(null)} className="text-xs text-info mb-3 flex items-center gap-1">
                     <ChevronLeft className="h-3 w-3" /> 다른 시술 더 추가하기
