@@ -175,7 +175,18 @@ export default function AddPaymentModal({ open, onClose, onSaved }: Props) {
               </label>
               <ClinicSearchInput
                 value={clinic}
-                onChange={setClinic}
+                onChange={(val) => {
+                  setClinic(val);
+                  setClinicKakaoId(null);
+                  setClinicDistrict(null);
+                  setClinicAddress(null);
+                }}
+                onSelectPlace={(place) => {
+                  setClinic(place.name);
+                  setClinicKakaoId(place.kakao_id || null);
+                  setClinicAddress(place.road_address || place.address || null);
+                  setClinicDistrict(extractDistrict(place.road_address || place.address || '') || null);
+                }}
                 placeholder="미금 밴스의원" />
             </div>
             <div>
