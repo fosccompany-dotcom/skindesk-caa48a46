@@ -153,6 +153,13 @@ export default function QuizResult() {
           <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
           퀴즈 다시 하기
         </Button>
+
+        <button
+          onClick={() => navigate('/')}
+          className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
+        >
+          다음에 하기
+        </button>
       </div>
     </div>
   );
