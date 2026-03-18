@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { SKIN_TRIBE_LABELS, type SkinTribe } from '@/lib/skinTribeClassifier';
-import { Link2, RefreshCw, ArrowRight } from 'lucide-react';
+import { Link2, RefreshCw, ArrowRight, ChevronLeft } from 'lucide-react';
 import { toast } from 'sonner';
 
 const TRIBE_CARDS: Record<SkinTribe, { quote: string }> = {
