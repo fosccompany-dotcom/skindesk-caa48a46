@@ -109,7 +109,7 @@ const Index = () => {
   const [parseModalOpen, setParseModalOpen] = useState(false);
   const { currentSeason, setCurrentSeason } = useSeason();
   const { nickname } = useSeason();
-  const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
+  
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<
     {
