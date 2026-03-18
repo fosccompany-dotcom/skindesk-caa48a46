@@ -390,6 +390,7 @@ const Profile = () => {
       if (data.name) setNickname(data.name);
       setBloomStage(data.bloom_stage || 1);
       setTotalLogCount(data.total_log_count || 0);
+      setSkinTribe(data.skin_tribe ?? null);
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
       requestAnimationFrame(() => {
         profileLoaded.current = true;
