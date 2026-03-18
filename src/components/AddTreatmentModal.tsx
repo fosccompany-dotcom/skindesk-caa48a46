@@ -476,7 +476,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
         label: catLabels[catKey],
         emoji: meta.emoji,
         color: meta.color,
-        items: [...items, { id: '__custom', name: customLabel }],
+        items: items.some(i => i.name === customLabel) ? items : [...items, { id: '__custom', name: customLabel }],
       };
     });
     result.sort((a, b) => getCatOrder(a.id) - getCatOrder(b.id));
