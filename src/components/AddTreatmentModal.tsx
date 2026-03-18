@@ -577,14 +577,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const handleSave = () => {
     if (!isBotox && !isFiller && !selectedItem) return;
-    // 결제 수단 필수 검증 (시술권 미사용 시)
-    if (!selectedPkgId && !paymentMethod) {
-      setPaymentShake(true);
-      setTimeout(() => setPaymentShake(false), 600);
-      const el = document.getElementById('payment-method-section');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
+    // 결제 수단은 선택사항 (필수 아님)
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
@@ -1036,9 +1029,8 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
               {/* 결제 수단 (시술권 미사용 시에만 표시) */}
               {!selectedPkgId && (
                 <div id="payment-method-section" className={paymentShake ? 'animate-shake' : ''}>
-                  <label className={cn('text-xs block mb-1.5', paymentShake ? 'text-red-500 font-semibold' : 'text-gray-400')}>
-                    결제 수단 <span className="text-red-400">*</span>
-                    {paymentShake && <span className="ml-1 text-[10px]">필수 항목입니다</span>}
+                  <label className="text-xs block mb-1.5 text-gray-400">
+                    결제 수단
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     {([
