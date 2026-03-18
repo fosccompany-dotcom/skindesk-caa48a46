@@ -425,7 +425,12 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                 </label>
                 <ClinicSearchInput
                   value={clinic}
-                  onChange={setClinic}
+                  onChange={(val) => {
+                    setClinic(val);
+                    setClinicKakaoId(null);
+                    setClinicDistrict(null);
+                    setClinicAddress(null);
+                  }}
                   onSelectPlace={handleSelectPlace}
                   placeholder="병원명을 검색하세요"
                 />
