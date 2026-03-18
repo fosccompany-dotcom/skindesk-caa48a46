@@ -783,7 +783,9 @@ const Index = () => {
               <Card key={r.id} className="border-0 shadow-sm">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Stethoscope className="h-4 w-4 text-primary" />
+                    {r.treatmentName === "컨디션 기록" && r.satisfaction
+                      ? <span className="text-lg">{CONDITION_OPTIONS.find(o => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span>
+                      : <Stethoscope className="h-4 w-4 text-primary" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
