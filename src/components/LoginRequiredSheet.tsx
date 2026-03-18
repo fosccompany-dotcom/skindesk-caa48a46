@@ -28,6 +28,10 @@ const texts = {
     kakao: '카카오톡으로 로그인',
     signup: '회원가입',
     noAccount: '계정이 없으신가요?',
+    forgotPassword: '비밀번호를 잊으셨나요?',
+    resetTitle: '비밀번호 재설정',
+    resetSubmit: '재설정 링크 발송',
+    resetSent: '이메일을 확인해주세요',
   },
   en: {
     title: 'Login Required',
@@ -39,6 +43,10 @@ const texts = {
     kakao: 'Login with Kakao',
     signup: 'Sign Up',
     noAccount: "Don't have an account?",
+    forgotPassword: 'Forgot password?',
+    resetTitle: 'Reset Password',
+    resetSubmit: 'Send reset link',
+    resetSent: 'Check your email',
   },
   zh: {
     title: '需要登录',
@@ -50,6 +58,10 @@ const texts = {
     kakao: '使用Kakao登录',
     signup: '注册',
     noAccount: '没有账号？',
+    forgotPassword: '忘记密码？',
+    resetTitle: '重置密码',
+    resetSubmit: '发送重置链接',
+    resetSent: '请检查您的邮箱',
   },
 };
 
