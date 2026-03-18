@@ -64,6 +64,7 @@ export default function SkinMatch() {
   const [birthDate, setBirthDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [parseModalOpen, setParseModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
