@@ -54,7 +54,8 @@ const App = () => (
                     <Route path="/privacy" element={<Privacy />} />
                     <Route path="/terms" element={<Terms />} />
                     <Route path="/skin-quiz" element={<PrivateRoute><SkinQuiz /></PrivateRoute>} />
-                    <Route path="/terms" element={<Terms />} />
+                    <Route path="/quiz-result" element={<PrivateRoute><QuizResult /></PrivateRoute>} />
+                    <Route path="/skin-match" element={<PrivateRoute><SkinMatch /></PrivateRoute>} />
 
                     {/* 보호된 라우트 — 로그인 필요 */}
                     <Route path="/"         element={<PrivateRoute><Index /></PrivateRoute>} />
