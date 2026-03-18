@@ -1038,6 +1038,7 @@ const Profile = () => {
             </CardContent>
           </Card>
 
+          <Button
             variant="ghost"
             className="w-full rounded-xl text-sm text-muted-foreground gap-2"
             onClick={handleLogout}
