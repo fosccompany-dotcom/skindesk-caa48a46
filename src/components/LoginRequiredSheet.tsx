@@ -166,6 +166,17 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
           </Button>
         </form>
 
+        {/* Forgot Password */}
+        <div className="text-center mt-2">
+          <button
+            type="button"
+            className="text-xs text-muted-foreground hover:underline underline-offset-2"
+            onClick={() => setResetOpen(true)}
+          >
+            {t.forgotPassword}
+          </button>
+        </div>
+
         {/* Divider */}
         <div className="flex items-center gap-3 my-4">
           <div className="flex-1 h-px bg-border" />
@@ -203,5 +214,49 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
         </div>
       </SheetContent>
     </Sheet>
+
+    {/* Reset Password Modal */}
+    <Dialog open={resetOpen} onOpenChange={setResetOpen}>
+      <DialogContent className="max-w-[340px] rounded-2xl">
+        <DialogHeader>
+          <DialogTitle className="text-lg">{t.resetTitle}</DialogTitle>
+        </DialogHeader>
+        <form onSubmit={async (e) => {
+          e.preventDefault();
+          setResetLoading(true);
+          const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+            redirectTo: window.location.origin + '/reset-password',
+          });
+          setResetLoading(false);
+          if (error) {
+            toast({ title: error.message, variant: 'destructive' });
+          } else {
+            toast({ title: t.resetSent });
+            setResetOpen(false);
+            setResetEmail('');
+          }
+        }} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs">{t.email}</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="email"
+                value={resetEmail}
+                onChange={e => setResetEmail(e.target.value)}
+                className="pl-10 h-11 rounded-xl"
+                placeholder="email@example.com"
+                required
+              />
+            </div>
+          </div>
+          <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold" disabled={resetLoading}>
+            {resetLoading && <Loader2 className="h-4 w-4 animate-spin mr-1" />}
+            {t.resetSubmit}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+    </>
   );
 }
