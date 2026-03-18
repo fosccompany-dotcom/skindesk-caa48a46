@@ -86,6 +86,7 @@ export default function SkinQuiz() {
   const [answers, setAnswers] = useState<QuizAnswers>({
     q1: null, q2: null, q3: null, q4: null, q5: null, q6: null,
   });
+  const [q5Selections, setQ5Selections] = useState<string[]>([]);
   const [hasBirthDate, setHasBirthDate] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const [result, setResult] = useState<SkinTribe | null>(null);
