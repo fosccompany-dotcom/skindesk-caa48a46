@@ -1005,7 +1005,7 @@ const Profile = () => {
                       const userId = userIdRef.current;
                       if (!userId) return;
                       await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
-                      navigate('/skin-quiz');
+                      navigate('/quiz');
                     }}
                   >
                     {skinTribe ? '다시 하기' : '퀴즈 시작'}

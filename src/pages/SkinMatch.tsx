@@ -94,7 +94,7 @@ export default function SkinMatch() {
         <p className="text-sm text-muted-foreground mb-6">피부족을 알아야 시술 궁합을 알 수 있어요</p>
         <Button
           className="rounded-xl h-12 px-8 font-bold bg-accent text-accent-foreground"
-          onClick={() => navigate('/skin-quiz')}
+          onClick={() => navigate('/quiz')}
         >
           퀴즈 시작하기
         </Button>
