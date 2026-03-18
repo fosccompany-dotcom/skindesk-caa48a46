@@ -11,12 +11,12 @@ import {
   Star,
   Trash2,
   Pencil,
-  Check,
+  
   Plus,
   ClipboardList,
   CalendarPlus,
-  Globe } from
-"lucide-react";
+  Globe,
+} from "lucide-react";
 import BloomAvatar from "@/components/BloomAvatar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -43,8 +43,8 @@ import {
   isSameMonth,
   isSameDay,
   setMonth,
-  setYear } from
-"date-fns";
+  setYear,
+} from "date-fns";
 import { ko } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import AddTreatmentModal from "@/components/AddTreatmentModal";
@@ -53,10 +53,10 @@ import EditReservationSheet from "@/components/EditReservationSheet";
 import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
-import { useSeason, SeasonKey } from "@/context/SeasonContext";
+import { useSeason } from "@/context/SeasonContext";
 import LoginRequiredSheet from "@/components/LoginRequiredSheet";
 import { useLoginGuard } from "@/hooks/useLoginGuard";
-import { useAuth } from "@/context/AuthContext";
+
 import logoImg from "@/assets/logo.png";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 
@@ -71,41 +71,28 @@ interface Reservation {
   skin_layer: string | null;
 }
 
-const SEASON_CONFIG: Record<SeasonKey, {emoji: string;title: string;sub: string;color: string;bg: string;}> = {
-  reset: { emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드", color: "hsl(var(--sage))", bg: "bg-sage-light" },
-  recovery: {
-    emoji: "🌿",
-    title: "Recovery Mode",
-    sub: "회복 모드",
-    color: "hsl(var(--sage-dark))",
-    bg: "bg-sage-light"
-  },
-  maintain: { emoji: "💜", title: "Maintain Mode", sub: "유지 모드", color: "hsl(var(--secondary))", bg: "bg-warm" },
-  boost: { emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드", color: "hsl(var(--rose))", bg: "bg-rose-light" },
-  special: { emoji: "🌸", title: "Special Mode", sub: "스페셜 모드", color: "hsl(var(--rose))", bg: "bg-warm" }
-};
 
 const TODAY = new Date("2026-03-10");
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const CONDITION_OPTIONS = [
-{ emoji: "✨", label: "좋음", value: 5 },
-{ emoji: "😊", label: "보통", value: 4 },
-{ emoji: "😐", label: "그저그럭", value: 3 },
-{ emoji: "😣", label: "별로", value: 2 },
-{ emoji: "😰", label: "안좋음", value: 1 }];
-
+  { emoji: "🏭", label: "기름", value: 5 },
+  { emoji: "🌊", label: "촉촉", value: 4 },
+  { emoji: "🌤️", label: "맑음", value: 3 },
+  { emoji: "🌵", label: "건조", value: 2 },
+  { emoji: "🏜️", label: "사막", value: 1 },
+];
 
 function getCycleStatus(cycle: TreatmentCycle) {
   const lastDate = new Date(cycle.lastTreatmentDate);
   const nextDate = addDays(lastDate, cycle.cycleDays);
   const daysElapsed = differenceInDays(TODAY, lastDate);
   const daysRemaining = differenceInDays(nextDate, TODAY);
-  const progress = Math.min(daysElapsed / cycle.cycleDays * 100, 100);
+  const progress = Math.min((daysElapsed / cycle.cycleDays) * 100, 100);
   let status: "good" | "upcoming" | "overdue";
-  if (daysRemaining > 14) status = "good";else
-  if (daysRemaining > 0) status = "upcoming";else
-  status = "overdue";
+  if (daysRemaining > 14) status = "good";
+  else if (daysRemaining > 0) status = "upcoming";
+  else status = "overdue";
   return { daysElapsed, daysRemaining, progress, nextDate, status };
 }
 
@@ -120,9 +107,8 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
-  const { currentSeason, setCurrentSeason } = useSeason();
   const { nickname } = useSeason();
-  const [modeDropdownOpen, setModeDropdownOpen] = useState(false);
+  
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<
     {
@@ -132,9 +118,9 @@ const Index = () => {
       used_sessions: number;
       clinic: string;
       expiry_date: string | null;
-    }[]>(
-    []);
-  const [clinicPayments, setClinicPayments] = useState<{amount: number;method: string;}[]>([]);
+    }[]
+  >([]);
+  const [clinicPayments, setClinicPayments] = useState<{ amount: number; method: string }[]>([]);
   const [todayCondition, setTodayCondition] = useState<number | null>(null);
   const [conditionMemo, setConditionMemo] = useState("");
   const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -150,9 +136,9 @@ const Index = () => {
 
   // AI 파싱 등 외부 데이터 변경 시 새로고침
   useEffect(() => {
-    const handler = () => setDataRefresh((v) => v + 1);
-    window.addEventListener("skindesk:data-changed", handler);
-    return () => window.removeEventListener("skindesk:data-changed", handler);
+    const handler = () => setDataRefresh(v => v + 1);
+    window.addEventListener('skindesk:data-changed', handler);
+    return () => window.removeEventListener('skindesk:data-changed', handler);
   }, []);
 
   // 언어 드롭다운 외부 클릭 닫기
@@ -171,7 +157,7 @@ const Index = () => {
 
   // Wilting: 48h+ since last record
   const lastRecordDateStr =
-  records.length > 0 ? records.reduce((max, r) => r.date > max ? r.date : max, records[0].date) : null;
+    records.length > 0 ? records.reduce((max, r) => (r.date > max ? r.date : max), records[0].date) : null;
   const isWilting = lastRecordDateStr ? differenceInDays(TODAY, new Date(lastRecordDateStr)) >= 2 : false;
 
   // Bloom progress
@@ -179,7 +165,7 @@ const Index = () => {
   const stageMin = STAGES[bloom.stage].min;
   const stageMax = bloom.nextMilestone || stageMin;
   const progressPct =
-  stageMax > stageMin ? Math.min((activeDays - stageMin) / (stageMax - stageMin) * 100, 100) : 100;
+    stageMax > stageMin ? Math.min(((activeDays - stageMin) / (stageMax - stageMin)) * 100, 100) : 100;
 
   // Reward feedback
   const [showReward, setShowReward] = useState(false);
@@ -187,21 +173,21 @@ const Index = () => {
   useEffect(() => {
     const loadDashboard = async () => {
       const {
-        data: { user }
+        data: { user },
       } = await supabase.auth.getUser();
       if (!user) return;
       const [payRes, pkgRes, resRes] = await Promise.all([
-      supabase.from("payment_records").select("amount,method").eq("user_id", user.id),
-      supabase.
-      from("treatment_packages").
-      select("id,name,total_sessions,used_sessions,clinic,expiry_date").
-      eq("user_id", user.id),
-      supabase.
-      from("reservations").
-      select("id,date,time,treatment_name,clinic,memo,body_area,skin_layer").
-      eq("user_id", user.id).
-      order("date", { ascending: false })]
-      );
+        supabase.from("payment_records").select("amount,method").eq("user_id", user.id),
+        supabase
+          .from("treatment_packages")
+          .select("id,name,total_sessions,used_sessions,clinic,expiry_date")
+          .eq("user_id", user.id),
+        supabase
+          .from("reservations")
+          .select("id,date,time,treatment_name,clinic,memo,body_area,skin_layer")
+          .eq("user_id", user.id)
+          .order("date", { ascending: false }),
+      ]);
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
       if (resRes.data) setReservations(resRes.data as Reservation[]);
@@ -210,25 +196,6 @@ const Index = () => {
   }, [records, reservationRefresh, dataRefresh]);
 
   // Season change handler — require login, then apply pending mode
-  const pendingSeasonRef = useRef<SeasonKey | null>(null);
-  const { user: authUser } = useAuth();
-  const handleSeasonChange = (season: SeasonKey) => {
-    setModeDropdownOpen(false);
-    if (!authUser) {
-      pendingSeasonRef.current = season;
-    }
-    guardAction(() => {
-      setCurrentSeason(season);
-    });
-  };
-
-  // Apply pending season after login
-  useEffect(() => {
-    if (authUser && pendingSeasonRef.current) {
-      setCurrentSeason(pendingSeasonRef.current);
-      pendingSeasonRef.current = null;
-    }
-  }, [authUser, setCurrentSeason]);
 
   // Privacy consent for OAuth users
   const [privacyConsentOpen, setPrivacyConsentOpen] = useState(false);
@@ -238,29 +205,25 @@ const Index = () => {
   useEffect(() => {
     const checkPrivacyConsent = async () => {
       const {
-        data: { user: authUser }
+        data: { user: authUser },
       } = await supabase.auth.getUser();
       if (!authUser) return;
 
       // OAuth 가입 시 privacy_agreed=true 파라미터 처리
       const params = new URLSearchParams(window.location.search);
-      if (params.get("privacy_agreed") === "true") {
-        await supabase.from("user_profiles").upsert({
+      if (params.get('privacy_agreed') === 'true') {
+        await supabase.from('user_profiles').upsert({
           id: authUser.id,
-          privacy_agreed_at: new Date().toISOString()
+          privacy_agreed_at: new Date().toISOString(),
         });
         // URL에서 파라미터 제거
-        params.delete("privacy_agreed");
+        params.delete('privacy_agreed');
         const newSearch = params.toString();
-        window.history.replaceState({}, "", `${window.location.pathname}${newSearch ? "?" + newSearch : ""}`);
+        window.history.replaceState({}, '', `${window.location.pathname}${newSearch ? '?' + newSearch : ''}`);
         return;
       }
 
-      const { data } = await supabase.
-      from("user_profiles").
-      select("privacy_agreed_at").
-      eq("id", authUser.id).
-      maybeSingle();
+      const { data } = await supabase.from("user_profiles").select("privacy_agreed_at").eq("id", authUser.id).maybeSingle();
       if (!data?.privacy_agreed_at) {
         setPrivacyConsentOpen(true);
       }
@@ -270,12 +233,12 @@ const Index = () => {
 
   const handlePrivacyConsent = async () => {
     const {
-      data: { user }
+      data: { user },
     } = await supabase.auth.getUser();
     if (!user) return;
     await supabase.from("user_profiles").upsert({
       id: user.id,
-      privacy_agreed_at: new Date().toISOString()
+      privacy_agreed_at: new Date().toISOString(),
     });
     setPrivacyConsentOpen(false);
   };
@@ -299,11 +262,11 @@ const Index = () => {
   const uniqueClinics = useMemo(() => new Set(cycles.map((c) => c.clinic)).size, [cycles]);
   const activePackages = useMemo(
     () => packages.filter((p) => (p.total_sessions ?? 0) - (p.used_sessions ?? 0) > 0),
-    [packages]
+    [packages],
   );
   const totalRemainingSessions = useMemo(
     () => activePackages.reduce((s, p) => s + ((p.total_sessions ?? 0) - (p.used_sessions ?? 0)), 0),
-    [activePackages]
+    [activePackages],
   );
   const totalBalance = useMemo(() => {
     const charged = clinicPayments.filter((p) => p.method === "charge").reduce((s, p) => s + p.amount, 0);
@@ -378,7 +341,7 @@ const Index = () => {
 
   // Expiry reminder events: 30, 20, 10 days before expiry_date
   const expiryEvents = useMemo(() => {
-    const events: {date: string;name: string;expiryDate: string;daysLeft: number;}[] = [];
+    const events: { date: string; name: string; expiryDate: string; daysLeft: number }[] = [];
     packages.forEach((pkg) => {
       if (!pkg.expiry_date) return;
       const remaining = (pkg.total_sessions ?? 0) - (pkg.used_sessions ?? 0);
@@ -393,7 +356,7 @@ const Index = () => {
               date: format(reminderDate, "yyyy-MM-dd"),
               name: pkg.name,
               expiryDate: format(expiry, "M월 d일"),
-              daysLeft: daysBefore
+              daysLeft: daysBefore,
             });
           }
         }
@@ -429,7 +392,7 @@ const Index = () => {
     setTimeout(() => setShowReward(false), 2500);
   };
 
-  const seasonMeta = currentSeason ? SEASON_CONFIG[currentSeason] : null;
+  
 
   if (loading) return <FlowerLoader />;
 
@@ -444,29 +407,29 @@ const Index = () => {
           <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
             <button
               onClick={() => setLangOpen((prev) => !prev)}
-              className="h-8 w-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
-              
+              className="h-8 w-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors"
+            >
               <Globe className="h-4 w-4 text-white/80" />
             </button>
-            {langOpen &&
-            <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
-                {(["ko", "en", "zh"] as Language[]).map((lang) =>
-              <button
-                key={lang}
-                onClick={() => {
-                  setLanguage(lang);
-                  setLangOpen(false);
-                }}
-                className={cn(
-                  "w-full text-left px-4 py-2.5 text-xs font-medium transition-colors",
-                  language === lang ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
-                )}>
-                
+            {langOpen && (
+              <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
+                {(["ko", "en", "zh"] as Language[]).map((lang) => (
+                  <button
+                    key={lang}
+                    onClick={() => {
+                      setLanguage(lang);
+                      setLangOpen(false);
+                    }}
+                    className={cn(
+                      "w-full text-left px-4 py-2.5 text-xs font-medium transition-colors",
+                      language === lang ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted",
+                    )}
+                  >
                     {LANGUAGE_LABELS[lang]}
                   </button>
-              )}
+                ))}
               </div>
-            }
+            )}
           </div>
 
           {/* Row 1: Nickname's Bloom Log (no avatar) */}
@@ -475,8 +438,8 @@ const Index = () => {
               <p className="text-white/60 text-[10px] tracking-wide">It's ​Blooming day! </p>
               <h1
                 className="text-white text-lg font-bold tracking-tight leading-tight"
-                style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-                
+                style={{ fontFamily: "'Noto Sans KR', sans-serif" }}
+              >
                 {nickname || "회원"}님의 <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
             </div>
@@ -497,42 +460,42 @@ const Index = () => {
             <PopoverContent
               side="bottom"
               align="start"
-              className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
-              
+              className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl"
+            >
               <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
               <div className="space-y-1.5 text-[11px]">
                 <p className="text-[#F2C94C] font-semibold">
                   현재: {bloom.emoji} {bloom.name} ({activeDays}건)
                 </p>
-                {bloom.nextMilestone !== null &&
-                <p className="text-white/90">
+                {bloom.nextMilestone !== null && (
+                  <p className="text-white/90">
                     다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
                   </p>
-                }
+                )}
                 {bloom.nextMilestone === null && <p className="text-white/90">✨ 최고 등급 달성!</p>}
               </div>
             </PopoverContent>
           </Popover>
           <div className="flex-1 min-w-0 space-y-1">
-            {isWilting ?
-            <p className="text-xs font-semibold text-muted-foreground">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p> :
-            bloom.stage === 0 ?
-            <p className="text-xs font-semibold">🌱 첫번째 기록 완료하고 새싹이로 업그레이드!</p> :
-            remaining > 0 ?
-            <p className="text-xs font-semibold">
+            {isWilting ? (
+              <p className="text-xs font-semibold text-muted-foreground">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p>
+            ) : bloom.stage === 0 ? (
+              <p className="text-xs font-semibold">🌱 첫번째 기록 완료하고 새싹이로 업그레이드!</p>
+            ) : remaining > 0 ? (
+              <p className="text-xs font-semibold">
                 🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성!
-              </p> :
-
-            <p className="text-xs font-semibold">✨ 최고 단계 달성!!!</p>
-            }
+              </p>
+            ) : (
+              <p className="text-xs font-semibold">✨ 최고 단계 달성!!!</p>
+            )}
             <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-full rounded-full transition-all duration-1000 ease-out"
                 style={{
                   width: `${progressPct}%`,
-                  background: "linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))"
-                }} />
-              
+                  background: "linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))",
+                }}
+              />
             </div>
           </div>
           <span className="text-lg shrink-0">
@@ -540,47 +503,68 @@ const Index = () => {
           </span>
         </div>
 
-        {/* ═══ Management Mode Selector ═══ */}
-        <div className="relative">
-          <div
-            className="flex items-center gap-2 bg-card border border-border rounded-xl px-3 py-2.5 cursor-pointer active:bg-muted/80 transition-colors shadow-sm"
-            onClick={() => setModeDropdownOpen((v) => !v)}>
-            
-            <span className="text-lg">{seasonMeta?.emoji || "⚙️"}</span>
-            <div className="flex-1 min-w-0">
-              <p className="text-muted-foreground text-[10px]">관리 모드</p>
-              <p className="text-foreground text-xs font-semibold">
-                {seasonMeta ? seasonMeta.title : "모드를 선택하세요"}
-              </p>
-            </div>
-            <ChevronDown
-              size={14}
-              className={cn("text-muted-foreground transition-transform", modeDropdownOpen && "rotate-180")} />
-            
-          </div>
 
-          {modeDropdownOpen &&
-          <div className="absolute left-0 right-0 top-full mt-1 bg-card/95 backdrop-blur-md rounded-xl shadow-lg border border-border/50 z-50 overflow-hidden">
-              {(Object.entries(SEASON_CONFIG) as [SeasonKey, (typeof SEASON_CONFIG)[SeasonKey]][]).map(([key, cfg]) =>
-            <button
-              key={key}
-              className={cn(
-                "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50",
-                currentSeason === key && "bg-muted"
-              )}
-              onClick={() => handleSeasonChange(key)}>
-              
-                  <span className="text-xl">{cfg.emoji}</span>
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-foreground">{cfg.title}</p>
-                    <p className="text-[10px] text-muted-foreground">{cfg.sub}</p>
-                  </div>
-                  {currentSeason === key && <Check size={16} className="text-primary shrink-0" />}
+        {/* ═══ Today's Condition Log ═══ */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="p-4">
+            <p className="text-sm font-bold text-foreground mb-3">오늘의 컨디션 기록</p>
+            <p className="text-[10px] text-muted-foreground mb-3">
+              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
+            </p>
+            <div className="flex items-center justify-between gap-1 mb-3">
+              {CONDITION_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  className={cn(
+                    "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all text-center",
+                    todayCondition === opt.value
+                      ? "bg-primary/10 ring-2 ring-primary/30 scale-105"
+                      : "bg-muted/50 hover:bg-muted",
+                  )}
+                  onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}
+                >
+                  <span className="text-xl">{opt.emoji}</span>
+                  <span className="text-[10px] font-medium text-foreground">{opt.label}</span>
                 </button>
-            )}
+              ))}
             </div>
-          }
-        </div>
+            {todayCondition && (
+              <div className="space-y-2">
+                <textarea
+                  className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  placeholder="오늘 피부 상태 메모 (선택)"
+                  rows={2}
+                  value={conditionMemo}
+                  onChange={(e) => setConditionMemo(e.target.value)}
+                />
+                <button
+                  className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
+                  onClick={async () => {
+                    await addRecord({
+                      date: format(TODAY, "yyyy-MM-dd"),
+                      treatmentName: "컨디션 기록",
+                      treatmentId: undefined,
+                      packageId: "",
+                      skinLayer: "epidermis",
+                      bodyArea: "face",
+                      clinic: "-",
+                      satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
+                      memo:
+                        conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
+                      notes: "일일 컨디션 기록",
+                    });
+                    setTodayCondition(null);
+                    setConditionMemo("");
+                    setShowReward(true);
+                    setTimeout(() => setShowReward(false), 2500);
+                  }}
+                >
+                  컨디션 기록하기
+                </button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
@@ -588,76 +572,76 @@ const Index = () => {
             <div className="flex items-center justify-between mb-3">
               <button
                 onClick={() => setCalendarMonth((prev) => subMonths(prev, 1))}
-                className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-                
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+              >
                 <ChevronLeft size={16} className="text-muted-foreground" />
               </button>
 
               <div className="relative">
                 <button
                   onClick={() => setYearMonthPickerOpen((v) => !v)}
-                  className="text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
-                  
+                  className="text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1"
+                >
                   {format(calendarMonth, "yyyy년 M월", { locale: ko })}
                   <ChevronDown size={12} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
                 </button>
 
-                {yearMonthPickerOpen &&
-                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-lg p-3 w-[260px]">
+                {yearMonthPickerOpen && (
+                  <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-lg p-3 w-[260px]">
                     {/* Year selector */}
                     <div className="flex items-center justify-between mb-3">
                       <button
-                      onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() - 1))}
-                      className="p-1 rounded hover:bg-muted">
-                      
+                        onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() - 1))}
+                        className="p-1 rounded hover:bg-muted"
+                      >
                         <ChevronLeft size={14} />
                       </button>
                       <span className="text-sm font-bold">{calendarMonth.getFullYear()}년</span>
                       <button
-                      onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() + 1))}
-                      className="p-1 rounded hover:bg-muted">
-                      
+                        onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() + 1))}
+                        className="p-1 rounded hover:bg-muted"
+                      >
                         <ChevronRight size={14} />
                       </button>
                     </div>
                     {/* Month grid */}
                     <div className="grid grid-cols-4 gap-1.5">
-                      {Array.from({ length: 12 }, (_, i) =>
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setCalendarMonth((prev) => setMonth(setYear(prev, calendarMonth.getFullYear()), i));
-                        setYearMonthPickerOpen(false);
-                      }}
-                      className={cn(
-                        "py-1.5 rounded-lg text-xs font-medium transition-colors",
-                        calendarMonth.getMonth() === i ?
-                        "bg-primary text-primary-foreground" :
-                        "hover:bg-muted text-foreground"
-                      )}>
-                      
+                      {Array.from({ length: 12 }, (_, i) => (
+                        <button
+                          key={i}
+                          onClick={() => {
+                            setCalendarMonth((prev) => setMonth(setYear(prev, calendarMonth.getFullYear()), i));
+                            setYearMonthPickerOpen(false);
+                          }}
+                          className={cn(
+                            "py-1.5 rounded-lg text-xs font-medium transition-colors",
+                            calendarMonth.getMonth() === i
+                              ? "bg-primary text-primary-foreground"
+                              : "hover:bg-muted text-foreground",
+                          )}
+                        >
                           {i + 1}월
                         </button>
-                    )}
+                      ))}
                     </div>
                   </div>
-                }
+                )}
               </div>
 
               <button
                 onClick={() => setCalendarMonth((prev) => addMonths(prev, 1))}
-                className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-                
+                className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+              >
                 <ChevronRight size={16} className="text-muted-foreground" />
               </button>
             </div>
 
             <div className="grid grid-cols-7 mb-1">
-              {WEEKDAYS.map((d) =>
-              <div key={d} className="text-center text-[10px] text-muted-foreground font-medium py-1">
+              {WEEKDAYS.map((d) => (
+                <div key={d} className="text-center text-[10px] text-muted-foreground font-medium py-1">
                   {d}
                 </div>
-              )}
+              ))}
             </div>
 
             <div className="grid grid-cols-7">
@@ -668,7 +652,7 @@ const Index = () => {
                 const hasRecord = recordDateSet.has(dateStr);
                 const hasReservation = reservationDateSet.has(dateStr);
                 const cycleLabel = cycleDateMap.get(dateStr);
-                const hasExpiry = expiryDateSet.has(dateStr) || isEmpty && dateStr === exampleExpiryDate;
+                const hasExpiry = expiryDateSet.has(dateStr) || (isEmpty && dateStr === exampleExpiryDate);
                 const isSelected = activeSelectedDate === dateStr;
 
                 const hasAnyData = hasRecord || hasReservation;
@@ -692,17 +676,11 @@ const Index = () => {
                         }, 500);
                       }
                     }}
-                    onPointerUp={() => {
-                      if (longPressTimer) clearTimeout(longPressTimer);
-                    }}
-                    onPointerLeave={() => {
-                      if (longPressTimer) clearTimeout(longPressTimer);
-                    }}
-                    onContextMenu={(e) => {
-                      if (hasAnyData && inMonth) e.preventDefault();
-                    }}
-                    className={cn("flex flex-col items-center py-1 transition-colors", !inMonth && "opacity-30")}>
-                    
+                    onPointerUp={() => { if (longPressTimer) clearTimeout(longPressTimer); }}
+                    onPointerLeave={() => { if (longPressTimer) clearTimeout(longPressTimer); }}
+                    onContextMenu={(e) => { if (hasAnyData && inMonth) e.preventDefault(); }}
+                    className={cn("flex flex-col items-center py-1 transition-colors", !inMonth && "opacity-30")}
+                  >
                     <span
                       className={cn(
                         "w-7 h-7 flex items-center justify-center rounded-full text-xs transition-all",
@@ -710,37 +688,37 @@ const Index = () => {
                         !isSelected && isToday2 && "bg-primary/20 text-primary font-semibold",
                         !isSelected && hasRecord && !isToday2 && "bg-[#FF7F7F]/40",
                         !isSelected && hasExpiry && !isToday2 && !hasRecord && "bg-[hsl(var(--destructive))]/15",
-                        !isSelected && cycleLabel && !isToday2 && !hasRecord && !hasExpiry && "ring-1 ring-primary/30"
-                      )}>
-                      
+                        !isSelected && cycleLabel && !isToday2 && !hasRecord && !hasExpiry && "ring-1 ring-primary/30",
+                      )}
+                    >
                       {format(day, "d")}
                     </span>
                     <div className="flex gap-0.5 mt-0.5 h-1.5 items-center">
                       {hasRecord && <div className="w-1 h-1 rounded-full bg-[#C9A96E]" />}
                       {hasReservation && <div className="w-1 h-1 rounded-full bg-info" />}
                       {hasExpiry && <div className="w-1 h-1 rounded-full bg-destructive" />}
-                      {cycleLabel && inMonth && !hasRecord && !hasReservation && !hasExpiry &&
-                      <div className="w-1 h-1 rounded-full bg-primary" />
-                      }
+                      {cycleLabel && inMonth && !hasRecord && !hasReservation && !hasExpiry && (
+                        <div className="w-1 h-1 rounded-full bg-primary" />
+                      )}
                     </div>
-                  </button>);
-
+                  </button>
+                );
               })}
             </div>
           </CardContent>
         </Card>
 
         {/* ═══ Selected Date Info ═══ */}
-        {activeSelectedDate &&
-        <div className="space-y-2">
+        {activeSelectedDate && (
+          <div className="space-y-2">
             <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1">
               <CalendarDays className="h-3.5 w-3.5 text-primary" />
               {format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: ko })}
             </p>
 
             {/* Expiry reminders */}
-            {(expiryByDate[activeSelectedDate] || []).map((ev, idx) =>
-          <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
+            {(expiryByDate[activeSelectedDate] || []).map((ev, idx) => (
+              <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
                     <span className="text-base">⏰</span>
@@ -753,11 +731,11 @@ const Index = () => {
                   </div>
                 </CardContent>
               </Card>
-          )}
+            ))}
 
             {/* Example expiry for empty state */}
-            {isEmpty && activeSelectedDate === exampleExpiryDate &&
-          <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
+            {isEmpty && activeSelectedDate === exampleExpiryDate && (
+              <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
                     <span className="text-base">⏰</span>
@@ -773,15 +751,15 @@ const Index = () => {
                   </span>
                 </CardContent>
               </Card>
-          }
+            )}
 
             {/* Reservations */}
-            {selectedReservations.map((res) =>
-          <Card
-            key={res.id}
-            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => setEditingReservation(res)}>
-            
+            {selectedReservations.map((res) => (
+              <Card
+                key={res.id}
+                className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+                onClick={() => setEditingReservation(res)}
+              >
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
                     <CalendarPlus className="h-4 w-4 text-info" />
@@ -798,45 +776,47 @@ const Index = () => {
                   </span>
                 </CardContent>
               </Card>
-          )}
+            ))}
 
             {/* Treatment records */}
-            {selectedRecords.map((r) =>
-          <Card key={r.id} className="border-0 shadow-sm">
+            {selectedRecords.map((r) => (
+              <Card key={r.id} className="border-0 shadow-sm">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    <Stethoscope className="h-4 w-4 text-primary" />
+                    {r.treatmentName === "컨디션 기록" && r.satisfaction
+                      ? <span className="text-lg">{CONDITION_OPTIONS.find(o => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span>
+                      : <Stethoscope className="h-4 w-4 text-primary" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
                     <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
                   </div>
-                  {r.satisfaction &&
-              <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
+                  {r.satisfaction && (
+                    <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
                       {"★".repeat(r.satisfaction)}
                     </span>
-              }
+                  )}
                 </CardContent>
               </Card>
-          )}
+            ))}
 
             {/* Add button when there are existing items */}
-            {hasSelectedInfo &&
-          <button
-            onClick={() => guardAction(() => setShowActionPicker(true))}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
-            
+            {hasSelectedInfo && (
+              <button
+                onClick={() => guardAction(() => setShowActionPicker(true))}
+                className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]"
+              >
                 <Plus className="h-4 w-4" />
                 <span className="text-xs font-medium">추가</span>
               </button>
-          }
+            )}
 
             {/* Empty state for selected date */}
             {!hasSelectedInfo &&
-          selectedDate &&
-          !expiryByDate[activeSelectedDate]?.length &&
-          !(isEmpty && activeSelectedDate === exampleExpiryDate) &&
-          <button onClick={() => guardAction(() => setShowActionPicker(true))} className="w-full text-left">
+              selectedDate &&
+              !expiryByDate[activeSelectedDate]?.length &&
+              !(isEmpty && activeSelectedDate === exampleExpiryDate) && (
+                <button onClick={() => guardAction(() => setShowActionPicker(true))} className="w-full text-left">
                   <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-5 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
                     <Plus className="h-5 w-5 text-primary mx-auto mb-2" />
                     <p className="text-xs font-semibold text-foreground">이 날짜에 기록이 없어요</p>
@@ -846,16 +826,16 @@ const Index = () => {
                     </p>
                   </div>
                 </button>
-          }
+              )}
           </div>
-        }
+        )}
 
         {/* ═══ Stat Cards — 2×2 below calendar ═══ */}
         <div className="grid grid-cols-2 gap-3">
           <Card
             className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate("/calendar?tab=history")}>
-            
+            onClick={() => navigate("/calendar?tab=history")}
+          >
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[hsl(260,60%,94%)] flex items-center justify-center">
                 <span className="text-lg">💉</span>
@@ -872,8 +852,8 @@ const Index = () => {
 
           <Card
             className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate("/calendar?tab=history")}>
-            
+            onClick={() => navigate("/calendar?tab=history")}
+          >
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[hsl(150,50%,92%)] flex items-center justify-center">
                 <span className="text-lg">🏥</span>
@@ -892,8 +872,8 @@ const Index = () => {
         <div className="grid grid-cols-2 gap-3">
           <Card
             className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate("/packages?tab=packages")}>
-            
+            onClick={() => navigate("/packages?tab=packages")}
+          >
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center">
                 <span className="text-lg">🎟️</span>
@@ -910,14 +890,14 @@ const Index = () => {
 
           <Card
             className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => navigate("/packages?tab=points")}>
-            
+            onClick={() => navigate("/packages?tab=points")}
+          >
             <CardContent className="p-4 flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[hsl(340,60%,92%)] flex items-center justify-center">
                 <span className="text-lg">💰</span>
               </div>
               <div>
-                <p className="text-[10px] text-muted-foreground">잔여 금액</p>
+                <p className="text-[10px] text-muted-foreground">잔여 포인트</p>
                 <p className="text-lg font-black text-foreground leading-tight">
                   {totalBalance > 0 ? `${totalBalance.toLocaleString()}` : <span className="opacity-40">0</span>}
                   <span className="text-xs font-medium text-muted-foreground ml-0.5">원</span>
@@ -927,91 +907,27 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* ═══ Today's Condition Log ═══ */}
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <p className="text-sm font-bold text-foreground mb-3">오늘의 컨디션 기록</p>
-            <p className="text-[10px] text-muted-foreground mb-3">
-              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
-            </p>
 
-            {/* Condition emoji selector */}
-            <div className="flex items-center justify-between gap-1 mb-3">
-              {CONDITION_OPTIONS.map((opt) =>
-              <button
-                key={opt.value}
-                className={cn(
-                  "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all text-center",
-                  todayCondition === opt.value ?
-                  "bg-primary/10 ring-2 ring-primary/30 scale-105" :
-                  "bg-muted/50 hover:bg-muted"
-                )}
-                onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}>
-                
-                  <span className="text-xl">{opt.emoji}</span>
-                  <span className="font-medium text-foreground text-sm">{opt.label}</span>
-                </button>
-              )}
-            </div>
 
-            {/* Memo + Save */}
-            {todayCondition &&
-            <div className="space-y-2">
-                <textarea
-                className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
-                placeholder="오늘 피부 상태 메모 (선택)"
-                rows={2}
-                value={conditionMemo}
-                onChange={(e) => setConditionMemo(e.target.value)} />
-              
-
-                <button
-                className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
-                onClick={async () => {
-                  await addRecord({
-                    date: format(TODAY, "yyyy-MM-dd"),
-                    treatmentName: "컨디션 기록",
-                    treatmentId: undefined,
-                    packageId: "",
-                    skinLayer: "epidermis",
-                    bodyArea: "face",
-                    clinic: "-",
-                    satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
-                    memo:
-                    conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                    notes: "일일 컨디션 기록"
-                  });
-                  setTodayCondition(null);
-                  setConditionMemo("");
-                  setShowReward(true);
-                  setTimeout(() => setShowReward(false), 2500);
-                }}>
-                
-                  컨디션 기록하기
-                </button>
-              </div>
-            }
-          </CardContent>
-        </Card>
 
         {/* ═══ Recent Records ═══ */}
-        {records.length > 0 &&
-        <div>
+        {records.length > 0 && (
+          <div>
             <div className="flex items-center justify-between px-1 mb-2.5">
               <h2 className="text-sm font-bold flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
                 최근 기록
               </h2>
               <button
-              onClick={() => navigate("/calendar?tab=history")}
-              className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-              
+                onClick={() => navigate("/calendar?tab=history")}
+                className="text-[10px] text-muted-foreground flex items-center gap-0.5"
+              >
                 전체보기 <ChevronRight size={10} />
               </button>
             </div>
             <div className="space-y-2">
-              {records.slice(0, 3).map((r) =>
-            <Card key={r.id} className="glass-card">
+              {records.slice(0, 3).map((r) => (
+                <Card key={r.id} className="glass-card">
                   <CardContent className="p-3.5">
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex-1 min-w-0">
@@ -1022,19 +938,19 @@ const Index = () => {
                         {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
                       </div>
                       <div className="flex items-center gap-1 shrink-0">
-                        {r.satisfaction &&
-                    <span className="text-xs text-[hsl(var(--accent))] font-medium">
+                        {r.satisfaction && (
+                          <span className="text-xs text-[hsl(var(--accent))] font-medium">
                             {"★".repeat(r.satisfaction)}
                           </span>
-                    }
+                        )}
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-            )}
+              ))}
             </div>
           </div>
-        }
+        )}
       </div>
 
       {/* Action Picker Sheet for home calendar */}
@@ -1051,8 +967,8 @@ const Index = () => {
                 setShowActionPicker(false);
                 setShowHomeReservationModal(true);
               }}
-              className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 hover:bg-accent/50 active:scale-[0.97] transition-all">
-              
+              className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-card p-5 hover:bg-accent/50 active:scale-[0.97] transition-all"
+            >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-info/10">
                 <CalendarPlus className="h-6 w-6 text-info" />
               </div>
@@ -1063,8 +979,8 @@ const Index = () => {
                 setShowActionPicker(false);
                 setShowHomeAddModal(true);
               }}
-              className="flex flex-col items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 hover:bg-primary/10 active:scale-[0.97] transition-all">
-              
+              className="flex flex-col items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 hover:bg-primary/10 active:scale-[0.97] transition-all"
+            >
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                 <ClipboardList className="h-6 w-6 text-primary" />
               </div>
@@ -1082,8 +998,8 @@ const Index = () => {
           setShowReward(true);
           setTimeout(() => setShowReward(false), 2500);
         }}
-        defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined} />
-      
+        defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined}
+      />
 
       <AddReservationModal
         open={showHomeReservationModal}
@@ -1091,15 +1007,15 @@ const Index = () => {
           setShowHomeReservationModal(false);
           setReservationRefresh((v) => v + 1);
         }}
-        defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined} />
-      
+        defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined}
+      />
 
       <EditReservationSheet
         open={!!editingReservation}
         onClose={() => setEditingReservation(null)}
         reservation={editingReservation}
-        onSaved={() => setReservationRefresh((v) => v + 1)} />
-      
+        onSaved={() => setReservationRefresh((v) => v + 1)}
+      />
 
       {parseModalOpen && <ParseTreatmentModal onClose={() => setParseModalOpen(false)} />}
       <AddTreatmentModal
@@ -1113,16 +1029,16 @@ const Index = () => {
         onOpenParse={() => {
           setModalOpen(false);
           setParseModalOpen(true);
-        }} />
-      
+        }}
+      />
 
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
 
       {/* Privacy Consent Modal for OAuth users */}
       <LoginRequiredSheet open={showLoginSheet} onClose={handleLoginClose} onLoginSuccess={handleLoginSuccess} />
 
-      {privacyConsentOpen &&
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
+      {privacyConsentOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="bg-background rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-xl">
             <div className="text-center space-y-1">
               <div className="text-2xl">🌸</div>
@@ -1133,16 +1049,16 @@ const Index = () => {
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed border rounded-lg p-3 bg-muted/30">
               {t("privacy_sensitive_notice") ||
-            "시술 기록은 건강에 관한 민감정보입니다. 본인 동의 하에만 수집되며, 서비스 제공 외 목적으로 사용되지 않습니다."}
+                "시술 기록은 건강에 관한 민감정보입니다. 본인 동의 하에만 수집되며, 서비스 제공 외 목적으로 사용되지 않습니다."}
             </p>
             <div className="space-y-3">
               <label className="flex items-start gap-2 cursor-pointer">
                 <input
-                type="checkbox"
-                checked={privacyAgreePolicy}
-                onChange={(e) => setPrivacyAgreePolicy(e.target.checked)}
-                className="mt-0.5 accent-primary" />
-              
+                  type="checkbox"
+                  checked={privacyAgreePolicy}
+                  onChange={(e) => setPrivacyAgreePolicy(e.target.checked)}
+                  className="mt-0.5 accent-primary"
+                />
                 <span className="text-xs leading-relaxed">
                   {t("privacy_agree_policy") || "[필수] 개인정보처리방침에 동의합니다"}{" "}
                   <a href="/privacy" target="_blank" className="underline text-primary">
@@ -1152,36 +1068,37 @@ const Index = () => {
               </label>
               <label className="flex items-start gap-2 cursor-pointer">
                 <input
-                type="checkbox"
-                checked={privacyAgreeAge}
-                onChange={(e) => setPrivacyAgreeAge(e.target.checked)}
-                className="mt-0.5 accent-primary" />
-              
+                  type="checkbox"
+                  checked={privacyAgreeAge}
+                  onChange={(e) => setPrivacyAgreeAge(e.target.checked)}
+                  className="mt-0.5 accent-primary"
+                />
                 <span className="text-xs">{t("privacy_agree_age") || "[필수] 만 14세 이상입니다"}</span>
               </label>
             </div>
             <button
-            onClick={handlePrivacyConsent}
-            disabled={!privacyAgreePolicy || !privacyAgreeAge}
-            className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-opacity">
-            
+              onClick={handlePrivacyConsent}
+              disabled={!privacyAgreePolicy || !privacyAgreeAge}
+              className="w-full py-3 rounded-xl text-sm font-semibold bg-primary text-primary-foreground disabled:opacity-40 disabled:cursor-not-allowed transition-opacity"
+            >
               {t("privacy_start") || "동의하고 시작하기"}
             </button>
           </div>
         </div>
-      }
+      )}
 
       {/* ═══ Reward Feedback Overlay ═══ */}
-      {showReward &&
-      <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
+      {showReward && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
           <div className="bg-black/70 backdrop-blur-md text-white rounded-2xl px-8 py-6 text-center space-y-2 animate-scale-in">
             <span className="text-4xl block animate-bounce">🌱</span>
-            <p className="text-sm font-semibold">좋아요, 한 걸음 더 🌱</p>
+            <p className="text-sm font-semibold">첫 업그레이드를 축하해요!</p>
+            <p className="text-xs text-white/80">씨앗에서 새싹이 되었어요! 🌱</p>
           </div>
         </div>
-      }
-    </div>);
-
+      )}
+    </div>
+  );
 };
 
 export default Index;
