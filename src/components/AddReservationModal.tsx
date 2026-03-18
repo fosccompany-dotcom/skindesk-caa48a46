@@ -538,6 +538,8 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
                 </>
               )}
 
+              {!treatmentSearch.trim() && catId && selectedCat && (
+
               {catId && selectedCat && (
                 <div>
                   <button onClick={() => setCatId(null)} className="text-xs text-info mb-3 flex items-center gap-1">
