@@ -76,11 +76,11 @@ const TODAY = new Date("2026-03-10");
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const CONDITION_OPTIONS = [
-  { emoji: "✨", label: "좋음", value: 5 },
-  { emoji: "😊", label: "보통", value: 4 },
-  { emoji: "😐", label: "그저그럭", value: 3 },
-  { emoji: "😣", label: "별로", value: 2 },
-  { emoji: "😰", label: "안좋음", value: 1 },
+  { emoji: "🏭", label: "기름", value: 5 },
+  { emoji: "🌊", label: "촉촉", value: 4 },
+  { emoji: "🌤️", label: "맑음", value: 3 },
+  { emoji: "🌵", label: "건조", value: 2 },
+  { emoji: "🏜️", label: "사막", value: 1 },
 ];
 
 function getCycleStatus(cycle: TreatmentCycle) {
