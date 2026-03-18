@@ -577,14 +577,7 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
 
   const handleSave = () => {
     if (!isBotox && !isFiller && !selectedItem) return;
-    // 결제 수단 필수 검증 (시술권 미사용 시)
-    if (!selectedPkgId && !paymentMethod) {
-      setPaymentShake(true);
-      setTimeout(() => setPaymentShake(false), 600);
-      const el = document.getElementById('payment-method-section');
-      el?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      return;
-    }
+    // 결제 수단은 선택사항 (필수 아님)
     const pm = resolvePaymentMethod();
     const amt = (!selectedPkgId && paymentMethod && paymentMethod !== 'service' && paymentAmount)
       ? parseInt(paymentAmount, 10) || null
