@@ -143,9 +143,17 @@ const Index = () => {
   const [showHomeAddModal, setShowHomeAddModal] = useState(false);
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
   const [reservationRefresh, setReservationRefresh] = useState(0);
+  const [dataRefresh, setDataRefresh] = useState(0);
   const [editingReservation, setEditingReservation] = useState<Reservation | null>(null);
   const [calendarMonth, setCalendarMonth] = useState(TODAY);
   const [yearMonthPickerOpen, setYearMonthPickerOpen] = useState(false);
+
+  // AI 파싱 등 외부 데이터 변경 시 새로고침
+  useEffect(() => {
+    const handler = () => setDataRefresh(v => v + 1);
+    window.addEventListener('skindesk:data-changed', handler);
+    return () => window.removeEventListener('skindesk:data-changed', handler);
+  }, []);
 
   // 언어 드롭다운 외부 클릭 닫기
   useEffect(() => {
