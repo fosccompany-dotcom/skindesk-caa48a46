@@ -437,19 +437,20 @@ export default function AddReservationModal({ open, onClose, defaultDate, onSave
           {/* Step 2: Treatment selection (multi) */}
           {step === 2 && (
             <div>
-              {/* Treatment search */}
+              {/* Treatment search — matches AddTreatmentModal style */}
               <div className="relative mb-4">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-muted-foreground" />
+                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
                 <input
-                  className="w-full border border-input bg-background text-foreground placeholder:text-muted-foreground rounded-xl pl-8 pr-8 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-info/40"
-                  placeholder="시술명 통합검색"
+                  type="text"
+                  className="w-full bg-muted border border-border rounded-xl pl-9 pr-9 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-info/50 focus:ring-1 focus:ring-info/30"
+                  placeholder="시술명 통합검색 (예: 보톡스, 필러, 리쥬란 등)"
                   value={treatmentSearch}
                   onChange={(e) => { setTreatmentSearch(e.target.value); setCatId(null); }}
                   autoComplete="off"
                 />
                 {treatmentSearch && (
-                  <button onClick={() => setTreatmentSearch("")} className="absolute right-2.5 top-1/2 -translate-y-1/2 opacity-50 hover:opacity-100">
-                    <X className="h-3.5 w-3.5" />
+                  <button onClick={() => setTreatmentSearch("")} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
+                    <X size={14} />
                   </button>
                 )}
               </div>
