@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { SKIN_TRIBE_LABELS, type SkinTribe } from '@/lib/skinTribeClassifier';
 import { Plus, ChevronLeft, Check, AlertTriangle, CalendarDays } from 'lucide-react';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 
 /* ── Treatment compatibility data ── */
 const MATCH_DATA: Record<SkinTribe, { good: string; caution: string; cycle: string }> = {
@@ -63,6 +64,7 @@ export default function SkinMatch() {
   const [birthDate, setBirthDate] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
+  const [parseModalOpen, setParseModalOpen] = useState(false);
 
   useEffect(() => {
     if (!user) { setLoading(false); return; }
@@ -186,8 +188,17 @@ export default function SkinMatch() {
         </Button>
       </div>
 
+      {parseModalOpen && (
+        <ParseTreatmentModal onClose={() => { setParseModalOpen(false); setAddModalOpen(false); }} />
+      )}
+
       {addModalOpen && (
-        <AddTreatmentModal open={addModalOpen} onClose={() => setAddModalOpen(false)} onSave={() => setAddModalOpen(false)} />
+        <AddTreatmentModal
+          open={addModalOpen}
+          onClose={() => setAddModalOpen(false)}
+          onSave={() => setAddModalOpen(false)}
+          onOpenParse={() => { setParseModalOpen(true); setAddModalOpen(false); }}
+        />
       )}
     </div>
   );

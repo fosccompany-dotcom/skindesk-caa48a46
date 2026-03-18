@@ -1022,7 +1022,8 @@ const Index = () => {
           setShowReward(true);
           setTimeout(() => setShowReward(false), 2500);
         }}
-        defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined} />
+        defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined}
+        onOpenParse={() => { setShowHomeAddModal(false); setParseModalOpen(true); }} />
       
 
       <AddReservationModal
