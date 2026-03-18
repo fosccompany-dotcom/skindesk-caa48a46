@@ -110,7 +110,9 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
   };
 
   return (
+    <>
     <Sheet open={open} onOpenChange={(v) => !v && handleClose()}>
+
       <SheetContent side="bottom" className="rounded-t-2xl px-6 pb-8 pt-6 max-h-[90vh] overflow-y-auto">
         {/* Logo */}
         <div className="flex justify-center mb-3">
