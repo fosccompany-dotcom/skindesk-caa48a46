@@ -17,6 +17,7 @@ import Farewell from "./pages/Farewell";
 import Signup from "./pages/Signup";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import SkinQuiz from "./pages/SkinQuiz";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
