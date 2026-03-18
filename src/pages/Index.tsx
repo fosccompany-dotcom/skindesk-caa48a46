@@ -843,72 +843,8 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* ═══ Today's Condition Log ═══ */}
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-4">
-            <p className="text-sm font-bold text-foreground mb-3">오늘의 컨디션 기록</p>
-            <p className="text-[10px] text-muted-foreground mb-3">
-              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
-            </p>
 
-            {/* Condition emoji selector */}
-            <div className="flex items-center justify-between gap-1 mb-3">
-              {CONDITION_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  className={cn(
-                    "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all text-center",
-                    todayCondition === opt.value
-                      ? "bg-primary/10 ring-2 ring-primary/30 scale-105"
-                      : "bg-muted/50 hover:bg-muted",
-                  )}
-                  onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}
-                >
-                  <span className="text-xl">{opt.emoji}</span>
-                  <span className="text-[10px] font-medium text-foreground">{opt.label}</span>
-                </button>
-              ))}
-            </div>
 
-            {/* Memo + Save */}
-            {todayCondition && (
-              <div className="space-y-2">
-                <textarea
-                  className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
-                  placeholder="오늘 피부 상태 메모 (선택)"
-                  rows={2}
-                  value={conditionMemo}
-                  onChange={(e) => setConditionMemo(e.target.value)}
-                />
-
-                <button
-                  className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
-                  onClick={async () => {
-                    await addRecord({
-                      date: format(TODAY, "yyyy-MM-dd"),
-                      treatmentName: "컨디션 기록",
-                      treatmentId: undefined,
-                      packageId: "",
-                      skinLayer: "epidermis",
-                      bodyArea: "face",
-                      clinic: "-",
-                      satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
-                      memo:
-                        conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                      notes: "일일 컨디션 기록",
-                    });
-                    setTodayCondition(null);
-                    setConditionMemo("");
-                    setShowReward(true);
-                    setTimeout(() => setShowReward(false), 2500);
-                  }}
-                >
-                  컨디션 기록하기
-                </button>
-              </div>
-            )}
-          </CardContent>
-        </Card>
 
         {/* ═══ Recent Records ═══ */}
         {records.length > 0 && (
