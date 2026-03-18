@@ -704,22 +704,6 @@ export default function AddTreatmentModal({ open, onClose, onSave, editRecord, o
           {/* ── STEP 1: 카테고리 선택 ── */}
           {step === 1 && (
             <div>
-              {/* 통합 검색창 */}
-              <div className="relative mb-3">
-                <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={e => { setSearchQuery(e.target.value); setCatId(null); setItemId(null); }}
-                  placeholder={language === 'en' ? 'Search treatments (e.g. Botox, Filler, drug name)' : language === 'zh' ? '搜索项目（如：肉毒素、填充剂等）' : '시술명 검색 (예: 보톡스, 필러, 약제명 등)'}
-                  className="w-full bg-muted border border-border rounded-xl pl-9 pr-4 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-amber/50 focus:ring-1 focus:ring-amber/30"
-                />
-                {searchQuery && (
-                  <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                    <X size={14} />
-                  </button>
-                )}
-              </div>
 
               {/* 검색 결과 */}
               {searchQuery.trim() ? (
