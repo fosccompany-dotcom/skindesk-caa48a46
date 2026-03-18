@@ -233,7 +233,7 @@ export default function LoginRequiredSheet({ open, onClose, onLoginSuccess }: Lo
           if (error) {
             toast({ title: error.message, variant: 'destructive' });
           } else {
-            toast({ title: t.resetSent });
+            toast({ title: t.resetSent, description: '메일이 보이지 않으면 스팸/프로모션 폴더를 확인해주세요.' });
             setResetOpen(false);
             setResetEmail('');
           }
