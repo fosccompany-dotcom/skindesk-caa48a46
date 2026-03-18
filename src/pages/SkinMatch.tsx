@@ -7,6 +7,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { SKIN_TRIBE_LABELS, type SkinTribe } from '@/lib/skinTribeClassifier';
 import { Plus, ChevronLeft, Check, AlertTriangle, CalendarDays } from 'lucide-react';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
+import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 
 /* ── Treatment compatibility data ── */
 const MATCH_DATA: Record<SkinTribe, { good: string; caution: string; cycle: string }> = {
