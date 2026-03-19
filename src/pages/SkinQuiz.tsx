@@ -63,7 +63,7 @@ const QUESTIONS = [
   },
   {
     id: 'q6' as const,
-    question: '태어난 연도는?',
+    question: '마지막으로 연령대를 선택해주세요!',
     options: [
 { label: '20대', value: '20s' },
 { label: '30대', value: '30s' },
