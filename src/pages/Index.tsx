@@ -525,7 +525,7 @@ const Index = () => {
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-4 pt-4 pb-40">
+      <div className="page-content space-y-4 pt-4 pb-40 py-0">
 
 
         {/* ═══ Today's Condition Log ═══ */}
@@ -1023,7 +1023,7 @@ const Index = () => {
           setTimeout(() => setShowReward(false), 2500);
         }}
         defaultDate={selectedDate ? format(selectedDate, "yyyy-MM-dd") : undefined}
-        onOpenParse={() => { setShowHomeAddModal(false); setParseModalOpen(true); }} />
+        onOpenParse={() => {setShowHomeAddModal(false);setParseModalOpen(true);}} />
       
 
       <AddReservationModal
