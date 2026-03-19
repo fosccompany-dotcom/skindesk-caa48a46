@@ -95,7 +95,7 @@ export default function SkinQuiz() {
     if (!user) return;
     supabase
       .from('user_profiles')
-      .select('birth_date')
+      .select(birth_date)
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
@@ -121,7 +121,7 @@ export default function SkinQuiz() {
         quiz_completed_at: new Date().toISOString(),
       };
       if (!hasBirthDate && ans.q6) {
-        updates.birth_date = mapQ6ToBirthDate(ans.q6);
+        updates.age_group = mapQ6ToBirthDate(ans.q6);
       }
       const { error } = await supabase
         .from('user_profiles')
