@@ -95,11 +95,11 @@ export default function SkinQuiz() {
     if (!user) return;
     supabase
       .from('user_profiles')
-      .select(birth_date)
+      .select('birth_date, age_group')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
-        if (data?.age_group) setHasBirthDate(true);
+        if (data?.birth_date || data?.age_group) setHasBirthDate(true);
       });
   }, [user]);
 
