@@ -52,9 +52,10 @@ function getAgeBracket(birthDate: string): '20s' | '30s' | '40+' | null {
 }
 
 const AGE_MESSAGES: Record<string, string> = {
-  '20s': '지금은 피지·모공 관리 집중 시기예요',
-  '30s': '리프팅 관리 시작 적기예요',
-  '40s': '수분+리프팅 복합 관리가 필요한 시기예요',
+  '20s': '지금 피부에 투자하면 10년 후가 달라요 🌱',
+  '30s': '슬슬 리프팅 시작할 최적의 타이밍이에요 ✨',
+  '40s': '탄력이랑 색소, 두 마리 토끼 다 잡을 시기예요 🌸',
+  '50s_plus': '피부가 원하는 걸 들어줄 시간이에요 💎',
 };
 
 export default function SkinMatch() {
