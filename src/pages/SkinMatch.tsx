@@ -70,7 +70,7 @@ export default function SkinMatch() {
     if (!user) { setLoading(false); return; }
     supabase
       .from('user_profiles')
-      .select('skin_tribe, birth_date')
+      .select('skin_tribe, age_group')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
