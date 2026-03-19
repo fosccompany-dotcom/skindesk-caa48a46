@@ -95,7 +95,7 @@ export default function SkinQuiz() {
     if (!user) return;
     supabase
       .from('user_profiles')
-      .select(birth_date)
+      .select('birth_date')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
