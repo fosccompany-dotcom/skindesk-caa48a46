@@ -90,7 +90,7 @@ export default function SkinQuiz() {
   const [result, setResult] = useState<SkinTribe | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Check if user already has birth_date → skip Q6
+  // Check if user already has age_group → skip Q6
   useEffect(() => {
     if (!user) return;
     supabase
@@ -99,7 +99,7 @@ export default function SkinQuiz() {
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
-        if (data?.birth_date) setHasBirthDate(true);
+        if (data?.age_group) setHasBirthDate(true);
       });
   }, [user]);
 
