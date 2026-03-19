@@ -43,13 +43,6 @@ const MATCH_DATA: Record<SkinTribe, { good: string; caution: string; cycle: stri
   },
 };
 
-function getAgeBracket(birthDate: string): '20s' | '30s' | '40+' | null {
-  const birth = new Date(birthDate);
-  const age = new Date().getFullYear() - birth.getFullYear();
-  if (age < 30) return '20s';
-  if (age < 40) return '30s';
-  return '40+';
-}
 
 const AGE_MESSAGES: Record<string, string> = {
   '20s': '지금 기록을 시작하면, 내 피부 패턴이 보이기 시작해요 🌱',
