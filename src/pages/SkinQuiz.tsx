@@ -194,11 +194,12 @@ export default function SkinQuiz() {
   const handleSkip = async () => {
     if (!user) { navigate('/'); return; }
     await supabase
-      .from('user_profiles')
-      .update({
-        skin_tribe: 'combo_balanced',
-        quiz_completed_at: new Date().toISOString(),
-      })
+  .from('user_profiles')
+  .update({
+    skin_tribe: 'combo_balanced',
+    age_group: null,          // ← 추가
+    quiz_completed_at: new Date().toISOString(),
+  })
       .eq('id', user.id);
     navigate('/', { replace: true });
   };
