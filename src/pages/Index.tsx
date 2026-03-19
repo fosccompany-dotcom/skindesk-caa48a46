@@ -500,12 +500,15 @@ const Index = () => {
             <div className="flex-1 min-w-0 space-y-1">
               {isWilting ?
               <p className="text-xs font-semibold text-white/70">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p> :
-              bloom.stage === 0 ?
+                           bloom.stage === 0 ?
               <p className="text-xs font-semibold text-white">첫번째 기록 완료하고 새싹이로 업그레이드 해요!</p> :
               remaining > 0 ?
+              <>
+              <p className="text-xs text-white/70">기록이 쌓일수록 내 피부가 보여요 🌱</p>
               <p className="text-xs font-semibold text-white">
                   🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성!
-                </p> :
+                </p>
+              </> :
               <p className="text-xs font-semibold text-white">✨ 최고 단계 달성!!!</p>
               }
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/20">
