@@ -500,7 +500,7 @@ const Index = () => {
             <div className="flex-1 min-w-0 space-y-1">
               {isWilting ?
               <p className="text-xs font-semibold text-white/70">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p> :
-                           bloom.stage === 0 ?
+              bloom.stage === 0 ?
               <p className="text-xs font-semibold text-white">첫번째 기록 완료하고 새싹이로 업그레이드 해요!</p> :
               remaining > 0 ?
               <>
@@ -542,11 +542,11 @@ const Index = () => {
               {CONDITION_OPTIONS.map((opt) =>
               <button
                 key={opt.value}
-                className={cn(
-                  "flex-1 flex flex-col items-center gap-1 py-2.5 rounded-xl transition-all text-center",
-                  todayCondition === opt.value ?
-                  "bg-primary/10 ring-2 ring-primary/30 scale-105" :
-                  "bg-muted/50 hover:bg-muted"
+                className={cn("flex-1 flex flex-col items-center gap-1 rounded-xl transition-all text-center py-[9px]",
+
+                todayCondition === opt.value ?
+                "bg-primary/10 ring-2 ring-primary/30 scale-105" :
+                "bg-muted/50 hover:bg-muted"
                 )}
                 onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}>
                 
@@ -594,11 +594,11 @@ const Index = () => {
         </Card>
 
         {/* ═══ AI 시술 기록 배너 (로그인 유저만) ═══ */}
-        {(user || window.location.hostname.includes('lovable')) && (
-          <button
-            onClick={() => setParseModalOpen(true)}
-            className="w-full flex items-center gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors px-4 py-3.5 text-left shadow-sm"
-          >
+        {(user || window.location.hostname.includes('lovable')) &&
+        <button
+          onClick={() => setParseModalOpen(true)}
+          className="w-full bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[7px] px-[5px] border-double border-0 rounded-sm opacity-100 gap-[10px] flex-row text-center font-sans text-xs font-extrabold mx-0 pl-[5px] pr-[5px] flex items-center justify-start">
+          
             <span className="text-2xl">📋</span>
             <div className="min-w-0">
               <p className="text-sm font-bold text-primary-foreground">✨ 시술 기록 한 번에 추가하기</p>
@@ -606,7 +606,7 @@ const Index = () => {
             </div>
             <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
           </button>
-        )}
+        }
 
         {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
