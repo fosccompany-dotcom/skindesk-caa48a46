@@ -65,10 +65,10 @@ const QUESTIONS = [
     id: 'q6' as const,
     question: '태어난 연도는?',
     options: [
-{ label: '20대 (2000년대생)', value: '2002-01-01' },
-{ label: '30대 (1990년대생)', value: '1992-01-01' },
-{ label: '40대 (1980년대생)', value: '1982-01-01' },
-{ label: '50대 이상', value: '1972-01-01' },
+{ label: '20대', value: '20s' },
+{ label: '30대', value: '30s' },
+{ label: '40대', value: '40s' },
+{ label: '50대 이상', value: '50s_plus' },
     ],
   },
 ] as const;
