@@ -53,8 +53,8 @@ function getAgeBracket(birthDate: string): '20s' | '30s' | '40+' | null {
 
 const AGE_MESSAGES: Record<string, string> = {
   '20s': '지금은 피지·모공 관리 집중 시기예요',
-  '30s': '리프팅 시작 적기예요',
-  '40+': '수분+리프팅 복합 관리가 필요한 시기예요',
+  '30s': '리프팅 관리 시작 적기예요',
+  '40s': '수분+리프팅 복합 관리가 필요한 시기예요',
 };
 
 export default function SkinMatch() {
@@ -75,7 +75,7 @@ export default function SkinMatch() {
       .single()
       .then(({ data }) => {
         setTribe((data?.skin_tribe as SkinTribe) ?? null);
-        setBirthDate(data?.birth_date ?? null);
+        setAgeGroup(data?.age_group ?? null);
         setLoading(false);
       });
   }, [user]);
@@ -92,13 +92,13 @@ export default function SkinMatch() {
   if (!tribe) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 text-center">
-        <p className="text-lg font-bold text-foreground mb-2">퀴즈를 먼저 해주세요</p>
+        <p className="text-lg font-bold text-foreground mb-2">퀴즈를 먼저 진행 해주세요</p>
         <p className="text-sm text-muted-foreground mb-6">피부족을 알아야 시술 궁합을 알 수 있어요</p>
         <Button
           className="rounded-xl h-12 px-8 font-bold bg-accent text-accent-foreground"
           onClick={() => navigate('/quiz')}
         >
-          퀴즈 시작하기
+          퀴즈 시작하기! 10초 컷! 
         </Button>
       </div>
     );
@@ -106,7 +106,7 @@ export default function SkinMatch() {
 
   const info = SKIN_TRIBE_LABELS[tribe];
   const match = MATCH_DATA[tribe];
-  const ageBracket = birthDate ? getAgeBracket(birthDate) : null;
+  const ageBracket = ageGroup ?? null;
 
   return (
     <div className="min-h-screen bg-background pb-28">
