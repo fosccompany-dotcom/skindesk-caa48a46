@@ -557,7 +557,7 @@ function PaymentHistoryTab() {
           <CreditCard className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
           <p className="text-sm font-semibold text-muted-foreground mb-1">아직 결제 기록이 없어요</p>
           <p className="text-xs text-muted-foreground/70 leading-relaxed">
-            결제 내역을 기록하면 병원별, 수단별로<br />지출 관리를 쉽게 할 수 있어요
+            지출을 기록하면 어디에 얼마를 쓰는지 보여요. 현명한 피부 투자의 첫걸음이에요 💡
           </p>
           <div className="flex items-center justify-center gap-1.5 mt-4">
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#F2C94C] shadow-md">
