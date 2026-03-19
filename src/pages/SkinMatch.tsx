@@ -61,7 +61,7 @@ export default function SkinMatch() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [tribe, setTribe] = useState<SkinTribe | null>(null);
-  const [birthDate, setBirthDate] = useState<string | null>(null);
+  const [ageGroup, setAgeGroup] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [addModalOpen, setAddModalOpen] = useState(false);
   const [parseModalOpen, setParseModalOpen] = useState(false);
