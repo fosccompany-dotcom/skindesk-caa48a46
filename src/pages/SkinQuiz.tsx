@@ -121,7 +121,7 @@ export default function SkinQuiz() {
         quiz_completed_at: new Date().toISOString(),
       };
       if (!hasBirthDate && ans.q6) {
-        updates.age_group = mapQ6ToBirthDate(ans.q6);
+        updates.age_group = (ans.q6);
       }
       const { error } = await supabase
         .from('user_profiles')
