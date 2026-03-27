@@ -793,7 +793,7 @@ const Index = () => {
           <Card key={r.id} className="border-0 shadow-sm">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    {r.treatmentName === "컨디션 기록" && r.satisfaction ?
+                    {(r.treatmentName === "컨디션 기록" || r.treatmentName === "Condition Log" || r.treatmentName === "状态记录") && r.satisfaction ?
                 <span className="text-lg">{CONDITION_OPTIONS.find((o) => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span> :
                 <Stethoscope className="h-4 w-4 text-primary" />}
                   </div>
@@ -817,7 +817,7 @@ const Index = () => {
             className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
             
                 <Plus className="h-4 w-4" />
-                <span className="text-xs font-medium">추가</span>
+                <span className="text-xs font-medium">{t("add_button")}</span>
               </button>
           }
 
@@ -829,10 +829,9 @@ const Index = () => {
           <button onClick={() => guardAction(() => setShowActionPicker(true))} className="w-full text-left">
                   <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-5 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
                     <Plus className="h-5 w-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-foreground">이 날짜에 기록이 없어요</p>
+                    <p className="text-xs font-semibold text-foreground">{t("no_record_this_date")}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
-                      탭하여 <span className="font-bold text-primary">{format(selectedDate, "M월 d일")}</span>에
-                      예약일정과 시술기록을 추가하세요
+                      {t("tap_to_add_record")}
                     </p>
                   </div>
                 </button>
@@ -848,8 +847,8 @@ const Index = () => {
                 <span className="text-sm">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">관리중인 시술</p>
-                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">개</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("managed_treatments")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -859,8 +858,8 @@ const Index = () => {
                 <span className="text-sm">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">이용중인 병원</p>
-                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">곳</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("active_clinics")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -870,8 +869,8 @@ const Index = () => {
                 <span className="text-sm">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">남은 시술 횟수</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">회</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("remaining_sessions")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -881,8 +880,8 @@ const Index = () => {
                 <span className="text-sm">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">잔여 포인트</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">원</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("remaining_points")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -894,8 +893,8 @@ const Index = () => {
           className="w-full flex items-center gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm px-4 py-3.5 text-left">
           <span className="text-2xl">📋</span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary-foreground">✨ 시술 기록 한 번에 추가하기</p>
-            <p className="text-[11px] text-primary-foreground/70">카톡·문자 붙여넣기만 하면 끝</p>
+            <p className="text-sm font-bold text-primary-foreground">{t("ai_parse_title")}</p>
+            <p className="text-[11px] text-primary-foreground/70">{t("ai_parse_desc")}</p>
           </div>
           <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
         </button>
@@ -907,13 +906,13 @@ const Index = () => {
             <div className="flex items-center justify-between px-1 mb-2.5">
               <h2 className="text-sm font-bold flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
-                최근 기록
+                {t("recent_records")}
               </h2>
               <button
               onClick={() => navigate("/calendar?tab=history")}
               className="text-[10px] text-muted-foreground flex items-center gap-0.5">
               
-                전체보기 <ChevronRight size={10} />
+                {t("view_all")} <ChevronRight size={10} />
               </button>
             </div>
             <div className="space-y-2">
@@ -949,9 +948,9 @@ const Index = () => {
         <SheetContent side="bottom" className="rounded-t-3xl px-5 pb-8 pt-4">
           <div className="mx-auto w-10 h-1 rounded-full bg-muted-foreground/20 mb-5" />
           <p className="text-center text-base font-semibold mb-1">
-            <span className="text-primary">{selectedDate ? format(selectedDate, "M월 d일") : ""}</span>을 선택하셨어요
+            <span className="text-primary">{selectedDate ? (language === "en" ? format(selectedDate, "MMM d") : format(selectedDate, "M月 d日")) : ""}</span>{t("date_selected_suffix")}
           </p>
-          <p className="text-center text-sm text-muted-foreground mb-6">무엇을 추가하시겠어요?</p>
+          <p className="text-center text-sm text-muted-foreground mb-6">{t("what_to_add")}</p>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => {
@@ -963,7 +962,7 @@ const Index = () => {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-info/10">
                 <CalendarPlus className="h-6 w-6 text-info" />
               </div>
-              <span className="text-sm font-semibold">예약 일정 추가</span>
+              <span className="text-sm font-semibold">{t("add_reservation")}</span>
             </button>
             <button
               onClick={() => {
@@ -975,7 +974,7 @@ const Index = () => {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                 <ClipboardList className="h-6 w-6 text-primary" />
               </div>
-              <span className="text-sm font-semibold">시술 내역 추가</span>
+              <span className="text-sm font-semibold">{t("add_treatment_record")}</span>
             </button>
           </div>
         </SheetContent>
@@ -1084,8 +1083,8 @@ const Index = () => {
       <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
           <div className="bg-black/70 backdrop-blur-md text-white rounded-2xl px-8 py-6 text-center space-y-2 animate-scale-in">
             <span className="text-4xl block animate-bounce">🌱</span>
-            <p className="text-sm font-semibold">첫 업그레이드를 축하해요!</p>
-            <p className="text-xs text-white/80">씨앗에서 새싹이 되었어요! 🌱</p>
+            <p className="text-sm font-semibold">{t("reward_title")}</p>
+            <p className="text-xs text-white/80">{t("reward_desc")}</p>
           </div>
         </div>
       }
