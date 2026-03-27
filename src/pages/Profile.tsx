@@ -1124,6 +1124,17 @@ const Profile = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Footer links */}
+      <div className="flex items-center justify-center gap-3 pt-4 pb-8">
+        <Link to="/terms" className="text-xs text-muted-foreground hover:underline">
+          {language === 'en' ? 'Terms of Service' : language === 'zh' ? '服务条款' : '이용약관'}
+        </Link>
+        <span className="text-xs text-muted-foreground">·</span>
+        <Link to="/privacy" className="text-xs text-muted-foreground hover:underline">
+          {language === 'en' ? 'Privacy Policy' : language === 'zh' ? '隐私政策' : '개인정보처리방침'}
+        </Link>
+      </div>
     </div>
   );
 };
