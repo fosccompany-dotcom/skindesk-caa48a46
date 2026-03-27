@@ -528,7 +528,7 @@ const Index = () => {
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-2.5 pt-3 pb-40">
+      <div className="page-content space-y-1.5 pt-3 pb-40">
 
 
         {/* ═══ Today's Condition Log ═══ */}
