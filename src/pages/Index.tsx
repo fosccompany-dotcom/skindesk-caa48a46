@@ -542,7 +542,7 @@ const Index = () => {
               {CONDITION_OPTIONS.map((opt) =>
               <button
                 key={opt.value}
-                className={cn("flex-1 flex flex-col items-center gap-0.5 rounded-xl transition-all text-center py-2",
+                className={cn("flex-1 flex flex-col items-center gap-0.5 rounded-xl transition-all text-center py-1.5",
 
                 todayCondition === opt.value ?
                 "bg-primary/10 ring-2 ring-primary/30 scale-105" :
