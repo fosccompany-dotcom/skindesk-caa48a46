@@ -533,16 +533,16 @@ const Index = () => {
 
         {/* ═══ Today's Condition Log ═══ */}
         <Card className="border-0 shadow-sm">
-          <CardContent className="p-3">
-            <p className="text-sm font-bold text-foreground mb-2">오늘의 컨디션 기록</p>
-            <p className="text-[10px] text-muted-foreground mb-2">
+          <CardContent className="px-2.5 py-2">
+            <p className="text-sm font-bold text-foreground mb-1">오늘의 컨디션 기록</p>
+            <p className="text-[10px] text-muted-foreground mb-1.5">
               {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
             </p>
-            <div className="flex items-center justify-between gap-1 mb-2">
+            <div className="flex items-center justify-between gap-1 mb-1.5">
               {CONDITION_OPTIONS.map((opt) =>
               <button
                 key={opt.value}
-                className={cn("flex-1 flex flex-col items-center gap-0.5 rounded-xl transition-all text-center py-2",
+                className={cn("flex-1 flex flex-col items-center gap-0.5 rounded-xl transition-all text-center py-1.5",
 
                 todayCondition === opt.value ?
                 "bg-primary/10 ring-2 ring-primary/30 scale-105" :
