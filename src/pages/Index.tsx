@@ -119,6 +119,9 @@ const Index = () => {
   const { cycles } = useCycles();
   const { records, loading, addRecord, updateRecord, deleteRecord } = useRecords();
   const { t, language, setLanguage } = useLanguage();
+  const dateLocale = language === "en" ? enLocale : language === "zh" ? zhLocale : koLocale;
+  const WEEKDAYS = [t("weekday_sun"), t("weekday_mon"), t("weekday_tue"), t("weekday_wed"), t("weekday_thu"), t("weekday_fri"), t("weekday_sat")];
+  const CONDITION_OPTIONS = CONDITION_KEYS.map((c) => ({ ...c, label: t(c.key) }));
   const [langOpen, setLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
