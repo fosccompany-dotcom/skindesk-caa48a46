@@ -465,11 +465,11 @@ const Index = () => {
           {/* Row 1: Nickname's Bloom Log */}
           <div className="flex items-center">
             <div className="flex-1 min-w-0">
-              <p className="text-white/60 tracking-wide text-xs font-sans font-extrabold">It's ​Blooming day! </p>
+              <p className="text-white/60 tracking-wide text-xs font-sans font-extrabold">{t("blooming_day")} </p>
               <h1
                 className="text-lg font-bold tracking-tight leading-tight text-white"
                 style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-                {nickname || "회원"}님의 <span className="text-[hsl(var(--accent))]">Bloom Log</span>
+                {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "회원")}{t("name_bloom_log")} <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
             </div>
           </div>
@@ -486,33 +486,33 @@ const Index = () => {
                 side="bottom"
                 align="start"
                 className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
-                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
+                <p className="text-[11px] font-semibold mb-2 text-white/80">{t("my_bloom")}</p>
                 <div className="space-y-1.5 text-[11px]">
                   <p className="text-[#F2C94C] font-semibold">
-                    현재: {bloom.emoji} {bloom.name} ({activeDays}건)
+                    {t("current_label")} {bloom.emoji} {bloom.name} ({activeDays}{t("unit_count")})
                   </p>
                   {bloom.nextMilestone !== null &&
                   <p className="text-white/90">
-                      다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
+                      {t("next_label")} {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}{t("unit_count")})
                     </p>
                   }
-                  {bloom.nextMilestone === null && <p className="text-white/90">✨ 최고 등급 달성!</p>}
+                  {bloom.nextMilestone === null && <p className="text-white/90">{t("max_rank_achieved")}</p>}
                 </div>
               </PopoverContent>
             </Popover>
             <div className="flex-1 min-w-0 space-y-1">
               {isWilting ?
-              <p className="text-xs font-semibold text-white/70">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p> :
+              <p className="text-xs font-semibold text-white/70">{t("wilting_message")}</p> :
               bloom.stage === 0 ?
-              <p className="text-xs font-semibold text-white">첫번째 기록 완료하고 새싹이로 업그레이드 해요!</p> :
+              <p className="text-xs font-semibold text-white">{t("first_record_upgrade")}</p> :
               remaining > 0 ?
               <>
-              <p className="text-xs text-white/70">기록이 쌓일수록 내 피부가 보여요 🌱</p>
+              <p className="text-xs text-white/70">{t("records_grow_skin")}</p>
               <p className="text-xs font-semibold text-white">
-                  🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성!
+                  🌸 {remaining} {t("records_until_next")} {STAGES[bloom.stage + 1]?.name || "Bloom"} {t("bloom_complete")}
                 </p>
               </> :
-              <p className="text-xs font-semibold text-white">✨ 최고 단계 달성!!!</p>
+              <p className="text-xs font-semibold text-white">{t("max_stage_achieved")}</p>
               }
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/20">
                 <div
