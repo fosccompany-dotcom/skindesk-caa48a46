@@ -837,34 +837,50 @@ const Index = () => {
           </div>
         }
 
-        {/* ═══ Stat Cards — compact 1×4 ═══ */}
-        <div className="grid grid-cols-4 gap-2">
+        {/* ═══ Stat Cards — 2×2 compact ═══ */}
+        <div className="grid grid-cols-2 gap-2">
           <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="p-2.5 flex flex-col items-center text-center gap-1">
-              <span className="text-base">💉</span>
-              <p className="text-[9px] text-muted-foreground leading-tight">관리시술</p>
-              <p className="text-base font-black text-foreground leading-none">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}</p>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">💉</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] text-muted-foreground">관리중인 시술</p>
+                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">개</span></p>
+              </div>
             </CardContent>
           </Card>
           <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="p-2.5 flex flex-col items-center text-center gap-1">
-              <span className="text-base">🏥</span>
-              <p className="text-[9px] text-muted-foreground leading-tight">이용병원</p>
-              <p className="text-base font-black text-foreground leading-none">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}</p>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">🏥</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] text-muted-foreground">이용중인 병원</p>
+                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">곳</span></p>
+              </div>
             </CardContent>
           </Card>
           <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="p-2.5 flex flex-col items-center text-center gap-1">
-              <span className="text-base">🎟️</span>
-              <p className="text-[9px] text-muted-foreground leading-tight">남은횟수</p>
-              <p className="text-base font-black text-foreground leading-none">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}</p>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">🎟️</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] text-muted-foreground">남은 시술 횟수</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">회</span></p>
+              </div>
             </CardContent>
           </Card>
           <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=points")}>
-            <CardContent className="p-2.5 flex flex-col items-center text-center gap-1">
-              <span className="text-base">💰</span>
-              <p className="text-[9px] text-muted-foreground leading-tight">포인트</p>
-              <p className="text-base font-black text-foreground leading-none">{totalBalance > 0 ? `${Math.floor(totalBalance / 10000)}만` : <span className="opacity-40">0</span>}</p>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">💰</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] text-muted-foreground">잔여 포인트</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">원</span></p>
+              </div>
             </CardContent>
           </Card>
         </div>
