@@ -886,7 +886,6 @@ const Index = () => {
         </div>
 
         {/* ═══ AI 시술 기록 배너 (로그인 유저만) ═══ */}
-        {(user || window.location.hostname.includes('lovable')) &&
         <button
           onClick={() => setParseModalOpen(true)}
           className="w-full flex items-center gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm px-4 py-3.5 text-left">
