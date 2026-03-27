@@ -896,7 +896,6 @@ const Index = () => {
           </div>
           <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
         </button>
-        }
 
 
         {/* ═══ Recent Records ═══ */}
