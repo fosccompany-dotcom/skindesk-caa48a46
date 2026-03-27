@@ -782,7 +782,7 @@ const Index = () => {
                     </p>
                   </div>
                   <span className="text-[10px] font-medium text-info bg-info/10 px-2 py-0.5 rounded-full shrink-0">
-                    예약
+                    {t("reservation_label")}
                   </span>
                 </CardContent>
               </Card>
