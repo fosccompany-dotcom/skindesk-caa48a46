@@ -142,12 +142,41 @@
     -webkit-user-select: text;
   }
 
+  /* 모바일: 스크롤바 숨김 */
   * {
     scrollbar-width: none;
     -ms-overflow-style: none;
   }
   *::-webkit-scrollbar {
     display: none;
+  }
+
+  /* PC(768px+): 얇은 스크롤바 표시 + 드래그 허용 */
+  @media (min-width: 768px) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: hsl(var(--border)) transparent;
+      -ms-overflow-style: auto;
+    }
+    *::-webkit-scrollbar {
+      display: block;
+      width: 6px;
+    }
+    *::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    *::-webkit-scrollbar-thumb {
+      background-color: hsl(var(--muted-foreground) / 0.3);
+      border-radius: 3px;
+    }
+    *::-webkit-scrollbar-thumb:hover {
+      background-color: hsl(var(--muted-foreground) / 0.5);
+    }
+
+    body {
+      user-select: text;
+      -webkit-user-select: text;
+    }
   }
 }
 
