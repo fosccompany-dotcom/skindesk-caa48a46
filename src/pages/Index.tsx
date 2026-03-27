@@ -838,7 +838,7 @@ const Index = () => {
         }
 
         {/* ═══ Stat Cards — 2×2 compact ═══ */}
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-2 gap-2 text-base">
           <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
             <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
               <div className="w-8 h-8 rounded-lg bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
