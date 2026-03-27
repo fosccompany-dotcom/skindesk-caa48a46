@@ -73,7 +73,7 @@ interface Reservation {
 }
 
 
-const TODAY = new Date("2026-03-10");
+const TODAY = new Date();
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
 const CONDITION_OPTIONS = [
