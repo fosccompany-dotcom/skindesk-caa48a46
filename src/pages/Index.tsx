@@ -904,55 +904,48 @@ const Index = () => {
         <div>
           {records.length > 0 ? (
             <>
-            <div className="flex items-center justify-between px-1 mb-2.5">
-              <h2 className="text-sm font-bold flex items-center gap-1.5">
-                <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
-                {t("recent_records")}
-              </h2>
-              <button
-              onClick={() => navigate("/calendar?tab=history")}
-              className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-                {t("view_all")} <ChevronRight size={10} />
-              </button>
-            </div>
-            <div className="flex items-center justify-between px-1 mb-2.5">
-              <h2 className="text-sm font-bold flex items-center gap-1.5">
-                <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
-                {t("recent_records")}
-              </h2>
-              <button
-              onClick={() => navigate("/calendar?tab=history")}
-              className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-              
-                {t("view_all")} <ChevronRight size={10} />
-              </button>
-            </div>
-            <div className="space-y-2">
-              {records.slice(0, 3).map((r) =>
-            <Card key={r.id} className="glass-card">
-                  <CardContent className="p-3.5">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">
-                          {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
-                        </p>
-                        {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
+              <div className="flex items-center justify-between px-1 mb-2.5">
+                <h2 className="text-sm font-bold flex items-center gap-1.5">
+                  <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
+                  {t("recent_records")}
+                </h2>
+                <button
+                  onClick={() => navigate("/calendar?tab=history")}
+                  className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  {t("view_all")} <ChevronRight size={10} />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {records.slice(0, 3).map((r) =>
+                  <Card key={r.id} className="glass-card">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                            {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
+                          </p>
+                          {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          {r.satisfaction &&
+                            <span className="text-xs text-[hsl(var(--accent))] font-medium">
+                              {"★".repeat(r.satisfaction)}
+                            </span>
+                          }
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        {r.satisfaction &&
-                    <span className="text-xs text-[hsl(var(--accent))] font-medium">
-                            {"★".repeat(r.satisfaction)}
-                          </span>
-                    }
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-            )}
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              아직 기록이 없어요. 첫 번째 시술을 남겨봐요 🌸
             </div>
-          </div>
-        }
+          )}
+        </div>
       </div>
 
       {/* Action Picker Sheet for home calendar */}
