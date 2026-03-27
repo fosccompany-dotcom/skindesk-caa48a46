@@ -848,7 +848,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("managed_treatments")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -859,7 +859,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("active_clinics")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -870,7 +870,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("remaining_sessions")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -881,7 +881,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("remaining_points")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -901,46 +901,51 @@ const Index = () => {
 
 
         {/* ═══ Recent Records ═══ */}
-        {records.length > 0 &&
         <div>
-            <div className="flex items-center justify-between px-1 mb-2.5">
-              <h2 className="text-sm font-bold flex items-center gap-1.5">
-                <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
-                {t("recent_records")}
-              </h2>
-              <button
-              onClick={() => navigate("/calendar?tab=history")}
-              className="text-[10px] text-muted-foreground flex items-center gap-0.5">
-              
-                {t("view_all")} <ChevronRight size={10} />
-              </button>
-            </div>
-            <div className="space-y-2">
-              {records.slice(0, 3).map((r) =>
-            <Card key={r.id} className="glass-card">
-                  <CardContent className="p-3.5">
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">
-                          {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
-                        </p>
-                        {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
+          {records.length > 0 ? (
+            <>
+              <div className="flex items-center justify-between px-1 mb-2.5">
+                <h2 className="text-sm font-bold flex items-center gap-1.5">
+                  <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
+                  {t("recent_records")}
+                </h2>
+                <button
+                  onClick={() => navigate("/calendar?tab=history")}
+                  className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                  {t("view_all")} <ChevronRight size={10} />
+                </button>
+              </div>
+              <div className="space-y-2">
+                {records.slice(0, 3).map((r) =>
+                  <Card key={r.id} className="glass-card">
+                    <CardContent className="p-3.5">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="flex-1 min-w-0">
+                          <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                            {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
+                          </p>
+                          {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
+                        </div>
+                        <div className="flex items-center gap-1 shrink-0">
+                          {r.satisfaction &&
+                            <span className="text-xs text-[hsl(var(--accent))] font-medium">
+                              {"★".repeat(r.satisfaction)}
+                            </span>
+                          }
+                        </div>
                       </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        {r.satisfaction &&
-                    <span className="text-xs text-[hsl(var(--accent))] font-medium">
-                            {"★".repeat(r.satisfaction)}
-                          </span>
-                    }
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-            )}
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8 text-sm text-muted-foreground">
+              아직 기록이 없어요. 첫 번째 시술을 남겨봐요 🌸
             </div>
-          </div>
-        }
+          )}
+        </div>
       </div>
 
       {/* Action Picker Sheet for home calendar */}
