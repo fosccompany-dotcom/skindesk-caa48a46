@@ -619,7 +619,7 @@ const Index = () => {
                       <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() - 1))} className="p-1 rounded hover:bg-muted">
                         <ChevronLeft size={14} />
                       </button>
-                      <span className="text-sm font-bold">{calendarMonth.getFullYear()}년</span>
+                      <span className="text-sm font-bold">{calendarMonth.getFullYear()}{t("year_suffix")}</span>
                       <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() + 1))} className="p-1 rounded hover:bg-muted">
                         <ChevronRight size={14} />
                       </button>
@@ -636,7 +636,7 @@ const Index = () => {
                         "py-1.5 rounded-lg text-xs font-medium transition-colors",
                         calendarMonth.getMonth() === i ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"
                       )}>
-                          {i + 1}월
+                          {language === "en" ? format(new Date(2000, i, 1), "MMM") : `${i + 1}${t("month_suffix")}`}
                         </button>
                     )}
                     </div>
