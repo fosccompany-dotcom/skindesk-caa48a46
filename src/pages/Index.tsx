@@ -537,9 +537,9 @@ const Index = () => {
         {/* ═══ Today's Condition Log ═══ */}
         <Card className="border-0 shadow-sm">
           <CardContent className="px-2.5 py-2">
-            <p className="text-sm font-bold text-foreground mb-1">오늘의 컨디션 기록</p>
+            <p className="text-sm font-bold text-foreground mb-1">{t("today_condition")}</p>
             <p className="text-[10px] text-muted-foreground mb-1.5">
-              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
+              {language === "en" ? format(TODAY, "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(TODAY, "M月d日 (EEEE)", { locale: dateLocale }) : format(TODAY, "M월 d일 (EEEE)", { locale: dateLocale })} · {t("condition_question")}
             </p>
             <div className="flex items-center justify-between gap-1 mb-1.5">
               {CONDITION_OPTIONS.map((opt) =>
@@ -610,7 +610,7 @@ const Index = () => {
                 <button
                   onClick={() => setYearMonthPickerOpen((v) => !v)}
                   className="text-xs font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
-                  {format(calendarMonth, "yyyy년 M월", { locale: ko })}
+                  {language === "en" ? format(calendarMonth, "MMMM yyyy", { locale: dateLocale }) : language === "zh" ? `${calendarMonth.getFullYear()}年 ${calendarMonth.getMonth() + 1}月` : format(calendarMonth, "yyyy년 M월", { locale: dateLocale })}
                   <ChevronDown size={10} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
                 </button>
                 {yearMonthPickerOpen &&
@@ -723,7 +723,7 @@ const Index = () => {
         <div className="space-y-2">
             <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1">
               <CalendarDays className="h-3.5 w-3.5 text-primary" />
-              {format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: ko })}
+              {language === "en" ? format(new Date(activeSelectedDate + "T00:00:00"), "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(new Date(activeSelectedDate + "T00:00:00"), "M月d日 (EEEE)", { locale: dateLocale }) : format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: dateLocale })}
             </p>
 
             {/* Expiry reminders */}
