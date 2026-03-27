@@ -848,7 +848,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("managed_treatments")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -859,7 +859,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("active_clinics")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -870,7 +870,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("remaining_sessions")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -881,7 +881,7 @@ const Index = () => {
               </div>
               <div className="min-w-0">
                 <p className="text-[9px] text-muted-foreground">{t("remaining_points")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -901,8 +901,20 @@ const Index = () => {
 
 
         {/* ═══ Recent Records ═══ */}
-        {records.length > 0 &&
         <div>
+          {records.length > 0 ? (
+            <>
+            <div className="flex items-center justify-between px-1 mb-2.5">
+              <h2 className="text-sm font-bold flex items-center gap-1.5">
+                <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
+                {t("recent_records")}
+              </h2>
+              <button
+              onClick={() => navigate("/calendar?tab=history")}
+              className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                {t("view_all")} <ChevronRight size={10} />
+              </button>
+            </div>
             <div className="flex items-center justify-between px-1 mb-2.5">
               <h2 className="text-sm font-bold flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
