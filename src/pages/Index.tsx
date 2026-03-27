@@ -596,43 +596,31 @@ const Index = () => {
 
         {/* ═══ Mini Calendar (moved to top) ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
-          <CardContent className="p-3">
-            <div className="flex items-center justify-between mb-3">
+          <CardContent className="px-3 py-2.5">
+            <div className="flex items-center justify-between mb-2">
               <button
                 onClick={() => setCalendarMonth((prev) => subMonths(prev, 1))}
-                className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-                
-                <ChevronLeft size={16} className="text-muted-foreground" />
+                className="p-1 rounded-lg hover:bg-muted transition-colors">
+                <ChevronLeft size={14} className="text-muted-foreground" />
               </button>
-
               <div className="relative">
                 <button
                   onClick={() => setYearMonthPickerOpen((v) => !v)}
-                  className="text-sm font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
-                  
+                  className="text-xs font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
                   {format(calendarMonth, "yyyy년 M월", { locale: ko })}
-                  <ChevronDown size={12} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
+                  <ChevronDown size={10} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
                 </button>
-
                 {yearMonthPickerOpen &&
                 <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-lg p-3 w-[260px]">
-                    {/* Year selector */}
                     <div className="flex items-center justify-between mb-3">
-                      <button
-                      onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() - 1))}
-                      className="p-1 rounded hover:bg-muted">
-                      
+                      <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() - 1))} className="p-1 rounded hover:bg-muted">
                         <ChevronLeft size={14} />
                       </button>
                       <span className="text-sm font-bold">{calendarMonth.getFullYear()}년</span>
-                      <button
-                      onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() + 1))}
-                      className="p-1 rounded hover:bg-muted">
-                      
+                      <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() + 1))} className="p-1 rounded hover:bg-muted">
                         <ChevronRight size={14} />
                       </button>
                     </div>
-                    {/* Month grid */}
                     <div className="grid grid-cols-4 gap-1.5">
                       {Array.from({ length: 12 }, (_, i) =>
                     <button
@@ -643,11 +631,8 @@ const Index = () => {
                       }}
                       className={cn(
                         "py-1.5 rounded-lg text-xs font-medium transition-colors",
-                        calendarMonth.getMonth() === i ?
-                        "bg-primary text-primary-foreground" :
-                        "hover:bg-muted text-foreground"
+                        calendarMonth.getMonth() === i ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"
                       )}>
-                      
                           {i + 1}월
                         </button>
                     )}
@@ -655,18 +640,16 @@ const Index = () => {
                   </div>
                 }
               </div>
-
               <button
                 onClick={() => setCalendarMonth((prev) => addMonths(prev, 1))}
-                className="p-1.5 rounded-lg hover:bg-muted transition-colors">
-                
-                <ChevronRight size={16} className="text-muted-foreground" />
+                className="p-1 rounded-lg hover:bg-muted transition-colors">
+                <ChevronRight size={14} className="text-muted-foreground" />
               </button>
             </div>
 
-            <div className="grid grid-cols-7 mb-1">
+            <div className="grid grid-cols-7 mb-0.5">
               {WEEKDAYS.map((d) =>
-              <div key={d} className="text-center text-[10px] text-muted-foreground font-medium py-1">
+              <div key={d} className="text-center text-[9px] text-muted-foreground font-medium py-0.5">
                   {d}
                 </div>
               )}
@@ -682,7 +665,6 @@ const Index = () => {
                 const cycleLabel = cycleDateMap.get(dateStr);
                 const hasExpiry = expiryDateSet.has(dateStr) || isEmpty && dateStr === exampleExpiryDate;
                 const isSelected = activeSelectedDate === dateStr;
-
                 const hasAnyData = hasRecord || hasReservation;
                 let longPressTimer: ReturnType<typeof setTimeout> | null = null;
 
@@ -707,21 +689,19 @@ const Index = () => {
                     onPointerUp={() => {if (longPressTimer) clearTimeout(longPressTimer);}}
                     onPointerLeave={() => {if (longPressTimer) clearTimeout(longPressTimer);}}
                     onContextMenu={(e) => {if (hasAnyData && inMonth) e.preventDefault();}}
-                    className={cn("flex flex-col items-center py-1 transition-colors", !inMonth && "opacity-30")}>
-                    
+                    className={cn("flex flex-col items-center py-0.5 transition-colors", !inMonth && "opacity-30")}>
                     <span
                       className={cn(
-                        "w-7 h-7 flex items-center justify-center rounded-full text-xs transition-all",
+                        "w-6 h-6 flex items-center justify-center rounded-full text-[11px] transition-all",
                         isSelected && "bg-primary text-primary-foreground font-bold",
                         !isSelected && isToday2 && "bg-primary/20 text-primary font-semibold",
                         !isSelected && hasRecord && !isToday2 && "bg-[#FF7F7F]/40",
                         !isSelected && hasExpiry && !isToday2 && !hasRecord && "bg-[hsl(var(--destructive))]/15",
                         !isSelected && cycleLabel && !isToday2 && !hasRecord && !hasExpiry && "ring-1 ring-primary/30"
                       )}>
-                      
                       {format(day, "d")}
                     </span>
-                    <div className="flex gap-0.5 mt-0.5 h-1.5 items-center">
+                    <div className="flex gap-0.5 mt-px h-1 items-center">
                       {hasRecord && <div className="w-1 h-1 rounded-full bg-[#C9A96E]" />}
                       {hasReservation && <div className="w-1 h-1 rounded-full bg-info" />}
                       {hasExpiry && <div className="w-1 h-1 rounded-full bg-destructive" />}
@@ -730,7 +710,6 @@ const Index = () => {
                       }
                     </div>
                   </button>);
-
               })}
             </div>
           </CardContent>
