@@ -426,7 +426,7 @@ const Index = () => {
   if (loading) return <FlowerLoader />;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
       {/* ── HEADER with logo background ── */}
       <div className="relative safe-top overflow-visible">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
