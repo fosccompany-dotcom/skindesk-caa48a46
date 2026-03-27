@@ -531,70 +531,128 @@ const Index = () => {
       <div className="page-content space-y-1.5 pt-3 pb-40">
 
 
-        {/* ═══ Today's Condition Log ═══ */}
-        <Card className="border-0 shadow-sm">
-          <CardContent className="p-3">
-            <p className="text-sm font-bold text-foreground mb-2">오늘의 컨디션 기록</p>
-            <p className="text-[10px] text-muted-foreground mb-2">
-              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
-            </p>
-            <div className="flex items-center justify-between gap-1 mb-2">
-              {CONDITION_OPTIONS.map((opt) =>
-              <button
-                key={opt.value}
-                className={cn("flex-1 flex flex-col items-center gap-0.5 rounded-xl transition-all text-center py-2",
-
-                todayCondition === opt.value ?
-                "bg-primary/10 ring-2 ring-primary/30 scale-105" :
-                "bg-muted/50 hover:bg-muted"
+        {/* ═══ Today's Condition — compact strip ═══ */}
+        <Card className="border-0 shadow-none bg-muted/40">
+          <CardContent className="px-3 py-2">
+            <div className="flex items-center gap-2">
+              <p className="text-[11px] font-semibold text-muted-foreground whitespace-nowrap shrink-0">오늘 컨디션</p>
+              <div className="flex items-center gap-0.5 flex-1 justify-end">
+                {CONDITION_OPTIONS.map((opt) =>
+                <button
+                  key={opt.value}
+                  className={cn("flex flex-col items-center rounded-lg transition-all px-1.5 py-1",
+                  todayCondition === opt.value ?
+                  "bg-primary/15 ring-1 ring-primary/30 scale-110" :
+                  "hover:bg-muted"
+                  )}
+                  onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}>
+                    <span className="text-base leading-none">{opt.emoji}</span>
+                    <span className="text-[8px] font-medium text-muted-foreground mt-0.5">{opt.label}</span>
+                  </button>
                 )}
-                onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}>
-                
-                  <span className="text-xl">{opt.emoji}</span>
-                  <span className="text-[10px] font-medium text-foreground">{opt.label}</span>
-                </button>
-              )}
+              </div>
             </div>
             {todayCondition &&
-            <div className="space-y-2">
-                <textarea
-                className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
-                placeholder="오늘 피부 상태 메모 (선택)"
-                rows={2}
-                value={conditionMemo}
-                onChange={(e) => setConditionMemo(e.target.value)} />
-              
+            <div className="flex items-center gap-2 mt-2">
+                <input
+                  type="text"
+                  className="flex-1 text-xs bg-background border border-border/50 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-primary/30"
+                  placeholder="메모 (선택)"
+                  value={conditionMemo}
+                  onChange={(e) => setConditionMemo(e.target.value)} />
                 <button
-                className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
-                onClick={async () => {
-                  await addRecord({
-                    date: format(TODAY, "yyyy-MM-dd"),
-                    treatmentName: "컨디션 기록",
-                    treatmentId: undefined,
-                    packageId: "",
-                    skinLayer: "epidermis",
-                    bodyArea: "face",
-                    clinic: "-",
-                    satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
-                    memo:
-                    conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                    notes: "일일 컨디션 기록"
-                  });
-                  setTodayCondition(null);
-                  setConditionMemo("");
-                  setShowReward(true);
-                  setTimeout(() => setShowReward(false), 2500);
-                }}>
-                
-                  컨디션 기록하기
-                </button>
+                  className="shrink-0 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-[11px] font-bold active:scale-[0.97] transition-transform"
+                  onClick={async () => {
+                    await addRecord({
+                      date: format(TODAY, "yyyy-MM-dd"),
+                      treatmentName: "컨디션 기록",
+                      treatmentId: undefined,
+                      packageId: "",
+                      skinLayer: "epidermis",
+                      bodyArea: "face",
+                      clinic: "-",
+                      satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
+                      memo:
+                      conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
+                      notes: "일일 컨디션 기록"
+                    });
+                    setTodayCondition(null);
+                    setConditionMemo("");
+                    setShowReward(true);
+                    setTimeout(() => setShowReward(false), 2500);
+                  }}>
+                    기록
+                  </button>
               </div>
             }
           </CardContent>
         </Card>
 
+        {/* ═══ AI 시술 기록 배너 (로그인 유저만) — 핵심 CTA ═══ */}
+        {(user || window.location.hostname.includes('lovable')) &&
+        <button
+          onClick={() => setParseModalOpen(true)}
+          className="w-full flex items-center gap-3 rounded-2xl bg-primary hover:bg-primary/90 transition-colors shadow-md px-4 py-4 text-left">
+          <div className="w-10 h-10 rounded-xl bg-primary-foreground/20 flex items-center justify-center shrink-0">
+            <span className="text-xl">📋</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[13px] font-bold text-primary-foreground">✨ 시술 기록 한 번에 추가하기</p>
+            <p className="text-[11px] text-primary-foreground/70 mt-0.5">카톡·문자 붙여넣기만 하면 끝</p>
+          </div>
+          <ChevronRight size={18} className="ml-auto text-primary-foreground/50 shrink-0" />
+        </button>
+        }
 
-        {/* ═══ Mini Calendar (moved to top) ═══ */}
+        {/* ═══ Stat Cards — 2×2 prominent ═══ */}
+        <div className="grid grid-cols-2 gap-2">
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
+            <CardContent className="px-3.5 py-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
+                <span className="text-lg">💉</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground leading-tight">관리중인 시술</p>
+                <p className="text-base font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[11px] font-semibold text-muted-foreground ml-0.5">개</span></p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
+            <CardContent className="px-3.5 py-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-lg">🏥</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground leading-tight">이용중인 병원</p>
+                <p className="text-base font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[11px] font-semibold text-muted-foreground ml-0.5">곳</span></p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
+            <CardContent className="px-3.5 py-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-lg">🎟️</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground leading-tight">남은 시술 횟수</p>
+                <p className="text-base font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[11px] font-semibold text-muted-foreground ml-0.5">회</span></p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=points")}>
+            <CardContent className="px-3.5 py-3 flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-lg">💰</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] text-muted-foreground leading-tight">잔여 포인트</p>
+                <p className="text-base font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[11px] font-semibold text-muted-foreground ml-0.5">원</span></p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* ═══ Mini Calendar ═══ */}
         <Card className="border-0 shadow-sm overflow-hidden">
           <CardContent className="px-3 py-2.5">
             <div className="flex items-center justify-between mb-2">
@@ -714,190 +772,6 @@ const Index = () => {
             </div>
           </CardContent>
         </Card>
-
-        {/* ═══ Selected Date Info ═══ */}
-        {activeSelectedDate &&
-        <div className="space-y-2">
-            <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1">
-              <CalendarDays className="h-3.5 w-3.5 text-primary" />
-              {format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: ko })}
-            </p>
-
-            {/* Expiry reminders */}
-            {(expiryByDate[activeSelectedDate] || []).map((ev, idx) =>
-          <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
-                    <span className="text-base">⏰</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{ev.name}</p>
-                    <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {ev.expiryDate}에 유효기간 만료 (D-{ev.daysLeft})
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-          )}
-
-            {/* Example expiry for empty state */}
-            {isEmpty && activeSelectedDate === exampleExpiryDate &&
-          <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
-                    <span className="text-base">⏰</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">시술권 유효기간이 곧 끝나요!</p>
-                    <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {format(addDays(TODAY, 8), "M월 d일")}에 만료 예정 (예시)
-                    </p>
-                  </div>
-                  <span className="text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0">
-                    예시
-                  </span>
-                </CardContent>
-              </Card>
-          }
-
-            {/* Reservations */}
-            {selectedReservations.map((res) =>
-          <Card
-            key={res.id}
-            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => setEditingReservation(res)}>
-            
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
-                    <CalendarPlus className="h-4 w-4 text-info" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{res.treatment_name}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
-                      {res.clinic}
-                      {res.time ? ` · ${res.time}` : ""}
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-medium text-info bg-info/10 px-2 py-0.5 rounded-full shrink-0">
-                    예약
-                  </span>
-                </CardContent>
-              </Card>
-          )}
-
-            {/* Treatment records */}
-            {selectedRecords.map((r) =>
-          <Card key={r.id} className="border-0 shadow-sm">
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    {r.treatmentName === "컨디션 기록" && r.satisfaction ?
-                <span className="text-lg">{CONDITION_OPTIONS.find((o) => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span> :
-                <Stethoscope className="h-4 w-4 text-primary" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
-                  </div>
-                  {r.satisfaction &&
-              <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
-                      {"★".repeat(r.satisfaction)}
-                    </span>
-              }
-                </CardContent>
-              </Card>
-          )}
-
-            {/* Add button when there are existing items */}
-            {hasSelectedInfo &&
-          <button
-            onClick={() => guardAction(() => setShowActionPicker(true))}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
-            
-                <Plus className="h-4 w-4" />
-                <span className="text-xs font-medium">추가</span>
-              </button>
-          }
-
-            {/* Empty state for selected date */}
-            {!hasSelectedInfo &&
-          selectedDate &&
-          !expiryByDate[activeSelectedDate]?.length &&
-          !(isEmpty && activeSelectedDate === exampleExpiryDate) &&
-          <button onClick={() => guardAction(() => setShowActionPicker(true))} className="w-full text-left">
-                  <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-5 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
-                    <Plus className="h-5 w-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-foreground">이 날짜에 기록이 없어요</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      탭하여 <span className="font-bold text-primary">{format(selectedDate, "M월 d일")}</span>에
-                      예약일정과 시술기록을 추가하세요
-                    </p>
-                  </div>
-                </button>
-          }
-          </div>
-        }
-
-        {/* ═══ Stat Cards — 2×2 compact ═══ */}
-        <div className="grid grid-cols-2 gap-2">
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">💉</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">관리중인 시술</p>
-                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">개</span></p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">🏥</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">이용중인 병원</p>
-                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">곳</span></p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">🎟️</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">남은 시술 횟수</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">회</span></p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=points")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">💰</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">잔여 포인트</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">원</span></p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* ═══ AI 시술 기록 배너 (로그인 유저만) ═══ */}
-        {(user || window.location.hostname.includes('lovable')) &&
-        <button
-          onClick={() => setParseModalOpen(true)}
-          className="w-full flex items-center gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm px-4 py-3.5 text-left">
-          <span className="text-2xl">📋</span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary-foreground">✨ 시술 기록 한 번에 추가하기</p>
-            <p className="text-[11px] text-primary-foreground/70">카톡·문자 붙여넣기만 하면 끝</p>
-          </div>
-          <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
-        </button>
-        }
 
 
         {/* ═══ Recent Records ═══ */}
