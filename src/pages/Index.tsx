@@ -45,7 +45,9 @@ import {
   setMonth,
   setYear } from
 "date-fns";
-import { ko } from "date-fns/locale";
+import { ko as koLocale } from "date-fns/locale";
+import { enUS as enLocale } from "date-fns/locale";
+import { zhCN as zhLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import AddTreatmentModal from "@/components/AddTreatmentModal";
 import AddReservationModal from "@/components/AddReservationModal";
@@ -74,14 +76,12 @@ interface Reservation {
 
 
 const TODAY = new Date();
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
-const CONDITION_OPTIONS = [
-{ emoji: "🏭", label: "기름", value: 5 },
-{ emoji: "🌊", label: "촉촉", value: 4 },
-{ emoji: "🌤️", label: "맑음", value: 3 },
-{ emoji: "🌵", label: "건조", value: 2 },
-{ emoji: "🏜️", label: "사막", value: 1 }];
+const CONDITION_KEYS = [
+{ emoji: "🏭", key: "condition_oily" as const, value: 5 },
+{ emoji: "🌊", key: "condition_moist" as const, value: 4 },
+{ emoji: "🌤️", key: "condition_clear" as const, value: 3 },
+{ emoji: "🌵", key: "condition_dry" as const, value: 2 },
+{ emoji: "🏜️", key: "condition_desert" as const, value: 1 }];
 
 
 function getCycleStatus(cycle: TreatmentCycle) {
