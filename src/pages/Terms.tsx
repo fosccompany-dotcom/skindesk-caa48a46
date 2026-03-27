@@ -34,7 +34,7 @@ const termsContent = {
         heading: '제6조 (준거법 및 관할)',
         body: `본 약관은 대한민국 법률에 따라 해석되며, 분쟁 발생 시 서울중앙지방법원을 전속 관할 법원으로 합니다.
 
-문의: fosccompany@gmail.com`,
+문의: tech@82edit.com`,
       },
     ],
   },
@@ -69,7 +69,7 @@ The Company does not guarantee the accuracy of information entered by users.`,
         heading: 'Article 6 (Governing Law)',
         body: `These Terms are governed by the laws of the Republic of Korea. Any disputes shall be subject to the exclusive jurisdiction of the Seoul Central District Court.
 
-Contact: fosccompany@gmail.com`,
+Contact: tech@82edit.com`,
       },
     ],
   },
@@ -104,7 +104,7 @@ Contact: fosccompany@gmail.com`,
         heading: '第六条（适用法律）',
         body: `本条款依照大韩民国法律解释，发生纠纷时以首尔中央地方法院为专属管辖法院。
 
-联系方式：fosccompany@gmail.com`,
+联系方式：tech@82edit.com`,
       },
     ],
   },
