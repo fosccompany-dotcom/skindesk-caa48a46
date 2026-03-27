@@ -562,7 +562,7 @@ const Index = () => {
             <div className="space-y-2">
                 <textarea
                 className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
-                placeholder="오늘 피부 상태 메모 (선택)"
+                placeholder={t("condition_memo_placeholder")}
                 rows={2}
                 value={conditionMemo}
                 onChange={(e) => setConditionMemo(e.target.value)} />
@@ -572,7 +572,7 @@ const Index = () => {
                 onClick={async () => {
                   await addRecord({
                     date: format(TODAY, "yyyy-MM-dd"),
-                    treatmentName: "컨디션 기록",
+                    treatmentName: t("condition_record_name"),
                     treatmentId: undefined,
                     packageId: "",
                     skinLayer: "epidermis",
@@ -580,8 +580,8 @@ const Index = () => {
                     clinic: "-",
                     satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
                     memo:
-                    conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                    notes: "일일 컨디션 기록"
+                    conditionMemo || `${t("condition_prefix")} ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
+                    notes: t("daily_condition_note")
                   });
                   setTodayCondition(null);
                   setConditionMemo("");
@@ -589,7 +589,7 @@ const Index = () => {
                   setTimeout(() => setShowReward(false), 2500);
                 }}>
                 
-                  컨디션 기록하기
+                  {t("record_condition")}
                 </button>
               </div>
             }
