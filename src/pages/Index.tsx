@@ -736,7 +736,7 @@ const Index = () => {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{ev.name}</p>
                     <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {ev.expiryDate}에 유효기간 만료 (D-{ev.daysLeft})
+                      {ev.expiryDate}{t("expiry_on_date")} (D-{ev.daysLeft})
                     </p>
                   </div>
                 </CardContent>
@@ -751,13 +751,13 @@ const Index = () => {
                     <span className="text-base">⏰</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">시술권 유효기간이 곧 끝나요!</p>
+                    <p className="text-sm font-semibold truncate">{t("expiry_soon_title")}</p>
                     <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {format(addDays(TODAY, 8), "M월 d일")}에 만료 예정 (예시)
+                      {language === "en" ? format(addDays(TODAY, 8), "MMM d") : format(addDays(TODAY, 8), "M月 d日")}{t("expiry_example_suffix")}
                     </p>
                   </div>
                   <span className="text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0">
-                    예시
+                    {t("example_label")}
                   </span>
                 </CardContent>
               </Card>
