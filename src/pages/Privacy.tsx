@@ -38,7 +38,7 @@ Anthropic Inc. — 영수증 AI 파싱 선택 기능 (처리 후 즉시 삭제)`
       {
         heading: '6. 사용자 권리',
         body: `열람·수정·삭제·처리정지 요청 가능.
-삭제 요청: 마이페이지 → 탈퇴 또는 fosccompany@gmail.com (5영업일 이내 처리)`,
+삭제 요청: 마이페이지 → 탈퇴 또는 tech@82edit.com (5영업일 이내 처리)`,
       },
       {
         heading: '7. 개인정보 보호 조치',
@@ -50,7 +50,7 @@ Anthropic Inc. — 영수증 AI 파싱 선택 기능 (처리 후 즉시 삭제)`
       },
       {
         heading: '9. 개인정보 보호책임자',
-        body: 'FOSC Company / fosccompany@gmail.com / 문의 접수 후 5영업일 이내',
+        body: 'FOSC Company / tech@82edit.com / 문의 접수 후 5영업일 이내',
       },
       {
         heading: '10. 방침 변경',
@@ -105,7 +105,7 @@ Anthropic Inc. — Optional AI receipt parsing (deleted immediately after proces
       {
         heading: '6. User Rights',
         body: `You may request access, correction, deletion, or suspension of processing at any time.
-Deletion requests: My Page → Withdraw, or email fosccompany@gmail.com (processed within 5 business days)`,
+Deletion requests: My Page → Withdraw, or email tech@82edit.com (processed within 5 business days)`,
       },
       {
         heading: '7. Security Measures',
@@ -117,7 +117,7 @@ Deletion requests: My Page → Withdraw, or email fosccompany@gmail.com (process
       },
       {
         heading: '9. Privacy Officer',
-        body: 'FOSC Company / fosccompany@gmail.com / Responded within 5 business days',
+        body: 'FOSC Company / tech@82edit.com / Responded within 5 business days',
       },
       {
         heading: '10. Policy Updates',
@@ -172,7 +172,7 @@ Anthropic Inc. — 可选AI收据解析功能（处理后立即删除）`,
       {
         heading: '6. 用户权利',
         body: `可随时申请查阅、更正、删除或停止处理。
-删除申请：我的页面 → 注销，或发送邮件至 fosccompany@gmail.com（5个工作日内处理）`,
+删除申请：我的页面 → 注销，或发送邮件至 tech@82edit.com（5个工作日内处理）`,
       },
       {
         heading: '7. 安全措施',
@@ -184,7 +184,7 @@ Anthropic Inc. — 可选AI收据解析功能（处理后立即删除）`,
       },
       {
         heading: '9. 个人信息保护负责人',
-        body: 'FOSC Company / fosccompany@gmail.com / 收到咨询后5个工作日内回复',
+        body: 'FOSC Company / tech@82edit.com / 收到咨询后5个工作日内回复',
       },
       {
         heading: '10. 政策变更',
