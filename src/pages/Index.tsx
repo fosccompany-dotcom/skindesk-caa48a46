@@ -45,7 +45,9 @@ import {
   setMonth,
   setYear } from
 "date-fns";
-import { ko } from "date-fns/locale";
+import { ko as koLocale } from "date-fns/locale";
+import { enUS as enLocale } from "date-fns/locale";
+import { zhCN as zhLocale } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import AddTreatmentModal from "@/components/AddTreatmentModal";
 import AddReservationModal from "@/components/AddReservationModal";
@@ -74,14 +76,12 @@ interface Reservation {
 
 
 const TODAY = new Date();
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
-
-const CONDITION_OPTIONS = [
-{ emoji: "🏭", label: "기름", value: 5 },
-{ emoji: "🌊", label: "촉촉", value: 4 },
-{ emoji: "🌤️", label: "맑음", value: 3 },
-{ emoji: "🌵", label: "건조", value: 2 },
-{ emoji: "🏜️", label: "사막", value: 1 }];
+const CONDITION_KEYS = [
+{ emoji: "🏭", key: "condition_oily" as const, value: 5 },
+{ emoji: "🌊", key: "condition_moist" as const, value: 4 },
+{ emoji: "🌤️", key: "condition_clear" as const, value: 3 },
+{ emoji: "🌵", key: "condition_dry" as const, value: 2 },
+{ emoji: "🏜️", key: "condition_desert" as const, value: 1 }];
 
 
 function getCycleStatus(cycle: TreatmentCycle) {
@@ -119,6 +119,9 @@ const Index = () => {
   const { cycles } = useCycles();
   const { records, loading, addRecord, updateRecord, deleteRecord } = useRecords();
   const { t, language, setLanguage } = useLanguage();
+  const dateLocale = language === "en" ? enLocale : language === "zh" ? zhLocale : koLocale;
+  const WEEKDAYS = [t("weekday_sun"), t("weekday_mon"), t("weekday_tue"), t("weekday_wed"), t("weekday_thu"), t("weekday_fri"), t("weekday_sat")];
+  const CONDITION_OPTIONS = CONDITION_KEYS.map((c) => ({ ...c, label: t(c.key) }));
   const [langOpen, setLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -462,11 +465,11 @@ const Index = () => {
           {/* Row 1: Nickname's Bloom Log */}
           <div className="flex items-center">
             <div className="flex-1 min-w-0">
-              <p className="text-white/60 tracking-wide text-xs font-sans font-extrabold">It's ​Blooming day! </p>
+              <p className="text-white/60 tracking-wide text-xs font-sans font-extrabold">{t("blooming_day")} </p>
               <h1
                 className="text-lg font-bold tracking-tight leading-tight text-white"
                 style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-                {nickname || "회원"}님의 <span className="text-[hsl(var(--accent))]">Bloom Log</span>
+                {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "회원")}{t("name_bloom_log")} <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
             </div>
           </div>
@@ -483,33 +486,33 @@ const Index = () => {
                 side="bottom"
                 align="start"
                 className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
-                <p className="text-[11px] font-semibold mb-2 text-white/80">🌱 나의 Bloom</p>
+                <p className="text-[11px] font-semibold mb-2 text-white/80">{t("my_bloom")}</p>
                 <div className="space-y-1.5 text-[11px]">
                   <p className="text-[#F2C94C] font-semibold">
-                    현재: {bloom.emoji} {bloom.name} ({activeDays}건)
+                    {t("current_label")} {bloom.emoji} {bloom.name} ({activeDays}{t("unit_count")})
                   </p>
                   {bloom.nextMilestone !== null &&
                   <p className="text-white/90">
-                      다음: {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}건)
+                      {t("next_label")} {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}{t("unit_count")})
                     </p>
                   }
-                  {bloom.nextMilestone === null && <p className="text-white/90">✨ 최고 등급 달성!</p>}
+                  {bloom.nextMilestone === null && <p className="text-white/90">{t("max_rank_achieved")}</p>}
                 </div>
               </PopoverContent>
             </Popover>
             <div className="flex-1 min-w-0 space-y-1">
               {isWilting ?
-              <p className="text-xs font-semibold text-white/70">🥀 조금 시들고 있어요… 다시 기록해볼까요?</p> :
+              <p className="text-xs font-semibold text-white/70">{t("wilting_message")}</p> :
               bloom.stage === 0 ?
-              <p className="text-xs font-semibold text-white">첫번째 기록 완료하고 새싹이로 업그레이드 해요!</p> :
+              <p className="text-xs font-semibold text-white">{t("first_record_upgrade")}</p> :
               remaining > 0 ?
               <>
-              <p className="text-xs text-white/70">기록이 쌓일수록 내 피부가 보여요 🌱</p>
+              <p className="text-xs text-white/70">{t("records_grow_skin")}</p>
               <p className="text-xs font-semibold text-white">
-                  🌸 {remaining}번만 더 기록하면 {STAGES[bloom.stage + 1]?.name || "Bloom"} 완성!
+                  🌸 {remaining} {t("records_until_next")} {STAGES[bloom.stage + 1]?.name || "Bloom"} {t("bloom_complete")}
                 </p>
               </> :
-              <p className="text-xs font-semibold text-white">✨ 최고 단계 달성!!!</p>
+              <p className="text-xs font-semibold text-white">{t("max_stage_achieved")}</p>
               }
               <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/20">
                 <div
@@ -534,9 +537,9 @@ const Index = () => {
         {/* ═══ Today's Condition Log ═══ */}
         <Card className="border-0 shadow-sm">
           <CardContent className="px-2.5 py-2">
-            <p className="text-sm font-bold text-foreground mb-1">오늘의 컨디션 기록</p>
+            <p className="text-sm font-bold text-foreground mb-1">{t("today_condition")}</p>
             <p className="text-[10px] text-muted-foreground mb-1.5">
-              {format(TODAY, "M월 d일 (EEEE)", { locale: ko })} · 오늘 피부 컨디션은 어떤가요?
+              {language === "en" ? format(TODAY, "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(TODAY, "M月d日 (EEEE)", { locale: dateLocale }) : format(TODAY, "M월 d일 (EEEE)", { locale: dateLocale })} · {t("condition_question")}
             </p>
             <div className="flex items-center justify-between gap-1 mb-1.5">
               {CONDITION_OPTIONS.map((opt) =>
@@ -559,7 +562,7 @@ const Index = () => {
             <div className="space-y-2">
                 <textarea
                 className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
-                placeholder="오늘 피부 상태 메모 (선택)"
+                placeholder={t("condition_memo_placeholder")}
                 rows={2}
                 value={conditionMemo}
                 onChange={(e) => setConditionMemo(e.target.value)} />
@@ -569,7 +572,7 @@ const Index = () => {
                 onClick={async () => {
                   await addRecord({
                     date: format(TODAY, "yyyy-MM-dd"),
-                    treatmentName: "컨디션 기록",
+                    treatmentName: t("condition_record_name"),
                     treatmentId: undefined,
                     packageId: "",
                     skinLayer: "epidermis",
@@ -577,8 +580,8 @@ const Index = () => {
                     clinic: "-",
                     satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
                     memo:
-                    conditionMemo || `컨디션: ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                    notes: "일일 컨디션 기록"
+                    conditionMemo || `${t("condition_prefix")} ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
+                    notes: t("daily_condition_note")
                   });
                   setTodayCondition(null);
                   setConditionMemo("");
@@ -586,7 +589,7 @@ const Index = () => {
                   setTimeout(() => setShowReward(false), 2500);
                 }}>
                 
-                  컨디션 기록하기
+                  {t("record_condition")}
                 </button>
               </div>
             }
@@ -607,7 +610,7 @@ const Index = () => {
                 <button
                   onClick={() => setYearMonthPickerOpen((v) => !v)}
                   className="text-xs font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
-                  {format(calendarMonth, "yyyy년 M월", { locale: ko })}
+                  {language === "en" ? format(calendarMonth, "MMMM yyyy", { locale: dateLocale }) : language === "zh" ? `${calendarMonth.getFullYear()}年 ${calendarMonth.getMonth() + 1}月` : format(calendarMonth, "yyyy년 M월", { locale: dateLocale })}
                   <ChevronDown size={10} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
                 </button>
                 {yearMonthPickerOpen &&
@@ -616,7 +619,7 @@ const Index = () => {
                       <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() - 1))} className="p-1 rounded hover:bg-muted">
                         <ChevronLeft size={14} />
                       </button>
-                      <span className="text-sm font-bold">{calendarMonth.getFullYear()}년</span>
+                      <span className="text-sm font-bold">{calendarMonth.getFullYear()}{t("year_suffix")}</span>
                       <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() + 1))} className="p-1 rounded hover:bg-muted">
                         <ChevronRight size={14} />
                       </button>
@@ -633,7 +636,7 @@ const Index = () => {
                         "py-1.5 rounded-lg text-xs font-medium transition-colors",
                         calendarMonth.getMonth() === i ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"
                       )}>
-                          {i + 1}월
+                          {language === "en" ? format(new Date(2000, i, 1), "MMM") : `${i + 1}${t("month_suffix")}`}
                         </button>
                     )}
                     </div>
@@ -720,7 +723,7 @@ const Index = () => {
         <div className="space-y-2">
             <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1">
               <CalendarDays className="h-3.5 w-3.5 text-primary" />
-              {format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: ko })}
+              {language === "en" ? format(new Date(activeSelectedDate + "T00:00:00"), "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(new Date(activeSelectedDate + "T00:00:00"), "M月d日 (EEEE)", { locale: dateLocale }) : format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: dateLocale })}
             </p>
 
             {/* Expiry reminders */}
@@ -733,7 +736,7 @@ const Index = () => {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{ev.name}</p>
                     <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {ev.expiryDate}에 유효기간 만료 (D-{ev.daysLeft})
+                      {ev.expiryDate}{t("expiry_on_date")} (D-{ev.daysLeft})
                     </p>
                   </div>
                 </CardContent>
@@ -748,13 +751,13 @@ const Index = () => {
                     <span className="text-base">⏰</span>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">시술권 유효기간이 곧 끝나요!</p>
+                    <p className="text-sm font-semibold truncate">{t("expiry_soon_title")}</p>
                     <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {format(addDays(TODAY, 8), "M월 d일")}에 만료 예정 (예시)
+                      {language === "en" ? format(addDays(TODAY, 8), "MMM d") : format(addDays(TODAY, 8), "M月 d日")}{t("expiry_example_suffix")}
                     </p>
                   </div>
                   <span className="text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0">
-                    예시
+                    {t("example_label")}
                   </span>
                 </CardContent>
               </Card>
@@ -779,7 +782,7 @@ const Index = () => {
                     </p>
                   </div>
                   <span className="text-[10px] font-medium text-info bg-info/10 px-2 py-0.5 rounded-full shrink-0">
-                    예약
+                    {t("reservation_label")}
                   </span>
                 </CardContent>
               </Card>
@@ -790,7 +793,7 @@ const Index = () => {
           <Card key={r.id} className="border-0 shadow-sm">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    {r.treatmentName === "컨디션 기록" && r.satisfaction ?
+                    {(r.treatmentName === "컨디션 기록" || r.treatmentName === "Condition Log" || r.treatmentName === "状态记录") && r.satisfaction ?
                 <span className="text-lg">{CONDITION_OPTIONS.find((o) => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span> :
                 <Stethoscope className="h-4 w-4 text-primary" />}
                   </div>
@@ -814,7 +817,7 @@ const Index = () => {
             className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
             
                 <Plus className="h-4 w-4" />
-                <span className="text-xs font-medium">추가</span>
+                <span className="text-xs font-medium">{t("add_button")}</span>
               </button>
           }
 
@@ -826,10 +829,9 @@ const Index = () => {
           <button onClick={() => guardAction(() => setShowActionPicker(true))} className="w-full text-left">
                   <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 p-5 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
                     <Plus className="h-5 w-5 text-primary mx-auto mb-2" />
-                    <p className="text-xs font-semibold text-foreground">이 날짜에 기록이 없어요</p>
+                    <p className="text-xs font-semibold text-foreground">{t("no_record_this_date")}</p>
                     <p className="text-[10px] text-muted-foreground mt-0.5">
-                      탭하여 <span className="font-bold text-primary">{format(selectedDate, "M월 d일")}</span>에
-                      예약일정과 시술기록을 추가하세요
+                      {t("tap_to_add_record")}
                     </p>
                   </div>
                 </button>
@@ -845,8 +847,8 @@ const Index = () => {
                 <span className="text-sm">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">관리중인 시술</p>
-                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">개</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("managed_treatments")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? cycles.length : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -856,8 +858,8 @@ const Index = () => {
                 <span className="text-sm">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">이용중인 병원</p>
-                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">곳</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("active_clinics")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? uniqueClinics : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -867,8 +869,8 @@ const Index = () => {
                 <span className="text-sm">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">남은 시술 횟수</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">회</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("remaining_sessions")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? totalRemainingSessions : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -878,8 +880,8 @@ const Index = () => {
                 <span className="text-sm">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">잔여 포인트</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">원</span></p>
+                <p className="text-[9px] text-muted-foreground">{t("remaining_points")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? totalBalance.toLocaleString() : <span className="opacity-40">0</span>}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></p>
               </div>
             </CardContent>
           </Card>
@@ -891,8 +893,8 @@ const Index = () => {
           className="w-full flex items-center gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm px-4 py-3.5 text-left">
           <span className="text-2xl">📋</span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary-foreground">✨ 시술 기록 한 번에 추가하기</p>
-            <p className="text-[11px] text-primary-foreground/70">카톡·문자 붙여넣기만 하면 끝</p>
+            <p className="text-sm font-bold text-primary-foreground">{t("ai_parse_title")}</p>
+            <p className="text-[11px] text-primary-foreground/70">{t("ai_parse_desc")}</p>
           </div>
           <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
         </button>
@@ -904,13 +906,13 @@ const Index = () => {
             <div className="flex items-center justify-between px-1 mb-2.5">
               <h2 className="text-sm font-bold flex items-center gap-1.5">
                 <Star className="h-3.5 w-3.5 text-[hsl(var(--accent))]" />
-                최근 기록
+                {t("recent_records")}
               </h2>
               <button
               onClick={() => navigate("/calendar?tab=history")}
               className="text-[10px] text-muted-foreground flex items-center gap-0.5">
               
-                전체보기 <ChevronRight size={10} />
+                {t("view_all")} <ChevronRight size={10} />
               </button>
             </div>
             <div className="space-y-2">
@@ -946,9 +948,9 @@ const Index = () => {
         <SheetContent side="bottom" className="rounded-t-3xl px-5 pb-8 pt-4">
           <div className="mx-auto w-10 h-1 rounded-full bg-muted-foreground/20 mb-5" />
           <p className="text-center text-base font-semibold mb-1">
-            <span className="text-primary">{selectedDate ? format(selectedDate, "M월 d일") : ""}</span>을 선택하셨어요
+            <span className="text-primary">{selectedDate ? (language === "en" ? format(selectedDate, "MMM d") : format(selectedDate, "M月 d日")) : ""}</span>{t("date_selected_suffix")}
           </p>
-          <p className="text-center text-sm text-muted-foreground mb-6">무엇을 추가하시겠어요?</p>
+          <p className="text-center text-sm text-muted-foreground mb-6">{t("what_to_add")}</p>
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => {
@@ -960,7 +962,7 @@ const Index = () => {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-info/10">
                 <CalendarPlus className="h-6 w-6 text-info" />
               </div>
-              <span className="text-sm font-semibold">예약 일정 추가</span>
+              <span className="text-sm font-semibold">{t("add_reservation")}</span>
             </button>
             <button
               onClick={() => {
@@ -972,7 +974,7 @@ const Index = () => {
               <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                 <ClipboardList className="h-6 w-6 text-primary" />
               </div>
-              <span className="text-sm font-semibold">시술 내역 추가</span>
+              <span className="text-sm font-semibold">{t("add_treatment_record")}</span>
             </button>
           </div>
         </SheetContent>
@@ -1081,8 +1083,8 @@ const Index = () => {
       <div className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none animate-fade-in">
           <div className="bg-black/70 backdrop-blur-md text-white rounded-2xl px-8 py-6 text-center space-y-2 animate-scale-in">
             <span className="text-4xl block animate-bounce">🌱</span>
-            <p className="text-sm font-semibold">첫 업그레이드를 축하해요!</p>
-            <p className="text-xs text-white/80">씨앗에서 새싹이 되었어요! 🌱</p>
+            <p className="text-sm font-semibold">{t("reward_title")}</p>
+            <p className="text-xs text-white/80">{t("reward_desc")}</p>
           </div>
         </div>
       }
