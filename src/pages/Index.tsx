@@ -551,12 +551,12 @@ const Index = () => {
                       ? "bg-primary/10 ring-2 ring-primary/30 scale-105"
                       : "bg-muted/50 hover:bg-muted"
                   )}
-                onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}>
-                
+                  onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}
+                >
                   <span className="text-xl">{opt.emoji}</span>
                   <span className="text-[10px] font-medium text-foreground">{opt.label}</span>
                 </button>
-              )}
+              ))}
             </div>
             {todayCondition &&
             <div className="space-y-2">
