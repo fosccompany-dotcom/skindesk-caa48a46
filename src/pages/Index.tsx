@@ -144,7 +144,7 @@ const Index = () => {
   const [todayCondition, setTodayCondition] = useState<number | null>(null);
   const [conditionMemo, setConditionMemo] = useState("");
   const [reservations, setReservations] = useState<Reservation[]>([]);
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [showActionPicker, setShowActionPicker] = useState(false);
   const [showHomeAddModal, setShowHomeAddModal] = useState(false);
   const [showHomeReservationModal, setShowHomeReservationModal] = useState(false);
