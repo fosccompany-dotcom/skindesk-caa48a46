@@ -1,7 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Package, Wallet, Building2, MoreVertical, Pencil, Trash2, ChevronDown, ArrowLeftRight } from 'lucide-react';
+import { Package, Wallet, Building2, MoreVertical, Pencil, Trash2, ChevronDown } from 'lucide-react';
+import DraggableTabsList from '@/components/DraggableTabsList';
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { supabase } from '@/integrations/supabase/client';
@@ -49,11 +50,6 @@ const Packages = () => {
     return ['packages', 'points'];
   });
 
-  const swapTabOrder = () => {
-    const swapped = [...tabOrder].reverse() as ('packages' | 'points')[];
-    setTabOrder(swapped);
-    localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(swapped));
-  };
 
   const tabConfig: Record<string, { icon: typeof Package; label: string }> = {
     packages: { icon: Package, label: '시술권 관리' },
@@ -222,26 +218,18 @@ const Packages = () => {
 
       <div className="page-content pb-28 pt-4">
         <Tabs defaultValue={defaultTab} className="w-full">
-          <div className="flex items-center gap-1.5 mb-4">
-            <TabsList className="flex-1 grid grid-cols-2">
-              {tabOrder.map((tabKey) => {
-                const cfg = tabConfig[tabKey];
-                const Icon = cfg.icon;
-                return (
-                  <TabsTrigger key={tabKey} value={tabKey}>
-                    <Icon className="h-3.5 w-3.5 mr-1.5" /> {cfg.label}
-                  </TabsTrigger>
-                );
-              })}
-            </TabsList>
-            <button
-              onClick={swapTabOrder}
-              className="w-7 h-7 flex items-center justify-center rounded-full bg-muted text-muted-foreground hover:bg-muted/80 transition-colors shrink-0"
-              aria-label="탭 순서 변경"
-            >
-              <ArrowLeftRight className="h-3 w-3" />
-            </button>
-          </div>
+          <DraggableTabsList
+            tabs={tabOrder.map((tabKey) => {
+              const cfg = tabConfig[tabKey];
+              const Icon = cfg.icon;
+              return { key: tabKey, label: cfg.label, icon: <Icon className="h-3.5 w-3.5 mr-1.5" /> };
+            })}
+            onReorder={(newOrder) => {
+              const typed = newOrder as ('packages' | 'points')[];
+              setTabOrder(typed);
+              localStorage.setItem(TAB_ORDER_KEY, JSON.stringify(typed));
+            }}
+          />
 
           {/* ══════════════ 시술권 관리 탭 ══════════════ */}
           <TabsContent value="packages" className="space-y-3 mt-0">
