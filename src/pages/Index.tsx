@@ -542,15 +542,15 @@ const Index = () => {
               {language === "en" ? format(TODAY, "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(TODAY, "M月d日 (EEEE)", { locale: dateLocale }) : format(TODAY, "M월 d일 (EEEE)", { locale: dateLocale })} · {t("condition_question")}
             </p>
             <div className="flex items-center justify-between gap-1 mb-1.5">
-              {CONDITION_OPTIONS.map((opt) =>
-              <button
-                key={opt.value}
-                className={cn("flex-1 flex flex-col items-center gap-0.5 rounded-xl transition-all text-center py-1.5",
-
-                todayCondition === opt.value ?
-                "bg-primary/10 ring-2 ring-primary/30 scale-105" :
-                "bg-muted/50 hover:bg-muted"
-                )}
+              {CONDITION_OPTIONS.map((opt) => (
+                <button
+                  key={opt.value}
+                  className={cn(
+                    "flex-1 flex flex-col items-center rounded-xl transition-all text-center gap-0 py-0",
+                    todayCondition === opt.value
+                      ? "bg-primary/10 ring-2 ring-primary/30 scale-105"
+                      : "bg-muted/50 hover:bg-muted"
+                  )}
                 onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}>
                 
                   <span className="text-xl">{opt.emoji}</span>
