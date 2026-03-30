@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import { useSeason } from '@/context/SeasonContext';
 import { useSearchParams } from 'react-router-dom';
 import { SkinLayerBadge, BodyAreaBadge } from '@/components/SkinLayerBadge';
 import { Card, CardContent } from '@/components/ui/card';
