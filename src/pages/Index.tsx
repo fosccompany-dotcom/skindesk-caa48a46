@@ -821,21 +821,6 @@ const Index = () => {
               </button>
           }
 
-            {/* Empty state for selected date */}
-            {!hasSelectedInfo &&
-          selectedDate &&
-          !expiryByDate[activeSelectedDate]?.length &&
-          !(isEmpty && activeSelectedDate === exampleExpiryDate) &&
-          <button onClick={() => guardAction(() => setShowActionPicker(true))} className="w-full text-left">
-                  <div className="rounded-2xl border border-dashed border-primary/30 bg-primary/5 px-4 py-3 text-center hover:bg-primary/10 transition-colors active:scale-[0.98]">
-                    <Plus className="h-4 w-4 text-primary mx-auto mb-1" />
-                    <p className="text-xs font-semibold text-foreground">{t("no_record_this_date")}</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5">
-                      {t("tap_to_add_record")}
-                    </p>
-                  </div>
-                </button>
-          }
           </div>
         }
 
