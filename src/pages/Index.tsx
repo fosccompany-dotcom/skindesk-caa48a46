@@ -912,7 +912,7 @@ const Index = () => {
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                          <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">
                             {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
                           </p>
                           {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
