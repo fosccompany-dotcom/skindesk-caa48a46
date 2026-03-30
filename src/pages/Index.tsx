@@ -848,7 +848,7 @@ const Index = () => {
                 <span className="text-sm">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">{t("active_clinics")}</p>
+                <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">{t("active_clinics")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
