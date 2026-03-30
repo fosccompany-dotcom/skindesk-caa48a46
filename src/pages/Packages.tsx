@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
+import { useSeason } from '@/context/SeasonContext';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, Wallet, Building2, MoreVertical, Pencil, Trash2, ChevronDown } from 'lucide-react';
@@ -37,6 +38,7 @@ const Packages = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const { loading: recordsLoading } = useRecords();
+  const { nickname } = useSeason();
   const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
   const defaultTab = searchParams.get('tab') || (savedTabOrder ? savedTabOrder[0] : 'packages');
 
@@ -209,7 +211,7 @@ const Packages = () => {
         <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-70 font-light">나의 관리 💎</p>
+              <p className="text-sm opacity-70 font-light">{nickname ? `${nickname}의` : '나의'} 관리 💎</p>
               <h1 className="mt-0.5 text-xl font-bold">시술권 · 포인트</h1>
             </div>
           </div>
