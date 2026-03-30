@@ -837,7 +837,7 @@ const Index = () => {
                 <span className="text-sm">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 font-sans text-sm">{t("managed_treatments")}</p>
+                <p className="text-muted-foreground mt-0.5 text-sm">{t("managed_treatments")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
