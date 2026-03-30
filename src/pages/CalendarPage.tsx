@@ -289,7 +289,7 @@ const CalendarPage = () => {
         <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm opacity-70 font-light">나의 기록 ✍️</p>
+              <p className="text-sm opacity-70 font-light">{nickname ? `${nickname}의` : '나의'} 기록 ✍️</p>
               <h1 className="mt-0.5 text-xl font-bold">시술내역</h1>
             </div>
             <div className="flex items-center gap-1">
