@@ -260,7 +260,7 @@ const Packages = () => {
                 {/* 안내 문구 */}
                 <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/50 p-6 text-center">
                   <Package className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-                  <p className="text-sm font-semibold text-muted-foreground mb-1">아직 등록된 시술권이 없어요</p>
+                  <p className="text-sm font-semibold text-muted-foreground mb-1">시술권 등록을 시작해 보세요</p>
                   <p className="text-xs text-muted-foreground/70 leading-relaxed">
                     시술권을 등록하면 남은 횟수와<br />다음 관리 시점을 자동으로 알려드려요
                   </p>
