@@ -804,7 +804,7 @@ const Index = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
+                    <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">{r.clinic}</p>
                   </div>
                   {r.satisfaction &&
               <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
