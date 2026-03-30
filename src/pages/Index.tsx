@@ -674,7 +674,12 @@ const Index = () => {
                 return (
                   <button
                     key={i}
-                    onClick={() => setSelectedDate(day)}
+                    onClick={() => {
+                      setSelectedDate(day);
+                      if (inMonth && !hasRecord && !hasReservation && !expiryByDate[dateStr]?.length) {
+                        guardAction(() => setShowActionPicker(true));
+                      }
+                    }}
                     onDoubleClick={() => {
                       if (hasAnyData && inMonth) {
                         setSelectedDate(day);
