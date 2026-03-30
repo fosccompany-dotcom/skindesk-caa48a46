@@ -545,7 +545,7 @@ function PaymentHistoryTab() {
 
         <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/50 p-6 text-center">
           <CreditCard className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-          <p className="text-sm font-semibold text-muted-foreground mb-1">아직 결제 기록이 없어요</p>
+          <p className="text-sm font-semibold text-muted-foreground mb-1">결제 기록을 시작해 보세요</p>
           <p className="text-xs text-muted-foreground/70 leading-relaxed">
             지출을 기록하면 어디에 얼마를 쓰는지 보여요. 현명한 피부 투자의 첫걸음이에요 💡
           </p>

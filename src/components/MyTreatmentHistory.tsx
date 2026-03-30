@@ -327,7 +327,7 @@ const MyTreatmentHistory = () => {
           {/* 안내 문구 */}
           <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/50 p-6 text-center">
             <Stethoscope className="h-8 w-8 text-muted-foreground/40 mx-auto mb-2" />
-            <p className="text-sm font-semibold text-muted-foreground mb-1">아직 시술 내역이 없어요</p>
+            <p className="text-sm font-semibold text-muted-foreground mb-1">시술 기록을 시작해 보세요</p>
             <p className="text-xs text-muted-foreground/70 leading-relaxed">
               첫 기록이 내 피부 히스토리의 시작이에요. 기록할수록 패턴이 보이고 관리가 달라져요 📊
             </p>
