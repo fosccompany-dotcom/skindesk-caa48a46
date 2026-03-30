@@ -726,14 +726,14 @@ const Index = () => {
         {/* ═══ Selected Date Info ═══ */}
         {activeSelectedDate &&
         <div className="space-y-2">
-            <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1">
+            <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1 py-[5px]">
               <CalendarDays className="h-3.5 w-3.5 text-primary" />
               {language === "en" ? format(new Date(activeSelectedDate + "T00:00:00"), "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(new Date(activeSelectedDate + "T00:00:00"), "M月d日 (EEEE)", { locale: dateLocale }) : format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: dateLocale })}
             </p>
 
             {/* Expiry reminders */}
             {(expiryByDate[activeSelectedDate] || []).map((ev, idx) =>
-          <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
+            <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
                     <span className="text-base">⏰</span>
@@ -746,11 +746,11 @@ const Index = () => {
                   </div>
                 </CardContent>
               </Card>
-          )}
+            )}
 
             {/* Example expiry for empty state */}
             {isEmpty && activeSelectedDate === exampleExpiryDate &&
-          <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
+            <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
                     <span className="text-base">⏰</span>
@@ -758,7 +758,7 @@ const Index = () => {
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{t("expiry_soon_title")}</p>
                     <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {language === "en" ? format(addDays(TODAY, 8), "MMM d") : format(addDays(TODAY, 8), "M月 d日")}{t("expiry_example_suffix")}
+                      {language === "en" ? format(addDays(TODAY, 8), "MMM d") : format(addDays(TODAY, 8), "M月 d일")}{t("expiry_example_suffix")}
                     </p>
                   </div>
                   <span className="text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0">
@@ -766,15 +766,15 @@ const Index = () => {
                   </span>
                 </CardContent>
               </Card>
-          }
+            }
 
             {/* Reservations */}
             {selectedReservations.map((res) =>
-          <Card
-            key={res.id}
-            className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-            onClick={() => setEditingReservation(res)}>
-            
+            <Card
+              key={res.id}
+              className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+              onClick={() => setEditingReservation(res)}>
+              
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
                     <CalendarPlus className="h-4 w-4 text-info" />
@@ -791,40 +791,40 @@ const Index = () => {
                   </span>
                 </CardContent>
               </Card>
-          )}
+            )}
 
             {/* Treatment records */}
             {selectedRecords.map((r) =>
-          <Card key={r.id} className="border-0 shadow-sm">
+            <Card key={r.id} className="border-0 shadow-sm">
                 <CardContent className="p-3.5 flex items-center gap-3">
                   <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                     {(r.treatmentName === "컨디션 기록" || r.treatmentName === "Condition Log" || r.treatmentName === "状态记录") && r.satisfaction ?
-                <span className="text-lg">{CONDITION_OPTIONS.find((o) => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span> :
-                <Stethoscope className="h-4 w-4 text-primary" />}
+                    <span className="text-lg">{CONDITION_OPTIONS.find((o) => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span> :
+                    <Stethoscope className="h-4 w-4 text-primary" />}
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
                     <p className="text-muted-foreground mt-0.5 font-sans text-sm">{r.clinic}</p>
                   </div>
                   {r.satisfaction &&
-              <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
+                  <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
                       {"★".repeat(r.satisfaction)}
                     </span>
-              }
+                  }
                 </CardContent>
               </Card>
-          )}
+            )}
 
             {/* Add button when there are existing items */}
             {hasSelectedInfo &&
-          <button
-            onClick={() => guardAction(() => setShowActionPicker(true))}
-            className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
-            
+            <button
+              onClick={() => guardAction(() => setShowActionPicker(true))}
+              className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
+              
                 <Plus className="h-4 w-4" />
                 <span className="text-xs font-medium">{t("add_button")}</span>
               </button>
-          }
+            }
 
           </div>
         }
@@ -880,8 +880,8 @@ const Index = () => {
         {/* ═══ AI 시술 기록 배너 (로그인 유저만) ═══ */}
         <button
           onClick={() => setParseModalOpen(true)}
-          className="w-full flex items-center gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm px-4 py-3.5 text-left">
-          <span className="text-2xl">📋</span>
+          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[11px] my-[5px] px-[11px] mx-0 mr-0 pl-[10px] pr-[10px] items-center justify-start flex flex-row text-left">
+          <span className="text-2xl px-[3px]">📋</span>
           <div className="min-w-0 flex-1">
             <p className="text-sm font-bold text-primary-foreground">{t("ai_parse_title")}</p>
             <p className="text-[11px] text-primary-foreground/70">{t("ai_parse_desc")}</p>
