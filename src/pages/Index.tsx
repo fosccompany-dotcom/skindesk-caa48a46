@@ -781,7 +781,7 @@ const Index = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{res.treatment_name}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">
                       {res.clinic}
                       {res.time ? ` · ${res.time}` : ""}
                     </p>
