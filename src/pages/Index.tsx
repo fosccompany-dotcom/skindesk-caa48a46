@@ -730,7 +730,153 @@ const Index = () => {
               <CalendarDays className="h-3.5 w-3.5 text-primary" />
               {language === "en" ? format(new Date(activeSelectedDate + "T00:00:00"), "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(new Date(activeSelectedDate + "T00:00:00"), "M月d日 (EEEE)", { locale: dateLocale }) : format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: dateLocale })}
             </p>
-...
+
+            {/* Expiry reminders */}
+            {(expiryByDate[activeSelectedDate] || []).map((ev, idx) =>
+            <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+                    <span className="text-base">⏰</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{ev.name}</p>
+                    <p className="text-[11px] text-destructive font-medium mt-0.5">
+                      {ev.expiryDate}{t("expiry_on_date")} (D-{ev.daysLeft})
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Example expiry for empty state */}
+            {isEmpty && activeSelectedDate === exampleExpiryDate &&
+            <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+                    <span className="text-base">⏰</span>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{t("expiry_soon_title")}</p>
+                    <p className="text-[11px] text-destructive font-medium mt-0.5">
+                      {language === "en" ? format(addDays(TODAY, 8), "MMM d") : format(addDays(TODAY, 8), "M月 d일")}{t("expiry_example_suffix")}
+                    </p>
+                  </div>
+                  <span className="text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0">
+                    {t("example_label")}
+                  </span>
+                </CardContent>
+              </Card>
+            }
+
+            {/* Reservations */}
+            {selectedReservations.map((res) =>
+            <Card
+              key={res.id}
+              className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
+              onClick={() => setEditingReservation(res)}>
+              
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
+                    <CalendarPlus className="h-4 w-4 text-info" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{res.treatment_name}</p>
+                    <p className="text-muted-foreground mt-0.5 font-sans text-sm">
+                      {res.clinic}
+                      {res.time ? ` · ${res.time}` : ""}
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-medium text-info bg-info/10 px-2 py-0.5 rounded-full shrink-0">
+                    {t("reservation_label")}
+                  </span>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Treatment records */}
+            {selectedRecords.map((r) =>
+            <Card key={r.id} className="border-0 shadow-sm">
+                <CardContent className="p-3.5 flex items-center gap-3">
+                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                    {(r.treatmentName === "컨디션 기록" || r.treatmentName === "Condition Log" || r.treatmentName === "状态记录") && r.satisfaction ?
+                    <span className="text-lg">{CONDITION_OPTIONS.find((o) => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span> :
+                    <Stethoscope className="h-4 w-4 text-primary" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
+                    <p className="text-muted-foreground mt-0.5 font-sans text-sm">{r.clinic}</p>
+                  </div>
+                  {r.satisfaction &&
+                  <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
+                      {"★".repeat(r.satisfaction)}
+                    </span>
+                  }
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Add button when there are existing items */}
+            {hasSelectedInfo &&
+            <button
+              onClick={() => guardAction(() => setShowActionPicker(true))}
+              className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
+              
+                <Plus className="h-4 w-4" />
+                <span className="text-xs font-medium">{t("add_button")}</span>
+              </button>
+            }
+
+          </div>
+        }
+
+        {/* ═══ Stat Cards — 2×2 compact ═══ */}
+        <div className="grid grid-cols-2 gap-2 text-base">
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">💉</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("managed_treatments")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">🏥</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("active_clinics")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">🎟️</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_sessions")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=points")}>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-sm">💰</span>
+              </div>
+              <div className="min-w-0">
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_points")}</p>
+                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* ═══ AI 시술 기록 배너 (로그인 유저만) ═══ */}
         <button
           onClick={() => setParseModalOpen(true)}
