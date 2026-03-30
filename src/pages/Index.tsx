@@ -870,7 +870,7 @@ const Index = () => {
                 <span className="text-sm">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 font-sans text-sm">{t("remaining_points")}</p>
+                <p className="text-muted-foreground mt-0.5 text-sm">{t("remaining_points")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
