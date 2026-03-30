@@ -404,7 +404,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       await supabase.from('payment_records').insert({
         user_id: user.id, date: b.date, clinic: b.clinic || '',
         clinic_type: '밴스', treatment_name: b.bundleName,
-        amount: b.amount_paid || 0, method: '시술결제', memo: b.memo || null,
+        amount: b.amount_paid || 0, method: 'cash', record_type: 'treatment_payment', memo: b.memo || null,
       });
       for (const t of b.treatments) {
         await addRecord({
@@ -444,7 +444,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       await supabase.from('payment_records').insert({
         user_id: user.id, date: c.date, clinic: c.clinic,
         clinic_type: '밴스', treatment_name: c.label,
-        amount: c.amount, method: '포인트충전', memo: null,
+        amount: c.amount, method: 'charge', record_type: 'charge', memo: null,
       });
     }
 
@@ -455,7 +455,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
       await supabase.from('payment_records').insert({
         user_id: user.id, date: c.date, clinic: c.clinic || '',
         clinic_type: '밴스', treatment_name: '시술결제',
-        amount: Number(cp.amount), method: cp.method === 'card' ? '카드' : '현금', memo: null,
+        amount: Number(cp.amount), method: cp.method === 'card' ? 'card' : 'cash', record_type: 'cash_payment', memo: null,
       });
     }
 
@@ -476,11 +476,11 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         });
       }
       if (p.payMethod !== '서비스' && p.amount_paid) {
-        const methodMap: Record<PkgPayMethod, string> = { '카드': '카드', '현금': '현금', '포인트': '시술결제', '서비스': '서비스' };
+        const methodMap: Record<PkgPayMethod, string> = { '카드': 'card', '현금': 'cash', '포인트': 'point', '서비스': 'service' };
         await supabase.from('payment_records').insert({
           user_id: user.id, date: p.date, clinic: p.clinic || '',
           clinic_type: '밴스', treatment_name: p.name,
-          amount: p.amount_paid, method: methodMap[p.payMethod], memo: p.memo || null,
+          amount: p.amount_paid, method: methodMap[p.payMethod] || 'card', record_type: 'package_purchase', memo: p.memo || null,
         });
         if (p.clinic && p.payMethod === '포인트') {
           const { data: pkgBal } = await supabase
@@ -540,7 +540,8 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         clinic: balanceInfo.clinic,
         treatment_name: '포인트 잔액 설정',
         amount: balanceInfo.amount,
-        method: '포인트충전',
+        method: 'charge',
+        record_type: 'charge',
         memo: balanceInfo.method === 'set' ? '잔액 직접 설정' : '기존 잔액에 더하기',
       });
     }
