@@ -781,7 +781,7 @@ const Index = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{res.treatment_name}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">
+                    <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">
                       {res.clinic}
                       {res.time ? ` · ${res.time}` : ""}
                     </p>
@@ -804,7 +804,7 @@ const Index = () => {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">{r.clinic}</p>
+                    <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">{r.clinic}</p>
                   </div>
                   {r.satisfaction &&
               <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
@@ -837,7 +837,7 @@ const Index = () => {
                 <span className="text-sm">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">{t("managed_treatments")}</p>
+                <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">{t("managed_treatments")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
@@ -848,7 +848,7 @@ const Index = () => {
                 <span className="text-sm">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">{t("active_clinics")}</p>
+                <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">{t("active_clinics")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
@@ -859,7 +859,7 @@ const Index = () => {
                 <span className="text-sm">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">{t("remaining_sessions")}</p>
+                <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">{t("remaining_sessions")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
@@ -870,7 +870,7 @@ const Index = () => {
                 <span className="text-sm">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-[9px] text-muted-foreground">{t("remaining_points")}</p>
+                <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">{t("remaining_points")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
@@ -912,7 +912,7 @@ const Index = () => {
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex-1 min-w-0">
                           <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">
+                          <p className="text-muted-foreground mt-0.5 py-[3px] my-0 text-base">
                             {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
                           </p>
                           {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
