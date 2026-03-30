@@ -859,7 +859,7 @@ const Index = () => {
                 <span className="text-sm">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 font-sans text-sm">{t("remaining_sessions")}</p>
+                <p className="text-muted-foreground mt-0.5 text-sm">{t("remaining_sessions")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
