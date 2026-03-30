@@ -837,7 +837,7 @@ const Index = () => {
                 <span className="text-sm">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-sm">{t("managed_treatments")}</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("managed_treatments")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
@@ -848,7 +848,7 @@ const Index = () => {
                 <span className="text-sm">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-sm">{t("active_clinics")}</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("active_clinics")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
@@ -859,7 +859,7 @@ const Index = () => {
                 <span className="text-sm">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-sm">{t("remaining_sessions")}</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_sessions")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
@@ -870,7 +870,7 @@ const Index = () => {
                 <span className="text-sm">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-sm">{t("remaining_points")}</p>
+                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_points")}</p>
                 <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
