@@ -38,6 +38,7 @@ const Packages = () => {
   const { language } = useLanguage();
   const [searchParams] = useSearchParams();
   const { loading: recordsLoading } = useRecords();
+  const { nickname } = useSeason();
   const savedTabOrder = (() => { try { const s = localStorage.getItem('skindesk_tab_order'); return s ? JSON.parse(s) : null; } catch { return null; } })();
   const defaultTab = searchParams.get('tab') || (savedTabOrder ? savedTabOrder[0] : 'packages');
 

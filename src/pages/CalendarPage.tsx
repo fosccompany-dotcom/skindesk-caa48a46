@@ -142,6 +142,7 @@ const CalendarPage = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(today);
   const { cycles } = useCycles();
   const { records, updateRecord, deleteRecord } = useRecords();
+  const { nickname } = useSeason();
 
   // ── 수정/삭제 state ──
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
