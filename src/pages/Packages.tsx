@@ -1,4 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
+import { useSeason } from '@/context/SeasonContext';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Package, Wallet, Building2, MoreVertical, Pencil, Trash2, ChevronDown } from 'lucide-react';
