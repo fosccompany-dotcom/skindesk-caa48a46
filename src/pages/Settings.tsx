@@ -92,22 +92,19 @@ const Settings = () => {
       const userId = userIdRef.current;
       if (!userId) return;
 
-      const deletes: Promise<any>[] = [];
+      const deletes: Promise<unknown>[] = [];
 
       if (resetTargets.treatments) {
-        deletes.push(supabase.from('treatment_records').delete().eq('user_id', userId));
-        // 시술 기록 삭제 시 연동된 주기 데이터도 함께 삭제
-        deletes.push(supabase.from('treatment_cycles').delete().eq('user_id', userId));
+        deletes.push(supabase.from('treatment_records').delete().eq('user_id', userId).then());
+        deletes.push(supabase.from('treatment_cycles').delete().eq('user_id', userId).then());
       }
       if (resetTargets.payments) {
-        deletes.push(supabase.from('payment_records').delete().eq('user_id', userId));
-        // 결제 기록 삭제 시 클리닉 잔액도 함께 초기화
-        deletes.push(supabase.from('clinic_balances').delete().eq('user_id', userId));
-        // 포인트 거래 내역도 삭제
-        deletes.push(supabase.from('point_transactions').delete().eq('user_id', userId));
+        deletes.push(supabase.from('payment_records').delete().eq('user_id', userId).then());
+        deletes.push(supabase.from('clinic_balances').delete().eq('user_id', userId).then());
+        deletes.push(supabase.from('point_transactions').delete().eq('user_id', userId).then());
       }
       if (resetTargets.packages) {
-        deletes.push(supabase.from('treatment_packages').delete().eq('user_id', userId));
+        deletes.push(supabase.from('treatment_packages').delete().eq('user_id', userId).then());
       }
 
       await Promise.all(deletes);
