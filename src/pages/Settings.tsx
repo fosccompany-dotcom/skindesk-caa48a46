@@ -92,21 +92,28 @@ const Settings = () => {
       const userId = userIdRef.current;
       if (!userId) return;
 
+      const deletes: PromiseLike<unknown>[] = [];
+
       if (resetTargets.treatments) {
-        await supabase.from('treatment_records').delete().eq('user_id', userId);
+        deletes.push(supabase.from('treatment_records').delete().eq('user_id', userId).then());
+        deletes.push(supabase.from('treatment_cycles').delete().eq('user_id', userId).then());
       }
       if (resetTargets.payments) {
-        await supabase.from('payment_records').delete().eq('user_id', userId);
+        deletes.push(supabase.from('payment_records').delete().eq('user_id', userId).then());
+        deletes.push(supabase.from('clinic_balances').delete().eq('user_id', userId).then());
+        deletes.push(supabase.from('point_transactions').delete().eq('user_id', userId).then());
       }
       if (resetTargets.packages) {
-        await supabase.from('treatment_packages').delete().eq('user_id', userId);
+        deletes.push(supabase.from('treatment_packages').delete().eq('user_id', userId).then());
       }
+
+      await Promise.all(deletes);
 
       toast({ title: '초기화 완료', description: '선택한 기록이 삭제되었어요' });
       setResetOpen(false);
       setResetTargets({ treatments: false, payments: false, packages: false });
       window.dispatchEvent(new CustomEvent('skindesk:data-changed'));
-      window.location.reload();
+      navigate('/');
     } catch (e) {
       toast({ title: '초기화 실패', variant: 'destructive' });
     } finally {
