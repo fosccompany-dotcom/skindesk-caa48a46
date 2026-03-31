@@ -40,6 +40,8 @@ import {
   Share2,
   Sun,
   Moon,
+  Download,
+  RotateCcw,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
