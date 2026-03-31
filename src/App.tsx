@@ -21,6 +21,7 @@ import SkinQuiz from "./pages/SkinQuiz";
 import QuizResult from "./pages/QuizResult";
 import SkinMatch from "./pages/SkinMatch";
 import ResetPassword from "./pages/ResetPassword";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
@@ -70,6 +71,7 @@ const App = () => (
                     <Route path="/calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
                     
                     <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
+                    <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
