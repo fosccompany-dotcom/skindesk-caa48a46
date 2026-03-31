@@ -931,8 +931,8 @@ const Index = () => {
               </div>
             </>
           ) : (
-            <div className="text-center py-8 text-sm text-muted-foreground">
-              오늘의 기록이 당신의 피부를 만들어요 🌸
+            <div className="text-center py-8 text-sm text-muted-foreground whitespace-pre-line">
+              {"첫 기록이 내 피부 히스토리의 시작이에요.\n기록할수록 패턴이 보이고 관리가 달라져요 🌸"}
             </div>
           )}
         </div>
