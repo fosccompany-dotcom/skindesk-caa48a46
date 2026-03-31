@@ -121,15 +121,19 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header with breadcrumb */}
-      <div className="page-header-gradient safe-top flex items-center gap-3 pt-4">
-        <button onClick={() => navigate('/profile')} className="tap-target p-1">
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <div className="flex items-center gap-1.5 text-sm">
-          <span className="text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => navigate('/profile')}>마이</span>
-          <span className="text-muted-foreground">›</span>
-          <span className="font-bold">설정</span>
+      {/* Header with logo background — matching Index style */}
+      <div className="relative safe-top overflow-hidden">
+        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        <div className="absolute inset-0 bg-black/55" />
+        <div className="relative z-10 pt-4 px-5 pb-4 flex items-center gap-3">
+          <button onClick={() => navigate('/profile')} className="tap-target p-1">
+            <ChevronLeft className="h-5 w-5 text-white" />
+          </button>
+          <div className="flex items-center gap-1.5 text-sm">
+            <span className="text-white/60 cursor-pointer hover:text-white/80 transition-colors" onClick={() => navigate('/profile')}>마이</span>
+            <span className="text-white/40">›</span>
+            <span className="font-bold text-white">설정</span>
+          </div>
         </div>
       </div>
 
