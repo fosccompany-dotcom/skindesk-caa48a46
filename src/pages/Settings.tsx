@@ -92,7 +92,7 @@ const Settings = () => {
       const userId = userIdRef.current;
       if (!userId) return;
 
-      const deletes: Promise<unknown>[] = [];
+      const deletes: PromiseLike<unknown>[] = [];
 
       if (resetTargets.treatments) {
         deletes.push(supabase.from('treatment_records').delete().eq('user_id', userId).then());
