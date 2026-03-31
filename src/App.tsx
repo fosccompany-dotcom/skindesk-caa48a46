@@ -71,6 +71,7 @@ const App = () => (
                     <Route path="/calendar" element={<PrivateRoute><CalendarPage /></PrivateRoute>} />
                     
                     <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
+                    <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>
