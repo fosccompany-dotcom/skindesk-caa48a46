@@ -434,10 +434,6 @@ const Profile = () => {
     return rated.reduce((sum, r) => sum + (r.satisfaction || 0), 0) / rated.length;
   }, [records]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/");
-  };
 
 
   return (
