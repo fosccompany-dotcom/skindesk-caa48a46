@@ -368,10 +368,7 @@ const Profile = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const userIdRef = useRef<string | null>(null);
-  const [resetOpen, setResetOpen] = useState(false);
-  const [resetTargets, setResetTargets] = useState<{ treatments: boolean; payments: boolean; packages: boolean }>({ treatments: false, payments: false, packages: false });
-  const [resetting, setResetting] = useState(false);
-  const [exporting, setExporting] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false); // kept for backward compat but moved to Settings
   const [bloomStage, setBloomStage] = useState(1);
   const [totalLogCount, setTotalLogCount] = useState(0);
 
