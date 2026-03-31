@@ -21,16 +21,18 @@ import {
   Sun,
   Moon,
   ChevronLeft,
+  Globe,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Language, LANGUAGE_LABELS } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
 
 const Settings = () => {
-  const { t, language } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
   const userIdRef = useRef<string | null>(null);
 
@@ -118,15 +120,45 @@ const Settings = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
+      {/* Header with breadcrumb */}
       <div className="page-header-gradient safe-top flex items-center gap-3 pt-4">
-        <button onClick={() => navigate(-1)} className="tap-target p-1">
+        <button onClick={() => navigate('/profile')} className="tap-target p-1">
           <ChevronLeft className="h-5 w-5" />
         </button>
-        <h1 className="text-lg font-bold">설정</h1>
+        <div className="flex items-center gap-1.5 text-sm">
+          <span className="text-muted-foreground cursor-pointer hover:text-foreground" onClick={() => navigate('/profile')}>마이</span>
+          <span className="text-muted-foreground">›</span>
+          <span className="font-bold">설정</span>
+        </div>
       </div>
 
       <div className="content-padding space-y-4 mt-4">
+        {/* ── 언어 설정 ── */}
+        <Card className="glass-card">
+          <CardContent className="p-4 space-y-2">
+            <Label className="text-xs flex items-center gap-1.5">
+              <Globe className="h-3.5 w-3.5" />
+              언어 / Language
+            </Label>
+            <div className="grid grid-cols-3 gap-2">
+              {(["ko", "en", "zh"] as Language[]).map((lang) => (
+                <button
+                  key={lang}
+                  onClick={() => setLanguage(lang)}
+                  className={cn(
+                    'px-3 py-2.5 rounded-xl text-xs font-medium transition-all border',
+                    language === lang
+                      ? 'bg-primary text-primary-foreground border-primary shadow-sm'
+                      : 'bg-card border-border text-muted-foreground'
+                  )}
+                >
+                  {LANGUAGE_LABELS[lang]}
+                </button>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* ── 화면 테마 ── */}
         <Card className="glass-card">
           <CardContent className="p-4 space-y-2">
