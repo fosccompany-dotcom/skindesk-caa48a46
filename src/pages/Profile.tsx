@@ -491,18 +491,15 @@ const Profile = () => {
       const userId = userIdRef.current;
       if (!userId) return;
 
-      const promises: Promise<any>[] = [];
       if (resetTargets.treatments) {
-        promises.push(supabase.from('treatment_records').delete().eq('user_id', userId));
+        await supabase.from('treatment_records').delete().eq('user_id', userId);
       }
       if (resetTargets.payments) {
-        promises.push(supabase.from('payment_records').delete().eq('user_id', userId));
+        await supabase.from('payment_records').delete().eq('user_id', userId);
       }
       if (resetTargets.packages) {
-        promises.push(supabase.from('treatment_packages').delete().eq('user_id', userId));
+        await supabase.from('treatment_packages').delete().eq('user_id', userId);
       }
-
-      await Promise.all(promises);
 
       toast({ title: '초기화 완료', description: '선택한 기록이 삭제되었어요' });
       setResetOpen(false);
