@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import logoImg from "@/assets/logo.png";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   AlertDialog,
