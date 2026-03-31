@@ -40,6 +40,8 @@ import {
   Share2,
   Sun,
   Moon,
+  Download,
+  RotateCcw,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -56,6 +58,7 @@ import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const skinTypes: SkinType[] = ["건성", "지성", "복합성", "민감성", "중성"];
 // MECE 피부과 용어 기반 관리 관심사 (주요 고민 + 관리 목표 통합)
@@ -365,6 +368,10 @@ const Profile = () => {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deletingAccount, setDeletingAccount] = useState(false);
   const userIdRef = useRef<string | null>(null);
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetTargets, setResetTargets] = useState<{ treatments: boolean; payments: boolean; packages: boolean }>({ treatments: false, payments: false, packages: false });
+  const [resetting, setResetting] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [bloomStage, setBloomStage] = useState(1);
   const [totalLogCount, setTotalLogCount] = useState(0);
 
@@ -442,6 +449,69 @@ const Profile = () => {
   const handleLogout = async () => {
     await supabase.auth.signOut();
     navigate("/");
+  };
+
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const userId = userIdRef.current;
+      if (!userId) return;
+
+      const [treatmentRes, paymentRes, packageRes] = await Promise.all([
+        supabase.from('treatment_records').select('*').order('date', { ascending: false }),
+        supabase.from('payment_records').select('*').order('date', { ascending: false }),
+        supabase.from('treatment_packages').select('*').order('created_at', { ascending: false }),
+      ]);
+
+      const exportData = {
+        exported_at: new Date().toISOString(),
+        treatment_records: treatmentRes.data || [],
+        payment_records: paymentRes.data || [],
+        treatment_packages: packageRes.data || [],
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `skindesk_backup_${format(new Date(), 'yyyyMMdd_HHmmss')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast({ title: '내보내기 완료', description: '파일이 다운로드되었어요' });
+    } catch (e) {
+      toast({ title: '내보내기 실패', variant: 'destructive' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleReset = async () => {
+    setResetting(true);
+    try {
+      const userId = userIdRef.current;
+      if (!userId) return;
+
+      if (resetTargets.treatments) {
+        await supabase.from('treatment_records').delete().eq('user_id', userId);
+      }
+      if (resetTargets.payments) {
+        await supabase.from('payment_records').delete().eq('user_id', userId);
+      }
+      if (resetTargets.packages) {
+        await supabase.from('treatment_packages').delete().eq('user_id', userId);
+      }
+
+      toast({ title: '초기화 완료', description: '선택한 기록이 삭제되었어요' });
+      setResetOpen(false);
+      setResetTargets({ treatments: false, payments: false, packages: false });
+      window.dispatchEvent(new CustomEvent('skindesk:data-changed'));
+      // Reload to refresh all contexts
+      window.location.reload();
+    } catch (e) {
+      toast({ title: '초기화 실패', variant: 'destructive' });
+    } finally {
+      setResetting(false);
+    }
   };
 
   return (
@@ -1035,6 +1105,78 @@ const Profile = () => {
                   );
                 })}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* ── 데이터 관리 ── */}
+          <Card className="glass-card">
+            <CardContent className="p-4 space-y-3">
+              <Label className="text-xs">데이터 관리</Label>
+
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full rounded-xl text-xs gap-2"
+                onClick={handleExport}
+                disabled={exporting}
+              >
+                <Download className="h-3.5 w-3.5" />
+                {exporting ? '내보내는 중...' : '기록 내보내기 (백업)'}
+              </Button>
+
+              <AlertDialog open={resetOpen} onOpenChange={setResetOpen}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full rounded-xl text-xs gap-2 text-destructive border-destructive/30 hover:bg-destructive/10"
+                  >
+                    <RotateCcw className="h-3.5 w-3.5" />
+                    기록 초기화하기
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>기록 초기화</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      삭제할 항목을 선택해주세요. 삭제된 데이터는 복구할 수 없어요.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <div className="space-y-3 py-2">
+                    {[
+                      { key: 'treatments' as const, label: '시술 기록', desc: '시술 내역 전체' },
+                      { key: 'payments' as const, label: '결제 기록', desc: '결제 내역 전체' },
+                      { key: 'packages' as const, label: '시술권', desc: '시술권 전체' },
+                    ].map(({ key, label, desc }) => (
+                      <label key={key} className="flex items-center gap-3 cursor-pointer">
+                        <Checkbox
+                          checked={resetTargets[key]}
+                          onCheckedChange={(checked) =>
+                            setResetTargets(prev => ({ ...prev, [key]: !!checked }))
+                          }
+                        />
+                        <div>
+                          <p className="text-sm font-medium">{label}</p>
+                          <p className="text-xs text-muted-foreground">{desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </div>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>취소</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      disabled={resetting || (!resetTargets.treatments && !resetTargets.payments && !resetTargets.packages)}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleReset();
+                      }}
+                    >
+                      {resetting ? '삭제 중...' : '선택 항목 삭제'}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
 
