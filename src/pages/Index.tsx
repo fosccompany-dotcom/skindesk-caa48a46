@@ -932,7 +932,7 @@ const Index = () => {
             </>
           ) : (
             <div className="text-center py-8 text-sm text-muted-foreground">
-              아직 기록이 없어요. 첫 번째 시술을 남겨봐요 🌸
+              오늘의 기록이 당신의 피부를 만들어요 🌸
             </div>
           )}
         </div>
