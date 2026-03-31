@@ -58,6 +58,7 @@ import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
 import { Progress } from "@/components/ui/progress";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const skinTypes: SkinType[] = ["건성", "지성", "복합성", "민감성", "중성"];
 // MECE 피부과 용어 기반 관리 관심사 (주요 고민 + 관리 목표 통합)
