@@ -365,10 +365,7 @@ const Profile = () => {
   const profileLoaded = useRef(false);
   const saveTimeout = useRef<ReturnType<typeof setTimeout>>();
   const [saved, setSaved] = useState(false);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deletingAccount, setDeletingAccount] = useState(false);
   const userIdRef = useRef<string | null>(null);
-  const [deleteOpen, setDeleteOpen] = useState(false); // kept for backward compat but moved to Settings
   const [bloomStage, setBloomStage] = useState(1);
   const [totalLogCount, setTotalLogCount] = useState(0);
 
