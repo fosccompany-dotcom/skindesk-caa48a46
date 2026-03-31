@@ -21,16 +21,18 @@ import {
   Sun,
   Moon,
   ChevronLeft,
+  Globe,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/i18n/LanguageContext";
+import { Language, LANGUAGE_LABELS } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Link } from "react-router-dom";
 
 const Settings = () => {
-  const { t, language } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
   const navigate = useNavigate();
   const userIdRef = useRef<string | null>(null);
 
