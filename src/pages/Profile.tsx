@@ -451,6 +451,72 @@ const Profile = () => {
     navigate("/");
   };
 
+  const handleExport = async () => {
+    setExporting(true);
+    try {
+      const userId = userIdRef.current;
+      if (!userId) return;
+
+      const [treatmentRes, paymentRes, packageRes] = await Promise.all([
+        supabase.from('treatment_records').select('*').order('date', { ascending: false }),
+        supabase.from('payment_records').select('*').order('date', { ascending: false }),
+        supabase.from('treatment_packages').select('*').order('created_at', { ascending: false }),
+      ]);
+
+      const exportData = {
+        exported_at: new Date().toISOString(),
+        treatment_records: treatmentRes.data || [],
+        payment_records: paymentRes.data || [],
+        treatment_packages: packageRes.data || [],
+      };
+
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `skindesk_backup_${format(new Date(), 'yyyyMMdd_HHmmss')}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast({ title: '내보내기 완료', description: '파일이 다운로드되었어요' });
+    } catch (e) {
+      toast({ title: '내보내기 실패', variant: 'destructive' });
+    } finally {
+      setExporting(false);
+    }
+  };
+
+  const handleReset = async () => {
+    setResetting(true);
+    try {
+      const userId = userIdRef.current;
+      if (!userId) return;
+
+      const promises: Promise<any>[] = [];
+      if (resetTargets.treatments) {
+        promises.push(supabase.from('treatment_records').delete().eq('user_id', userId));
+      }
+      if (resetTargets.payments) {
+        promises.push(supabase.from('payment_records').delete().eq('user_id', userId));
+      }
+      if (resetTargets.packages) {
+        promises.push(supabase.from('treatment_packages').delete().eq('user_id', userId));
+      }
+
+      await Promise.all(promises);
+
+      toast({ title: '초기화 완료', description: '선택한 기록이 삭제되었어요' });
+      setResetOpen(false);
+      setResetTargets({ treatments: false, payments: false, packages: false });
+      window.dispatchEvent(new CustomEvent('skindesk:data-changed'));
+      // Reload to refresh all contexts
+      window.location.reload();
+    } catch (e) {
+      toast({ title: '초기화 실패', variant: 'destructive' });
+    } finally {
+      setResetting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="relative safe-top">
