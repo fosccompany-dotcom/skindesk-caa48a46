@@ -1020,63 +1020,6 @@ const Profile = () => {
         </div>
       </div>
 
-      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>{t("delete_account_confirm")}</AlertDialogTitle>
-            <AlertDialogDescription>{t("delete_account_desc")}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>{t("cancel")}</AlertDialogCancel>
-            <AlertDialogAction
-              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              disabled={deletingAccount}
-              onClick={async (e) => {
-                e.preventDefault();
-                setDeletingAccount(true);
-                try {
-                  const {
-                    data: { session },
-                  } = await supabase.auth.refreshSession();
-                  if (!session) {
-                    console.error("세션이 없습니다.");
-                    navigate("/");
-                    return;
-                  }
-                  const { data, error: fnError } = await supabase.functions.invoke("delete-account", {
-                    headers: { Authorization: `Bearer ${session.access_token}` },
-                  });
-                  if (fnError) {
-                    throw new Error(fnError.message || "탈퇴 처리 중 오류가 발생했습니다.");
-                  }
-                  // User is already deleted; signOut may 403 — ignore the error
-                  await supabase.auth.signOut().catch(() => {});
-                  navigate("/farewell");
-                } catch (e: unknown) {
-                  const message = e instanceof Error ? e.message : "탈퇴 처리 중 오류가 발생했습니다.";
-                  console.error("탈퇴 실패", message);
-                  toast({ title: message, variant: "destructive" });
-                  setDeletingAccount(false);
-                }
-              }}
-            >
-              {deletingAccount ? "처리 중..." : t("delete_account")}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Footer links */}
-      <div className="flex items-center justify-center gap-3 pt-4 pb-8">
-        <Link to="/terms" className="text-xs text-muted-foreground hover:underline">
-          {language === 'en' ? 'Terms of Service' : language === 'zh' ? '服务条款' : '이용약관'}
-        </Link>
-        <span className="text-xs text-muted-foreground">·</span>
-        <Link to="/privacy" className="text-xs text-muted-foreground hover:underline">
-          {language === 'en' ? 'Privacy Policy' : language === 'zh' ? '隐私政策' : '개인정보처리방침'}
-        </Link>
-      </div>
-    </div>
   );
 };
 
