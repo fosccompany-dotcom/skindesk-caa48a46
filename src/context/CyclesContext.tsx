@@ -55,7 +55,15 @@ export function CyclesProvider({ children }: { children: ReactNode }) {
         filter: `user_id=eq.${user.id}`,
       }, () => { fetchCycles(); })
       .subscribe();
-    return () => { supabase.removeChannel(channel); };
+
+    // 외부 데이터 변경(초기화 등) 시 cycles 재조회
+    const handler = () => fetchCycles();
+    window.addEventListener('skindesk:data-changed', handler);
+
+    return () => {
+      supabase.removeChannel(channel);
+      window.removeEventListener('skindesk:data-changed', handler);
+    };
   }, [user, fetchCycles]);
 
   return (
