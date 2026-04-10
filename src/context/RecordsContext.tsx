@@ -48,6 +48,13 @@ export function RecordsProvider({ children }: { children: ReactNode }) {
     fetchRecords();
   }, [user]);
 
+  // 외부 데이터 변경(초기화 등) 시 records 재조회
+  useEffect(() => {
+    const handler = () => { if (user) fetchRecords(); };
+    window.addEventListener('skindesk:data-changed', handler);
+    return () => window.removeEventListener('skindesk:data-changed', handler);
+  }, [user]);
+
   const fetchRecords = async () => {
     setLoading(true);
     const { data, error } = await supabase
