@@ -76,12 +76,6 @@ interface Reservation {
 
 
 const TODAY = new Date();
-const CONDITION_KEYS = [
-{ emoji: "🏭", key: "condition_oily" as const, value: 5 },
-{ emoji: "🌊", key: "condition_moist" as const, value: 4 },
-{ emoji: "🌤️", key: "condition_clear" as const, value: 3 },
-{ emoji: "🌵", key: "condition_dry" as const, value: 2 },
-{ emoji: "🏜️", key: "condition_desert" as const, value: 1 }];
 
 
 function getCycleStatus(cycle: TreatmentCycle) {
