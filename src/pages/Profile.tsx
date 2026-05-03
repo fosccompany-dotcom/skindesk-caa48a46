@@ -738,16 +738,33 @@ const Profile = () => {
                       </Button>
                     )}
                     <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs h-7 px-2"
-                      onClick={async () => {
-                        const userId = userIdRef.current;
-                        if (!userId) return;
-                        await supabase.from('user_profiles').update({ quiz_completed_at: null }).eq('id', userId);
-                        navigate('/quiz');
-                      }}
-                    >
+  variant="outline"
+  size="sm"
+  className="text-xs h-7 px-2"
+  onClick={async () => {
+    try {
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      if (authError || !user) {
+        console.error('[퀴즈 시작] auth 실패', authError);
+        toast.error('로그인이 필요해요');
+        return;
+      }
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({ quiz_completed_at: null })
+        .eq('id', user.id);
+      if (updateError) {
+        console.error('[퀴즈 시작] update 실패', updateError);
+        toast.error('잠시 후 다시 시도해주세요');
+        return;
+      }
+      navigate('/quiz');
+    } catch (e) {
+      console.error('[퀴즈 시작] 예외', e);
+      toast.error('오류가 발생했어요');
+    }
+  }}
+>
                       {skinTribe ? '다시 하기' : '퀴즈 시작'}
                     </Button>
                   </div>
