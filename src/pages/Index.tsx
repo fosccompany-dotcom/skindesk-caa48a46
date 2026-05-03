@@ -658,17 +658,6 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* ═══ AI 시술 기록 배너 (로그인 유저만) ═══ */}
-        <button
-          onClick={() => setParseModalOpen(true)}
-          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[11px] my-[5px] px-[11px] mx-0 mr-0 pl-[10px] pr-[10px] items-center justify-start flex flex-row text-left">
-          <span className="text-2xl px-[3px]">📋</span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary-foreground">{t("ai_parse_title")}</p>
-            <p className="text-[11px] text-primary-foreground/70">{t("ai_parse_desc")}</p>
-          </div>
-          <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
-        </button>
 
 
         {/* ═══ Recent Records ═══ */}
