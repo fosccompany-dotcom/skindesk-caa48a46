@@ -119,9 +119,15 @@ const MyTreatmentHistory = () => {
   // Filter & search
   const filtered = useMemo(() => {
     const now = new Date();
+    const selectedDateStr = format(selectedDate, 'yyyy-MM-dd');
     return records
       .filter(r => !r.packageId)
       .filter(r => {
+        // Calendar view → only the selected date
+        if (viewMode === 'calendar') {
+          if (r.date !== selectedDateStr) return false;
+          return true;
+        }
         // Period filter
         if (periodFilter !== 'all') {
           const d = parseISO(r.date);
@@ -148,7 +154,7 @@ const MyTreatmentHistory = () => {
         }
         return true;
       });
-  }, [records, periodFilter, categoryFilter, bodyAreaFilter, clinicFilter, search]);
+  }, [records, periodFilter, categoryFilter, bodyAreaFilter, clinicFilter, search, viewMode, selectedDate]);
 
   // Group by month
   const grouped = useMemo(() => {
