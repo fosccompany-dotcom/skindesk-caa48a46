@@ -537,67 +537,39 @@ const Index = () => {
           <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
         </button>
 
-        {/* ═══ Today's Condition Log ═══ */}
-        <Card className="border-0 shadow-sm">
-          <CardContent className="px-2.5 py-2">
-            <p className="text-sm font-bold text-foreground mb-1">{t("today_condition")}</p>
-            <p className="text-[10px] text-muted-foreground mb-1.5">
-              {language === "en" ? format(TODAY, "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(TODAY, "M月d日 (EEEE)", { locale: dateLocale }) : format(TODAY, "M월 d일 (EEEE)", { locale: dateLocale })} · {t("condition_question")}
-            </p>
-            <div className="flex items-center justify-between gap-1 mb-1.5">
-              {CONDITION_OPTIONS.map((opt) => (
-                <button
-                  key={opt.value}
-                  className={cn(
-                    "flex-1 flex flex-col items-center rounded-xl transition-all text-center gap-0 py-0",
-                    todayCondition === opt.value
-                      ? "bg-primary/10 ring-2 ring-primary/30 scale-105"
-                      : "bg-muted/50 hover:bg-muted"
-                  )}
-                  onClick={() => setTodayCondition(todayCondition === opt.value ? null : opt.value)}
-                >
-                  <span className="text-xl">{opt.emoji}</span>
-                  <span className="text-[10px] font-medium text-foreground">{opt.label}</span>
-                </button>
-              ))}
-            </div>
-            {todayCondition &&
-            <div className="space-y-2">
-                <textarea
-                className="w-full text-xs bg-muted/30 border border-border/50 rounded-lg px-3 py-2 resize-none focus:outline-none focus:ring-1 focus:ring-primary/30"
-                placeholder={t("condition_memo_placeholder")}
-                rows={2}
-                value={conditionMemo}
-                onChange={(e) => setConditionMemo(e.target.value)} />
-              
-                <button
-                className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-bold active:scale-[0.98] transition-transform"
-                onClick={async () => {
-                  await addRecord({
-                    date: format(TODAY, "yyyy-MM-dd"),
-                    treatmentName: t("condition_record_name"),
-                    treatmentId: undefined,
-                    packageId: "",
-                    skinLayer: "epidermis",
-                    bodyArea: "face",
-                    clinic: "-",
-                    satisfaction: todayCondition as 1 | 2 | 3 | 4 | 5,
-                    memo:
-                    conditionMemo || `${t("condition_prefix")} ${CONDITION_OPTIONS.find((o) => o.value === todayCondition)?.label}`,
-                    notes: t("daily_condition_note")
-                  });
-                  setTodayCondition(null);
-                  setConditionMemo("");
-                  setShowReward(true);
-                  setTimeout(() => setShowReward(false), 2500);
-                }}>
-                
-                  {t("record_condition")}
-                </button>
+        {/* ═══ Next Step Card ═══ */}
+        {(() => {
+          let icon = "✨";
+          let mainText = "첫 시술 기록하기";
+          let subText = "기록 한 건이 회복 추적의 시작이에요";
+          let onClick = () => setParseModalOpen(true);
+
+          if (!nextStepInfo.quizDone) {
+            icon = "🌱";
+            mainText = "30초만에 내 피부족 알아보기";
+            subText = "내 피부에 맞는 관리 시작";
+            onClick = () => navigate('/profile');
+          } else if (nextStepInfo.logCount > 0 && nextStepInfo.lastDate) {
+            const dPlus = differenceInDays(TODAY, new Date(nextStepInfo.lastDate));
+            icon = "📸";
+            mainText = `${nextStepInfo.lastName ?? ''} D+${dPlus}`;
+            subText = "오늘 회복 컨디션 기록하기";
+            onClick = () => setParseModalOpen(true);
+          }
+
+          return (
+            <button
+              onClick={onClick}
+              className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[11px] my-[5px] px-[11px] mx-0 mr-0 pl-[10px] pr-[10px] items-center justify-start flex flex-row text-left">
+              <span className="text-2xl px-[3px]">{icon}</span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-primary-foreground">{mainText}</p>
+                <p className="text-[11px] text-primary-foreground/70">{subText}</p>
               </div>
-            }
-          </CardContent>
-        </Card>
+              <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
+            </button>
+          );
+        })()}
 
 
         {/* Mini calendar removed — see /calendar page */}
