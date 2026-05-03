@@ -559,7 +559,7 @@ const Index = () => {
             icon = "🌱";
             mainText = "30초만에 내 피부족 알아보기";
             subText = "내 피부에 맞는 관리 시작";
-            onClick = () => navigate('/profile');
+            onClick = () => navigate('/profile#skin-tribe');
           } else if (nextStepInfo.logCount > 0 && nextStepInfo.lastDate) {
             const dPlus = differenceInDays(TODAY, new Date(nextStepInfo.lastDate));
             icon = "📸";
