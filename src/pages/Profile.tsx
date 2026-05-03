@@ -746,7 +746,7 @@ const Profile = () => {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError || !user) {
         console.error('[퀴즈 시작] auth 실패', authError);
-        toast.error('로그인이 필요해요');
+        toast({ title: '로그인이 필요해요', variant: 'destructive' });
         return;
       }
       const { error: updateError } = await supabase
@@ -755,13 +755,13 @@ const Profile = () => {
         .eq('id', user.id);
       if (updateError) {
         console.error('[퀴즈 시작] update 실패', updateError);
-        toast.error('잠시 후 다시 시도해주세요');
+        toast({ title: '잠시 후 다시 시도해주세요', variant: 'destructive' });
         return;
       }
       navigate('/quiz');
     } catch (e) {
       console.error('[퀴즈 시작] 예외', e);
-      toast.error('오류가 발생했어요');
+      toast({ title: '오류가 발생했어요', variant: 'destructive' });
     }
   }}
 >
