@@ -115,7 +115,7 @@ const Index = () => {
   const { t, language, setLanguage } = useLanguage();
   const dateLocale = language === "en" ? enLocale : language === "zh" ? zhLocale : koLocale;
   const WEEKDAYS = [t("weekday_sun"), t("weekday_mon"), t("weekday_tue"), t("weekday_wed"), t("weekday_thu"), t("weekday_fri"), t("weekday_sat")];
-  const CONDITION_OPTIONS = CONDITION_KEYS.map((c) => ({ ...c, label: t(c.key) }));
+  const [nextStepInfo, setNextStepInfo] = useState<{ quizDone: boolean; logCount: number; lastDate: string | null; lastName: string | null }>({ quizDone: false, logCount: 0, lastDate: null, lastName: null });
   const [langOpen, setLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
