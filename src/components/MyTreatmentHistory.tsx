@@ -630,6 +630,8 @@ const MyTreatmentHistory = () => {
           </div>
         ))
       )}
+      </>
+      )}
     </div>
   );
 };
