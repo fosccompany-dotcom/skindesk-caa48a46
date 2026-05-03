@@ -533,6 +533,17 @@ const Index = () => {
       {/* ── CONTENT ── */}
       <div className="page-content space-y-1.5 pt-3 pb-40">
 
+        {/* ═══ AI 시술 기록 배너 (메인 CTA, 상단으로 이동) ═══ */}
+        <button
+          onClick={() => setParseModalOpen(true)}
+          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[11px] my-[5px] px-[11px] mx-0 mr-0 pl-[10px] pr-[10px] items-center justify-start flex flex-row text-left">
+          <span className="text-2xl px-[3px]">📋</span>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-primary-foreground">{t("ai_parse_title")}</p>
+            <p className="text-[11px] text-primary-foreground/70">{t("ai_parse_desc")}</p>
+          </div>
+          <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
+        </button>
 
         {/* ═══ Today's Condition Log ═══ */}
         <Card className="border-0 shadow-sm">
@@ -597,237 +608,7 @@ const Index = () => {
         </Card>
 
 
-        {/* ═══ Mini Calendar (moved to top) ═══ */}
-        <Card className="border-0 shadow-sm overflow-hidden">
-          <CardContent className="px-3 py-2.5">
-            <div className="flex items-center justify-between mb-2">
-              <button
-                onClick={() => setCalendarMonth((prev) => subMonths(prev, 1))}
-                className="p-1 rounded-lg hover:bg-muted transition-colors">
-                <ChevronLeft size={14} className="text-muted-foreground" />
-              </button>
-              <div className="relative">
-                <button
-                  onClick={() => setYearMonthPickerOpen((v) => !v)}
-                  className="text-xs font-bold text-foreground hover:text-primary transition-colors flex items-center gap-1">
-                  {language === "en" ? format(calendarMonth, "MMMM yyyy", { locale: dateLocale }) : language === "zh" ? `${calendarMonth.getFullYear()}年 ${calendarMonth.getMonth() + 1}月` : format(calendarMonth, "yyyy년 M월", { locale: dateLocale })}
-                  <ChevronDown size={10} className={cn("transition-transform", yearMonthPickerOpen && "rotate-180")} />
-                </button>
-                {yearMonthPickerOpen &&
-                <div className="absolute top-full mt-2 left-1/2 -translate-x-1/2 z-50 bg-card border border-border rounded-xl shadow-lg p-3 w-[260px]">
-                    <div className="flex items-center justify-between mb-3">
-                      <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() - 1))} className="p-1 rounded hover:bg-muted">
-                        <ChevronLeft size={14} />
-                      </button>
-                      <span className="text-sm font-bold">{calendarMonth.getFullYear()}{t("year_suffix")}</span>
-                      <button onClick={() => setCalendarMonth((prev) => setYear(prev, prev.getFullYear() + 1))} className="p-1 rounded hover:bg-muted">
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-4 gap-1.5">
-                      {Array.from({ length: 12 }, (_, i) =>
-                    <button
-                      key={i}
-                      onClick={() => {
-                        setCalendarMonth((prev) => setMonth(setYear(prev, calendarMonth.getFullYear()), i));
-                        setYearMonthPickerOpen(false);
-                      }}
-                      className={cn(
-                        "py-1.5 rounded-lg text-xs font-medium transition-colors",
-                        calendarMonth.getMonth() === i ? "bg-primary text-primary-foreground" : "hover:bg-muted text-foreground"
-                      )}>
-                          {language === "en" ? format(new Date(2000, i, 1), "MMM") : `${i + 1}${t("month_suffix")}`}
-                        </button>
-                    )}
-                    </div>
-                  </div>
-                }
-              </div>
-              <button
-                onClick={() => setCalendarMonth((prev) => addMonths(prev, 1))}
-                className="p-1 rounded-lg hover:bg-muted transition-colors">
-                <ChevronRight size={14} className="text-muted-foreground" />
-              </button>
-            </div>
-
-            <div className="grid grid-cols-7 mb-0.5">
-              {WEEKDAYS.map((d) =>
-              <div key={d} className="text-center text-[9px] text-muted-foreground font-medium py-0.5">
-                  {d}
-                </div>
-              )}
-            </div>
-
-            <div className="grid grid-cols-7">
-              {calendarDays.map((day, i) => {
-                const dateStr = format(day, "yyyy-MM-dd");
-                const inMonth = isSameMonth(day, calendarMonth);
-                const isToday2 = isSameDay(day, TODAY);
-                const hasRecord = recordDateSet.has(dateStr);
-                const hasReservation = reservationDateSet.has(dateStr);
-                const cycleLabel = cycleDateMap.get(dateStr);
-                const hasExpiry = expiryDateSet.has(dateStr) || isEmpty && dateStr === exampleExpiryDate;
-                const isSelected = activeSelectedDate === dateStr;
-                const hasAnyData = hasRecord || hasReservation;
-                let longPressTimer: ReturnType<typeof setTimeout> | null = null;
-
-                return (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      setSelectedDate(day);
-                      if (inMonth && !hasRecord && !hasReservation && !expiryByDate[dateStr]?.length) {
-                        guardAction(() => setShowActionPicker(true));
-                      }
-                    }}
-                    onDoubleClick={() => {
-                      if (hasAnyData && inMonth) {
-                        setSelectedDate(day);
-                        guardAction(() => setShowActionPicker(true));
-                      }
-                    }}
-                    onPointerDown={() => {
-                      if (hasAnyData && inMonth) {
-                        longPressTimer = setTimeout(() => {
-                          setSelectedDate(day);
-                          guardAction(() => setShowActionPicker(true));
-                        }, 500);
-                      }
-                    }}
-                    onPointerUp={() => {if (longPressTimer) clearTimeout(longPressTimer);}}
-                    onPointerLeave={() => {if (longPressTimer) clearTimeout(longPressTimer);}}
-                    onContextMenu={(e) => {if (hasAnyData && inMonth) e.preventDefault();}}
-                    className={cn("flex flex-col items-center py-0.5 transition-colors", !inMonth && "opacity-30")}>
-                    <span
-                      className={cn(
-                        "w-6 h-6 flex items-center justify-center rounded-full text-[11px] transition-all",
-                        isSelected && "bg-primary text-primary-foreground font-bold",
-                        !isSelected && isToday2 && "bg-primary/20 text-primary font-semibold",
-                        !isSelected && hasRecord && !isToday2 && "bg-[#FF7F7F]/40",
-                        !isSelected && hasExpiry && !isToday2 && !hasRecord && "bg-[hsl(var(--destructive))]/15",
-                        !isSelected && cycleLabel && !isToday2 && !hasRecord && !hasExpiry && "ring-1 ring-primary/30"
-                      )}>
-                      {format(day, "d")}
-                    </span>
-                    <div className="flex gap-0.5 mt-px h-1 items-center">
-                      {hasRecord && <div className="w-1 h-1 rounded-full bg-[#C9A96E]" />}
-                      {hasReservation && <div className="w-1 h-1 rounded-full bg-info" />}
-                      {hasExpiry && <div className="w-1 h-1 rounded-full bg-destructive" />}
-                      {cycleLabel && inMonth && !hasRecord && !hasReservation && !hasExpiry &&
-                      <div className="w-1 h-1 rounded-full bg-primary" />
-                      }
-                    </div>
-                  </button>);
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* ═══ Selected Date Info ═══ */}
-        {activeSelectedDate &&
-        <div className="space-y-2">
-            <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1 py-[5px]">
-              <CalendarDays className="h-3.5 w-3.5 text-primary" />
-              {language === "en" ? format(new Date(activeSelectedDate + "T00:00:00"), "EEEE, MMM d", { locale: dateLocale }) : language === "zh" ? format(new Date(activeSelectedDate + "T00:00:00"), "M月d日 (EEEE)", { locale: dateLocale }) : format(new Date(activeSelectedDate + "T00:00:00"), "M월 d일 (EEEE)", { locale: dateLocale })}
-            </p>
-
-            {/* Expiry reminders */}
-            {(expiryByDate[activeSelectedDate] || []).map((ev, idx) =>
-            <Card key={`expiry-${idx}`} className="border-0 shadow-sm border-l-2 border-l-destructive">
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
-                    <span className="text-base">⏰</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{ev.name}</p>
-                    <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {ev.expiryDate}{t("expiry_on_date")} (D-{ev.daysLeft})
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Example expiry for empty state */}
-            {isEmpty && activeSelectedDate === exampleExpiryDate &&
-            <Card className="border-0 shadow-sm border-l-2 border-l-destructive opacity-60">
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
-                    <span className="text-base">⏰</span>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{t("expiry_soon_title")}</p>
-                    <p className="text-[11px] text-destructive font-medium mt-0.5">
-                      {language === "en" ? format(addDays(TODAY, 8), "MMM d") : format(addDays(TODAY, 8), "M月 d일")}{t("expiry_example_suffix")}
-                    </p>
-                  </div>
-                  <span className="text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full shrink-0">
-                    {t("example_label")}
-                  </span>
-                </CardContent>
-              </Card>
-            }
-
-            {/* Reservations */}
-            {selectedReservations.map((res) =>
-            <Card
-              key={res.id}
-              className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform"
-              onClick={() => setEditingReservation(res)}>
-              
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-info/10 flex items-center justify-center shrink-0">
-                    <CalendarPlus className="h-4 w-4 text-info" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{res.treatment_name}</p>
-                    <p className="text-muted-foreground mt-0.5 font-sans text-sm">
-                      {res.clinic}
-                      {res.time ? ` · ${res.time}` : ""}
-                    </p>
-                  </div>
-                  <span className="text-[10px] font-medium text-info bg-info/10 px-2 py-0.5 rounded-full shrink-0">
-                    {t("reservation_label")}
-                  </span>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Treatment records */}
-            {selectedRecords.map((r) =>
-            <Card key={r.id} className="border-0 shadow-sm">
-                <CardContent className="p-3.5 flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
-                    {(r.treatmentName === "컨디션 기록" || r.treatmentName === "Condition Log" || r.treatmentName === "状态记录") && r.satisfaction ?
-                    <span className="text-lg">{CONDITION_OPTIONS.find((o) => o.value === r.satisfaction)?.emoji ?? "🌤️"}</span> :
-                    <Stethoscope className="h-4 w-4 text-primary" />}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold truncate">{r.treatmentName}</p>
-                    <p className="text-muted-foreground mt-0.5 font-sans text-sm">{r.clinic}</p>
-                  </div>
-                  {r.satisfaction &&
-                  <span className="text-xs text-[hsl(var(--accent))] font-medium shrink-0">
-                      {"★".repeat(r.satisfaction)}
-                    </span>
-                  }
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Add button when there are existing items */}
-            {hasSelectedInfo &&
-            <button
-              onClick={() => guardAction(() => setShowActionPicker(true))}
-              className="w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl border border-dashed border-muted-foreground/20 text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-colors active:scale-[0.98]">
-              
-                <Plus className="h-4 w-4" />
-                <span className="text-xs font-medium">{t("add_button")}</span>
-              </button>
-            }
-
-          </div>
-        }
+        {/* Mini calendar removed — see /calendar page */}
 
         {/* ═══ Stat Cards — 2×2 compact ═══ */}
         <div className="grid grid-cols-2 gap-2 text-base pb-[3px]">
@@ -877,17 +658,6 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* ═══ AI 시술 기록 배너 (로그인 유저만) ═══ */}
-        <button
-          onClick={() => setParseModalOpen(true)}
-          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[11px] my-[5px] px-[11px] mx-0 mr-0 pl-[10px] pr-[10px] items-center justify-start flex flex-row text-left">
-          <span className="text-2xl px-[3px]">📋</span>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary-foreground">{t("ai_parse_title")}</p>
-            <p className="text-[11px] text-primary-foreground/70">{t("ai_parse_desc")}</p>
-          </div>
-          <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
-        </button>
 
 
         {/* ═══ Recent Records ═══ */}
