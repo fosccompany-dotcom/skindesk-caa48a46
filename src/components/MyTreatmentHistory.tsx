@@ -5,11 +5,12 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { SKIN_LAYER_LABELS, BODY_AREA_LABELS, SkinLayer, BodyArea, TreatmentRecord } from '@/types/skin';
-import { format, parseISO, subMonths } from 'date-fns';
+import { format, parseISO, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, addMonths, isSameMonth, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import {
   Search, ChevronDown, ChevronUp, Pencil, Trash2, Check, X, Star,
-  Calendar as CalendarIcon, Building2, Stethoscope, FileText, Zap
+  Calendar as CalendarIcon, Building2, Stethoscope, FileText, Zap,
+  ChevronLeft, ChevronRight, List as ListIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
