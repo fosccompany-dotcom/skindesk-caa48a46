@@ -638,8 +638,6 @@ const MyTreatmentHistory = () => {
           </div>
         ))
       )}
-      </>
-      )}
     </div>
   );
 };
