@@ -135,8 +135,6 @@ const Index = () => {
     }[]>(
     []);
   const [clinicPayments, setClinicPayments] = useState<{amount: number;method: string;}[]>([]);
-  const [todayCondition, setTodayCondition] = useState<number | null>(null);
-  const [conditionMemo, setConditionMemo] = useState("");
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date | null>(new Date());
   const [showActionPicker, setShowActionPicker] = useState(false);
