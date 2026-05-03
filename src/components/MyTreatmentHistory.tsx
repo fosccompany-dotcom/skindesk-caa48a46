@@ -78,6 +78,9 @@ const MyTreatmentHistory = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TreatmentRecord>>({});
+  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
   // Derive dynamic body area chips from records
   const bodyAreaChips = useMemo(() => {
