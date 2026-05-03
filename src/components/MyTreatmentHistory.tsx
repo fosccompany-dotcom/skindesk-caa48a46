@@ -217,9 +217,118 @@ const MyTreatmentHistory = () => {
     );
   }
 
+  // Calendar helpers
+  const recordDateSet = useMemo(() => {
+    const s = new Set<string>();
+    records.filter(r => !r.packageId).forEach(r => s.add(r.date));
+    return s;
+  }, [records]);
+
+  const calendarDays = useMemo(() => {
+    const monthStart = startOfMonth(calendarMonth);
+    const monthEnd = endOfMonth(calendarMonth);
+    const startDate = startOfWeek(monthStart, { weekStartsOn: 0 });
+    const endDate = endOfWeek(monthEnd, { weekStartsOn: 0 });
+    const days: Date[] = [];
+    let day = startDate;
+    while (day <= endDate) { days.push(day); day = addDays(day, 1); }
+    return days;
+  }, [calendarMonth]);
+
+  const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
   return (
     <div className="space-y-4">
 
+      {/* View mode toggle */}
+      <div className="inline-flex p-1 bg-muted rounded-lg">
+        <button
+          onClick={() => setViewMode('calendar')}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all',
+            viewMode === 'calendar' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+          )}
+        >
+          <CalendarIcon className="h-3.5 w-3.5" /> 캘린더
+        </button>
+        <button
+          onClick={() => setViewMode('list')}
+          className={cn(
+            'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all',
+            viewMode === 'list' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+          )}
+        >
+          <ListIcon className="h-3.5 w-3.5" /> 리스트
+        </button>
+      </div>
+
+      {viewMode === 'calendar' && (
+        <>
+          <Card className="border-0 shadow-sm overflow-hidden">
+            <CardContent className="px-3 py-2.5">
+              <div className="flex items-center justify-between mb-2">
+                <button
+                  onClick={() => setCalendarMonth(prev => subMonths(prev, 1))}
+                  className="p-1 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <ChevronLeft size={14} className="text-muted-foreground" />
+                </button>
+                <span className="text-xs font-bold text-foreground">
+                  {format(calendarMonth, 'yyyy년 M월', { locale: ko })}
+                </span>
+                <button
+                  onClick={() => setCalendarMonth(prev => addMonths(prev, 1))}
+                  className="p-1 rounded-lg hover:bg-muted transition-colors"
+                >
+                  <ChevronRight size={14} className="text-muted-foreground" />
+                </button>
+              </div>
+              <div className="grid grid-cols-7 mb-0.5">
+                {WEEKDAYS.map(d => (
+                  <div key={d} className="text-center text-[9px] text-muted-foreground font-medium py-0.5">{d}</div>
+                ))}
+              </div>
+              <div className="grid grid-cols-7">
+                {calendarDays.map((day, i) => {
+                  const dateStr = format(day, 'yyyy-MM-dd');
+                  const inMonth = isSameMonth(day, calendarMonth);
+                  const isTodayDay = isSameDay(day, new Date());
+                  const hasRecord = recordDateSet.has(dateStr);
+                  const isSelected = isSameDay(day, selectedDate);
+                  return (
+                    <button
+                      key={i}
+                      onClick={() => setSelectedDate(day)}
+                      className={cn('flex flex-col items-center py-0.5 transition-colors', !inMonth && 'opacity-30')}
+                    >
+                      <span
+                        className={cn(
+                          'w-6 h-6 flex items-center justify-center rounded-full text-[11px] transition-all',
+                          isSelected && 'bg-primary text-primary-foreground font-bold',
+                          !isSelected && isTodayDay && 'bg-primary/20 text-primary font-semibold',
+                          !isSelected && hasRecord && !isTodayDay && 'bg-[#FF7F7F]/40'
+                        )}
+                      >
+                        {format(day, 'd')}
+                      </span>
+                      <div className="flex gap-0.5 mt-px h-1 items-center">
+                        {hasRecord && <div className="w-1 h-1 rounded-full bg-[#C9A96E]" />}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+          <p className="text-xs font-bold text-foreground flex items-center gap-1.5 px-1">
+            <CalendarIcon className="h-3.5 w-3.5 text-primary" />
+            {format(selectedDate, 'M월 d일 (EEEE)', { locale: ko })}
+          </p>
+        </>
+      )}
+
+      {viewMode === 'list' && (
+      <>
 
       {/* Row 1 — 기간 dropdown */}
       <div className="space-y-2">
