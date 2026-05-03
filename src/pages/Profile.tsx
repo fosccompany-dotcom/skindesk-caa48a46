@@ -47,7 +47,7 @@ import { useLanguage } from "@/i18n/LanguageContext";
 import { Language, LANGUAGE_LABELS } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason, SeasonKey } from "@/context/SeasonContext";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
@@ -362,6 +362,19 @@ const Profile = () => {
   const userIdRef = useRef<string | null>(null);
   const [bloomStage, setBloomStage] = useState(1);
   const [totalLogCount, setTotalLogCount] = useState(0);
+
+  // ── 해시 스크롤 (#skin-tribe) ─────────────────────────────────────
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash === "#skin-tribe") {
+      setTimeout(() => {
+        document.getElementById("skin-tribe")?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 200);
+    }
+  }, [location.hash]);
 
   // ── Supabase 프로필 로드 ─────────────────────────────────────────────
   useEffect(() => {
@@ -709,7 +722,7 @@ const Profile = () => {
               </div>
 
               {/* 내 피부족 */}
-              <div className="space-y-2">
+              <div id="skin-tribe" className="space-y-2">
                 <Label className="text-xs">내 피부족</Label>
                 <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-3 py-2.5">
                   <div className="flex items-center gap-2">
