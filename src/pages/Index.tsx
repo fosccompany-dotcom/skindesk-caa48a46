@@ -203,6 +203,17 @@ const Index = () => {
       if (payRes.data) setClinicPayments(payRes.data);
       if (pkgRes.data) setPackages(pkgRes.data);
       if (resRes.data) setReservations(resRes.data as Reservation[]);
+
+      const [profRes, lastRecRes] = await Promise.all([
+        supabase.from("user_profiles").select("quiz_completed_at,total_log_count").eq("id", user.id).maybeSingle(),
+        supabase.from("treatment_records").select("date,treatment_name").eq("user_id", user.id).order("date", { ascending: false }).limit(1).maybeSingle(),
+      ]);
+      setNextStepInfo({
+        quizDone: !!profRes.data?.quiz_completed_at,
+        logCount: profRes.data?.total_log_count ?? 0,
+        lastDate: lastRecRes.data?.date ?? null,
+        lastName: lastRecRes.data?.treatment_name ?? null,
+      });
     };
     loadDashboard();
   }, [records, reservationRefresh, dataRefresh]);
