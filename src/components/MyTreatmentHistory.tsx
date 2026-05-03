@@ -389,9 +389,16 @@ const MyTreatmentHistory = () => {
           </div>
         )}
       </div>
+      </>
+      )}
 
       {/* Records by month */}
       {Object.keys(grouped).length === 0 ? (
+        viewMode === 'calendar' ? (
+          <div className="rounded-2xl border border-dashed border-muted-foreground/20 bg-muted/30 p-6 text-center">
+            <p className="text-xs text-muted-foreground">선택한 날짜에 시술 기록이 없어요</p>
+          </div>
+        ) : (
         <div className="space-y-3 mt-2">
           {/* 예시 시술내역 카드 */}
           <div className="relative opacity-60 pointer-events-none">
