@@ -468,6 +468,7 @@ const MyTreatmentHistory = () => {
             </div>
           </div>
         </div>
+        )
       ) : (
         Object.entries(grouped).map(([month, recs]) => (
           <div key={month}>
