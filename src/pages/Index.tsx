@@ -633,54 +633,6 @@ const Index = () => {
 
         {/* Mini calendar removed — see /calendar page */}
 
-        {/* ═══ Stat Cards — 2×2 compact ═══ */}
-        <div className="grid grid-cols-2 gap-2 text-base pb-[3px]">
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">💉</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("managed_treatments")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">🏥</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("active_clinics")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">🎟️</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_sessions")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=points")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">💰</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_points")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
 
 
         {/* ═══ Recent Records ═══ */}
