@@ -20,8 +20,8 @@ const BottomNav = () => {
 
   const navItems = [
     { path: '/', icon: Home, label: t('nav_home') },
-    { path: '/calendar', icon: ClipboardList, label: t('nav_calendar') },
     { path: '/packages', icon: Package, label: t('nav_packages') },
+    { path: '/calendar', icon: ClipboardList, label: t('nav_calendar') },
     { path: '/profile', icon: User, label: t('nav_my') },
   ];
 
