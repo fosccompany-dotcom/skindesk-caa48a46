@@ -551,7 +551,7 @@ const Index = () => {
               <CardContent className="px-4 py-4 space-y-2.5">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🌷</span>
-                  <p className="text-[11px] font-bold tracking-wide text-muted-foreground uppercase">{t("last_treatment") || "마지막 시술"}</p>
+                  <p className="text-[11px] font-bold tracking-wide text-muted-foreground uppercase">마지막 시술</p>
                 </div>
                 <div className="flex items-baseline gap-2 flex-wrap">
                   <p className="text-base font-bold text-foreground">{nextStepInfo.lastName}</p>
@@ -561,11 +561,11 @@ const Index = () => {
                 <div className="flex items-center gap-2 pt-1.5 border-t border-border/40">
                   <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
                   <p className="text-xs text-foreground">
-                    {t("next_recommended") || "다음 추천"} <span className="font-bold text-primary">{nextDateLabel}</span>
+                    다음 추천 <span className="font-bold text-primary">{nextDateLabel}</span>
                     {daysToNext >= 0 ? (
-                      <span className="text-muted-foreground"> · {daysToNext === 0 ? (t("today") || "오늘") : `D-${daysToNext}`}</span>
+                      <span className="text-muted-foreground"> · {daysToNext === 0 ? "오늘" : `D-${daysToNext}`}</span>
                     ) : (
-                      <span className="text-destructive font-semibold"> · {Math.abs(daysToNext)}{t("days_overdue_suffix") || "일 지남"}</span>
+                      <span className="text-destructive font-semibold"> · {Math.abs(daysToNext)}일 지남</span>
                     )}
                   </p>
                 </div>
