@@ -31,6 +31,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { SeasonProvider } from "./context/SeasonContext";
+import { ManagementSettingsProvider } from "./context/ManagementSettingsContext";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +49,7 @@ const App = () => (
             <SeasonProvider>
             <CyclesProvider>
               <RecordsProvider>
+                <ManagementSettingsProvider>
                 <div className="app-container min-h-screen bg-background relative">
                   <Routes>
                     {/* 공개 라우트 */}
@@ -78,6 +80,7 @@ const App = () => (
                   <GlobalFAB />
                   <BottomNav />
                 </div>
+                </ManagementSettingsProvider>
               </RecordsProvider>
             </CyclesProvider>
             </SeasonProvider>
