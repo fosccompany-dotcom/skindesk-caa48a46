@@ -80,6 +80,7 @@ const App = () => (
                   <GlobalFAB />
                   <BottomNav />
                 </div>
+                </ManagementSettingsProvider>
               </RecordsProvider>
             </CyclesProvider>
             </SeasonProvider>
