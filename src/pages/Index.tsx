@@ -491,8 +491,8 @@ const Index = () => {
       </div>
 
       {/* ═══ Bloom Progress (outside image header) ═══ */}
-      <div className="px-5 pt-3 pb-1">
-        <div className="flex items-center gap-3 px-1">
+      <div className="px-4 pt-2.5 pb-1">
+        <div className="flex items-center gap-2.5 px-0.5">
           <Popover>
             <PopoverTrigger asChild>
               <button className="focus:outline-none shrink-0">
@@ -519,19 +519,16 @@ const Index = () => {
           </Popover>
           <div className="flex-1 min-w-0 space-y-1">
             {isWilting ?
-            <p className="text-xs font-semibold text-muted-foreground">{t("wilting_message")}</p> :
+            <p className="text-[11px] font-semibold text-muted-foreground leading-snug">{t("wilting_message")}</p> :
             bloom.stage === 0 ?
-            <p className="text-xs font-semibold text-foreground">{t("first_record_upgrade")}</p> :
+            <p className="text-[11px] font-semibold text-foreground leading-snug">{t("first_record_upgrade")}</p> :
             remaining > 0 ?
-            <>
-            <p className="text-xs text-muted-foreground">{t("records_grow_skin")}</p>
-            <p className="text-xs font-semibold text-foreground">
+            <p className="text-[11px] font-semibold text-foreground leading-snug">
                 🌸 {remaining} {t("records_until_next")} {STAGES[bloom.stage + 1]?.name || "Bloom"} {t("bloom_complete")}
-              </p>
-            </> :
-            <p className="text-xs font-semibold text-foreground">{t("max_stage_achieved")}</p>
+              </p> :
+            <p className="text-[11px] font-semibold text-foreground leading-snug">{t("max_stage_achieved")}</p>
             }
-            <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
+            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
               <div
                 className="h-full rounded-full transition-all duration-1000 ease-out"
                 style={{
@@ -540,14 +537,14 @@ const Index = () => {
                 }} />
             </div>
           </div>
-          <span className="text-lg shrink-0">
+          <span className="text-base shrink-0">
             {bloom.nextMilestone !== null ? STAGES[bloom.stage + 1]?.emoji : "🌺"}
           </span>
         </div>
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-3 pt-4 pb-40">
+      <div className="page-content space-y-2.5 pt-3 pb-40">
 
         {/* ═══ 마지막 시술 + 다음 추천일 (개인화) ═══ */}
         {nextStepInfo.lastDate && nextStepInfo.lastName && (() => {
