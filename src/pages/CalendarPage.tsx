@@ -24,6 +24,8 @@ import { supabase } from '@/integrations/supabase/client';
 import AddPaymentModal from '@/components/AddPaymentModal';
 import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 import { useLoginGuard } from '@/hooks/useLoginGuard';
+import { useManagementSettings } from '@/context/ManagementSettingsContext';
+import { getPersonalizedCycle } from '@/utils/personalizedCycle';
 
 const eventTypeConfig = {
   treatment:     { icon: CalendarDays, color: 'text-primary',    bg: 'bg-primary/10',   dotColor: 'bg-primary' },
