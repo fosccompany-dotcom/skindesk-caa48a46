@@ -138,7 +138,9 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
 // ── CalendarPage ──────────────────────────────────────────────────────
 const CalendarPage = () => {
   const [searchParams] = useSearchParams();
-  const defaultTab = searchParams.get('tab') || 'history';
+  const tabParam = searchParams.get('tab');
+  const isHistoryView = tabParam === 'history' || tabParam === 'payments';
+  const defaultTab = tabParam || 'history';
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
@@ -309,7 +311,7 @@ const CalendarPage = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm opacity-70 font-light">{nickname ? `${nickname}의` : '나의'} 기록 ✍️</p>
-              <h1 className="mt-0.5 text-xl font-bold">시술내역</h1>
+              <h1 className="mt-0.5 text-xl font-bold">{isHistoryView ? '시술내역' : '캘린더'}</h1>
             </div>
             <div className="flex items-center gap-1">
               <span className="px-3 py-1.5 text-xs font-medium text-primary-foreground bg-white/15 rounded-full backdrop-blur-sm">
@@ -322,7 +324,11 @@ const CalendarPage = () => {
       </div>
 
       <div className="page-content space-y-5 pt-4">
-        <HistoryTabs defaultTab={defaultTab} />
+        {isHistoryView ? (
+          <HistoryTabs defaultTab={defaultTab} />
+        ) : (
+          <MyTreatmentHistory mode="calendar" />
+        )}
       </div>
     </div>
   );

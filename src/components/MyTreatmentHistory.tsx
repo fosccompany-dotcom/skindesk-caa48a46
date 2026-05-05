@@ -67,7 +67,11 @@ const matchesCategory = (treatmentName: string, categoryValue: string): boolean 
   return cat.keywords.some(kw => name.includes(kw.toLowerCase()));
 };
 
-const MyTreatmentHistory = () => {
+interface MyTreatmentHistoryProps {
+  mode?: 'list' | 'calendar';
+}
+
+const MyTreatmentHistory = ({ mode = 'list' }: MyTreatmentHistoryProps) => {
   const { records, loading, updateRecord, deleteRecord } = useRecords();
   const { cycles } = useCycles();
   const [search, setSearch] = useState('');
@@ -78,7 +82,7 @@ const MyTreatmentHistory = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TreatmentRecord>>({});
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const viewMode = mode;
   const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
@@ -240,27 +244,7 @@ const MyTreatmentHistory = () => {
   return (
     <div className="space-y-4">
 
-      {/* View mode toggle */}
-      <div className="inline-flex p-1 bg-muted rounded-lg">
-        <button
-          onClick={() => setViewMode('calendar')}
-          className={cn(
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all',
-            viewMode === 'calendar' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
-          )}
-        >
-          <CalendarIcon className="h-3.5 w-3.5" /> 캘린더
-        </button>
-        <button
-          onClick={() => setViewMode('list')}
-          className={cn(
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all',
-            viewMode === 'list' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
-          )}
-        >
-          <ListIcon className="h-3.5 w-3.5" /> 리스트
-        </button>
-      </div>
+      {/* View mode toggle removed — controlled by bottom nav */}
 
       {viewMode === 'calendar' && (
         <>
