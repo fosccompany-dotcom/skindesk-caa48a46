@@ -667,12 +667,10 @@ const Profile = () => {
 
           {/* ── [2] 현재 관리 모드 (드롭다운) ── */}
           <Card className="glass-card">
-            <CardContent className="p-4 space-y-2">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
-                  <Target className="h-4 w-4 text-accent-foreground" />
-                </div>
-                <h2 className="font-bold text-sm">현재 관리 모드</h2>
+            <CardContent className="p-3 space-y-2">
+              <div className="flex items-center gap-1.5">
+                <Target className="h-3.5 w-3.5 text-muted-foreground" />
+                <h2 className="font-semibold text-xs text-muted-foreground">현재 관리 모드</h2>
               </div>
               {(() => {
                 const modes = [
@@ -685,7 +683,7 @@ const Profile = () => {
                 const current = modes.find(m => m.key === currentSeason) || modes[2];
                 return (
                   <Select value={currentSeason || 'maintain'} onValueChange={(v) => setSeasonGlobal(v as SeasonKey)}>
-                    <SelectTrigger className="rounded-xl text-sm h-11">
+                    <SelectTrigger className="rounded-xl text-sm h-10">
                       <SelectValue>
                         <span className="flex items-center gap-2">
                           <span>{current.emoji}</span>
@@ -713,12 +711,10 @@ const Profile = () => {
 
           {/* ── [3+4] 관리 세팅 (내 피부족 포함) ── */}
           <Card className="glass-card">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
-                  <Settings className="h-4 w-4 text-accent-foreground" />
-                </div>
-                <h2 className="font-bold text-sm">관리 세팅</h2>
+            <CardContent className="p-3 space-y-3">
+              <div className="flex items-center gap-1.5">
+                <Settings className="h-3.5 w-3.5 text-muted-foreground" />
+                <h2 className="font-semibold text-xs text-muted-foreground">관리 세팅</h2>
               </div>
 
               {/* 내 피부족 */}
