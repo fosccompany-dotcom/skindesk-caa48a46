@@ -244,27 +244,7 @@ const MyTreatmentHistory = ({ mode = 'list' }: MyTreatmentHistoryProps) => {
   return (
     <div className="space-y-4">
 
-      {/* View mode toggle */}
-      <div className="inline-flex p-1 bg-muted rounded-lg">
-        <button
-          onClick={() => setViewMode('calendar')}
-          className={cn(
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all',
-            viewMode === 'calendar' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
-          )}
-        >
-          <CalendarIcon className="h-3.5 w-3.5" /> 캘린더
-        </button>
-        <button
-          onClick={() => setViewMode('list')}
-          className={cn(
-            'flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition-all',
-            viewMode === 'list' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
-          )}
-        >
-          <ListIcon className="h-3.5 w-3.5" /> 리스트
-        </button>
-      </div>
+      {/* View mode toggle removed — controlled by bottom nav */}
 
       {viewMode === 'calendar' && (
         <>
