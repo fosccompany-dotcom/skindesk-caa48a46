@@ -476,60 +476,62 @@ const Index = () => {
               </h1>
             </div>
           </div>
+        </div>
+      </div>
 
-          {/* ═══ Bloom Progress (inside header) ═══ */}
-          <div className="flex items-center gap-3 px-1">
-            <Popover>
-              <PopoverTrigger asChild>
-                <button className="focus:outline-none shrink-0">
-                  <BloomAvatar size="sm" showDays={false} />
-                </button>
-              </PopoverTrigger>
-              <PopoverContent
-                side="bottom"
-                align="start"
-                className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
-                <p className="text-[11px] font-semibold mb-2 text-white/80">{t("my_bloom")}</p>
-                <div className="space-y-1.5 text-[11px]">
-                  <p className="text-[#F2C94C] font-semibold">
-                    {t("current_label")} {bloom.emoji} {bloom.name} ({activeDays}{t("unit_count")})
-                  </p>
-                  {bloom.nextMilestone !== null &&
-                  <p className="text-white/90">
-                      {t("next_label")} {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}{t("unit_count")})
-                    </p>
-                  }
-                  {bloom.nextMilestone === null && <p className="text-white/90">{t("max_rank_achieved")}</p>}
-                </div>
-              </PopoverContent>
-            </Popover>
-            <div className="flex-1 min-w-0 space-y-1">
-              {isWilting ?
-              <p className="text-xs font-semibold text-white/70">{t("wilting_message")}</p> :
-              bloom.stage === 0 ?
-              <p className="text-xs font-semibold text-white">{t("first_record_upgrade")}</p> :
-              remaining > 0 ?
-              <>
-              <p className="text-xs text-white/70">{t("records_grow_skin")}</p>
-              <p className="text-xs font-semibold text-white">
-                  🌸 {remaining} {t("records_until_next")} {STAGES[bloom.stage + 1]?.name || "Bloom"} {t("bloom_complete")}
+      {/* ═══ Bloom Progress (outside image header) ═══ */}
+      <div className="px-5 pt-3 pb-1">
+        <div className="flex items-center gap-3 px-1">
+          <Popover>
+            <PopoverTrigger asChild>
+              <button className="focus:outline-none shrink-0">
+                <BloomAvatar size="sm" showDays={false} />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent
+              side="bottom"
+              align="start"
+              className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
+              <p className="text-[11px] font-semibold mb-2 text-white/80">{t("my_bloom")}</p>
+              <div className="space-y-1.5 text-[11px]">
+                <p className="text-[#F2C94C] font-semibold">
+                  {t("current_label")} {bloom.emoji} {bloom.name} ({activeDays}{t("unit_count")})
                 </p>
-              </> :
-              <p className="text-xs font-semibold text-white">{t("max_stage_achieved")}</p>
-              }
-              <div className="relative h-2 w-full overflow-hidden rounded-full bg-white/20">
-                <div
-                  className="h-full rounded-full transition-all duration-1000 ease-out"
-                  style={{
-                    width: `${progressPct}%`,
-                    background: "linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))"
-                  }} />
+                {bloom.nextMilestone !== null &&
+                <p className="text-white/90">
+                    {t("next_label")} {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}{t("unit_count")})
+                  </p>
+                }
+                {bloom.nextMilestone === null && <p className="text-white/90">{t("max_rank_achieved")}</p>}
               </div>
+            </PopoverContent>
+          </Popover>
+          <div className="flex-1 min-w-0 space-y-1">
+            {isWilting ?
+            <p className="text-xs font-semibold text-muted-foreground">{t("wilting_message")}</p> :
+            bloom.stage === 0 ?
+            <p className="text-xs font-semibold text-foreground">{t("first_record_upgrade")}</p> :
+            remaining > 0 ?
+            <>
+            <p className="text-xs text-muted-foreground">{t("records_grow_skin")}</p>
+            <p className="text-xs font-semibold text-foreground">
+                🌸 {remaining} {t("records_until_next")} {STAGES[bloom.stage + 1]?.name || "Bloom"} {t("bloom_complete")}
+              </p>
+            </> :
+            <p className="text-xs font-semibold text-foreground">{t("max_stage_achieved")}</p>
+            }
+            <div className="relative h-2 w-full overflow-hidden rounded-full bg-muted">
+              <div
+                className="h-full rounded-full transition-all duration-1000 ease-out"
+                style={{
+                  width: `${progressPct}%`,
+                  background: "linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))"
+                }} />
             </div>
-            <span className="text-lg shrink-0">
-              {bloom.nextMilestone !== null ? STAGES[bloom.stage + 1]?.emoji : "🌺"}
-            </span>
           </div>
+          <span className="text-lg shrink-0">
+            {bloom.nextMilestone !== null ? STAGES[bloom.stage + 1]?.emoji : "🌺"}
+          </span>
         </div>
       </div>
 
