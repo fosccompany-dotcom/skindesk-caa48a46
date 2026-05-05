@@ -448,13 +448,13 @@ const Index = () => {
       <div className="relative safe-top overflow-visible">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/55" />
-        <div className="relative z-10 pt-10 px-5 pb-5 space-y-3">
+        <div className="relative z-10 pt-9 px-4 pb-4 space-y-2">
           {/* Language selector */}
-          <div className="absolute top-2 right-4 z-20" ref={langDropdownRef}>
+          <div className="absolute top-2 right-3 z-20" ref={langDropdownRef}>
             <button
               onClick={() => setLangOpen((prev) => !prev)}
-              className="h-8 w-8 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
-              <Globe className="h-4 w-4 text-white/80" />
+              className="h-7 w-7 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
+              <Globe className="h-3.5 w-3.5 text-white/80" />
             </button>
             {langOpen &&
             <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
@@ -479,9 +479,9 @@ const Index = () => {
           {/* Row 1: Nickname's Bloom Log */}
           <div className="flex items-center">
             <div className="flex-1 min-w-0">
-              <p className="text-white/60 tracking-wide text-xs font-sans font-extrabold">{t("blooming_day")} </p>
+              <p className="text-white/60 tracking-wide text-[10px] font-sans font-extrabold">{t("blooming_day")} </p>
               <h1
-                className="text-lg font-bold tracking-tight leading-tight text-white"
+                className="text-base font-bold tracking-tight leading-tight text-white"
                 style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
                 {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "회원")}{t("name_bloom_log")} <span className="text-[hsl(var(--accent))]">Bloom Log</span>
               </h1>
