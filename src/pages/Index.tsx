@@ -679,12 +679,12 @@ const Index = () => {
             <button
               onClick={onClick}
               className="w-full gap-3 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all py-4 px-4 items-center justify-start flex flex-row text-left">
-              <span className="text-3xl">{icon}</span>
+              <span className="text-2xl">{icon}</span>
               <div className="min-w-0 flex-1">
                 <p className="text-base font-bold text-foreground">{mainText}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{subText}</p>
               </div>
-              <ChevronRight size={20} className="ml-auto text-muted-foreground shrink-0" />
+              <ChevronRight size={18} className="ml-auto text-muted-foreground shrink-0" />
             </button>
           );
         })()}
