@@ -17,8 +17,10 @@ import {
   Globe,
   Sparkles,
   FileText,
-  ArrowRight } from
+  ArrowRight,
+  SunMoon } from
 "lucide-react";
+import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import BloomAvatar from "@/components/BloomAvatar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useNavigate, useSearchParams } from "react-router-dom";
