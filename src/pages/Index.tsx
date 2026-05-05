@@ -17,8 +17,10 @@ import {
   Globe,
   Sparkles,
   FileText,
-  ArrowRight } from
+  ArrowRight,
+  SunMoon } from
 "lucide-react";
+import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import BloomAvatar from "@/components/BloomAvatar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -57,7 +59,7 @@ import EditReservationSheet from "@/components/EditReservationSheet";
 import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
-import { useSeason } from "@/context/SeasonContext";
+
 import LoginRequiredSheet from "@/components/LoginRequiredSheet";
 import { useLoginGuard } from "@/hooks/useLoginGuard";
 import { useAuth } from "@/context/AuthContext";
@@ -127,7 +129,7 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
-  const { nickname } = useSeason();
+  const { nickname, currentSeason, setCurrentSeason } = useSeason();
 
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<
@@ -444,50 +446,101 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-      {/* ── HEADER with logo background (only behind nickname row) ── */}
-      <div className="relative safe-top overflow-visible">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/55" />
-        <div className="relative z-10 pt-9 px-4 pb-4 space-y-2">
-          {/* Language selector */}
-          <div className="absolute top-2 right-3 z-20" ref={langDropdownRef}>
-            <button
-              onClick={() => setLangOpen((prev) => !prev)}
-              className="h-7 w-7 rounded-full bg-white/15 backdrop-blur-sm flex items-center justify-center hover:bg-white/25 transition-colors">
-              <Globe className="h-3.5 w-3.5 text-white/80" />
-            </button>
-            {langOpen &&
-            <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
-                {(["ko", "en", "zh"] as Language[]).map((lang) =>
-              <button
-                key={lang}
-                onClick={() => {
-                  setLanguage(lang);
-                  setLangOpen(false);
-                }}
-                className={cn(
-                  "w-full text-left px-4 py-2.5 text-xs font-medium transition-colors",
-                  language === lang ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
-                )}>
-                    {LANGUAGE_LABELS[lang]}
-                  </button>
-              )}
-              </div>
-            }
-          </div>
+      {/* ── HEADER (YouTube-style top bar) ── */}
+      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-b border-border safe-top">
+        <div className="flex items-center justify-between px-4 h-12">
+          {/* Logo */}
+          <button
+            onClick={() => navigate('/')}
+            className="flex items-center gap-1.5 focus:outline-none active:opacity-70 transition-opacity">
+            <img src={logoImg} alt="Bloomlog" className="h-6 w-6 rounded-md object-cover" />
+            <span
+              className="text-base font-extrabold tracking-tight text-foreground"
+              style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
+              Bloomlog
+            </span>
+          </button>
 
-          {/* Row 1: Nickname's Bloom Log */}
-          <div className="flex items-center">
-            <div className="flex-1 min-w-0">
-              <p className="text-white/60 tracking-wide text-[10px] font-sans font-extrabold">{t("blooming_day")} </p>
-              <h1
-                className="text-base font-bold tracking-tight leading-tight text-white"
-                style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-                {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "회원")}{t("name_bloom_log")} <span className="text-[hsl(var(--accent))]">Bloom Log</span>
-              </h1>
+          {/* Right actions */}
+          <div className="flex items-center gap-1">
+            {/* Add treatment */}
+            <button
+              onClick={() => setParseModalOpen(true)}
+              aria-label="시술 추가"
+              className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-muted active:scale-95 transition">
+              <Plus className="h-5 w-5 text-foreground" strokeWidth={2.2} />
+            </button>
+
+            {/* Mode change */}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button
+                  aria-label="모드 변경"
+                  className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-muted active:scale-95 transition">
+                  <SunMoon className="h-5 w-5 text-foreground" strokeWidth={2} />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="end" sideOffset={6} className="w-48 p-1 rounded-xl">
+                {([
+                  { key: "reset", emoji: "🌵", label: "Reset" },
+                  { key: "recovery", emoji: "🌿", label: "Recovery" },
+                  { key: "maintain", emoji: "💜", label: "Maintain" },
+                  { key: "boost", emoji: "🌹", label: "Boost" },
+                  { key: "special", emoji: "🌸", label: "Special" },
+                ] as { key: SeasonKey; emoji: string; label: string }[]).map((m) => (
+                  <button
+                    key={m.key}
+                    onClick={() => setCurrentSeason(m.key)}
+                    className={cn(
+                      "w-full flex items-center gap-2 px-3 py-2 text-xs rounded-lg transition-colors text-left",
+                      currentSeason === m.key ? "bg-primary/10 text-primary font-semibold" : "text-foreground hover:bg-muted"
+                    )}>
+                    <span className="text-base">{m.emoji}</span>
+                    <span>{m.label} Mode</span>
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
+
+            {/* Language */}
+            <div className="relative" ref={langDropdownRef}>
+              <button
+                onClick={() => setLangOpen((prev) => !prev)}
+                aria-label="언어 변경"
+                className="h-9 w-9 rounded-full flex items-center justify-center hover:bg-muted active:scale-95 transition">
+                <Globe className="h-5 w-5 text-foreground" strokeWidth={2} />
+              </button>
+              {langOpen && (
+                <div className="absolute right-0 top-full mt-1 z-50 bg-popover border border-border rounded-xl shadow-lg overflow-hidden min-w-[120px]">
+                  {(["ko", "en", "zh"] as Language[]).map((lang) => (
+                    <button
+                      key={lang}
+                      onClick={() => {
+                        setLanguage(lang);
+                        setLangOpen(false);
+                      }}
+                      className={cn(
+                        "w-full text-left px-4 py-2.5 text-xs font-medium transition-colors",
+                        language === lang ? "bg-primary/10 text-primary" : "text-foreground hover:bg-muted"
+                      )}>
+                      {LANGUAGE_LABELS[lang]}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>
+      </header>
+
+      {/* Greeting row */}
+      <div className="px-4 pt-3 pb-1">
+        <p className="text-muted-foreground text-[10px] font-extrabold tracking-wide">{t("blooming_day")}</p>
+        <h1
+          className="text-base font-bold tracking-tight leading-tight text-foreground"
+          style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
+          {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "회원")}{t("name_bloom_log")} <span className="text-primary">Bloom Log</span>
+        </h1>
       </div>
 
       {/* ═══ Bloom Progress (outside image header) ═══ */}
