@@ -60,6 +60,7 @@ import LoginRequiredSheet from "@/components/LoginRequiredSheet";
 import { useLoginGuard } from "@/hooks/useLoginGuard";
 import { useAuth } from "@/context/AuthContext";
 import { useManagementSettings } from "@/context/ManagementSettingsContext";
+import { getPersonalizedCycle } from "@/utils/personalizedCycle";
 
 import logoImg from "@/assets/logo.png";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
