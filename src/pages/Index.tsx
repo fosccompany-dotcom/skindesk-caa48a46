@@ -640,30 +640,38 @@ const Index = () => {
         {/* ═══ AI 시술 기록 배너 (메인 CTA) ═══ */}
         <button
           onClick={() => setParseModalOpen(true)}
-          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-4 px-4 items-center justify-start flex flex-row text-left">
-          <span className="text-2xl">📋</span>
+          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-4 px-4 items-center flex flex-row text-left">
+          <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+            <FileText className="h-6 w-6 text-primary-foreground" strokeWidth={2} />
+          </div>
           <div className="min-w-0 flex-1">
-            <p className="text-base font-bold text-primary-foreground">{t("ai_parse_title")}</p>
+            <p className="text-base font-bold text-primary-foreground leading-tight">{t("ai_parse_title")}</p>
             <p className="text-xs text-primary-foreground/80 mt-0.5">{t("ai_parse_desc")}</p>
           </div>
-          <ChevronRight size={18} className="ml-auto text-primary-foreground/70 shrink-0" />
+          <ChevronRight size={18} className="text-primary-foreground/70 shrink-0" />
         </button>
 
         {/* ═══ Next Step Card ═══ */}
         {(() => {
-          let icon = "✨";
+          let IconComp = Sparkles;
+          let iconBg = "bg-[hsl(var(--accent))]/15";
+          let iconColor = "text-[hsl(var(--accent))]";
           let mainText = "첫 시술 기록하기";
           let subText = "기록 한 건이 회복 추적의 시작이에요";
           let onClick = () => setParseModalOpen(true);
 
           if (!nextStepInfo.quizDone) {
-            icon = "🌱";
+            IconComp = Sparkles;
+            iconBg = "bg-[hsl(150,50%,92%)]";
+            iconColor = "text-[hsl(150,45%,35%)]";
             mainText = "30초만에 내 피부족 알아보기";
             subText = "내 피부에 맞는 관리 시작";
             onClick = () => navigate('/profile#skin-tribe');
           } else if (nextStepInfo.logCount > 0 && nextStepInfo.lastDate) {
             const dPlus = differenceInDays(TODAY, new Date(nextStepInfo.lastDate));
-            icon = "📸";
+            IconComp = ArrowRight;
+            iconBg = "bg-primary/10";
+            iconColor = "text-primary";
             mainText = `${nextStepInfo.lastName ?? ''} D+${dPlus}`;
             subText = "오늘 회복 컨디션 기록하기";
             onClick = () => setParseModalOpen(true);
@@ -672,13 +680,15 @@ const Index = () => {
           return (
             <button
               onClick={onClick}
-              className="w-full gap-3 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all py-4 px-4 items-center justify-start flex flex-row text-left">
-              <span className="text-2xl">{icon}</span>
+              className="w-full gap-3 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all py-4 px-4 items-center flex flex-row text-left">
+              <div className={cn("w-12 h-12 rounded-xl flex items-center justify-center shrink-0", iconBg)}>
+                <IconComp className={cn("h-6 w-6", iconColor)} strokeWidth={2} />
+              </div>
               <div className="min-w-0 flex-1">
-                <p className="text-base font-bold text-foreground">{mainText}</p>
+                <p className="text-base font-bold text-foreground leading-tight">{mainText}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{subText}</p>
               </div>
-              <ChevronRight size={18} className="ml-auto text-muted-foreground shrink-0" />
+              <ChevronRight size={18} className="text-muted-foreground shrink-0" />
             </button>
           );
         })()}
