@@ -790,12 +790,10 @@ const Profile = () => {
 
           {/* ── [5] 프로필 ── */}
           <Card className="glass-card">
-            <CardContent className="p-4 space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="h-8 w-8 rounded-xl bg-accent flex items-center justify-center">
-                  <User className="h-4 w-4 text-accent-foreground" />
-                </div>
-                <h2 className="font-bold text-sm">프로필</h2>
+            <CardContent className="p-3 space-y-3">
+              <div className="flex items-center gap-1.5">
+                <User className="h-3.5 w-3.5 text-muted-foreground" />
+                <h2 className="font-semibold text-xs text-muted-foreground">프로필</h2>
               </div>
 
               {/* 닉네임 */}
