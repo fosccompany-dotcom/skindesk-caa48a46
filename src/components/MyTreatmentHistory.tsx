@@ -67,7 +67,11 @@ const matchesCategory = (treatmentName: string, categoryValue: string): boolean 
   return cat.keywords.some(kw => name.includes(kw.toLowerCase()));
 };
 
-const MyTreatmentHistory = () => {
+interface MyTreatmentHistoryProps {
+  mode?: 'list' | 'calendar';
+}
+
+const MyTreatmentHistory = ({ mode = 'list' }: MyTreatmentHistoryProps) => {
   const { records, loading, updateRecord, deleteRecord } = useRecords();
   const { cycles } = useCycles();
   const [search, setSearch] = useState('');
@@ -78,7 +82,7 @@ const MyTreatmentHistory = () => {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<TreatmentRecord>>({});
-  const [viewMode, setViewMode] = useState<'list' | 'calendar'>('list');
+  const viewMode = mode;
   const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
 
