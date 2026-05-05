@@ -594,20 +594,20 @@ const Index = () => {
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/calendar?tab=history")}>
             <CardContent className="px-4 py-4 flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
-                <span className="text-2xl">💉</span>
+                <Stethoscope className="h-6 w-6 text-[hsl(260,50%,45%)]" strokeWidth={2} />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-muted-foreground text-xs font-medium">{t("managed_treatments")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">첫 시술을 기록해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/calendar?tab=history")}>
             <CardContent className="px-4 py-4 flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-2xl">🏥</span>
+                <Hospital className="h-6 w-6 text-[hsl(150,45%,35%)]" strokeWidth={2} />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-muted-foreground text-xs font-medium">{t("active_clinics")}</p>
                 <p className="text-xl font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
@@ -616,9 +616,9 @@ const Index = () => {
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/packages?tab=packages")}>
             <CardContent className="px-4 py-4 flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-2xl">🎟️</span>
+                <Package className="h-6 w-6 text-[hsl(30,80%,45%)]" strokeWidth={2} />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-muted-foreground text-xs font-medium">{t("remaining_sessions")}</p>
                 <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
@@ -627,9 +627,9 @@ const Index = () => {
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/packages?tab=points")}>
             <CardContent className="px-4 py-4 flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-2xl">💰</span>
+                <Wallet className="h-6 w-6 text-[hsl(340,55%,45%)]" strokeWidth={2} />
               </div>
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="text-muted-foreground text-xs font-medium">{t("remaining_points")}</p>
                 <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
