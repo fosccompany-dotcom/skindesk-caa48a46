@@ -546,16 +546,49 @@ const Index = () => {
       {/* ── CONTENT ── */}
       <div className="page-content space-y-3 pt-4 pb-40">
 
-        {/* ═══ 마지막 시술 + 다음 추천일 ═══ */}
+        {/* ═══ 마지막 시술 + 다음 추천일 (개인화) ═══ */}
         {nextStepInfo.lastDate && nextStepInfo.lastName && (() => {
           const lastDateObj = new Date(nextStepInfo.lastDate);
           const dPlus = differenceInDays(TODAY, lastDateObj);
-          // 매칭 cycle 찾기 (없으면 30일 기본)
+
+          // 1) 기준 주기 (cycle 매칭 또는 30일 기본)
           const matchedCycle = cycles.find(c => c.treatmentName === nextStepInfo.lastName);
-          const cycleDays = matchedCycle?.cycleDays ?? 30;
-          const nextDate = addDays(lastDateObj, cycleDays);
+          let cycleDays = matchedCycle?.cycleDays ?? 30;
+
+          // 2) 관리 모드 보정 (얼굴 기준)
+          const faceLevel = mgmtSettings.face;
+          let modeFactor = 1;
+          let modeLabel = "유지";
+          if (faceLevel === "tight") { modeFactor = 0.75; modeLabel = "타이트"; }
+          else if (faceLevel === "none") { modeFactor = 1.4; modeLabel = "여유"; }
+
+          // 3) 나이 보정
+          let ageFactor = 1;
+          let ageBand: "young" | "mid" | "mature" = "mid";
+          if (userProfile.birth_date) {
+            const yrs = (TODAY.getTime() - new Date(userProfile.birth_date).getTime()) / (365.25 * 24 * 3600 * 1000);
+            if (yrs < 30) { ageFactor = 1.1; ageBand = "young"; }
+            else if (yrs >= 45) { ageFactor = 0.9; ageBand = "mature"; }
+          }
+
+          // 4) 피부타입 보정
+          let skinFactor = 1;
+          const st = userProfile.skin_type;
+          if (st === "민감성") skinFactor = 1.2;
+          else if (st === "지성") skinFactor = 0.95;
+
+          const adjustedDays = Math.max(7, Math.round(cycleDays * modeFactor * ageFactor * skinFactor));
+          const nextDate = addDays(lastDateObj, adjustedDays);
           const daysToNext = differenceInDays(nextDate, TODAY);
           const nextDateLabel = format(nextDate, language === "en" ? "MMM d" : "M월 d일", { locale: dateLocale });
+
+          // 추천 문구 생성
+          const tribeMsg = userProfile.skin_tribe ? `${userProfile.skin_tribe} 타입` : null;
+          const ageMsg = ageBand === "young" ? "회복력이 좋아 살짝 여유롭게" : ageBand === "mature" ? "관리 효과 유지를 위해 조금 더 짧게" : "표준 주기로";
+          const skinMsg = st === "민감성" ? "민감 피부엔 충분한 회복 기간을 두고" : st === "지성" ? "지성 피부 특성상 조금 더 자주" : null;
+          const modeMsg = modeLabel === "타이트" ? "타이트 관리 모드로" : modeLabel === "여유" ? "여유 관리 모드로" : "유지 관리 모드로";
+          const recMsg = [tribeMsg, modeMsg, ageMsg, skinMsg].filter(Boolean).join(" · ");
+
           return (
             <Card className="border-0 shadow-md rounded-2xl bg-gradient-to-br from-[hsl(var(--rose-light))] to-[hsl(var(--amber-light))]">
               <CardContent className="px-4 py-4 space-y-2.5">
@@ -572,6 +605,7 @@ const Index = () => {
                   <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
                   <p className="text-xs text-foreground">
                     다음 추천 <span className="font-bold text-primary">{nextDateLabel}</span>
+                    <span className="text-muted-foreground"> · {adjustedDays}일 주기</span>
                     {daysToNext >= 0 ? (
                       <span className="text-muted-foreground"> · {daysToNext === 0 ? "오늘" : `D-${daysToNext}`}</span>
                     ) : (
@@ -579,6 +613,9 @@ const Index = () => {
                     )}
                   </p>
                 </div>
+                <p className="text-[11px] text-muted-foreground leading-snug">
+                  💡 {recMsg} 추천드려요
+                </p>
               </CardContent>
             </Card>
           );
