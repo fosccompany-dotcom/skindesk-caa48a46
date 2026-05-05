@@ -534,66 +534,66 @@ const Index = () => {
       </div>
 
       {/* ── CONTENT ── */}
-      <div className="page-content space-y-1.5 pt-3 pb-40">
+      <div className="page-content space-y-3 pt-4 pb-40">
 
-        {/* ═══ Stat Cards — 2×2 compact (최상단) ═══ */}
-        <div className="grid grid-cols-2 gap-2 text-base pb-[3px]">
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">💉</span>
+        {/* ═══ Stat Cards — 2×2 (확대) ═══ */}
+        <div className="grid grid-cols-2 gap-3">
+          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/calendar?tab=history")}>
+            <CardContent className="px-4 py-4 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
+                <span className="text-2xl">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("managed_treatments")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
+                <p className="text-muted-foreground text-[12px] font-medium">{t("managed_treatments")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">🏥</span>
+          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/calendar?tab=history")}>
+            <CardContent className="px-4 py-4 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-2xl">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("active_clinics")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
+                <p className="text-muted-foreground text-[12px] font-medium">{t("active_clinics")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">🎟️</span>
+          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/packages?tab=packages")}>
+            <CardContent className="px-4 py-4 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-2xl">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_sessions")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
+                <p className="text-muted-foreground text-[12px] font-medium">{t("remaining_sessions")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-sm cursor-pointer active:scale-[0.98] transition-transform" onClick={() => navigate("/packages?tab=points")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
-                <span className="text-sm">💰</span>
+          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/packages?tab=points")}>
+            <CardContent className="px-4 py-4 flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
+                <span className="text-2xl">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground mt-0.5 text-xs">{t("remaining_points")}</p>
-                <p className="text-sm font-black text-foreground leading-tight">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-medium text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
+                <p className="text-muted-foreground text-[12px] font-medium">{t("remaining_points")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* ═══ AI 시술 기록 배너 (메인 CTA, 상단으로 이동) ═══ */}
+        {/* ═══ AI 시술 기록 배너 (메인 CTA) ═══ */}
         <button
           onClick={() => setParseModalOpen(true)}
-          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[11px] my-[5px] px-[11px] mx-0 mr-0 pl-[10px] pr-[10px] items-center justify-start flex flex-row text-left">
-          <span className="text-2xl px-[3px]">📋</span>
+          className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-4 px-4 items-center justify-start flex flex-row text-left">
+          <span className="text-3xl">📋</span>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary-foreground">{t("ai_parse_title")}</p>
-            <p className="text-[11px] text-primary-foreground/70">{t("ai_parse_desc")}</p>
+            <p className="text-base font-bold text-primary-foreground">{t("ai_parse_title")}</p>
+            <p className="text-xs text-primary-foreground/80 mt-0.5">{t("ai_parse_desc")}</p>
           </div>
-          <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
+          <ChevronRight size={20} className="ml-auto text-primary-foreground/70 shrink-0" />
         </button>
 
         {/* ═══ Next Step Card ═══ */}
@@ -619,13 +619,13 @@ const Index = () => {
           return (
             <button
               onClick={onClick}
-              className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-sm py-[11px] my-[5px] px-[11px] mx-0 mr-0 pl-[10px] pr-[10px] items-center justify-start flex flex-row text-left">
-              <span className="text-2xl px-[3px]">{icon}</span>
+              className="w-full gap-3 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all py-4 px-4 items-center justify-start flex flex-row text-left">
+              <span className="text-3xl">{icon}</span>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-primary-foreground">{mainText}</p>
-                <p className="text-[11px] text-primary-foreground/70">{subText}</p>
+                <p className="text-base font-bold text-foreground">{mainText}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">{subText}</p>
               </div>
-              <ChevronRight size={16} className="ml-auto text-primary-foreground/50 shrink-0" />
+              <ChevronRight size={20} className="ml-auto text-muted-foreground shrink-0" />
             </button>
           );
         })()}
