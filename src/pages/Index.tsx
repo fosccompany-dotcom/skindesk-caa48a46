@@ -603,8 +603,8 @@ const Index = () => {
                 <span className="text-2xl">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("managed_treatments")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("managed_treatments")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -614,8 +614,8 @@ const Index = () => {
                 <span className="text-2xl">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("active_clinics")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("active_clinics")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -625,8 +625,8 @@ const Index = () => {
                 <span className="text-2xl">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("remaining_sessions")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("remaining_sessions")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -636,8 +636,8 @@ const Index = () => {
                 <span className="text-2xl">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("remaining_points")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("remaining_points")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
