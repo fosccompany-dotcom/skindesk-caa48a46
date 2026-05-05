@@ -203,12 +203,18 @@ const CalendarPage = () => {
     } catch { toast.error('삭제 실패'); }
   };
 
-  // 주기 기반 자동 추천 이벤트 생성
+  // 주기 기반 자동 추천 이벤트 생성 (개인화 적용)
   const cycleEvents = useMemo(() => {
     const events: (CalendarEvent & { cycleInfo?: string })[] = [];
     cycles.forEach((cycle) => {
       const lastDate = new Date(cycle.lastTreatmentDate);
-      let nextDate = addDays(lastDate, cycle.cycleDays);
+      const { adjustedDays, message: recMsg } = getPersonalizedCycle(cycle.cycleDays, {
+        birthDate: userProfile.birth_date,
+        skinType: userProfile.skin_type,
+        skinTribe: userProfile.skin_tribe,
+        managementLevel: mgmtSettings.face,
+      }, today);
+      let nextDate = addDays(lastDate, adjustedDays);
       if (nextDate < today) {
         const overdueDays = differenceInDays(today, nextDate);
         events.push({
@@ -218,7 +224,7 @@ const CalendarPage = () => {
           type: 'recommendation',
           skinLayer: cycle.skinLayer,
           bodyArea: cycle.bodyArea,
-          cycleInfo: `${overdueDays}일 초과 · ${cycle.product || ''} · ${BODY_AREA_LABELS[cycle.bodyArea]}`,
+          cycleInfo: `${overdueDays}일 초과 · ${adjustedDays}일 맞춤주기 · ${recMsg}`,
         } as any);
         nextDate = addDays(today, 7);
       }
@@ -233,14 +239,14 @@ const CalendarPage = () => {
             type: 'recommendation',
             skinLayer: cycle.skinLayer,
             bodyArea: cycle.bodyArea,
-            cycleInfo: `${cycle.cycleDays}일 주기${cycle.product ? ` · ${cycle.product}` : ''} · D-${daysFromNow}`,
+            cycleInfo: `${adjustedDays}일 맞춤주기 · D-${daysFromNow} · ${recMsg}`,
           } as any);
         }
-        nextDate = addDays(nextDate, cycle.cycleDays);
+        nextDate = addDays(nextDate, adjustedDays);
       }
     });
     return events;
-  }, [cycles]);
+  }, [cycles, userProfile, mgmtSettings.face]);
 
   const allEvents = useMemo(() => {
     const combined = [...cycleEvents];
