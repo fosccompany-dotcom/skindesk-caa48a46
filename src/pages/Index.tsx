@@ -647,12 +647,12 @@ const Index = () => {
         <button
           onClick={() => setParseModalOpen(true)}
           className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-4 px-4 items-center justify-start flex flex-row text-left">
-          <span className="text-3xl">📋</span>
+          <span className="text-2xl">📋</span>
           <div className="min-w-0 flex-1">
             <p className="text-base font-bold text-primary-foreground">{t("ai_parse_title")}</p>
             <p className="text-xs text-primary-foreground/80 mt-0.5">{t("ai_parse_desc")}</p>
           </div>
-          <ChevronRight size={20} className="ml-auto text-primary-foreground/70 shrink-0" />
+          <ChevronRight size={18} className="ml-auto text-primary-foreground/70 shrink-0" />
         </button>
 
         {/* ═══ Next Step Card ═══ */}
