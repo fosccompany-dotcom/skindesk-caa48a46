@@ -49,6 +49,7 @@ const App = () => (
             <SeasonProvider>
             <CyclesProvider>
               <RecordsProvider>
+                <ManagementSettingsProvider>
                 <div className="app-container min-h-screen bg-background relative">
                   <Routes>
                     {/* 공개 라우트 */}
