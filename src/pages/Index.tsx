@@ -11,11 +11,13 @@ import {
   Star,
   Trash2,
   Pencil,
-
   Plus,
   ClipboardList,
   CalendarPlus,
-  Globe } from
+  Globe,
+  Sparkles,
+  FileText,
+  ArrowRight } from
 "lucide-react";
 import BloomAvatar from "@/components/BloomAvatar";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
