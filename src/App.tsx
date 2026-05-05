@@ -31,6 +31,7 @@ import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { SeasonProvider } from "./context/SeasonContext";
+import { ManagementSettingsProvider } from "./context/ManagementSettingsContext";
 
 const queryClient = new QueryClient();
 
