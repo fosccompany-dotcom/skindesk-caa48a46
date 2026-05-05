@@ -208,7 +208,7 @@ const Index = () => {
       if (resRes.data) setReservations(resRes.data as Reservation[]);
 
       const [profRes, lastRecRes] = await Promise.all([
-        supabase.from("user_profiles").select("quiz_completed_at,total_log_count").eq("id", user.id).maybeSingle(),
+        supabase.from("user_profiles").select("quiz_completed_at,total_log_count,skin_type,birth_date,skin_tribe").eq("id", user.id).maybeSingle(),
         supabase.from("treatment_records").select("date,treatment_name").eq("user_id", user.id).order("date", { ascending: false }).limit(1).maybeSingle(),
       ]);
       setNextStepInfo({
@@ -216,6 +216,11 @@ const Index = () => {
         logCount: profRes.data?.total_log_count ?? 0,
         lastDate: lastRecRes.data?.date ?? null,
         lastName: lastRecRes.data?.treatment_name ?? null,
+      });
+      setUserProfile({
+        skin_type: profRes.data?.skin_type ?? null,
+        birth_date: profRes.data?.birth_date ?? null,
+        skin_tribe: profRes.data?.skin_tribe ?? null,
       });
     };
     loadDashboard();
