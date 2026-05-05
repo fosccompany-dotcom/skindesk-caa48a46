@@ -567,19 +567,14 @@ const Index = () => {
 
           return (
             <Card className="border-0 shadow-md rounded-2xl bg-gradient-to-br from-[hsl(var(--rose-light))] to-[hsl(var(--amber-light))]">
-              <CardContent className="px-4 py-4 space-y-2.5">
-                <div className="flex items-center gap-2">
-                  <span className="text-xl">🌷</span>
-                  <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">마지막 시술</p>
+              <CardContent className="px-4 py-4 flex items-center gap-3">
+                <div className="w-12 h-12 rounded-xl bg-white/60 flex items-center justify-center shrink-0">
+                  <Sparkles className="h-6 w-6 text-primary" strokeWidth={2} />
                 </div>
-                <div className="flex items-baseline gap-2 flex-wrap">
-                  <p className="text-base font-bold text-foreground">{nextStepInfo.lastName}</p>
-                  <span className="text-xs font-semibold text-primary">D+{dPlus}</span>
-                  <span className="text-xs text-muted-foreground">· {format(lastDateObj, "yyyy.MM.dd")}</span>
-                </div>
-                <div className="flex items-center gap-2 pt-1.5 border-t border-border/40">
-                  <CalendarDays className="h-4 w-4 text-primary shrink-0" />
-                  <p className="text-xs text-foreground">
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="text-xs font-medium text-muted-foreground">마지막 시술 · D+{dPlus}</p>
+                  <p className="text-base font-bold text-foreground truncate leading-tight">{nextStepInfo.lastName}</p>
+                  <p className="text-xs text-foreground leading-snug">
                     다음 추천 <span className="font-bold text-primary">{nextDateLabel}</span>
                     <span className="text-muted-foreground"> · {adjustedDays}일 주기</span>
                     {daysToNext >= 0 ? (
@@ -589,9 +584,6 @@ const Index = () => {
                     )}
                   </p>
                 </div>
-                <p className="text-xs text-muted-foreground leading-snug">
-                  💡 {recMsg} 추천드려요
-                </p>
               </CardContent>
             </Card>
           );
