@@ -116,6 +116,8 @@ const Index = () => {
   const dateLocale = language === "en" ? enLocale : language === "zh" ? zhLocale : koLocale;
   const WEEKDAYS = [t("weekday_sun"), t("weekday_mon"), t("weekday_tue"), t("weekday_wed"), t("weekday_thu"), t("weekday_fri"), t("weekday_sat")];
   const [nextStepInfo, setNextStepInfo] = useState<{ quizDone: boolean; logCount: number; lastDate: string | null; lastName: string | null }>({ quizDone: false, logCount: 0, lastDate: null, lastName: null });
+  const [userProfile, setUserProfile] = useState<{ skin_type: string | null; birth_date: string | null; skin_tribe: string | null }>({ skin_type: null, birth_date: null, skin_tribe: null });
+  const { settings: mgmtSettings } = useManagementSettings();
   const [langOpen, setLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
   const [modalOpen, setModalOpen] = useState(false);
