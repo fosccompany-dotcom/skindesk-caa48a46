@@ -138,7 +138,9 @@ const RecordCard = ({ r, onEdit, onDelete }: { r: TreatmentRecord; onEdit: (r: T
 // ── CalendarPage ──────────────────────────────────────────────────────
 const CalendarPage = () => {
   const [searchParams] = useSearchParams();
-  const defaultTab = searchParams.get('tab') || 'history';
+  const tabParam = searchParams.get('tab');
+  const isHistoryView = tabParam === 'history' || tabParam === 'payments';
+  const defaultTab = tabParam || 'history';
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(today);
   const [selectedDate, setSelectedDate] = useState<Date>(today);
