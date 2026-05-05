@@ -433,7 +433,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
-      {/* ── HEADER with logo background ── */}
+      {/* ── HEADER with logo background (only behind nickname row) ── */}
       <div className="relative safe-top overflow-visible">
         <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black/55" />
