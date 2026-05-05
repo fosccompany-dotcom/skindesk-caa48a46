@@ -568,15 +568,15 @@ const Index = () => {
               <CardContent className="px-4 py-4 space-y-2.5">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🌷</span>
-                  <p className="text-[11px] font-bold tracking-wide text-muted-foreground uppercase">마지막 시술</p>
+                  <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">마지막 시술</p>
                 </div>
                 <div className="flex items-baseline gap-2 flex-wrap">
                   <p className="text-base font-bold text-foreground">{nextStepInfo.lastName}</p>
                   <span className="text-xs font-semibold text-primary">D+{dPlus}</span>
-                  <span className="text-[11px] text-muted-foreground">· {format(lastDateObj, "yyyy.MM.dd")}</span>
+                  <span className="text-xs text-muted-foreground">· {format(lastDateObj, "yyyy.MM.dd")}</span>
                 </div>
                 <div className="flex items-center gap-2 pt-1.5 border-t border-border/40">
-                  <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <CalendarDays className="h-4 w-4 text-primary shrink-0" />
                   <p className="text-xs text-foreground">
                     다음 추천 <span className="font-bold text-primary">{nextDateLabel}</span>
                     <span className="text-muted-foreground"> · {adjustedDays}일 주기</span>
@@ -587,7 +587,7 @@ const Index = () => {
                     )}
                   </p>
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-snug">
+                <p className="text-xs text-muted-foreground leading-snug">
                   💡 {recMsg} 추천드려요
                 </p>
               </CardContent>
@@ -603,8 +603,8 @@ const Index = () => {
                 <span className="text-2xl">💉</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("managed_treatments")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("managed_treatments")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">첫 시술을 기록해봐요 🌱</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -614,8 +614,8 @@ const Index = () => {
                 <span className="text-2xl">🏥</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("active_clinics")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("active_clinics")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">병원을 추가해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -625,8 +625,8 @@ const Index = () => {
                 <span className="text-2xl">🎟️</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("remaining_sessions")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("remaining_sessions")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">시술권을 등록해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -636,8 +636,8 @@ const Index = () => {
                 <span className="text-2xl">💰</span>
               </div>
               <div className="min-w-0">
-                <p className="text-muted-foreground text-[12px] font-medium">{t("remaining_points")}</p>
-                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[11px] font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
+                <p className="text-muted-foreground text-xs font-medium">{t("remaining_points")}</p>
+                <p className="text-xl font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-xs font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-xs font-normal text-muted-foreground/70">포인트를 적립해봐요</span>}</p>
               </div>
             </CardContent>
           </Card>
@@ -647,12 +647,12 @@ const Index = () => {
         <button
           onClick={() => setParseModalOpen(true)}
           className="w-full gap-3 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-4 px-4 items-center justify-start flex flex-row text-left">
-          <span className="text-3xl">📋</span>
+          <span className="text-2xl">📋</span>
           <div className="min-w-0 flex-1">
             <p className="text-base font-bold text-primary-foreground">{t("ai_parse_title")}</p>
             <p className="text-xs text-primary-foreground/80 mt-0.5">{t("ai_parse_desc")}</p>
           </div>
-          <ChevronRight size={20} className="ml-auto text-primary-foreground/70 shrink-0" />
+          <ChevronRight size={18} className="ml-auto text-primary-foreground/70 shrink-0" />
         </button>
 
         {/* ═══ Next Step Card ═══ */}
@@ -679,12 +679,12 @@ const Index = () => {
             <button
               onClick={onClick}
               className="w-full gap-3 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all py-4 px-4 items-center justify-start flex flex-row text-left">
-              <span className="text-3xl">{icon}</span>
+              <span className="text-2xl">{icon}</span>
               <div className="min-w-0 flex-1">
                 <p className="text-base font-bold text-foreground">{mainText}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">{subText}</p>
               </div>
-              <ChevronRight size={20} className="ml-auto text-muted-foreground shrink-0" />
+              <ChevronRight size={18} className="ml-auto text-muted-foreground shrink-0" />
             </button>
           );
         })()}
