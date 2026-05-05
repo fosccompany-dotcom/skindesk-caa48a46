@@ -129,7 +129,7 @@ const Index = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editRecord, setEditRecord] = useState<TreatmentRecord | null>(null);
   const [parseModalOpen, setParseModalOpen] = useState(false);
-  const { nickname } = useSeason();
+  const { nickname, currentSeason, setCurrentSeason } = useSeason();
 
   const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<
