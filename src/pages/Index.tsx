@@ -568,15 +568,15 @@ const Index = () => {
               <CardContent className="px-4 py-4 space-y-2.5">
                 <div className="flex items-center gap-2">
                   <span className="text-xl">🌷</span>
-                  <p className="text-[11px] font-bold tracking-wide text-muted-foreground uppercase">마지막 시술</p>
+                  <p className="text-xs font-bold tracking-wide text-muted-foreground uppercase">마지막 시술</p>
                 </div>
                 <div className="flex items-baseline gap-2 flex-wrap">
                   <p className="text-base font-bold text-foreground">{nextStepInfo.lastName}</p>
                   <span className="text-xs font-semibold text-primary">D+{dPlus}</span>
-                  <span className="text-[11px] text-muted-foreground">· {format(lastDateObj, "yyyy.MM.dd")}</span>
+                  <span className="text-xs text-muted-foreground">· {format(lastDateObj, "yyyy.MM.dd")}</span>
                 </div>
                 <div className="flex items-center gap-2 pt-1.5 border-t border-border/40">
-                  <CalendarDays className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <CalendarDays className="h-4 w-4 text-primary shrink-0" />
                   <p className="text-xs text-foreground">
                     다음 추천 <span className="font-bold text-primary">{nextDateLabel}</span>
                     <span className="text-muted-foreground"> · {adjustedDays}일 주기</span>
@@ -587,7 +587,7 @@ const Index = () => {
                     )}
                   </p>
                 </div>
-                <p className="text-[11px] text-muted-foreground leading-snug">
+                <p className="text-xs text-muted-foreground leading-snug">
                   💡 {recMsg} 추천드려요
                 </p>
               </CardContent>
