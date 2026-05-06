@@ -305,14 +305,9 @@ const CalendarPage = () => {
     <div className="min-h-screen bg-background">
       <AppHeader title="시술 내역" showBack={false} />
       <div className="px-4 pt-4 flex items-center justify-between">
-        <div>
-          <p className="text-xs text-muted-foreground font-light">{nickname ? `${nickname}의` : '나의'} 기록 ✍️</p>
-          <h1 className="mt-0.5 text-xl font-bold">{isHistoryView ? '시술내역' : '캘린더'}</h1>
+        <div className="flex flex-col">
+          <p className="text-xs text-muted-foreground font-light whitespace-pre-line">{nickname ? `${nickname}의` : '나의'} 기록 ✍️{"\n\n"}{records.length}건</p>
         </div>
-        <span className="px-3 py-1.5 text-xs font-medium text-foreground bg-muted rounded-full">
-          <ClipboardList className="h-3.5 w-3.5 inline mr-1" />
-          {records.length}건
-        </span>
       </div>
 
       <div className="page-content space-y-5 pt-4">
