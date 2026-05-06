@@ -7,7 +7,7 @@ import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
-import logoImg from '@/assets/logo.png';
+import AppHeader from '@/components/AppHeader';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
