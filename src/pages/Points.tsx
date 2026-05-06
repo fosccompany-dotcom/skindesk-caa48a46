@@ -92,7 +92,7 @@ const Points = () => {
   return (
     <div className="min-h-screen bg-background">
 
-      <AppHeader />
+      <AppHeader title="포인트" showBack={false} />
       <div className="px-4 pt-4">
         <h1 className="text-lg font-bold">포인트 관리</h1>
         <div className="flex items-end gap-6 mt-3">
