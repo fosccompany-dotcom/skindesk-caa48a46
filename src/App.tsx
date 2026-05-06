@@ -80,6 +80,7 @@ const App = () => (
                   </Routes>
                   <GlobalFAB />
                   <BottomNav />
+                  <AppStartLoginGate />
                 </div>
                 </ManagementSettingsProvider>
               </RecordsProvider>
