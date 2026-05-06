@@ -1018,6 +1018,56 @@ const Profile = () => {
             </CardContent>
           </Card>
 
+          {/* ── 즐겨찾기 병원 ── */}
+          <Card id="fav-clinics" className="rounded-2xl border-border/50">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-xs">즐겨찾기 병원</h3>
+                  <p className="text-[10px] text-muted-foreground">
+                    선택한 병원의 이달의 이벤트를 한눈에 볼 수 있어요
+                  </p>
+                </div>
+                {favClinics.length > 0 && (
+                  <Badge variant="secondary" className="text-[10px]">{favClinics.length}</Badge>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {CLINIC_PRESETS.map(c => {
+                  const active = favClinics.includes(c.id);
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => toggleFavClinic(c.id)}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left",
+                        active
+                          ? "bg-primary/10 border-primary/40 text-primary"
+                          : "bg-card border-border/50 text-foreground"
+                      )}
+                    >
+                      <Building2 className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate flex-1">{c.label}</span>
+                      {active && <Check className="h-3.5 w-3.5 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+              {favClinics.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full rounded-xl text-xs gap-1.5"
+                  onClick={() => navigate('/treatments/events')}
+                >
+                  <Heart className="h-3.5 w-3.5" />
+                  이달의 이벤트 보러가기
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+
           {/* ── 설정 페이지 이동 ── */}
           <Button
             variant="outline"
