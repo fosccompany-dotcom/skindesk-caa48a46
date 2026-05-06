@@ -303,7 +303,7 @@ const CalendarPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="캘린더" showBack={false} />
+      <AppHeader title="나의 시술내역" showBack={false} />
       <div className="px-4 pt-4 flex items-center justify-between">
         <div className="flex flex-col">
           <p className="text-xs text-muted-foreground font-light whitespace-pre-line">🗓 나의 시술 기록 예약 캘린더로 한눈에 보기</p>
