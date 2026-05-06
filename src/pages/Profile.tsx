@@ -451,7 +451,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title=" " showBack={false} />
+      <AppHeader title="마이페이지" showBack={false} />
       <div className="px-4 pt-4">
         <h1 className="text-lg font-bold">{"\n"}</h1>
       </div>
