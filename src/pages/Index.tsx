@@ -654,8 +654,8 @@ const Index = () => {
           </Card>
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/calendar?tab=history")}>
             <CardContent className="px-3 py-3 flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(150,50%,92%)] flex items-center justify-center shrink-0">
-                <Hospital className="h-5 w-5 text-[hsl(150,45%,35%)]" strokeWidth={2} />
+              <div className="w-10 h-10 rounded-xl bg-rose-light flex items-center justify-center shrink-0">
+                <Hospital className="h-5 w-5 text-rose-400" strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
                 <p className="text-muted-foreground text-[10px] font-medium">{t("active_clinics")}</p>
@@ -712,8 +712,8 @@ const Index = () => {
 
           if (!nextStepInfo.quizDone) {
             IconComp = Sparkles;
-            iconBg = "bg-[hsl(150,50%,92%)]";
-            iconColor = "text-[hsl(150,45%,35%)]";
+            iconBg = "bg-amber-300";
+            iconColor = "text-amber-600";
             mainText = "30초만에 내 피부족 알아보기";
             subText = "내 피부에 맞는 관리 시작";
             onClick = () => navigate('/profile#skin-tribe');

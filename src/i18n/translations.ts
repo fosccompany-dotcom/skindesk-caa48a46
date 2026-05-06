@@ -299,7 +299,7 @@ const ko: TranslationKeys = {
 
   hello: "안녕하세요 👋",
   my_skin_care: "나의 피부 관리",
-  blooming_day: "It's ​Blooming day!",
+  blooming_day: " ",
   name_bloom_log: "님의",
   my_bloom: "🌱 나의 Bloom",
   current_label: "현재:",
