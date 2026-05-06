@@ -745,25 +745,20 @@ const Profile = () => {
   className="text-xs h-7 px-2"
   onClick={async () => {
     try {
-      const { data: { user }, error: authError } = await supabase.auth.getUser();
-      if (authError || !user) {
-        console.error('[퀴즈 시작] auth 실패', authError);
-        toast({ title: '로그인이 필요해요', variant: 'destructive' });
-        return;
-      }
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({ quiz_completed_at: null })
-        .eq('id', user.id);
-      if (updateError) {
-        console.error('[퀴즈 시작] update 실패', updateError);
-        toast({ title: '잠시 후 다시 시도해주세요', variant: 'destructive' });
-        return;
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { error: updateError } = await supabase
+          .from('user_profiles')
+          .update({ quiz_completed_at: null })
+          .eq('id', user.id);
+        if (updateError) {
+          console.error('[퀴즈 시작] update 실패', updateError);
+        }
       }
       navigate('/quiz');
     } catch (e) {
       console.error('[퀴즈 시작] 예외', e);
-      toast({ title: '오류가 발생했어요', variant: 'destructive' });
+      navigate('/quiz');
     }
   }}
 >
