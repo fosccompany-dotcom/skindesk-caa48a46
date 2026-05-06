@@ -213,14 +213,6 @@ const MyTreatmentHistory = ({ mode = 'list' }: MyTreatmentHistoryProps) => {
     toast({ title: '삭제 완료', description: '시술 기록이 삭제되었습니다.' });
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
-      </div>
-    );
-  }
-
   // Calendar helpers
   const recordDateSet = useMemo(() => {
     const s = new Set<string>();
@@ -240,6 +232,14 @@ const MyTreatmentHistory = ({ mode = 'list' }: MyTreatmentHistoryProps) => {
   }, [calendarMonth]);
 
   const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-20">
+        <div className="animate-spin h-6 w-6 border-2 border-primary border-t-transparent rounded-full" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">
