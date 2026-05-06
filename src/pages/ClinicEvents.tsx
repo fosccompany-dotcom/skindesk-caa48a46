@@ -57,7 +57,7 @@ const ClinicEvents = () => {
             onClick={() => navigate('/profile#fav-clinics')}
           >
             <SettingsIcon className="h-3.5 w-3.5" />
-            병원 설정
+            클리닉 설정
           </Button>
         </div>
       </div>
