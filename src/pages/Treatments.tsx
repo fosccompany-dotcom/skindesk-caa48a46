@@ -269,7 +269,7 @@ const Treatments = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      <AppHeader title=" " showBack={false} />
+      <AppHeader title="시술 정보" showBack={false} />
       <div className="px-4 pt-4">
         <h1 className="text-lg font-bold">{"\n"}</h1>
         <p className="text-xs text-muted-foreground mt-0.5">클리닉별 시술 정보</p>
