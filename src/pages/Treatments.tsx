@@ -1,18 +1,12 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from "@/integrations/supabase/client";
-import { useTreatmentFavorites } from '@/hooks/useTreatmentFavorites';
 import AppHeader from '@/components/AppHeader';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { 
   Search, 
-  MapPin, 
   ChevronDown, 
   ChevronUp, 
-  Filter, 
-  Clock, 
   Gift, 
   Heart, 
   TrendingUp, 
@@ -20,16 +14,15 @@ import {
   Target
 } from 'lucide-react';
 import { 
-  TREATMENT_CATALOG, 
+  CLINIC_TREATMENTS, 
   CATEGORY_LABELS, 
-  PRICE_LABELS, 
   EFFECT_LABELS, 
   BODY_AREA_TREATMENT_LABELS 
 } from '@/data/treatmentCatalog';
 import { CLINIC_PRESETS } from '@/constants/clinicPresets';
-import TreatmentDetailDrawer from '@/components/treatments/TreatmentDetailDrawer';
 import { cn } from '@/lib/utils';
-import TreatmentParsingModal from '@/components/treatments/TreatmentParsingModal';
+import ParseTreatmentModal from '@/components/ParseTreatmentModal';
+import { useTreatmentFavorites } from '@/hooks/useTreatmentFavorites';
 
 const FilterRow = ({ label, children, section }: { label: string; children: React.ReactNode; section: string }) => (
   <div className="space-y-2.5">
@@ -51,11 +44,9 @@ const Treatments = () => {
   const [selectedClinic, setSelectedClinic] = useState<string | null>(null);
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<string[]>([]);
-  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['인기 시술', '쁘띠/보톡스']));
-  const [selectedTreatment, setSelectedTreatment] = useState<any>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['보톡스', '필러']));
   const [isParseModalOpen, setParseModalOpen] = useState(false);
 
   const { favorites, toggleFavorite } = useTreatmentFavorites();
@@ -67,30 +58,19 @@ const Treatments = () => {
   }, [selectedClinic]);
 
   const filteredTreatments = useMemo(() => {
-    return TREATMENT_CATALOG.filter(t => {
+    return CLINIC_TREATMENTS.filter(t => {
       if (searchQuery && !t.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       if (selectedClinic && t.clinic !== selectedClinic) return false;
-      if (selectedBranches.length > 0 && !selectedBranches.includes(t.branch || '')) return false;
+      if (selectedBranches.length > 0 && !t.branches?.some(b => selectedBranches.includes(b))) return false;
       if (selectedCategories.length > 0 && !selectedCategories.includes(t.category)) return false;
-      if (selectedAreas.length > 0 && !t.bodyArea?.some(a => selectedAreas.includes(a))) return false;
+      if (selectedAreas.length > 0 && !t.bodyAreas?.some(a => selectedAreas.includes(a))) return false;
       if (selectedEffects.length > 0 && !t.effects?.some(e => selectedEffects.includes(e))) return false;
-      if (selectedPrices.length > 0) {
-        const p = t.priceValue;
-        const matches = selectedPrices.some(range => {
-          if (range === 'under5') return p < 50000;
-          if (range === '5to10') return p >= 50000 && p < 100000;
-          if (range === '10to20') return p >= 100000 && p < 200000;
-          if (range === 'over20') return p >= 200000;
-          return false;
-        });
-        if (!matches) return false;
-      }
       return true;
     });
-  }, [searchQuery, selectedClinic, selectedBranches, selectedCategories, selectedPrices, selectedAreas, selectedEffects]);
+  }, [searchQuery, selectedClinic, selectedBranches, selectedCategories, selectedAreas, selectedEffects]);
 
   const grouped = useMemo(() => {
-    const res: Record<string, typeof TREATMENT_CATALOG> = {};
+    const res: Record<string, typeof CLINIC_TREATMENTS> = {};
     filteredTreatments.forEach(t => {
       const label = CATEGORY_LABELS[t.category as keyof typeof CATEGORY_LABELS] || t.category;
       if (!res[label]) res[label] = [];
@@ -103,7 +83,6 @@ const Treatments = () => {
     list.includes(item) ? list.filter(i => i !== item) : [...list, item];
 
   const categoryKeys = Object.keys(CATEGORY_LABELS);
-  const priceKeys = Object.keys(PRICE_LABELS);
   const bodyAreaKeys = Object.keys(BODY_AREA_TREATMENT_LABELS);
   const effectKeys = Object.keys(EFFECT_LABELS);
 
@@ -197,19 +176,6 @@ const Treatments = () => {
           ))}
         </FilterRow>
 
-        <FilterRow label="가격대" section="price">
-          {priceKeys.map(p => (
-            <Badge
-              key={p}
-              variant={selectedPrices.includes(p) ? 'default' : 'outline'}
-              className="cursor-pointer text-[11px]"
-              onClick={() => setSelectedPrices(prev => toggle(prev, p))}
-            >
-              {PRICE_LABELS[p as keyof typeof PRICE_LABELS]}
-            </Badge>
-          ))}
-        </FilterRow>
-
         <FilterRow label="부위" section="bodyArea">
           {bodyAreaKeys.map(a => (
             <Badge
@@ -262,7 +228,7 @@ const Treatments = () => {
               {isOpen && (
                 <div className="space-y-2 px-3 pb-3">
                   {treatments.map(t => (
-                    <div key={t.id} className="bg-background/50 border border-border/30 p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform" onClick={() => setSelectedTreatment(t)}>
+                    <div key={t.id} className="bg-background/50 border border-border/30 p-3 rounded-xl cursor-pointer active:scale-[0.98] transition-transform">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0 flex-1">
                           <p className="text-sm font-medium text-foreground truncate">{t.name}</p>
@@ -279,8 +245,7 @@ const Treatments = () => {
                             <Heart className={cn("h-4 w-4", favorites.includes(t.id) ? "text-rose-500 fill-rose-500" : "text-muted-foreground")} />
                           </button>
                           <div className="text-right">
-                            {t.discount && <p className="text-[10px] text-rose-500 font-bold mb-0.5">{t.discount}</p>}
-                            <p className="text-sm font-bold text-primary">{t.price}</p>
+                            <p className="text-sm font-bold text-primary">{t.priceRange}</p>
                           </div>
                         </div>
                       </div>
@@ -294,13 +259,7 @@ const Treatments = () => {
       </div>
       </div>
 
-      <TreatmentDetailDrawer 
-        treatment={selectedTreatment} 
-        isOpen={!!selectedTreatment} 
-        onOpenChange={(open) => !open && setSelectedTreatment(null)} 
-      />
-
-      <TreatmentParsingModal
+      <ParseTreatmentModal
         isOpen={isParseModalOpen}
         onOpenChange={setParseModalOpen}
       />
