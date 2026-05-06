@@ -272,7 +272,7 @@ const Treatments = () => {
       <AppHeader title="시술 정보" showBack={false} />
       <div className="px-4 pt-4">
         <h1 className="text-lg font-bold">{"\n"}</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">클리닉별 시술 정보</p>
+        <p className="text-xs text-muted-foreground mt-0.5">주요 클리닉별 시술 정보</p>
       </div>
 
       <div className="page-content pt-4">
