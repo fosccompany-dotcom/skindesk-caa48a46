@@ -303,7 +303,7 @@ const CalendarPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="시술 내역" showBack={false} />
+      <AppHeader title="캘린더" showBack={false} />
       <div className="px-4 pt-4 flex items-center justify-between">
         <div className="flex flex-col">
           <p className="text-xs text-muted-foreground font-light whitespace-pre-line">{nickname ? `${nickname}의` : '나의'} 기록 ✍️{"\n\n"}{records.length}건</p>
