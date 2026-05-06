@@ -44,10 +44,10 @@ const ClinicEvents = () => {
           <div>
             <h1 className="text-lg font-bold flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" />
-              {monthLabel} 주요 병원 이벤트
+              {monthLabel} 즐겨찾기 클리닉 이벤트
             </h1>
             <p className="text-xs text-muted-foreground mt-0.5">
-              마이페이지에서 즐겨찾기한 병원의 이번 달 이벤트를 모아봤어요
+              마이페이지에서 즐겨찾기한 클리닉의 이번 달 이벤트를 모아봤어요
             </p>
           </div>
           <Button
