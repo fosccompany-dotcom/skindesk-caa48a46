@@ -14,7 +14,7 @@ import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, 
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord, SkinLayer, BodyArea } from '@/types/skin';
 import MyTreatmentHistory from '@/components/MyTreatmentHistory';
-import logoImg from '@/assets/logo.png';
+import AppHeader from '@/components/AppHeader';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
