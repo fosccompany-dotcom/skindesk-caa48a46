@@ -6,7 +6,7 @@ import { useLanguage } from '@/i18n/LanguageContext';
 import { useAuth } from '@/context/AuthContext';
 import LoginRequiredSheet from '@/components/LoginRequiredSheet';
 
-const GUARDED_PATHS = ['/profile'];
+const GUARDED_PATHS: string[] = [];
 
 const BottomNav = () => {
   const location = useLocation();
