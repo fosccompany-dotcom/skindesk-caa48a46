@@ -259,10 +259,11 @@ const Treatments = () => {
       </div>
       </div>
 
-      <ParseTreatmentModal
-        isOpen={isParseModalOpen}
-        onOpenChange={setParseModalOpen}
-      />
+      {isParseModalOpen && (
+        <ParseTreatmentModal
+          onClose={() => setParseModalOpen(false)}
+        />
+      )}
     </div>
   );
 };
