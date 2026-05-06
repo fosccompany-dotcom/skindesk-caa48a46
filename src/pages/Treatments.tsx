@@ -109,7 +109,7 @@ const Treatments = () => {
         className="w-full mb-2.5 flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 border border-rose-200/50 active:scale-[0.98] transition-all"
       >
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-rose-500/10 shrink-0">
-          <Gift className="h-5 w-5 text-rose-500" />
+          <Heart className="h-5 w-5 text-rose-500" />
         </div>
         <div className="flex-1 text-left">
           <p className="text-sm font-bold text-foreground">내 즐겨찾기 클리닉 이벤트 리스트</p>
