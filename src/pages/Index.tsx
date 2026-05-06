@@ -715,7 +715,7 @@ const Index = () => {
             iconColor = "text-amber-600";
             mainText = "30초만에 내 피부족 알아보기";
             subText = "내 피부에 맞는 관리 시작";
-            onClick = () => navigate('/profile#skin-tribe');
+            onClick = () => navigate('/skin-quiz');
           } else if (nextStepInfo.logCount > 0 && nextStepInfo.lastDate) {
             const dPlus = differenceInDays(TODAY, new Date(nextStepInfo.lastDate));
             IconComp = ArrowRight;
