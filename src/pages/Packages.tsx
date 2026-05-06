@@ -205,17 +205,10 @@ const Packages = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative safe-top overflow-hidden">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-70 font-light">{nickname ? `${nickname}의` : '나의'} 관리 💎</p>
-              <h1 className="mt-0.5 text-xl font-bold">시술권 · 포인트</h1>
-            </div>
-          </div>
-        </div>
+      <AppHeader />
+      <div className="px-4 pt-4">
+        <p className="text-xs text-muted-foreground font-light">{nickname ? `${nickname}의` : '나의'} 관리 💎</p>
+        <h1 className="mt-0.5 text-xl font-bold">시술권 · 포인트</h1>
       </div>
 
       <div className="page-content pb-28 pt-4">
