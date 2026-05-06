@@ -121,7 +121,7 @@ const Treatments = () => {
       {/* AI 파싱 CTA */}
       <button
         onClick={() => setParseModalOpen(true)}
-        className="w-full mb-4 flex items-center gap-3 px-4 py-3.5 rounded-2xl bg-primary text-primary-foreground shadow-lg active:scale-[0.98] transition-all"
+        className="w-full mb-4 flex items-center gap-3 px-4 py-3.5 rounded-2xl text-primary-foreground shadow-lg active:scale-[0.98] transition-all bg-orange-900"
       >
         <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
           <TrendingUp className="h-5 w-5" />
