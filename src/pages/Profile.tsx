@@ -36,6 +36,8 @@ import {
   Check,
   Settings,
   Share2,
+  Building2,
+  Heart,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -48,6 +50,7 @@ import { Language, LANGUAGE_LABELS } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import { CLINIC_PRESETS } from "@/constants/clinicPresets";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
