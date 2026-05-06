@@ -7,7 +7,6 @@ import {
   Search, 
   ChevronDown, 
   ChevronUp, 
-  HeartMinus, 
   Heart, 
   TrendingUp, 
   ChevronRight,
