@@ -301,6 +301,19 @@ const Profile = () => {
   const [goals, setGoals] = useState<string[]>([]);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
+  const [favClinics, setFavClinics] = useState<string[]>(() => {
+    try {
+      const s = localStorage.getItem('favorite_clinics');
+      return s ? JSON.parse(s) : [];
+    } catch { return []; }
+  });
+  const toggleFavClinic = (id: string) => {
+    setFavClinics(prev => {
+      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
+      localStorage.setItem('favorite_clinics', JSON.stringify(next));
+      return next;
+    });
+  };
   const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState("");
   const [skinTribe, setSkinTribe] = useState<string | null>(null);
@@ -371,10 +384,11 @@ const Profile = () => {
   useEffect(() => {
     if (location.hash === "#skin-tribe") {
       setTimeout(() => {
-        document.getElementById("skin-tribe")?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        document.getElementById("skin-tribe")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200);
+    } else if (location.hash === "#fav-clinics") {
+      setTimeout(() => {
+        document.getElementById("fav-clinics")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 200);
     }
   }, [location.hash]);
