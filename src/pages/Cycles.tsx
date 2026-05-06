@@ -96,7 +96,7 @@ const Cycles = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <AppHeader title="시술 주기" showBack={false} />
       <div className="px-4 pt-4">
         <h1 className="text-lg font-bold">피부 관리 현황</h1>
         <p className="text-xs text-muted-foreground mt-1">시술 주기 및 시즌별 추천</p>

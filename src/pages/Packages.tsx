@@ -205,7 +205,7 @@ const Packages = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      <AppHeader title="패키지" showBack={false} />
       <div className="px-4 pt-4">
         <p className="text-xs text-muted-foreground font-light">{nickname ? `${nickname}의` : '나의'} 관리 💎</p>
         <h1 className="mt-0.5 text-xl font-bold">시술권 · 포인트</h1>
