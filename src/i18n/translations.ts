@@ -341,7 +341,7 @@ const ko: TranslationKeys = {
   count_suffix: "개",
   active_clinics: "이용중인 클리닉",
   clinic_suffix: "곳",
-  remaining_sessions: "남은 시술 횟수",
+  remaining_sessions: "남은 시술권",
   session_suffix: "회",
   remaining_points: "잔여 포인트",
   currency_suffix: "원",
