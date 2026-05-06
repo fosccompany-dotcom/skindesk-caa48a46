@@ -288,7 +288,7 @@ const Treatments = () => {
           <Gift className="h-5 w-5 text-rose-500" />
         </div>
         <div className="flex-1 text-left">
-          <p className="text-sm font-bold text-foreground">이달의 주요 병원 이벤트</p>
+          <p className="text-sm font-bold text-foreground">내 피부과에서 진행중인 이벤트 리스트</p>
           <p className="text-xs text-muted-foreground mt-0.5">내 즐겨찾기 병원의 이번 달 혜택을 한눈에</p>
         </div>
         <ChevronDown className="h-4 w-4 text-muted-foreground -rotate-90 shrink-0" />
