@@ -453,7 +453,7 @@ const Profile = () => {
     <div className="min-h-screen bg-background">
       <AppHeader title=" " showBack={false} />
       <div className="px-4 pt-4">
-        <h1 className="text-lg font-bold">{nickname ? `${nickname}님의 기본정보` : t("my_page")}</h1>
+        <h1 className="text-lg font-bold">{"\n"}</h1>
       </div>
 
       {/* ── Bloom Stage Badge ── */}
