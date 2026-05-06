@@ -14,7 +14,7 @@ import { format, addDays, addMonths, subMonths, differenceInDays, startOfMonth, 
 import { ko } from 'date-fns/locale';
 import { CalendarEvent, BODY_AREA_LABELS, SKIN_LAYER_LABELS, TreatmentRecord, SkinLayer, BodyArea } from '@/types/skin';
 import MyTreatmentHistory from '@/components/MyTreatmentHistory';
-import logoImg from '@/assets/logo.png';
+import AppHeader from '@/components/AppHeader';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
@@ -303,24 +303,16 @@ const CalendarPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* 헤더 */}
-      <div className="relative safe-top overflow-hidden">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" style={{ clipPath: 'inset(0)' }} />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="page-header-gradient relative z-10" style={{ background: 'transparent' }}>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm opacity-70 font-light">{nickname ? `${nickname}의` : '나의'} 기록 ✍️</p>
-              <h1 className="mt-0.5 text-xl font-bold">{isHistoryView ? '시술내역' : '캘린더'}</h1>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="px-3 py-1.5 text-xs font-medium text-primary-foreground bg-white/15 rounded-full backdrop-blur-sm">
-                <ClipboardList className="h-3.5 w-3.5 inline mr-1" />
-                {records.length}건
-              </span>
-            </div>
-          </div>
+      <AppHeader />
+      <div className="px-4 pt-4 flex items-center justify-between">
+        <div>
+          <p className="text-xs text-muted-foreground font-light">{nickname ? `${nickname}의` : '나의'} 기록 ✍️</p>
+          <h1 className="mt-0.5 text-xl font-bold">{isHistoryView ? '시술내역' : '캘린더'}</h1>
         </div>
+        <span className="px-3 py-1.5 text-xs font-medium text-foreground bg-muted rounded-full">
+          <ClipboardList className="h-3.5 w-3.5 inline mr-1" />
+          {records.length}건
+        </span>
       </div>
 
       <div className="page-content space-y-5 pt-4">

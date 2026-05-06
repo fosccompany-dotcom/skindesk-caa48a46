@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-import logoImg from "@/assets/logo.png";
+import AppHeader from "@/components/AppHeader";
 import { format, differenceInYears } from "date-fns";
 import { ko } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -451,20 +451,9 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="relative safe-top">
-        <img
-          src={logoImg}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{ clipPath: "inset(0)" }}
-        />
-        <div className="absolute inset-0 bg-black/40" style={{ clipPath: "inset(0)" }} />
-        <div
-          className="page-header-gradient relative z-10 flex items-center justify-between pt-4"
-          style={{ background: "transparent" }}
-        >
-          <h1 className="text-lg font-bold text-justify">{nickname ? `${nickname}님의 기본정보` : t("my_page")}</h1>
-        </div>
+      <AppHeader />
+      <div className="px-4 pt-4">
+        <h1 className="text-lg font-bold">{nickname ? `${nickname}님의 기본정보` : t("my_page")}</h1>
       </div>
 
       {/* ── Bloom Stage Badge ── */}

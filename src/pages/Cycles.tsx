@@ -1,5 +1,5 @@
 import { Clock, AlertTriangle, CheckCircle2, Timer, CalendarDays, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
-import logoImg from '@/assets/logo.png';
+import AppHeader from '@/components/AppHeader';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -96,14 +96,10 @@ const Cycles = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="relative safe-top overflow-hidden">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="page-header-gradient relative z-10 pt-4" style={{ background: 'transparent' }}>
-          <h1 className="text-lg font-bold">피부 관리 현황</h1>
-          <p className="text-xs opacity-70 mt-1">시술 주기 및 시즌별 추천</p>
-        </div>
+      <AppHeader />
+      <div className="px-4 pt-4">
+        <h1 className="text-lg font-bold">피부 관리 현황</h1>
+        <p className="text-xs text-muted-foreground mt-1">시술 주기 및 시즌별 추천</p>
       </div>
 
       <div className="page-content pt-4 pb-28">

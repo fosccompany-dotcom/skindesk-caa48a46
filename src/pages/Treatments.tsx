@@ -7,7 +7,7 @@ import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import { useRecords } from '@/context/RecordsContext';
 import FlowerLoader from '@/components/FlowerLoader';
-import logoImg from '@/assets/logo.png';
+import AppHeader from '@/components/AppHeader';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
 import { toast } from '@/hooks/use-toast';
@@ -269,14 +269,10 @@ const Treatments = () => {
 
   return (
     <div className="min-h-screen bg-background pb-24">
-      {/* Header */}
-      <div className="relative safe-top overflow-hidden">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="page-header-gradient relative z-10 pt-4" style={{ background: 'transparent' }}>
-          <h1 className="text-lg font-bold">시술 리스트</h1>
-          <p className="text-xs opacity-70 mt-0.5">클리닉별 시술 정보</p>
-        </div>
+      <AppHeader />
+      <div className="px-4 pt-4">
+        <h1 className="text-lg font-bold">시술 리스트</h1>
+        <p className="text-xs text-muted-foreground mt-0.5">클리닉별 시술 정보</p>
       </div>
 
       <div className="page-content pt-4">
