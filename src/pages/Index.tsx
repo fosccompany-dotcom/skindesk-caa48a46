@@ -534,7 +534,7 @@ const Index = () => {
       </header>
 
       {/* Greeting row */}
-      <div className="px-4 pt-3 pb-1">
+      <div className="pt-3 pb-1 px-0 py-0">
         <h1
           className="text-sm font-medium tracking-tight leading-tight text-foreground"
           style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
@@ -713,7 +713,7 @@ const Index = () => {
             IconComp = Sparkles;
             iconBg = "bg-amber-300";
             iconColor = "text-amber-600";
-            mainText = "30초만에 내 피부족 알아보기";
+            mainText = "30초 만에 내 피부 그룹 알아보기";
             subText = "내 피부에 맞는 관리 시작";
             onClick = () => navigate('/skin-quiz');
           } else if (nextStepInfo.logCount > 0 && nextStepInfo.lastDate) {
