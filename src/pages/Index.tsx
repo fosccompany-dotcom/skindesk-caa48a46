@@ -538,7 +538,7 @@ const Index = () => {
         <h1
           className="text-sm font-medium tracking-tight leading-tight text-foreground"
           style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-          반가워요! {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "이름")}님 마이 페이지에서 닉네임을 설정해주세요 :)
+          ​
         </h1>
       </div>
 
