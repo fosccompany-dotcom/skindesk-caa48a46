@@ -339,7 +339,7 @@ const ko: TranslationKeys = {
   schedule_in_2weeks: "2주 내 예정 일정",
   managed_treatments: "관리중인 시술",
   count_suffix: "개",
-  active_clinics: "이용중인 병원",
+  active_clinics: "이용중인 클리닉",
   clinic_suffix: "곳",
   remaining_sessions: "남은 시술 횟수",
   session_suffix: "회",
