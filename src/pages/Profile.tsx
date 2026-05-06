@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
-import logoImg from "@/assets/logo.png";
+import AppHeader from "@/components/AppHeader";
 import { format, differenceInYears } from "date-fns";
 import { ko } from "date-fns/locale";
 import { cn } from "@/lib/utils";
