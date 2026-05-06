@@ -66,7 +66,7 @@ const ClinicEvents = () => {
         {favClinics.length === 0 && (
           <div className="glass-card rounded-2xl p-6 text-center space-y-3">
             <Heart className="h-8 w-8 text-muted-foreground mx-auto" />
-            <p className="text-sm text-foreground font-medium">마이 페이지에서 자주가는 클리닉을 즐겨찾기 해보세요!</p>
+            <p className="text-sm text-foreground font-medium">마이페이지에서 자주가는 클리닉을 즐겨찾기 해보세요!</p>
             <p className="text-xs text-muted-foreground">
               마이페이지에서 자주 가는 클리닉을 선택하면<br />
               이번 달 이벤트를 한눈에 볼 수 있어요
