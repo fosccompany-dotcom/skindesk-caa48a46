@@ -553,7 +553,7 @@ const Profile = () => {
               : 100;
 
         return (
-          <div className="px-4 pt-3 pb-1 space-y-2">
+          <div className="pt-3 pb-1 px-0 py-0 space-y-2">
             <div className="flex items-start gap-3">
               <Popover>
                 <PopoverTrigger asChild>
