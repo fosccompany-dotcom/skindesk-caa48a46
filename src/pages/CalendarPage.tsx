@@ -303,10 +303,14 @@ const CalendarPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader title="나의 시술내역" showBack={false} />
+      <AppHeader title={isHistoryView ? '나의 시술내역' : '캘린더'} showBack={false} />
       <div className="px-4 pt-4 flex items-center justify-between">
         <div className="flex flex-col">
-          <p className="text-xs text-muted-foreground font-light whitespace-pre-line">🗓 나의 시술 기록 예약 캘린더로 한눈에 보기</p>
+          <p className="text-xs text-muted-foreground font-light whitespace-pre-line">
+            {isHistoryView
+              ? '📋 등록된 시술 내역과 결제 기록을 확인하세요'
+              : '🗓 나의 시술 기록 예약 캘린더로 한눈에 보기'}
+          </p>
         </div>
       </div>
 
