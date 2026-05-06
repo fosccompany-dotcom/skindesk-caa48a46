@@ -1018,13 +1018,13 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* ── 즐겨찾기 병원 ── */}
+          {/* ── 즐겨찾기 클리닉 ── */}
           <Card id="fav-clinics" className="rounded-2xl border-border/50">
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-2">
                 <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
                 <div className="flex-1">
-                  <h3 className="font-semibold text-xs">즐겨찾기 병원</h3>
+                  <h3 className="font-semibold text-xs">즐겨찾기 클리닉</h3>
                   <p className="text-[10px] text-muted-foreground">
                     선택한 병원의 이달의 이벤트를 한눈에 볼 수 있어요
                   </p>
