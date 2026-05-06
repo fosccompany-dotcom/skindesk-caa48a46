@@ -306,7 +306,7 @@ const CalendarPage = () => {
       <AppHeader title="캘린더" showBack={false} />
       <div className="px-4 pt-4 flex items-center justify-between">
         <div className="flex flex-col">
-          <p className="text-xs text-muted-foreground font-light whitespace-pre-line">{nickname ? `${nickname}의` : '나의'} 기록 ✍️{"\n\n"}{records.length}건</p>
+          <p className="text-xs text-muted-foreground font-light whitespace-pre-line">나의 시술 기록 예약 캘린더로 한눈에 보기</p>
         </div>
       </div>
 
