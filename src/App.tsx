@@ -10,6 +10,7 @@ import CalendarPage from "./pages/CalendarPage";
 
 import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
+import ClinicEvents from "./pages/ClinicEvents";
 import Cycles from "./pages/Cycles";
 import StatusList from "./pages/StatusList";
 import Farewell from "./pages/Farewell";
@@ -68,6 +69,7 @@ const App = () => (
                     <Route path="/"         element={<PrivateRoute><Index /></PrivateRoute>} />
                     <Route path="/points"   element={<PrivateRoute><Points /></PrivateRoute>} />
                     <Route path="/treatments" element={<PrivateRoute><Treatments /></PrivateRoute>} />
+                    <Route path="/treatments/events" element={<PrivateRoute><ClinicEvents /></PrivateRoute>} />
                     <Route path="/cycles"   element={<PrivateRoute><Cycles /></PrivateRoute>} />
                     <Route path="/status"   element={<PrivateRoute><StatusList /></PrivateRoute>} />
                     <Route path="/packages" element={<PrivateRoute><Packages /></PrivateRoute>} />

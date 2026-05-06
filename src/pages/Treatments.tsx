@@ -2,7 +2,8 @@ import { useState, useMemo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart, Plus, ScanText } from 'lucide-react';
+import { Filter, X, ChevronDown, ChevronUp, Search, MapPin, Sparkles, Tag, Building2, CalendarPlus, Heart, Plus, ScanText, Gift } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AddTreatmentModal from '@/components/AddTreatmentModal';
 import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import { useRecords } from '@/context/RecordsContext';
@@ -145,6 +146,7 @@ function matchesPrice(t: ClinicTreatment, range: PriceRange): boolean {
 type FilterSection = 'clinic' | 'category' | 'price' | 'bodyArea' | 'effect';
 
 const Treatments = () => {
+  const navigate = useNavigate();
   const [search, setSearch] = useState('');
   const [selectedClinic, setSelectedClinic] = useState<ClinicBrand | null>(null);
   const [selectedBranches, setSelectedBranches] = useState<string[]>([]);
@@ -276,6 +278,21 @@ const Treatments = () => {
       </div>
 
       <div className="page-content pt-4">
+
+      {/* 이달의 이벤트 진입 배너 */}
+      <button
+        onClick={() => navigate('/treatments/events')}
+        className="w-full mb-2.5 flex items-center gap-3 px-4 py-3 rounded-2xl bg-gradient-to-r from-rose-50 to-amber-50 border border-rose-200/50 active:scale-[0.98] transition-all"
+      >
+        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-rose-500/10 shrink-0">
+          <Gift className="h-5 w-5 text-rose-500" />
+        </div>
+        <div className="flex-1 text-left">
+          <p className="text-sm font-bold text-foreground">이달의 주요 병원 이벤트</p>
+          <p className="text-xs text-muted-foreground mt-0.5">내 즐겨찾기 병원의 이번 달 혜택을 한눈에</p>
+        </div>
+        <ChevronDown className="h-4 w-4 text-muted-foreground -rotate-90 shrink-0" />
+      </button>
 
       {/* AI 파싱 CTA */}
       <button

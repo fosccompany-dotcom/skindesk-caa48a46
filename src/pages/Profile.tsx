@@ -36,6 +36,8 @@ import {
   Check,
   Settings,
   Share2,
+  Building2,
+  Heart,
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Input } from "@/components/ui/input";
@@ -48,6 +50,7 @@ import { Language, LANGUAGE_LABELS } from "@/i18n/translations";
 import { supabase } from "@/integrations/supabase/client";
 import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
+import { CLINIC_PRESETS } from "@/constants/clinicPresets";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
@@ -298,6 +301,19 @@ const Profile = () => {
   const [goals, setGoals] = useState<string[]>([]);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
+  const [favClinics, setFavClinics] = useState<string[]>(() => {
+    try {
+      const s = localStorage.getItem('favorite_clinics');
+      return s ? JSON.parse(s) : [];
+    } catch { return []; }
+  });
+  const toggleFavClinic = (id: string) => {
+    setFavClinics(prev => {
+      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
+      localStorage.setItem('favorite_clinics', JSON.stringify(next));
+      return next;
+    });
+  };
   const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState("");
   const [skinTribe, setSkinTribe] = useState<string | null>(null);
@@ -368,10 +384,11 @@ const Profile = () => {
   useEffect(() => {
     if (location.hash === "#skin-tribe") {
       setTimeout(() => {
-        document.getElementById("skin-tribe")?.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
+        document.getElementById("skin-tribe")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 200);
+    } else if (location.hash === "#fav-clinics") {
+      setTimeout(() => {
+        document.getElementById("fav-clinics")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }, 200);
     }
   }, [location.hash]);
@@ -998,6 +1015,56 @@ const Profile = () => {
                   <p className="text-[11px] text-muted-foreground text-center py-1">{t("max_region")}</p>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* ── 즐겨찾기 병원 ── */}
+          <Card id="fav-clinics" className="rounded-2xl border-border/50">
+            <CardContent className="p-4 space-y-3">
+              <div className="flex items-center gap-2">
+                <Heart className="h-4 w-4 text-rose-500 fill-rose-500" />
+                <div className="flex-1">
+                  <h3 className="font-semibold text-xs">즐겨찾기 병원</h3>
+                  <p className="text-[10px] text-muted-foreground">
+                    선택한 병원의 이달의 이벤트를 한눈에 볼 수 있어요
+                  </p>
+                </div>
+                {favClinics.length > 0 && (
+                  <Badge variant="secondary" className="text-[10px]">{favClinics.length}</Badge>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-1.5">
+                {CLINIC_PRESETS.map(c => {
+                  const active = favClinics.includes(c.id);
+                  return (
+                    <button
+                      key={c.id}
+                      onClick={() => toggleFavClinic(c.id)}
+                      className={cn(
+                        "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left",
+                        active
+                          ? "bg-primary/10 border-primary/40 text-primary"
+                          : "bg-card border-border/50 text-foreground"
+                      )}
+                    >
+                      <Building2 className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate flex-1">{c.label}</span>
+                      {active && <Check className="h-3.5 w-3.5 shrink-0" />}
+                    </button>
+                  );
+                })}
+              </div>
+              {favClinics.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full rounded-xl text-xs gap-1.5"
+                  onClick={() => navigate('/treatments/events')}
+                >
+                  <Heart className="h-3.5 w-3.5" />
+                  이달의 이벤트 보러가기
+                </Button>
+              )}
             </CardContent>
           </Card>
 
