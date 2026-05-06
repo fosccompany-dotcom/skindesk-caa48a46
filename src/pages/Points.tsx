@@ -92,31 +92,27 @@ const Points = () => {
   return (
     <div className="min-h-screen bg-background">
 
-      {/* ── 헤더 ── */}
-      <div className="relative safe-top overflow-hidden">
-        <img src={logoImg} alt="" className="absolute inset-0 w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black/40" />
-        <div className="page-header-gradient relative z-10 pt-4" style={{ background: 'transparent' }}>
-          <h1 className="text-lg font-bold">포인트 관리</h1>
-          <div className="flex items-end gap-6 mt-3">
-            <div>
-              <p className="text-3xl font-bold tracking-tight">{currentBalance.toLocaleString()}원</p>
-              <p className="text-xs opacity-60 font-light mt-0.5">밴스 미금 잔액</p>
-            </div>
-            <div className="pb-0.5">
-              <p className="text-lg font-semibold opacity-90">{totalSpent.toLocaleString()}원</p>
-              <p className="text-xs opacity-60 font-light">누적 지출</p>
-            </div>
+      <AppHeader />
+      <div className="px-4 pt-4">
+        <h1 className="text-lg font-bold">포인트 관리</h1>
+        <div className="flex items-end gap-6 mt-3">
+          <div>
+            <p className="text-3xl font-bold tracking-tight">{currentBalance.toLocaleString()}원</p>
+            <p className="text-xs text-muted-foreground font-light mt-0.5">밴스 미금 잔액</p>
           </div>
-          {/* 병원별 잔액 카드 */}
-          <div className="flex gap-2 flex-wrap mt-3 pb-1">
-            {Object.entries(clinicBalances).map(([clinic, bal]) => (
-              <div key={clinic} className="flex-1 min-w-[130px] rounded-xl bg-white/10 border border-white/20 px-3 py-2">
-                <p className="text-[10px] opacity-50 mb-0.5">{clinic}</p>
-                <p className="text-sm font-semibold text-[#C9A96E]">₩{bal.toLocaleString()}</p>
-              </div>
-            ))}
+          <div className="pb-0.5">
+            <p className="text-lg font-semibold">{totalSpent.toLocaleString()}원</p>
+            <p className="text-xs text-muted-foreground font-light">누적 지출</p>
           </div>
+        </div>
+        {/* 병원별 잔액 카드 */}
+        <div className="flex gap-2 flex-wrap mt-3 pb-1">
+          {Object.entries(clinicBalances).map(([clinic, bal]) => (
+            <div key={clinic} className="flex-1 min-w-[130px] rounded-xl bg-muted border border-border px-3 py-2">
+              <p className="text-[10px] text-muted-foreground mb-0.5">{clinic}</p>
+              <p className="text-sm font-semibold text-primary">₩{bal.toLocaleString()}</p>
+            </div>
+          ))}
         </div>
       </div>
 
