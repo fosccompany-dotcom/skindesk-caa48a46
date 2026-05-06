@@ -539,7 +539,7 @@ const Index = () => {
         <h1
           className="text-base font-bold tracking-tight leading-tight text-foreground"
           style={{ fontFamily: "'Noto Sans KR', sans-serif" }}>
-          {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "회원")}{t("name_bloom_log")} <span className="text-primary">Bloom Log</span>
+          {nickname || (language === "en" ? "User" : language === "zh" ? "用户" : "회원")}{t("name_bloom_log")} <span className="text-primary"> </span>
         </h1>
       </div>
 
