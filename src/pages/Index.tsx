@@ -548,25 +548,25 @@ const Index = () => {
 
 
         {/* ═══ Stat Cards — 2×2 (확대) ═══ */}
-        <div className="grid grid-cols-2 gap-2.5">
-          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="px-3 py-3 flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
-                <Package className="h-5 w-5 text-[hsl(30,80%,45%)]" strokeWidth={2} />
+        <div className="grid grid-cols-2 gap-2">
+          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-xl" onClick={() => navigate("/packages?tab=packages")}>
+            <CardContent className="px-2.5 py-1.5 flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
+                <Package className="h-4 w-4 text-[hsl(30,80%,45%)]" strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-muted-foreground text-[10px] font-medium">{t("remaining_sessions")}</p>
+                <p className="text-muted-foreground text-[9px] font-medium leading-none">{t("remaining_sessions")}</p>
                 <p className="text-lg font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권 등록</span>}</p>
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/packages?tab=points")}>
-            <CardContent className="px-3 py-3 flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
-                <Wallet className="h-5 w-5 text-[hsl(340,55%,45%)]" strokeWidth={2} />
+          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-xl" onClick={() => navigate("/packages?tab=points")}>
+            <CardContent className="px-2.5 py-1.5 flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
+                <Wallet className="h-4 w-4 text-[hsl(340,55%,45%)]" strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-muted-foreground text-[10px] font-medium">{t("remaining_points")}</p>
+                <p className="text-muted-foreground text-[9px] font-medium leading-none">{t("remaining_points")}</p>
                 <p className="text-lg font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트 적립</span>}</p>
               </div>
             </CardContent>
