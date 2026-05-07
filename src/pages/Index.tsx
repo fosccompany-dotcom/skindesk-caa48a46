@@ -543,6 +543,73 @@ const Index = () => {
       </div>
 
 
+      {/* ═══ Hero: 다음 추천 시술 ═══ */}
+      {(() => {
+        const upcoming = cycles
+          .map((c) => {
+            const next = addDays(new Date(c.lastTreatmentDate), c.cycleDays);
+            return { name: c.treatmentName, next, daysDiff: differenceInDays(next, TODAY) };
+          })
+          .sort((a, b) => {
+            // 미래(>=0) 우선 가까운 순, 없으면 과거 중 가장 최근
+            const aFuture = a.daysDiff >= 0;
+            const bFuture = b.daysDiff >= 0;
+            if (aFuture && !bFuture) return -1;
+            if (!aFuture && bFuture) return 1;
+            if (aFuture) return a.daysDiff - b.daysDiff;
+            return b.daysDiff - a.daysDiff;
+          });
+        const top = upcoming[0];
+        const moreCount = Math.max(0, upcoming.length - 1);
+
+        return (
+          <div className="px-4 pt-3">
+            {top ? (
+              <div className="rounded-2xl bg-gradient-to-br from-[hsl(var(--amber-light))] to-[hsl(var(--rose-light))] shadow-md p-3.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-10 h-10 rounded-xl bg-white/70 flex items-center justify-center shrink-0">
+                    <Sparkles className="h-5 w-5 text-[hsl(30,75%,45%)]" strokeWidth={2} />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-semibold text-muted-foreground">✨ 다음 추천 시술</p>
+                    <p className="text-sm font-bold text-foreground truncate leading-tight mt-0.5">{top.name}</p>
+                    <p className="text-[11px] leading-snug mt-0.5">
+                      {top.daysDiff >= 0 ? (
+                        <span className="text-foreground">
+                          <span className="font-bold text-primary">D-{top.daysDiff}</span>
+                          <span className="text-muted-foreground"> · {format(top.next, "M월 d일", { locale: dateLocale })}</span>
+                        </span>
+                      ) : (
+                        <span className="text-[hsl(30,55%,40%)]">
+                          <span className="font-semibold">추천일이 지났어요</span>
+                          <span className="text-muted-foreground"> · D+{Math.abs(top.daysDiff)} · {format(top.next, "M월 d일", { locale: dateLocale })}</span>
+                        </span>
+                      )}
+                    </p>
+                  </div>
+                </div>
+                {moreCount > 0 && (
+                  <p className="text-[10px] text-muted-foreground mt-2 text-right">추천 {moreCount}건 더 ▾</p>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => setParseModalOpen(true)}
+                className="w-full rounded-2xl bg-card border border-border shadow-sm p-3.5 flex items-center gap-2.5 text-left active:scale-[0.98] transition">
+                <div className="w-10 h-10 rounded-xl bg-[hsl(var(--amber-light))] flex items-center justify-center shrink-0">
+                  <Sparkles className="h-5 w-5 text-[hsl(30,75%,45%)]" strokeWidth={2} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[10px] font-semibold text-muted-foreground">✨ 다음 추천 시술</p>
+                  <p className="text-sm font-bold text-foreground leading-tight mt-0.5">첫 시술 기록을 추가해보세요</p>
+                </div>
+                <ArrowRight className="h-4 w-4 text-primary shrink-0" />
+              </button>
+            )}
+          </div>
+        );
+      })()}
+
       {/* ── CONTENT ── */}
       <div className="page-content space-y-2.5 pt-3 pb-40">
 
