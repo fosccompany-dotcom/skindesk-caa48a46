@@ -622,8 +622,8 @@ const Index = () => {
                 <Package className="h-4 w-4 text-[hsl(30,80%,45%)]" strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-muted-foreground text-[9px] font-medium leading-none">{t("remaining_sessions")}</p>
-                <p className="text-lg font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">시술권 등록</span>}</p>
+                <p className="text-muted-foreground font-medium leading-none text-xs">{t("remaining_sessions")}</p>
+                <p className="text-lg font-black text-foreground leading-tight mt-0.5">{totalRemainingSessions > 0 ? <>{totalRemainingSessions}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("session_suffix")}</span></> : <span className="font-normal text-muted-foreground/70 text-xs">시술권 등록</span>}</p>
               </div>
             </CardContent>
           </Card>
