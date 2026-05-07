@@ -633,8 +633,8 @@ const Index = () => {
                 <Wallet className="h-4 w-4 text-[hsl(340,55%,45%)]" strokeWidth={2} />
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-muted-foreground text-[9px] font-medium leading-none">{t("remaining_points")}</p>
-                <p className="text-lg font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">포인트 적립</span>}</p>
+                <p className="text-muted-foreground font-medium leading-none text-xs">{t("remaining_points")}</p>
+                <p className="text-lg font-black text-foreground leading-tight mt-0.5">{totalBalance > 0 ? <>{totalBalance.toLocaleString()}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("currency_suffix")}</span></> : <span className="font-normal text-muted-foreground/70 text-xs">포인트 적립</span>}</p>
               </div>
             </CardContent>
           </Card>
