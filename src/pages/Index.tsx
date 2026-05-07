@@ -728,7 +728,7 @@ const Index = () => {
         {/* ═══ AI 시술 기록 배너 (메인 CTA) ═══ */}
         <button
           onClick={() => setParseModalOpen(true)}
-          className="w-full gap-2.5 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-3 px-3 items-center flex flex-row text-left">
+          className="w-full mb-4 flex items-center gap-3 px-4 py-3.5 rounded-2xl text-primary-foreground shadow-lg active:scale-[0.98] transition-all bg-amber-800">
           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
             <FileText className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
           </div>
