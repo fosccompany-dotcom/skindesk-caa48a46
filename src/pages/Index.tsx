@@ -701,9 +701,43 @@ const Index = () => {
               </div>
             </>
           ) : (
-            <div className="text-center py-8 text-sm text-muted-foreground whitespace-pre-line">
-              {"첫 기록이 내 피부 히스토리의 시작이에요.\n기록할수록 패턴이 보이고 관리가 달라져요 🌸"}
-            </div>
+            <>
+              <div className="text-center py-8 text-sm text-muted-foreground whitespace-pre-line">
+                {"첫 기록이 내 피부 히스토리의 시작이에요.\n기록할수록 패턴이 보이고 관리가 달라져요 🌸"}
+              </div>
+
+              {/* ═══ How it works (empty-state guide) ═══ */}
+              <div className="mt-2 mb-12 rounded-2xl p-4 bg-gradient-to-br from-[hsl(var(--rose-light))] to-[hsl(var(--amber-light))] dark:from-muted dark:to-muted/60 border border-border/40">
+                <p className="text-xs font-semibold text-foreground/80 mb-3 px-0.5">이렇게 진행돼요</p>
+                <div className="flex flex-col gap-1.5">
+                  {[
+                    { emoji: "📱", title: "카톡/문자 복붙", desc: "결제내역, 시술 안내문 그대로" },
+                    { emoji: "✨", title: "자동 정리", desc: "시술명·날짜·금액 자동 추출" },
+                    { emoji: "📅", title: "시술내역 자동 등록", desc: "다음 추천일 알림까지 자동" },
+                  ].map((step, i) => (
+                    <div key={i} className="flex flex-col items-stretch">
+                      <div className="flex items-start gap-3 rounded-xl bg-background/60 dark:bg-background/30 p-3">
+                        <div className="flex-shrink-0 flex items-center justify-center h-8 w-8 rounded-full bg-background text-base">
+                          {step.emoji}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-bold text-primary">STEP {i + 1}</span>
+                          </div>
+                          <p className="text-sm font-semibold text-foreground leading-tight mt-0.5">{step.title}</p>
+                          <p className="text-[11px] text-muted-foreground mt-0.5">{step.desc}</p>
+                        </div>
+                      </div>
+                      {i < 2 && (
+                        <div className="flex justify-center py-1">
+                          <ChevronDown className="h-3.5 w-3.5 text-muted-foreground/50" />
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </>
           )}
         </div>
       </div>
