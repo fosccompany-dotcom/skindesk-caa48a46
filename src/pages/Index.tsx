@@ -542,126 +542,13 @@ const Index = () => {
         </h1>
       </div>
 
-      {/* ═══ Bloom Progress (outside image header) ═══ */}
-      <div className="px-4 pt-2.5 pb-1">
-        <div className="flex items-center gap-2.5 px-0.5">
-          <Popover>
-            <PopoverTrigger asChild>
-              <button className="focus:outline-none shrink-0">
-                <BloomAvatar size="sm" showDays={false} />
-              </button>
-            </PopoverTrigger>
-            <PopoverContent
-              side="bottom"
-              align="start"
-              className="w-52 rounded-xl border-0 bg-black/70 backdrop-blur-md text-white p-3 shadow-xl">
-              <p className="text-[11px] font-semibold mb-2 text-white/80">{t("my_bloom")}</p>
-              <div className="space-y-1.5 text-[11px]">
-                <p className="text-[#F2C94C] font-semibold">
-                  {t("current_label")} {bloom.emoji} {bloom.name} ({activeDays}{t("unit_count")})
-                </p>
-                {bloom.nextMilestone !== null &&
-                <p className="text-white/90">
-                    {t("next_label")} {STAGES[bloom.stage + 1].emoji} {STAGES[bloom.stage + 1].name} ({bloom.nextMilestone}{t("unit_count")})
-                  </p>
-                }
-                {bloom.nextMilestone === null && <p className="text-white/90">{t("max_rank_achieved")}</p>}
-              </div>
-            </PopoverContent>
-          </Popover>
-          <div className="flex-1 min-w-0 space-y-1">
-            {isWilting ?
-            <p className="text-[11px] font-semibold text-muted-foreground leading-snug">{t("wilting_message")}</p> :
-            bloom.stage === 0 ?
-            <p className="text-[11px] font-semibold text-foreground leading-snug">{t("first_record_upgrade")}</p> :
-            remaining > 0 ?
-            <p className="text-[11px] font-semibold text-foreground leading-snug">
-                🌸 {remaining} {t("records_until_next")} {STAGES[bloom.stage + 1]?.name || "Bloom"} {t("bloom_complete")}
-              </p> :
-            <p className="text-[11px] font-semibold text-foreground leading-snug">{t("max_stage_achieved")}</p>
-            }
-            <div className="relative h-1.5 w-full overflow-hidden rounded-full bg-muted">
-              <div
-                className="h-full rounded-full transition-all duration-1000 ease-out"
-                style={{
-                  width: `${progressPct}%`,
-                  background: "linear-gradient(90deg, hsl(var(--primary)/0.6), hsl(var(--primary)), hsl(var(--rose)))"
-                }} />
-            </div>
-          </div>
-          <span className="text-base shrink-0">
-            {bloom.nextMilestone !== null ? STAGES[bloom.stage + 1]?.emoji : "🌺"}
-          </span>
-        </div>
-      </div>
 
       {/* ── CONTENT ── */}
       <div className="page-content space-y-2.5 pt-3 pb-40">
 
-        {/* ═══ 마지막 시술 + 다음 추천일 (개인화) ═══ */}
-        {nextStepInfo.lastDate && nextStepInfo.lastName && (() => {
-          const lastDateObj = new Date(nextStepInfo.lastDate);
-          const dPlus = differenceInDays(TODAY, lastDateObj);
-          const matchedCycle = cycles.find(c => c.treatmentName === nextStepInfo.lastName);
-          const baseDays = matchedCycle?.cycleDays ?? 30;
-          const { adjustedDays, message: recMsg } = getPersonalizedCycle(baseDays, {
-            birthDate: userProfile.birth_date,
-            skinType: userProfile.skin_type,
-            skinTribe: userProfile.skin_tribe,
-            managementLevel: mgmtSettings.face,
-          }, TODAY);
-          const nextDate = addDays(lastDateObj, adjustedDays);
-          const daysToNext = differenceInDays(nextDate, TODAY);
-          const nextDateLabel = format(nextDate, language === "en" ? "MMM d" : "M월 d일", { locale: dateLocale });
-
-          return (
-            <Card className="border-0 shadow-md rounded-2xl bg-gradient-to-br from-[hsl(var(--rose-light))] to-[hsl(var(--amber-light))]">
-              <CardContent className="px-3 py-3 flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-xl bg-white/60 flex items-center justify-center shrink-0">
-                  <Sparkles className="h-5 w-5 text-primary" strokeWidth={2} />
-                </div>
-                <div className="min-w-0 flex-1 space-y-0.5">
-                  <p className="text-[10px] font-medium text-muted-foreground">마지막 시술 · D+{dPlus}</p>
-                  <p className="text-sm font-bold text-foreground truncate leading-tight">{nextStepInfo.lastName}</p>
-                  <p className="text-[11px] text-foreground leading-snug">
-                    다음 추천 <span className="font-bold text-primary">{nextDateLabel}</span>
-                    <span className="text-muted-foreground"> · {adjustedDays}일</span>
-                    {daysToNext >= 0 ? (
-                      <span className="text-muted-foreground"> · {daysToNext === 0 ? "오늘" : `D-${daysToNext}`}</span>
-                    ) : (
-                      <span className="text-destructive font-semibold"> · {Math.abs(daysToNext)}일 지남</span>
-                    )}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })()}
 
         {/* ═══ Stat Cards — 2×2 (확대) ═══ */}
         <div className="grid grid-cols-2 gap-2.5">
-          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-3 flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-[hsl(260,60%,94%)] flex items-center justify-center shrink-0">
-                <Stethoscope className="h-5 w-5 text-[hsl(260,50%,45%)]" strokeWidth={2} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-muted-foreground text-[10px] font-medium">{t("managed_treatments")}</p>
-                <p className="text-lg font-black text-foreground leading-tight mt-0.5">{cycles.length > 0 ? <>{cycles.length}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("count_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">첫 시술 기록</span>}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/calendar?tab=history")}>
-            <CardContent className="px-3 py-3 flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-rose-light flex items-center justify-center shrink-0">
-                <Hospital className="h-5 w-5 text-rose-400" strokeWidth={2} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-muted-foreground text-[10px] font-medium">{t("active_clinics")}</p>
-                <p className="text-lg font-black text-foreground leading-tight mt-0.5">{uniqueClinics > 0 ? <>{uniqueClinics}<span className="text-[10px] font-semibold text-muted-foreground ml-0.5">{t("clinic_suffix")}</span></> : <span className="text-[10px] font-normal text-muted-foreground/70">병원 추가</span>}</p>
-              </div>
-            </CardContent>
-          </Card>
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-2xl" onClick={() => navigate("/packages?tab=packages")}>
             <CardContent className="px-3 py-3 flex items-center gap-2.5">
               <div className="w-10 h-10 rounded-xl bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
@@ -700,47 +587,6 @@ const Index = () => {
           <ChevronRight size={16} className="text-primary-foreground/70 shrink-0" />
         </button>
 
-        {/* ═══ Next Step Card ═══ */}
-        {(() => {
-          let IconComp = Sparkles;
-          let iconBg = "bg-[hsl(var(--accent))]/15";
-          let iconColor = "text-[hsl(var(--accent))]";
-          let mainText = "첫 시술 기록하기";
-          let subText = "기록 한 건이 회복 추적의 시작이에요";
-          let onClick = () => setParseModalOpen(true);
-
-          if (!nextStepInfo.quizDone) {
-            IconComp = Sparkles;
-            iconBg = "bg-amber-300";
-            iconColor = "text-amber-600";
-            mainText = "30초 만에 내 피부 그룹 알아보기";
-            subText = "내 피부에 맞는 관리 시작";
-            onClick = () => navigate('/skin-quiz');
-          } else if (nextStepInfo.logCount > 0 && nextStepInfo.lastDate) {
-            const dPlus = differenceInDays(TODAY, new Date(nextStepInfo.lastDate));
-            IconComp = ArrowRight;
-            iconBg = "bg-primary/10";
-            iconColor = "text-primary";
-            mainText = `${nextStepInfo.lastName ?? ''} D+${dPlus}`;
-            subText = "오늘 회복 컨디션 기록하기";
-            onClick = () => setParseModalOpen(true);
-          }
-
-          return (
-            <button
-              onClick={onClick}
-              className="w-full gap-2.5 rounded-2xl bg-card border border-border shadow-sm hover:shadow-md transition-all py-3 px-3 items-center flex flex-row text-left">
-              <div className={cn("w-10 h-10 rounded-xl flex items-center justify-center shrink-0", iconBg)}>
-                <IconComp className={cn("h-5 w-5", iconColor)} strokeWidth={2} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-foreground leading-tight">{mainText}</p>
-                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">{subText}</p>
-              </div>
-              <ChevronRight size={16} className="text-muted-foreground shrink-0" />
-            </button>
-          );
-        })()}
 
 
         {/* Mini calendar removed — see /calendar page */}
