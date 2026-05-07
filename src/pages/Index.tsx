@@ -640,22 +640,6 @@ const Index = () => {
           </Card>
         </div>
 
-        {/* ═══ AI 시술 기록 배너 (메인 CTA) ═══ */}
-        <button
-          onClick={() => setParseModalOpen(true)}
-          className="w-full gap-2.5 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-3 px-3 items-center flex flex-row text-left">
-          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
-            <FileText className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-bold text-primary-foreground leading-tight">{t("ai_parse_title")}</p>
-            <p className="text-[11px] text-primary-foreground/80 mt-0.5 leading-snug">{t("ai_parse_desc")}</p>
-          </div>
-          <ChevronRight size={16} className="text-primary-foreground/70 shrink-0" />
-        </button>
-
-
-
         {/* Mini calendar removed — see /calendar page */}
 
 
@@ -740,6 +724,20 @@ const Index = () => {
             </>
           )}
         </div>
+
+        {/* ═══ AI 시술 기록 배너 (메인 CTA) ═══ */}
+        <button
+          onClick={() => setParseModalOpen(true)}
+          className="w-full gap-2.5 rounded-2xl bg-primary/90 hover:bg-primary transition-colors shadow-md py-3 px-3 items-center flex flex-row text-left">
+          <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
+            <FileText className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-bold text-primary-foreground leading-tight">{t("ai_parse_title")}</p>
+            <p className="text-[11px] text-primary-foreground/80 mt-0.5 leading-snug">{t("ai_parse_desc")}</p>
+          </div>
+          <ChevronRight size={16} className="text-primary-foreground/70 shrink-0" />
+        </button>
       </div>
 
       {/* Action Picker Sheet for home calendar */}
