@@ -695,7 +695,7 @@ const Index = () => {
                 <p className="text-xs font-semibold text-foreground/80 mb-3 px-0.5">이렇게 진행돼요</p>
                 <div className="flex flex-col gap-1.5">
                   {[
-                    { emoji: "📱", title: "카톡/문자 복붙", desc: "결제내역, 시술 안내문 그대로" },
+                    { emoji: "📱", title: "카톡/문자 복붙 or 캡쳐 업로드", desc: "결제내역, 시술 안내문 그대로" },
                     { emoji: "✨", title: "자동 정리", desc: "시술명·날짜·금액 자동 추출" },
                     { emoji: "📅", title: "시술내역 자동 등록", desc: "다음 추천일 알림까지 자동" },
                   ].map((step, i) => (

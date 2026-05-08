@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          granted_at: string | null
+          granted_by: string | null
+          notes: string | null
+          role: string
+          user_id: string
+        }
+        Insert: {
+          granted_at?: string | null
+          granted_by?: string | null
+          notes?: string | null
+          role?: string
+          user_id: string
+        }
+        Update: {
+          granted_at?: string | null
+          granted_by?: string | null
+          notes?: string | null
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       clinic_balances: {
         Row: {
           balance: number
@@ -43,6 +67,376 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      clinic_brands: {
+        Row: {
+          classification: string | null
+          crawl_difficulty: string | null
+          created_at: string | null
+          description: string | null
+          event_page_url: string | null
+          has_event_kw: boolean | null
+          html_chars: number | null
+          http_status: number | null
+          id: string
+          is_active: boolean | null
+          last_audit_at: string | null
+          name: string
+          slug: string | null
+          source_version: string | null
+          total_branches_kr: number | null
+          total_branches_overseas: number | null
+          updated_at: string | null
+          website: string | null
+        }
+        Insert: {
+          classification?: string | null
+          crawl_difficulty?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_page_url?: string | null
+          has_event_kw?: boolean | null
+          html_chars?: number | null
+          http_status?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_audit_at?: string | null
+          name: string
+          slug?: string | null
+          source_version?: string | null
+          total_branches_kr?: number | null
+          total_branches_overseas?: number | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Update: {
+          classification?: string | null
+          crawl_difficulty?: string | null
+          created_at?: string | null
+          description?: string | null
+          event_page_url?: string | null
+          has_event_kw?: boolean | null
+          html_chars?: number | null
+          http_status?: number | null
+          id?: string
+          is_active?: boolean | null
+          last_audit_at?: string | null
+          name?: string
+          slug?: string | null
+          source_version?: string | null
+          total_branches_kr?: number | null
+          total_branches_overseas?: number | null
+          updated_at?: string | null
+          website?: string | null
+        }
+        Relationships: []
+      }
+      clinic_events: {
+        Row: {
+          brand_id: string | null
+          created_at: string | null
+          description: string | null
+          discount_amount: number | null
+          discount_pct: number | null
+          end_date: string | null
+          id: string
+          image_url: string | null
+          is_published: boolean | null
+          location_id: string | null
+          source_type: string | null
+          source_url: string | null
+          start_date: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          brand_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount_amount?: number | null
+          discount_pct?: number | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          location_id?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          start_date: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          brand_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount_amount?: number | null
+          discount_pct?: number | null
+          end_date?: string | null
+          id?: string
+          image_url?: string | null
+          is_published?: boolean | null
+          location_id?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          start_date?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_events_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_events_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["brand_id"]
+          },
+          {
+            foreignKeyName: "clinic_events_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_brand_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "clinic_events_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_kakao_no_match"
+            referencedColumns: ["location_id"]
+          },
+        ]
+      }
+      clinic_locations: {
+        Row: {
+          address: string | null
+          branch_name: string
+          brand_id: string
+          business_hours: string | null
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          is_overseas: boolean | null
+          kakao_backfill_status: string | null
+          kakao_place_id: string | null
+          landmark: string | null
+          latitude: number | null
+          longitude: number | null
+          phone: string | null
+          region_gugun: string | null
+          region_sido: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          branch_name: string
+          brand_id: string
+          business_hours?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_overseas?: boolean | null
+          kakao_backfill_status?: string | null
+          kakao_place_id?: string | null
+          landmark?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          phone?: string | null
+          region_gugun?: string | null
+          region_sido?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          branch_name?: string
+          brand_id?: string
+          business_hours?: string | null
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_overseas?: boolean | null
+          kakao_backfill_status?: string | null
+          kakao_place_id?: string | null
+          landmark?: string | null
+          latitude?: number | null
+          longitude?: number | null
+          phone?: string | null
+          region_gugun?: string | null
+          region_sido?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_locations_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_locations_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["brand_id"]
+          },
+          {
+            foreignKeyName: "clinic_locations_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_brand_summary"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clinic_treatments: {
+        Row: {
+          body_areas: string[] | null
+          branch_note: string | null
+          brand_id: string | null
+          catalog_id: string | null
+          category: string | null
+          created_at: string | null
+          description: string | null
+          discount_pct: number | null
+          effective_from: string
+          effective_to: string | null
+          effects: string[] | null
+          id: string
+          location_id: string | null
+          original_price_krw: number | null
+          package_option_id: string | null
+          price_krw: number | null
+          price_range_text: string | null
+          price_unit: string | null
+          raw_text: string | null
+          source_type: string | null
+          source_url: string | null
+          treatment_name: string
+          updated_at: string | null
+        }
+        Insert: {
+          body_areas?: string[] | null
+          branch_note?: string | null
+          brand_id?: string | null
+          catalog_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount_pct?: number | null
+          effective_from?: string
+          effective_to?: string | null
+          effects?: string[] | null
+          id?: string
+          location_id?: string | null
+          original_price_krw?: number | null
+          package_option_id?: string | null
+          price_krw?: number | null
+          price_range_text?: string | null
+          price_unit?: string | null
+          raw_text?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          treatment_name: string
+          updated_at?: string | null
+        }
+        Update: {
+          body_areas?: string[] | null
+          branch_note?: string | null
+          brand_id?: string | null
+          catalog_id?: string | null
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          discount_pct?: number | null
+          effective_from?: string
+          effective_to?: string | null
+          effects?: string[] | null
+          id?: string
+          location_id?: string | null
+          original_price_krw?: number | null
+          package_option_id?: string | null
+          price_krw?: number | null
+          price_range_text?: string | null
+          price_unit?: string | null
+          raw_text?: string | null
+          source_type?: string | null
+          source_url?: string | null
+          treatment_name?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_treatments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["brand_id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_brand_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_kakao_no_match"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_package_option_id_fkey"
+            columns: ["package_option_id"]
+            isOneToOne: false
+            referencedRelation: "package_options"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       package_options: {
         Row: {
@@ -529,10 +923,190 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      v_admin_locations_brand: {
+        Row: {
+          address: string | null
+          branch_name: string | null
+          brand_id: string | null
+          brand_name: string | null
+          classification: string | null
+          crawl_difficulty: string | null
+          created_at: string | null
+          is_active: boolean | null
+          kakao_backfill_status: string | null
+          kakao_place_id: string | null
+          location_id: string | null
+          region_gugun: string | null
+          region_sido: string | null
+        }
+        Relationships: []
+      }
+      v_brand_summary: {
+        Row: {
+          actual_locations: number | null
+          classification: string | null
+          crawl_difficulty: string | null
+          id: string | null
+          kakao_matched: number | null
+          kakao_pending: number | null
+          name: string | null
+          pending_events: number | null
+          published_events: number | null
+          total_branches_kr: number | null
+          treatment_records: number | null
+          website: string | null
+        }
+        Relationships: []
+      }
+      v_kakao_no_match: {
+        Row: {
+          branch_name: string | null
+          brand: string | null
+          classification: string | null
+          location_id: string | null
+          region_gugun: string | null
+          region_sido: string | null
+          website: string | null
+        }
+        Relationships: []
+      }
+      v_pending_review_events: {
+        Row: {
+          branch_name: string | null
+          brand_name: string | null
+          created_at: string | null
+          description: string | null
+          discount_pct: number | null
+          end_date: string | null
+          event_id: string | null
+          source_type: string | null
+          source_url: string | null
+          start_date: string | null
+          title: string | null
+        }
+        Relationships: []
+      }
+      v_searchable_treatments: {
+        Row: {
+          body_areas: string[] | null
+          branch_name: string | null
+          branch_note: string | null
+          brand_classification: string | null
+          brand_id: string | null
+          brand_name: string | null
+          brand_slug: string | null
+          catalog_id: string | null
+          category: string | null
+          description: string | null
+          discount_pct: number | null
+          effective_from: string | null
+          effects: string[] | null
+          location_id: string | null
+          original_price_krw: number | null
+          price_krw: number | null
+          price_range_text: string | null
+          region_gugun: string | null
+          region_sido: string | null
+          source_type: string | null
+          treatment_id: string | null
+          treatment_name: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clinic_treatments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["brand_id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_brand_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_kakao_no_match"
+            referencedColumns: ["location_id"]
+          },
+        ]
+      }
     }
     Functions: {
       compute_bloom_stage: { Args: { log_count: number }; Returns: number }
+      debug_vault_access: { Args: never; Returns: Json }
+      fn_expire_clinic_events: { Args: never; Returns: Json }
+      fn_run_crawl_cron: { Args: never; Returns: Json }
+      fn_run_kakao_backfill_cron: {
+        Args: { p_batch_size?: number }
+        Returns: Json
+      }
+      is_admin: { Args: never; Returns: boolean }
+      review_clinic_event: {
+        Args: { p_action: string; p_event_id: string }
+        Returns: Json
+      }
+      search_treatments: {
+        Args: {
+          p_body_areas?: string[]
+          p_brand_slug?: string
+          p_category?: string
+          p_effects?: string[]
+          p_limit?: number
+          p_offset?: number
+          p_only_with_price?: boolean
+          p_query?: string
+          p_region_sido?: string
+        }
+        Returns: {
+          body_areas: string[]
+          branch_name: string
+          branch_note: string
+          brand_id: string
+          brand_name: string
+          brand_slug: string
+          catalog_id: string
+          category: string
+          description: string
+          discount_pct: number
+          effects: string[]
+          original_price_krw: number
+          price_krw: number
+          price_range_text: string
+          region_gugun: string
+          region_sido: string
+          total_count: number
+          treatment_id: string
+          treatment_name: string
+        }[]
+      }
+      show_limit: { Args: never; Returns: number }
+      show_trgm: { Args: { "": string }; Returns: string[] }
     }
     Enums: {
       [_ in never]: never
