@@ -614,7 +614,7 @@ const Index = () => {
         {/* ═══ Stat Cards — 2×2 (확대) ═══ */}
         <div className="grid grid-cols-2 gap-2">
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-xl" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="px-2.5 py-1.5 flex items-center gap-2">
+            <CardContent className="px-2.5 py-1.5 flex items-center gap-2 border-slate-200 shadow-sm border-solid">
               <div className="w-7 h-7 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
                 <Package className="h-4 w-4 text-[hsl(30,80%,45%)]" strokeWidth={2} />
               </div>
@@ -625,7 +625,7 @@ const Index = () => {
             </CardContent>
           </Card>
           <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-xl" onClick={() => navigate("/packages?tab=points")}>
-            <CardContent className="px-2.5 py-1.5 flex items-center gap-2">
+            <CardContent className="px-2.5 py-1.5 flex items-center gap-2 rounded-2xl shadow-sm">
               <div className="w-7 h-7 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
                 <Wallet className="h-4 w-4 text-[hsl(340,55%,45%)]" strokeWidth={2} />
               </div>
