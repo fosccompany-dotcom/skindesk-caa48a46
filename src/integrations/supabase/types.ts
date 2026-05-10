@@ -438,6 +438,53 @@ export type Database = {
           },
         ]
       }
+      diagnosis_snapshots: {
+        Row: {
+          id: string
+          notes: string | null
+          score_a: number | null
+          score_h: number | null
+          score_i: number | null
+          score_o: number | null
+          score_p: number | null
+          snapshot_at: string
+          source: string | null
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          notes?: string | null
+          score_a?: number | null
+          score_h?: number | null
+          score_i?: number | null
+          score_o?: number | null
+          score_p?: number | null
+          snapshot_at?: string
+          source?: string | null
+          user_id: string
+        }
+        Update: {
+          id?: string
+          notes?: string | null
+          score_a?: number | null
+          score_h?: number | null
+          score_i?: number | null
+          score_o?: number | null
+          score_p?: number | null
+          snapshot_at?: string
+          source?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnosis_snapshots_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       package_options: {
         Row: {
           category: string
@@ -766,6 +813,7 @@ export type Database = {
       treatment_records: {
         Row: {
           amount_paid: number | null
+          axis_weights: Json | null
           body_area: string | null
           clinic: string
           clinic_address: string | null
@@ -791,6 +839,7 @@ export type Database = {
         }
         Insert: {
           amount_paid?: number | null
+          axis_weights?: Json | null
           body_area?: string | null
           clinic: string
           clinic_address?: string | null
@@ -816,6 +865,7 @@ export type Database = {
         }
         Update: {
           amount_paid?: number | null
+          axis_weights?: Json | null
           body_area?: string | null
           clinic?: string
           clinic_address?: string | null
@@ -859,6 +909,7 @@ export type Database = {
           created_at: string | null
           current_season: string | null
           deleted_at: string | null
+          diagnosis_updated_at: string | null
           email: string | null
           goals: string[] | null
           id: string
@@ -866,6 +917,11 @@ export type Database = {
           privacy_agreed_at: string | null
           quiz_completed_at: string | null
           regions: string[] | null
+          score_a: number | null
+          score_h: number | null
+          score_i: number | null
+          score_o: number | null
+          score_p: number | null
           skin_goal: string | null
           skin_tribe: string | null
           skin_type: string | null
@@ -882,6 +938,7 @@ export type Database = {
           created_at?: string | null
           current_season?: string | null
           deleted_at?: string | null
+          diagnosis_updated_at?: string | null
           email?: string | null
           goals?: string[] | null
           id: string
@@ -889,6 +946,11 @@ export type Database = {
           privacy_agreed_at?: string | null
           quiz_completed_at?: string | null
           regions?: string[] | null
+          score_a?: number | null
+          score_h?: number | null
+          score_i?: number | null
+          score_o?: number | null
+          score_p?: number | null
           skin_goal?: string | null
           skin_tribe?: string | null
           skin_type?: string | null
@@ -905,6 +967,7 @@ export type Database = {
           created_at?: string | null
           current_season?: string | null
           deleted_at?: string | null
+          diagnosis_updated_at?: string | null
           email?: string | null
           goals?: string[] | null
           id?: string
@@ -912,6 +975,11 @@ export type Database = {
           privacy_agreed_at?: string | null
           quiz_completed_at?: string | null
           regions?: string[] | null
+          score_a?: number | null
+          score_h?: number | null
+          score_i?: number | null
+          score_o?: number | null
+          score_p?: number | null
           skin_goal?: string | null
           skin_tribe?: string | null
           skin_type?: string | null
@@ -920,6 +988,45 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      user_favorite_clinics: {
+        Row: {
+          clinic_brand_id: string
+          created_at: string
+          id: string
+          priority: number
+          user_id: string
+        }
+        Insert: {
+          clinic_brand_id: string
+          created_at?: string
+          id?: string
+          priority: number
+          user_id: string
+        }
+        Update: {
+          clinic_brand_id?: string
+          created_at?: string
+          id?: string
+          priority?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorite_clinics_clinic_brand_id_fkey"
+            columns: ["clinic_brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorite_clinics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
