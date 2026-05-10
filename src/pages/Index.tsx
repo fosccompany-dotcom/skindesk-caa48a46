@@ -661,7 +661,7 @@ const Index = () => {
                   <Card key={r.id} className="glass-card">
                     <CardContent className="p-3.5">
                       <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 min-w-0">
+                        <div className="flex-1 space-y-2 mx-[10px]">
                           <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
                           <p className="text-muted-foreground mt-0.5 font-sans text-sm">
                             {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
