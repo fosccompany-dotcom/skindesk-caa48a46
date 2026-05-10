@@ -347,7 +347,7 @@ const ko: TranslationKeys = {
   currency_suffix: "원",
 
   ai_parse_title: "✨ 시술 기록 한 번에 추가하기",
-  ai_parse_desc: "카톡·문자 붙여넣기만 하면 끝",
+  ai_parse_desc: "          카톡·문자 붙여넣기만 하면 끝",
 
   recent_records: "최근 기록",
   no_record_this_date: "이 날짜에 기록이 없어요",
