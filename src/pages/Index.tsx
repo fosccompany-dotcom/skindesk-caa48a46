@@ -683,12 +683,8 @@ const Index = () => {
             </>
           ) : (
             <>
-              <div className="text-center py-8 text-sm text-muted-foreground whitespace-pre-line">
-                {"첫 기록이 내 피부 히스토리의 시작이에요.\n기록할수록 패턴이 보이고 관리가 달라져요 🌸"}
-              </div>
-
               {/* ═══ How it works (empty-state guide) ═══ */}
-              <div className="mt-2 mb-12 rounded-2xl p-4 bg-gradient-to-br from-[hsl(var(--rose-light))] to-[hsl(var(--amber-light))] dark:from-muted dark:to-muted/60 border border-border/40">
+              <div className="mt-2 rounded-2xl p-4 bg-gradient-to-br from-[hsl(var(--rose-light))] to-[hsl(var(--amber-light))] dark:from-muted dark:to-muted/60 border border-border/40">
                 <p className="text-xs font-semibold text-foreground/80 mb-3 px-0.5">이렇게 진행돼요</p>
                 <div className="flex flex-col gap-1.5">
                   {[
@@ -717,6 +713,10 @@ const Index = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+
+              <div className="text-center py-8 mb-12 text-sm text-muted-foreground whitespace-pre-line">
+                {"첫 기록이 내 피부 히스토리의 시작이에요.\n기록할수록 패턴이 보이고 관리가 달라져요 🌸"}
               </div>
             </>
           )}
