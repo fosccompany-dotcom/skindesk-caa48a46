@@ -6,7 +6,7 @@ export default function FlowerLoader() {
       <img
         src={logoImg}
         alt="Bloomlog"
-        className="w-20 h-20 opacity-90"
+        className="w-60 h-60 opacity-90"
       />
     </div>
   );
