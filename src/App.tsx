@@ -15,6 +15,7 @@ import Cycles from "./pages/Cycles";
 import StatusList from "./pages/StatusList";
 import Farewell from "./pages/Farewell";
 
+import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
@@ -26,7 +27,6 @@ import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
-import AppStartLoginGate from "./components/AppStartLoginGate";
 import { CyclesProvider } from "./context/CyclesContext";
 import { RecordsProvider } from "./context/RecordsContext";
 import { LanguageProvider } from "@/i18n/LanguageContext";
@@ -55,6 +55,7 @@ const App = () => (
                 <div className="app-container min-h-screen bg-background relative">
                   <Routes>
                     {/* 공개 라우트 */}
+                    <Route path="/login" element={<Login />} />
                     <Route path="/signup" element={<Signup />} />
                     <Route path="/farewell" element={<Farewell />} />
                     <Route path="/privacy" element={<Privacy />} />
@@ -82,7 +83,6 @@ const App = () => (
                   </Routes>
                   <GlobalFAB />
                   <BottomNav />
-                  <AppStartLoginGate />
                 </div>
                 </ManagementSettingsProvider>
               </RecordsProvider>

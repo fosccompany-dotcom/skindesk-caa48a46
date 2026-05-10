@@ -5,9 +5,7 @@ import { cn } from '@/lib/utils';
 import AddTreatmentModal from './AddTreatmentModal';
 import ParseTreatmentModal from './ParseTreatmentModal';
 import FabCoachmark from './FabCoachmark';
-import LoginRequiredSheet from './LoginRequiredSheet';
 import { useRecords } from '@/context/RecordsContext';
-import { useLoginGuard } from '@/hooks/useLoginGuard';
 import { TreatmentRecord } from '@/types/skin';
 
 const HIDDEN_PATHS = ['/signup', '/farewell'];
@@ -30,7 +28,6 @@ const GlobalFAB = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [parseModalOpen, setParseModalOpen] = useState(false);
   const [coachOpen, setCoachOpen] = useState(false);
-  const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
 
   // Drag state
   const [pos, setPos] = useState(loadPos);
@@ -118,12 +115,10 @@ const GlobalFAB = () => {
 
   const handleFabClick = () => {
     if (movedRef.current) { movedRef.current = false; return; }
-    guardAction(() => {
-      setModalOpen(true);
-      if (!localStorage.getItem(FAB_COACH_KEY)) {
-        setTimeout(() => setCoachOpen(true), 300);
-      }
-    });
+    setModalOpen(true);
+    if (!localStorage.getItem(FAB_COACH_KEY)) {
+      setTimeout(() => setCoachOpen(true), 300);
+    }
   };
 
   const handleCloseCoach = () => {
@@ -189,11 +184,6 @@ const GlobalFAB = () => {
         onClickParse={handleCoachParse}
       />
 
-      <LoginRequiredSheet
-        open={showLoginSheet}
-        onClose={handleLoginClose}
-        onLoginSuccess={handleLoginSuccess}
-      />
     </>
   );
 };

@@ -1,20 +1,12 @@
-import { useState } from 'react';
 import { Home, Package, User, ClipboardList, CalendarDays, Stethoscope } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/i18n/LanguageContext';
-import { useAuth } from '@/context/AuthContext';
-import LoginRequiredSheet from '@/components/LoginRequiredSheet';
-
-const GUARDED_PATHS: string[] = [];
 
 const BottomNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { t } = useLanguage();
-  const { user } = useAuth();
-  const [loginSheetOpen, setLoginSheetOpen] = useState(false);
-  const [pendingPath, setPendingPath] = useState<string | null>(null);
 
   if (['/signup', '/farewell'].includes(location.pathname)) return null;
 
@@ -28,12 +20,7 @@ const BottomNav = () => {
   ];
 
   const handleNavClick = (path: string) => {
-    if (GUARDED_PATHS.includes(path) && !user) {
-      setPendingPath(path);
-      setLoginSheetOpen(true);
-    } else {
-      navigate(path);
-    }
+    navigate(path);
   };
 
   const isItemActive = (item: typeof navItems[number]) => {
@@ -47,8 +34,7 @@ const BottomNav = () => {
   };
 
   return (
-    <>
-      <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-card/95 backdrop-blur-xl border-t border-border/50 safe-bottom">
+    <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-card/95 backdrop-blur-xl border-t border-border/50 safe-bottom">
         <div className="flex items-end justify-around px-2 py-1.5">
           {navItems.map((item) => {
             const isActive = isItemActive(item);
@@ -86,13 +72,7 @@ const BottomNav = () => {
             );
           })}
         </div>
-      </nav>
-      <LoginRequiredSheet
-        open={loginSheetOpen}
-        onClose={() => { setLoginSheetOpen(false); setPendingPath(null); }}
-        onLoginSuccess={() => { if (pendingPath) navigate(pendingPath); setPendingPath(null); }}
-      />
-    </>
+    </nav>
   );
 };
 

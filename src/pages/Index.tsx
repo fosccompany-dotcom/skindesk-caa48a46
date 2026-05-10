@@ -60,8 +60,6 @@ import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
 import { supabase } from "@/integrations/supabase/client";
 
-import LoginRequiredSheet from "@/components/LoginRequiredSheet";
-import { useLoginGuard } from "@/hooks/useLoginGuard";
 import { useAuth } from "@/context/AuthContext";
 import { useManagementSettings } from "@/context/ManagementSettingsContext";
 import { getPersonalizedCycle } from "@/utils/personalizedCycle";
@@ -131,7 +129,6 @@ const Index = () => {
   const [parseModalOpen, setParseModalOpen] = useState(false);
   const { nickname, currentSeason, setCurrentSeason } = useSeason();
 
-  const { showLoginSheet, guardAction, handleLoginSuccess, handleClose: handleLoginClose } = useLoginGuard();
   const [packages, setPackages] = useState<
     {
       id: string;
@@ -823,8 +820,6 @@ const Index = () => {
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
 
       {/* Privacy Consent Modal for OAuth users */}
-      <LoginRequiredSheet open={showLoginSheet} onClose={handleLoginClose} onLoginSuccess={handleLoginSuccess} />
-
       {privacyConsentOpen &&
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4">
           <div className="bg-background rounded-2xl p-6 w-full max-w-sm space-y-4 shadow-xl">
