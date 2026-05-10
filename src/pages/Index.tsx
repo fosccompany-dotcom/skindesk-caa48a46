@@ -614,7 +614,7 @@ const Index = () => {
         {/* ═══ Stat Cards — 2×2 (확대) ═══ */}
         <div className="grid grid-cols-2 gap-2">
           <Card className="glass-card cursor-pointer active:scale-[0.97] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="px-3 py-2.5 flex items-center gap-2 border">
+            <CardContent className="px-3 py-2.5 flex items-center border rounded-xl shadow-sm gap-[10px] border-none">
               <div className="w-7 h-7 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
                 <Package className="h-4 w-4 text-[hsl(30,80%,45%)]" strokeWidth={2} />
               </div>
