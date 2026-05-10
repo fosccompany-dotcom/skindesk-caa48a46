@@ -22,8 +22,6 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import AddPaymentModal from '@/components/AddPaymentModal';
-import LoginRequiredSheet from '@/components/LoginRequiredSheet';
-import { useLoginGuard } from '@/hooks/useLoginGuard';
 import { useManagementSettings } from '@/context/ManagementSettingsContext';
 import { getPersonalizedCycle } from '@/utils/personalizedCycle';
 
@@ -384,7 +382,6 @@ function PaymentHistoryTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState<Partial<PaymentRecord>>({});
   const [deleting, setDeleting] = useState<string | null>(null);
-  const { showLoginSheet: payLoginSheet, guardAction: payGuardAction, handleLoginSuccess: payLoginSuccess, handleClose: payLoginClose } = useLoginGuard();
   const [methodFilter, setMethodFilter] = useState<string | null>(null);
 
   const loadPayments = async () => {
@@ -506,7 +503,7 @@ function PaymentHistoryTab() {
             </div>
           </div>
           <Button
-            onClick={() => payGuardAction(() => setShowAddModal(true))}
+            onClick={() => setShowAddModal(true)}
             className="w-full mt-3 rounded-xl text-xs gap-1.5"
             size="sm">
             <Plus className="h-3.5 w-3.5" />
@@ -724,11 +721,6 @@ function PaymentHistoryTab() {
         })}
         </div>
       }
-      <LoginRequiredSheet
-        open={payLoginSheet}
-        onClose={payLoginClose}
-        onLoginSuccess={payLoginSuccess}
-      />
     </div>);
 }
 

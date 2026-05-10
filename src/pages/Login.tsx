@@ -42,7 +42,7 @@ const Login = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: 'https://skindesk.lovable.app'
+        redirectTo: window.location.origin,
       }
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
@@ -52,7 +52,7 @@ const Login = () => {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: 'https://skindesk.lovable.app'
+        redirectTo: window.location.origin,
       }
     });
     if (error) toast({ title: error.message, variant: 'destructive' });
