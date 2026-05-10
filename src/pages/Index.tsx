@@ -613,8 +613,8 @@ const Index = () => {
 
         {/* ═══ Stat Cards — 2×2 (확대) ═══ */}
         <div className="grid grid-cols-2 gap-2">
-          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-xl" onClick={() => navigate("/packages?tab=packages")}>
-            <CardContent className="px-2.5 py-1.5 flex items-center gap-2 border-slate-200 shadow-sm border-solid">
+          <Card className="glass-card cursor-pointer active:scale-[0.97] transition-transform" onClick={() => navigate("/packages?tab=packages")}>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-[hsl(30,90%,92%)] flex items-center justify-center shrink-0">
                 <Package className="h-4 w-4 text-[hsl(30,80%,45%)]" strokeWidth={2} />
               </div>
@@ -624,8 +624,8 @@ const Index = () => {
               </div>
             </CardContent>
           </Card>
-          <Card className="border-0 shadow-md cursor-pointer active:scale-[0.97] transition-transform rounded-xl" onClick={() => navigate("/packages?tab=points")}>
-            <CardContent className="px-2.5 py-1.5 flex items-center gap-2 rounded-2xl shadow-sm">
+          <Card className="glass-card cursor-pointer active:scale-[0.97] transition-transform" onClick={() => navigate("/packages?tab=points")}>
+            <CardContent className="px-3 py-2.5 flex items-center gap-2">
               <div className="w-7 h-7 rounded-lg bg-[hsl(340,60%,92%)] flex items-center justify-center shrink-0">
                 <Wallet className="h-4 w-4 text-[hsl(340,55%,45%)]" strokeWidth={2} />
               </div>
@@ -656,17 +656,17 @@ const Index = () => {
                   {t("view_all")} <ChevronRight size={10} />
                 </button>
               </div>
-              <div className="space-y-1 mx-[20px] px-0">
+              <div className="space-y-2">
                 {records.slice(0, 3).map((r) =>
                   <Card key={r.id} className="glass-card">
                     <CardContent className="p-3.5">
                       <div className="flex items-start justify-between gap-2">
-                        <div className="flex-1 space-y-2 mx-[10px]">
+                        <div className="flex-1 min-w-0 space-y-1">
                           <span className="text-sm font-semibold text-foreground">{r.treatmentName}</span>
-                          <p className="text-muted-foreground mt-0.5 font-sans text-sm">
+                          <p className="text-muted-foreground font-sans text-xs">
                             {format(new Date(r.date), "yyyy.MM.dd")} · {r.clinic}
                           </p>
-                          {r.memo && <p className="text-[11px] text-muted-foreground mt-1 line-clamp-1">{r.memo}</p>}
+                          {r.memo && <p className="text-[11px] text-muted-foreground line-clamp-1">{r.memo}</p>}
                         </div>
                         <div className="flex items-center gap-1 shrink-0">
                           {r.satisfaction &&
@@ -725,7 +725,7 @@ const Index = () => {
         {/* ═══ AI 시술 기록 배너 (메인 CTA) ═══ */}
         <button
           onClick={() => setParseModalOpen(true)}
-          className="w-full mb-4 flex items-center gap-3 px-4 py-3.5 rounded-2xl text-primary-foreground shadow-lg active:scale-[0.98] transition-all bg-amber-700">
+          className="w-full mb-4 flex items-center gap-3 px-4 py-3.5 rounded-2xl text-primary-foreground shadow-md active:scale-[0.98] transition-all bg-primary">
           <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center shrink-0">
             <FileText className="h-5 w-5 text-primary-foreground" strokeWidth={2} />
           </div>
