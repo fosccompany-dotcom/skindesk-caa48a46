@@ -680,13 +680,12 @@ const Profile = () => {
               </div>
               {(() => {
                 const modes = [
-                  { key: "reset", emoji: "🌵", title: "Reset Mode", sub: "피부 리셋 모드" },
-                  { key: "recovery", emoji: "🌿", title: "Recovery Mode", sub: "회복 모드" },
+                  { key: "no_care", emoji: "💤", title: "Rest Mode", sub: "휴식 모드" },
                   { key: "maintain", emoji: "💜", title: "Maintain Mode", sub: "유지 모드" },
                   { key: "boost", emoji: "🌹", title: "Boost Mode", sub: "관리 끌올 모드" },
                   { key: "special", emoji: "🌸", title: "Special Mode", sub: "스페셜 모드" },
                 ] as const;
-                const current = modes.find(m => m.key === currentSeason) || modes[2];
+                const current = modes.find(m => m.key === currentSeason) || modes[1];
                 return (
                   <Select value={currentSeason || 'maintain'} onValueChange={(v) => setSeasonGlobal(v as SeasonKey)}>
                     <SelectTrigger className="rounded-xl text-sm h-10">

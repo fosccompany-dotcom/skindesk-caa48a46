@@ -3,7 +3,7 @@
 // 각 시술의 피부과학적 회복 주기 + 5모드별 권장 빈도를 정의합니다.
 // ─────────────────────────────────────────────────────────────────────────────
 
-export type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
+export type SeasonKey = 'no_care' | 'maintain' | 'boost' | 'special';
 
 export interface SeasonRec {
   label: string;          // "연 1회", "3개월 간격 2회" 등
@@ -36,17 +36,11 @@ const liftingTreatments: TreatmentSeasonData[] = [
     description: 'HIFU 방식 피부 리프팅. 피하 지방층까지 집속 초음파 에너지 전달.',
     baseIntervalDays: 150,
     seasons: {
-      reset: {
+      no_care: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 모드에는 고에너지 시술 지양. 피부 회복에 집중하세요.',
-      },
-      recovery: {
-        label: '비추천',
-        timesPerYear: 0,
-        intervalDays: 0,
-        note: '시술 후 예민기 — 슈링크는 회복 모드에 적합하지 않습니다.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '연 2회 (6개월 간격)',
@@ -78,17 +72,11 @@ const liftingTreatments: TreatmentSeasonData[] = [
     description: 'SMAS층 집중 리프팅. 슈링크 대비 더 깊은 층에 작용하는 고강도 리프팅 시술.',
     baseIntervalDays: 180,
     seasons: {
-      reset: {
+      no_care: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '고에너지 시술로 리셋 모드에는 피부 부담이 큽니다.',
-      },
-      recovery: {
-        label: '비추천',
-        timesPerYear: 0,
-        intervalDays: 0,
-        note: '회복 중인 피부에는 적합하지 않습니다.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '연 1~2회 (6개월 간격)',
@@ -120,17 +108,11 @@ const liftingTreatments: TreatmentSeasonData[] = [
     description: '고주파(RF) 방식의 콜라겐 리모델링. 피부 전체 레이어에 균일한 열에너지 전달.',
     baseIntervalDays: 365,
     seasons: {
-      reset: {
+      no_care: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 모드에는 고에너지 시술을 피하고 피부 휴식 우선.',
-      },
-      recovery: {
-        label: '비추천',
-        timesPerYear: 0,
-        intervalDays: 0,
-        note: '예민기에는 적합하지 않습니다.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '연 1회',
@@ -162,17 +144,11 @@ const liftingTreatments: TreatmentSeasonData[] = [
     description: '고주파(RF) 기반 바디·페이스 라인 개선 기기. 피하지방층 작용.',
     baseIntervalDays: 90,
     seasons: {
-      reset: {
+      no_care: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 모드에는 강한 에너지 시술 중단.',
-      },
-      recovery: {
-        label: '비추천',
-        timesPerYear: 0,
-        intervalDays: 0,
-        note: '피부 장벽 회복이 우선입니다.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2개월 간격 (연 6회)',
@@ -204,17 +180,11 @@ const liftingTreatments: TreatmentSeasonData[] = [
     description: '마이크로포커스 초음파(MFU)+RF 복합 리프팅. 실시간 영상 확인 기반.',
     baseIntervalDays: 150,
     seasons: {
-      reset: {
+      no_care: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 모드에는 피부 휴식이 우선입니다.',
-      },
-      recovery: {
-        label: '비추천',
-        timesPerYear: 0,
-        intervalDays: 0,
-        note: '예민기에는 적합하지 않습니다.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '연 2~3회 (4~6개월 간격)',
@@ -253,17 +223,11 @@ const botoxFillerTreatments: TreatmentSeasonData[] = [
     description: '보툴리눔 톡신 주사. 근육 이완을 통한 주름 개선 및 윤곽 교정.',
     baseIntervalDays: 120,
     seasons: {
-      reset: {
-        label: '필요 시 1회',
-        timesPerYear: 1,
-        intervalDays: 180,
-        note: '리셋 모드에는 필수 부위(사각턱, 종아리 등)만 최소한으로 유지.',
-      },
-      recovery: {
-        label: '최소 유지 (4~6개월 간격)',
-        timesPerYear: 2,
-        intervalDays: 150,
-        note: '예민기에는 새로운 부위 도전 지양. 기존 관리 부위만 최소 유지.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '3~4개월 간격 (연 3~4회)',
@@ -295,17 +259,11 @@ const botoxFillerTreatments: TreatmentSeasonData[] = [
     description: '복합단백질 제거 정제 보툴리눔 톡신. 내성 없는 장기 관리에 적합.',
     baseIntervalDays: 150,
     seasons: {
-      reset: {
-        label: '필요 시 1회',
-        timesPerYear: 1,
-        intervalDays: 180,
-        note: '기존 유지 부위만 리터치.',
-      },
-      recovery: {
-        label: '4~6개월 간격',
-        timesPerYear: 2,
-        intervalDays: 150,
-        note: '예민기에는 최소 부위만 유지.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '4~5개월 간격 (연 3회)',
@@ -337,17 +295,11 @@ const botoxFillerTreatments: TreatmentSeasonData[] = [
     description: '히알루론산 등 필러 주입. 볼륨 보충, 팔자 개선, 윤곽 교정.',
     baseIntervalDays: 365,
     seasons: {
-      reset: {
-        label: '비추천 (기존 유지만)',
-        timesPerYear: 0,
-        intervalDays: 0,
-        note: '리셋 모드에는 새 필러 주입 지양. 기존 필러 녹임 시술만 고려.',
-      },
-      recovery: {
+      no_care: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '예민기에는 필러 주입 피하기.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '연 1~2회 (6~12개월 간격)',
@@ -386,17 +338,11 @@ const injectionTreatments: TreatmentSeasonData[] = [
     description: '연어 DNA(PN) 기반 피부 재생 주사. 손상 피부 회복, 콜라겐 촉진.',
     baseIntervalDays: 90,
     seasons: {
-      reset: {
-        label: '연 1~2회 기본 재생',
-        timesPerYear: 2,
-        intervalDays: 180,
-        note: '리셋 모드에 적합. 피부 장벽 회복과 재생에 이상적인 시술.',
-      },
-      recovery: {
-        label: '월 1회 × 3개월 집중 (회복 프로토콜)',
-        timesPerYear: 3,
-        intervalDays: 30,
-        note: '예민기 피부 장벽 복구에 최적. 3개월 집중 후 2개월 휴식.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2~3개월 간격 (연 4~6회)',
@@ -428,17 +374,11 @@ const injectionTreatments: TreatmentSeasonData[] = [
     description: '눈가 전용 리쥬란. 눈 밑 재생 및 잔주름 개선.',
     baseIntervalDays: 60,
     seasons: {
-      reset: {
-        label: '연 2회',
-        timesPerYear: 2,
-        intervalDays: 180,
-        note: '눈가 기본 유지. 리셋 모드에도 부담 없이 진행 가능.',
-      },
-      recovery: {
-        label: '1~2개월 간격 × 3회',
-        timesPerYear: 3,
-        intervalDays: 45,
-        note: '예민기에도 눈가는 가능. 전체 피부 상태 고려하여 진행.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2개월 간격 (연 6회)',
@@ -470,17 +410,11 @@ const injectionTreatments: TreatmentSeasonData[] = [
     description: '히알루론산 피부 내 직접 주입. 즉각적인 수분 충전 및 광채 효과.',
     baseIntervalDays: 60,
     seasons: {
-      reset: {
-        label: '2~3개월 간격 (연 4~6회)',
-        timesPerYear: 4,
-        intervalDays: 75,
-        note: '리셋 모드에 적합. 피부 수분 공급으로 회복 가속화.',
-      },
-      recovery: {
-        label: '1개월 간격 × 3회 집중',
-        timesPerYear: 4,
-        intervalDays: 30,
-        note: '시술 후 피부 진정·수분 공급. 회복 모드에 가장 적합한 시술 중 하나.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2개월 간격 (연 6회)',
@@ -512,17 +446,11 @@ const injectionTreatments: TreatmentSeasonData[] = [
     description: '히알루론산+미백·영양 성분 수분광 주사. 즉각 수분·광채 효과.',
     baseIntervalDays: 28,
     seasons: {
-      reset: {
-        label: '월 1회 기본 수분 유지',
-        timesPerYear: 8,
-        intervalDays: 45,
-        note: '리셋 모드에도 부담 없는 수분 관리. 홈케어와 병행.',
-      },
-      recovery: {
-        label: '2~3주 간격 집중 수분',
-        timesPerYear: 12,
-        intervalDays: 21,
-        note: '예민기 피부 수분·진정에 효과적. 자극이 적어 회복 모드에 적합.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '3~4주 간격 (연 10~12회)',
@@ -554,17 +482,11 @@ const injectionTreatments: TreatmentSeasonData[] = [
     description: '줄기세포 유래 엑소좀. 피부 재생·항염 효과. 시술 후 회복에 탁월.',
     baseIntervalDays: 45,
     seasons: {
-      reset: {
-        label: '1~2개월 간격 집중 재생',
-        timesPerYear: 6,
-        intervalDays: 60,
-        note: '리셋 모드에 최적. 시술 후 피부 손상 회복에 탁월.',
-      },
-      recovery: {
-        label: '2주 간격 × 4회 집중 (장벽 회복 프로토콜)',
-        timesPerYear: 4,
-        intervalDays: 14,
-        note: '회복 모드 핵심 시술. 피부 장벽 재건 + 항염 효과.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '1~2개월 간격 (연 6~8회)',
@@ -596,17 +518,11 @@ const injectionTreatments: TreatmentSeasonData[] = [
     description: '글루타치온 기반 미백·항산화 주사. 피부 톤 개선 및 해독 효과.',
     baseIntervalDays: 14,
     seasons: {
-      reset: {
-        label: '주 1~2회 집중 해독',
-        timesPerYear: 52,
-        intervalDays: 7,
-        note: '리셋 모드에 글루타치온으로 피부 해독·재생 집중.',
-      },
-      recovery: {
-        label: '주 1회',
-        timesPerYear: 24,
-        intervalDays: 7,
-        note: '항산화·해독으로 예민기 피부 안정화 지원.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2주 간격',
@@ -645,17 +561,11 @@ const laserTreatments: TreatmentSeasonData[] = [
     description: '피코초 레이저 토닝. 색소·기미 개선, 모공 축소, 피부 톤 균일화.',
     baseIntervalDays: 21,
     seasons: {
-      reset: {
-        label: '비추천 (홈케어 대체)',
+      no_care: {
+        label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 모드에는 레이저 자극 최소화. 비타민C 세럼 등 홈케어로 대체.',
-      },
-      recovery: {
-        label: '4~6주 간격 1~2회',
-        timesPerYear: 2,
-        intervalDays: 35,
-        note: '회복 후기에 가볍게 1~2회. 피부 상태 충분히 안정된 후 진행.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '3~4주 간격 (연 10~12회)',
@@ -687,17 +597,11 @@ const laserTreatments: TreatmentSeasonData[] = [
     description: '혈관·색소 레이저. 붉은기, 모세혈관, 기미, 잡티 동시 개선.',
     baseIntervalDays: 28,
     seasons: {
-      reset: {
+      no_care: {
         label: '비추천',
         timesPerYear: 0,
         intervalDays: 0,
-        note: '리셋 모드에는 레이저 시술 중단. 피부 회복 우선.',
-      },
-      recovery: {
-        label: '필요 시 1~2회',
-        timesPerYear: 2,
-        intervalDays: 45,
-        note: '붉은기 케어 목적으로 제한적 사용. 피부 진정 상태 확인 후 진행.',
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '3~4주 간격 (연 10~12회)',
@@ -729,17 +633,11 @@ const laserTreatments: TreatmentSeasonData[] = [
     description: '수압 필링. 각질 제거 + 영양 수분 공급 동시 진행. 자극이 적음.',
     baseIntervalDays: 21,
     seasons: {
-      reset: {
-        label: '2~3주 간격 (연 15~18회)',
-        timesPerYear: 15,
-        intervalDays: 21,
-        note: '리셋 모드에 가장 적합한 시술. 자극 없이 피부 컨디션 유지.',
-      },
-      recovery: {
-        label: '1~2주 간격 집중',
-        timesPerYear: 20,
-        intervalDays: 10,
-        note: '예민기 피부 진정+각질 케어. 자극이 가장 적어 회복 모드에 최적.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2주 간격 (연 20~24회)',
@@ -771,17 +669,11 @@ const laserTreatments: TreatmentSeasonData[] = [
     description: '냉각 기반 피부 진정·홍조 개선. 예민성 피부 즉각 진정.',
     baseIntervalDays: 14,
     seasons: {
-      reset: {
-        label: '주 1~2회 정기 관리',
-        timesPerYear: 52,
-        intervalDays: 7,
-        note: '리셋 모드에 최적. 피부 진정과 염증 완화에 이상적.',
-      },
-      recovery: {
-        label: '주 2~3회 집중 진정',
-        timesPerYear: 80,
-        intervalDays: 3,
-        note: '회복 모드 피부 진정의 핵심. 시술 후 즉각 진정에 효과적.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2주 간격 정기 관리',
@@ -813,17 +705,11 @@ const laserTreatments: TreatmentSeasonData[] = [
     description: '클리닉 피부 관리 (진정, 수분, 영양 팩 등). 기본 피부 케어.',
     baseIntervalDays: 14,
     seasons: {
-      reset: {
-        label: '주 1~2회 집중 홈케어형 관리',
-        timesPerYear: 52,
-        intervalDays: 7,
-        note: '리셋 모드의 핵심. 피부 관리만으로 충분한 회복 가능.',
-      },
-      recovery: {
-        label: '주 2회 집중 진정 관리',
-        timesPerYear: 80,
-        intervalDays: 3,
-        note: '회복 모드 기본 케어. 자극 없이 피부 장벽 강화.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '2주 간격 (연 20~24회)',
@@ -855,17 +741,11 @@ const laserTreatments: TreatmentSeasonData[] = [
     description: '피부 진정·보습 팩. 시술 후 피부 안정화, 홍조 완화.',
     baseIntervalDays: 7,
     seasons: {
-      reset: {
-        label: '주 2~3회',
-        timesPerYear: 104,
-        intervalDays: 3,
-        note: '리셋 모드에 가장 기본적인 피부 진정 케어.',
-      },
-      recovery: {
-        label: '매 시술 후 + 주 3회',
-        timesPerYear: 120,
-        intervalDays: 2,
-        note: '회복 모드 필수. 모든 시술 직후 진정팩 병행.',
+      no_care: {
+        label: '비추천',
+        timesPerYear: 0,
+        intervalDays: 0,
+        note: '휴식기에는 시술을 쉬고 피부 회복에 집중하세요.',
       },
       maintain: {
         label: '주 2회',
@@ -903,8 +783,7 @@ export const ALL_TREATMENT_SEASON_DATA: TreatmentSeasonData[] = [
 ];
 
 export const SEASON_META: Record<SeasonKey, { emoji: string; title: string; sub: string; color: string; bg: string; border: string }> = {
-  reset:    { emoji: '🌵', title: 'Reset Mode',    sub: '피부 리셋 모드',  color: 'text-green-700',  bg: 'bg-green-50',   border: 'border-green-200' },
-  recovery: { emoji: '🌿', title: 'Recovery Mode', sub: '회복 모드',        color: 'text-sky-700',    bg: 'bg-sky-50',     border: 'border-sky-200' },
+  no_care:  { emoji: '💤', title: 'Rest Mode',     sub: '휴식 모드',        color: 'text-stone-700',  bg: 'bg-stone-50',   border: 'border-stone-200' },
   maintain: { emoji: '💜', title: 'Maintain Mode', sub: '유지 모드',        color: 'text-indigo-700', bg: 'bg-indigo-50',  border: 'border-indigo-200' },
   boost:    { emoji: '🌹', title: 'Boost Mode',    sub: '관리 끌올 모드',  color: 'text-amber-700',  bg: 'bg-amber-50',   border: 'border-amber-200' },
   special:  { emoji: '🌸', title: 'Special Mode',  sub: '스페셜 모드',     color: 'text-purple-700', bg: 'bg-purple-50',  border: 'border-purple-200' },

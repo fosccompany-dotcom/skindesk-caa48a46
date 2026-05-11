@@ -12,8 +12,7 @@ import { useNavigate } from 'react-router-dom';
 
 // ─── 모드 배지 컬러 ───────────────────────────────────────────────────────────
 const SEASON_BADGE: Record<SeasonKey, string> = {
-  reset:    'bg-green-100 text-green-700 border-green-200',
-  recovery: 'bg-sky-100 text-sky-700 border-sky-200',
+  no_care:  'bg-stone-100 text-stone-700 border-stone-200',
   maintain: 'bg-indigo-100 text-indigo-700 border-indigo-200',
   boost:    'bg-amber-100 text-amber-700 border-amber-200',
   special:  'bg-purple-100 text-purple-700 border-purple-200',
@@ -129,10 +128,10 @@ function TreatmentCard({
   );
 }
 
-// ─── 5개 모드 가로 비교 ───────────────────────────────────────────────────────
+// ─── 4개 모드 가로 비교 ───────────────────────────────────────────────────────
 function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; currentSeason: SeasonKey }) {
   const [show, setShow] = useState(false);
-  const seasons: SeasonKey[] = ['reset', 'recovery', 'maintain', 'boost', 'special'];
+  const seasons: SeasonKey[] = ['no_care', 'maintain', 'boost', 'special'];
 
   return (
     <div>
@@ -141,7 +140,7 @@ function AllSeasonCompare({ data, currentSeason }: { data: TreatmentSeasonData; 
         className="flex items-center gap-1 text-[10px] text-gray-400 hover:text-gray-600"
       >
         <Info size={10} />
-        {show ? '모드별 비교 닫기' : '5모드 모두 보기'}
+        {show ? '모드별 비교 닫기' : '4모드 모두 보기'}
       </button>
 
       {show && (
