@@ -6,8 +6,6 @@
  *            J Cosmet Dermatol. 2008 (PubMed: 18555952)
  */
 
-import type { SkinTribe } from './skinTribeClassifier';
-
 export type AxisKey = 'p' | 'o' | 'i' | 'h' | 'a';
 
 export type ScoreValue = 0 | 3 | 7 | 10;
@@ -244,25 +242,6 @@ export function mapGoalToSkinGoal(goals: SkinGoalKey[] | null): SkinGoal {
     default:
       return 'maintenance';
   }
-}
-
-/* ── 호환성 다리: 5축 점수 → SkinTribe 역추정 ─────────────────────────────── */
-
-export function mapScoresToTribe(scores: FiveAxisScores): SkinTribe {
-  let base: 'oily' | 'dry' | 'combo';
-  if (scores.o >= 7) {
-    base = 'oily';
-  } else if (scores.h >= 5 && scores.o <= 5) {
-    base = 'dry';
-  } else {
-    base = 'combo';
-  }
-
-  const sensitive = scores.i >= 5;
-
-  if (base === 'oily') return sensitive ? 'oily_sensitive' : 'oily_strong';
-  if (base === 'dry') return sensitive ? 'desert_sensitive' : 'dry_calm';
-  return sensitive ? 'combo_sensitive' : 'combo_balanced';
 }
 
 /* ── UI 메타 ────────────────────────────────────────────────────────────── */
