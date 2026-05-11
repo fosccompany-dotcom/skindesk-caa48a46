@@ -899,6 +899,59 @@ export type Database = {
           },
         ]
       }
+      user_favorite_clinics: {
+        Row: {
+          clinic_brand_id: string
+          created_at: string
+          id: string
+          priority: number
+          user_id: string
+        }
+        Insert: {
+          clinic_brand_id: string
+          created_at?: string
+          id?: string
+          priority: number
+          user_id: string
+        }
+        Update: {
+          clinic_brand_id?: string
+          created_at?: string
+          id?: string
+          priority?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorite_clinics_clinic_brand_id_fkey"
+            columns: ["clinic_brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorite_clinics_clinic_brand_id_fkey"
+            columns: ["clinic_brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["brand_id"]
+          },
+          {
+            foreignKeyName: "user_favorite_clinics_clinic_brand_id_fkey"
+            columns: ["clinic_brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_brand_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorite_clinics_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "user_profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_profiles: {
         Row: {
           age_group: string | null
@@ -988,45 +1041,6 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
-      }
-      user_favorite_clinics: {
-        Row: {
-          clinic_brand_id: string
-          created_at: string
-          id: string
-          priority: number
-          user_id: string
-        }
-        Insert: {
-          clinic_brand_id: string
-          created_at?: string
-          id?: string
-          priority: number
-          user_id: string
-        }
-        Update: {
-          clinic_brand_id?: string
-          created_at?: string
-          id?: string
-          priority?: number
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_favorite_clinics_clinic_brand_id_fkey"
-            columns: ["clinic_brand_id"]
-            isOneToOne: false
-            referencedRelation: "clinic_brands"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_favorite_clinics_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "user_profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {
