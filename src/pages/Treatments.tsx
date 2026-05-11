@@ -44,7 +44,7 @@ const Treatments = () => {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<string[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['보톡스', '필러']));
-  const [isParseModalOpen, setParseModalOpen] = useState(false);
+  
 
   const { favorites, toggleFavorite } = useTreatmentFavorites();
 
