@@ -8,7 +8,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   Heart, 
-  TrendingUp, 
   ChevronRight,
   Target
 } from 'lucide-react';
@@ -20,7 +19,6 @@ import {
 } from '@/data/treatmentCatalog';
 import { CLINIC_PRESETS } from '@/constants/clinicPresets';
 import { cn } from '@/lib/utils';
-import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import { useTreatmentFavorites } from '@/hooks/useTreatmentFavorites';
 
 const FilterRow = ({ label, children, section }: { label: string; children: React.ReactNode; section: string }) => (
