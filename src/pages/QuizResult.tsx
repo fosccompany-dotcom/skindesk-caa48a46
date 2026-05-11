@@ -1,37 +1,43 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
-import { Link2, RefreshCw, ArrowRight, ChevronLeft } from "lucide-react";
-import { toast } from "sonner";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
+import { Link2, RefreshCw, ArrowRight, ChevronLeft, Info } from 'lucide-react';
+import { toast } from 'sonner';
+import {
+  Radar,
+  RadarChart,
+  PolarGrid,
+  PolarAngleAxis,
+  PolarRadiusAxis,
+  ResponsiveContainer,
+} from 'recharts';
+import {
+  AXIS_META,
+  interpretScore,
+  type AxisKey,
+  type FiveAxisScores,
+} from '@/lib/skinDiagnosis';
 
-const TRIBE_CARDS: Record<SkinTribe, { quote: string }> = {
-  desert_sensitive: {
-    quote: "세상 모든 제품이 내 피부의 적.\n당기고, 빨개지고, 각질까지.\n근데 그래서 더 열심히 관리하잖아.",
-  },
-  dry_calm: {
-    quote: "각질은 있는데 트러블은 없어.\n그냥 건조한 거라 생각하고 살았는데\n알고 보면 수분이 많이 부족한 상태.",
-  },
-  combo_sensitive: {
-    quote: "T존은 기름, 볼은 사막.\n어떤 날은 번들, 어떤 날은 당겨.\n피부가 매일 다른 말을 해.",
-  },
-  combo_balanced: {
-    quote: "T존만 좀 기름지거나, 그냥 평범하거나.\n큰 트러블 없이 살아왔는데\n관리하면 확실히 달라지는 피부야.",
-  },
-  oily_sensitive: {
-    quote: "번들거리면서 트러블도 잘 나.\n지성인 줄 알고 강한 제품 썼다가\n더 예민해진 경험 있잖아.",
-  },
-  oily_strong: {
-    quote: "번들거려도 트러블은 없어.\n모공이랑 피지가 고민이지\n예민하진 않아서 회복은 빠른 편.",
-  },
-};
+interface DiagnosisSnapshot {
+  id: string;
+  score_p: number | null;
+  score_o: number | null;
+  score_i: number | null;
+  score_h: number | null;
+  score_a: number | null;
+  snapshot_at: string;
+  source: string | null;
+}
+
+const AXES: AxisKey[] = ['p', 'o', 'i', 'h', 'a'];
 
 export default function QuizResult() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [tribe, setTribe] = useState<SkinTribe | null>(null);
+  const [scores, setScores] = useState<FiveAxisScores | null>(null);
+  const [history, setHistory] = useState<DiagnosisSnapshot[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -39,63 +45,80 @@ export default function QuizResult() {
       setLoading(false);
       return;
     }
-    supabase
-      .from("user_profiles")
-      .select("skin_tribe")
-      .eq("id", user.id)
-      .single()
-      .then(({ data }) => {
-        setTribe((data?.skin_tribe as SkinTribe) ?? "combo_balanced");
-        setLoading(false);
-      });
+
+    const load = async () => {
+      const [profileRes, snapshotRes] = await Promise.all([
+        supabase
+          .from('user_profiles')
+          .select('score_p, score_o, score_i, score_h, score_a')
+          .eq('id', user.id)
+          .single(),
+        supabase
+          .from('diagnosis_snapshots')
+          .select('id, score_p, score_o, score_i, score_h, score_a, snapshot_at, source')
+          .eq('user_id', user.id)
+          .order('snapshot_at', { ascending: false })
+          .limit(5),
+      ]);
+
+      const profile = profileRes.data;
+      if (
+        profile &&
+        (profile.score_p !== null ||
+          profile.score_o !== null ||
+          profile.score_i !== null ||
+          profile.score_h !== null ||
+          profile.score_a !== null)
+      ) {
+        setScores({
+          p: profile.score_p ?? 0,
+          o: profile.score_o ?? 0,
+          i: profile.score_i ?? 0,
+          h: profile.score_h ?? 0,
+          a: profile.score_a ?? 0,
+        });
+      }
+
+      setHistory(snapshotRes.data ?? []);
+      setLoading(false);
+    };
+    load();
   }, [user]);
 
-  // OG meta
+  // 페이지 타이틀
   useEffect(() => {
-    if (!tribe) return;
-    const info = SKIN_TRIBE_LABELS[tribe];
-    document.title = `나는 ${info.name} | Bloom Log 피부족 테스트`;
-    const setMeta = (property: string, content: string) => {
-      let el = document.querySelector(`meta[property="${property}"]`);
-      if (!el) {
-        el = document.createElement("meta");
-        el.setAttribute("property", property);
-        document.head.appendChild(el);
-      }
-      el.setAttribute("content", content);
-    };
-    setMeta("og:title", `나는 ${info.name} | Bloom Log 피부족 테스트`);
-    setMeta("og:description", TRIBE_CARDS[tribe].quote.split("\n")[0]);
-    setMeta("og:image", "/og-image.png");
+    document.title = '내 피부 진단 결과 | Bloom Log';
     return () => {
-      document.title = "Bloom Log";
+      document.title = 'Bloom Log';
     };
-  }, [tribe]);
+  }, []);
 
   const handleShare = async () => {
-    const info = tribe ? SKIN_TRIBE_LABELS[tribe] : null;
-    const text = info ? `나는 ${info.name}이래! 너는? bloomlog.kr/quiz` : "";
+    const text = '내 피부 5축 진단 결과 확인하기! bloomlog.kr/quiz';
     try {
       if (navigator.share) {
-        await navigator.share({ text, url: "https://bloomlog.kr/quiz" });
+        await navigator.share({ text, url: 'https://bloomlog.kr/quiz' });
       } else {
         await navigator.clipboard.writeText(text);
-        toast.success("링크가 복사되었어요!");
+        toast.success('링크가 복사되었어요!');
       }
     } catch {
       try {
         await navigator.clipboard.writeText(text);
-        toast.success("링크가 복사되었어요!");
+        toast.success('링크가 복사되었어요!');
       } catch {
-        toast.error("공유에 실패했어요");
+        toast.error('공유에 실패했어요');
       }
     }
   };
 
   const handleRetakeQuiz = async () => {
     if (!user) return;
-    await supabase.from("user_profiles").update({ quiz_completed_at: null }).eq("id", user.id);
-    navigate("/quiz", { replace: true });
+    await supabase
+      .from('user_profiles')
+      .update({ quiz_completed_at: null })
+      .eq('id', user.id);
+    navigate('/quiz', { replace: true });
   };
 
   if (loading) {
@@ -106,52 +129,173 @@ export default function QuizResult() {
     );
   }
 
-  const effectiveTribe = tribe ?? "combo_balanced";
-  const info = SKIN_TRIBE_LABELS[effectiveTribe];
-  const card = TRIBE_CARDS[effectiveTribe];
+  if (!scores) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 text-center">
+        <p className="text-lg font-bold text-foreground mb-2">진단 결과가 없어요</p>
+        <p className="text-sm text-muted-foreground mb-6">
+          먼저 피부 진단 퀴즈를 진행해주세요
+        </p>
+        <Button
+          className="rounded-xl h-12 px-8 font-bold bg-accent text-accent-foreground"
+          onClick={() => navigate('/quiz')}
+        >
+          퀴즈 시작하기
+        </Button>
+      </div>
+    );
+  }
+
+  const chartData = AXES.map((axisKey) => ({
+    axis: axisKey.toUpperCase(),
+    score: scores[axisKey],
+    fullMark: 10,
+  }));
 
   return (
-    <div className="min-h-screen bg-background flex flex-col pb-24">
+    <div className="min-h-screen bg-background flex flex-col pb-10">
       {/* Header */}
       <div className="flex items-center px-4 pt-[calc(var(--safe-top)+12px)] pb-3">
-        <button onClick={() => navigate("/")} className="p-1 text-muted-foreground hover:text-foreground">
+        <button
+          onClick={() => navigate('/')}
+          className="p-1 text-muted-foreground hover:text-foreground"
+        >
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <h1 className="flex-1 text-center text-sm font-bold text-foreground pr-6">퀴즈 결과</h1>
+        <h1 className="flex-1 text-center text-sm font-bold text-foreground pr-6">
+          내 피부 진단 결과
+        </h1>
       </div>
 
-      {/* Hero */}
-      <div className="flex flex-col items-center pt-8 pb-8 px-6 text-center">
-        <div className="text-6xl mb-5">{info.emoji}</div>
-        <p className="text-sm text-muted-foreground mb-1">나의 피부족은</p>
-        <h1 className="text-2xl font-extrabold text-foreground mb-4">{info.name}</h1>
+      {/* 레이더 차트 */}
+      <div className="px-4 pt-2 pb-4">
+        <div className="bg-card border border-border rounded-2xl px-3 py-4">
+          <h2 className="text-center text-xs text-muted-foreground font-medium mb-2">
+            나의 피부 5축 프로필
+          </h2>
+          <div className="w-full h-[280px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <RadarChart data={chartData} outerRadius="72%">
+                <PolarGrid stroke="#e5e7eb" />
+                <PolarAngleAxis
+                  dataKey="axis"
+                  tick={{ fontSize: 13, fill: '#374151', fontWeight: 700 }}
+                />
+                <PolarRadiusAxis
+                  angle={90}
+                  domain={[0, 10]}
+                  tick={{ fontSize: 10, fill: '#9ca3af' }}
+                />
+                <Radar
+                  name="현재"
+                  dataKey="score"
+                  stroke="hsl(var(--accent))"
+                  fill="hsl(var(--accent))"
+                  fillOpacity={0.4}
+                />
+              </RadarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </div>
 
-        {/* Quote card */}
-        <div className="w-full max-w-sm bg-card border border-border rounded-2xl px-6 py-5 shadow-sm">
-          <p className="text-sm text-foreground leading-relaxed whitespace-pre-line italic">"{card.quote}"</p>
+      {/* 5축 점수 카드 */}
+      <div className="px-4 space-y-2">
+        {AXES.map((axisKey) => {
+          const meta = AXIS_META[axisKey];
+          const score = scores[axisKey];
+          const interpretation = interpretScore(axisKey, score);
+          return (
+            <div
+              key={axisKey}
+              className="bg-card border border-border rounded-2xl px-4 py-3 flex items-center gap-3"
+            >
+              <span className="text-2xl shrink-0">{meta.emoji}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-baseline gap-1.5">
+                  <span className={`text-sm font-bold ${meta.color}`}>{meta.label}</span>
+                  <span className="text-[10px] text-muted-foreground">
+                    {meta.description}
+                  </span>
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-0.5 leading-snug">
+                  {interpretation}
+                </p>
+              </div>
+              <div className="shrink-0 text-right">
+                <p className={`text-2xl font-black ${meta.color}`}>{score}</p>
+                <p className="text-[9px] text-muted-foreground leading-tight">/ 10</p>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 진단 히스토리 (2개 이상일 때만) */}
+      {history.length >= 2 && (
+        <div className="px-4 mt-4">
+          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
+            진단 히스토리
+          </h3>
+          <div className="bg-card border border-border rounded-2xl px-4 py-3 space-y-2">
+            {history.map((snap, idx) => {
+              const date = new Date(snap.snapshot_at);
+              const dateStr = `${date.getFullYear()}.${String(date.getMonth() + 1).padStart(2, '0')}.${String(date.getDate()).padStart(2, '0')}`;
+              return (
+                <div
+                  key={snap.id}
+                  className={`flex items-center justify-between text-xs ${
+                    idx === 0 ? 'text-foreground font-semibold' : 'text-muted-foreground'
+                  }`}
+                >
+                  <span>
+                    {dateStr} {idx === 0 && '(최신)'}
+                  </span>
+                  <span className="font-mono text-[10px]">
+                    P{snap.score_p ?? '-'} O{snap.score_o ?? '-'} I{snap.score_i ?? '-'} H{snap.score_h ?? '-'} A{snap.score_a ?? '-'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* BSTI 근거 문구 */}
+      <div className="px-4 mt-4">
+        <div className="bg-muted/30 border border-border rounded-xl px-4 py-3 flex gap-2 items-start">
+          <Info className="w-3.5 h-3.5 mt-0.5 shrink-0 text-muted-foreground" />
+          <div className="text-[10px] text-muted-foreground leading-relaxed">
+            <p>
+              이 진단은 미국 피부과 전문의 Dr. Leslie Baumann이 개발한{' '}
+              <span className="font-semibold">Baumann Skin Type Indicator (BSTI)</span> 시스템을 기반으로 합니다.
+              한국에서도 2016년 임상 연구로 피부과 전문의 진단과 동일한 정확도가 입증되었어요.
+            </p>
+            <p className="mt-1.5">
+              단, 자기 진단의 한계가 있으므로 정확한 케어를 위해서는 피부과 전문의 상담을 권장합니다.
+            </p>
+          </div>
         </div>
       </div>
 
       {/* CTAs */}
-      <div className="px-6 space-y-3 max-w-sm mx-auto w-full">
-        {/* Main CTA */}
+      <div className="px-4 mt-5 space-y-3">
         <Button
-          className="w-full rounded-xl h-13 text-base font-bold bg-accent text-accent-foreground hover:bg-accent/90 shadow-md"
+          className="w-full rounded-xl h-12 text-sm font-bold bg-accent text-accent-foreground hover:bg-accent/90 shadow-md"
           onClick={handleShare}
         >
-          <Link2 className="w-5 h-5 mr-2" />내 결과 공유하기
+          <Link2 className="w-4 h-4 mr-2" />
+          내 결과 공유하기
         </Button>
 
-        {/* Sub CTA */}
         <Button
           variant="ghost"
           className="w-full rounded-xl h-11 text-sm text-muted-foreground hover:text-foreground"
-          onClick={() => navigate("/skin-match")}
+          onClick={() => navigate('/skin-match')}
         >
           내 시술 궁합 보러가기 <ArrowRight className="w-4 h-4 ml-1" />
         </Button>
 
-        {/* Retake */}
         <Button
           variant="outline"
           className="w-full rounded-xl h-10 text-xs text-muted-foreground border-border"
@@ -162,7 +306,7 @@ export default function QuizResult() {
         </Button>
 
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate('/')}
           className="w-full text-center text-xs text-muted-foreground hover:text-foreground transition-colors py-2"
         >
           다음에 하기

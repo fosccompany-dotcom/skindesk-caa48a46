@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,185 +6,174 @@ import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import {
-  classifySkinTribe,
-  mapQ5ToGoal,
-  mapQ6ToBirthDate,
-  SKIN_TRIBE_LABELS,
-  type QuizAnswers,
-  type SkinTribe,
-} from '@/lib/skinTribeClassifier';
+  DIAGNOSIS_QUESTIONS,
+  AGE_QUESTION,
+  GOAL_QUESTION,
+  calculateScores,
+  mapScoresToTribe,
+  mapGoalToSkinGoal,
+  type DiagnosisAnswers,
+  type AgeGroup,
+  type SkinGoalKey,
+  type ScoreValue,
+  type FiveAxisQuestionId,
+} from '@/lib/skinDiagnosis';
 
-/* ── Question definitions ── */
-const QUESTIONS = [
-  {
-    id: 'q1' as const,
-    question: '세안 후 아무것도 안 바르면?',
-    options: [
-      { key: 'A' as const, label: '금방 당기고 뻣뻣해' },
-      { key: 'B' as const, label: '괜찮다가 T존만 슬슬 번들거려' },
-      { key: 'C' as const, label: '꽤 빠르게 기름기 올라와' },
-    ],
-  },
-  {
-    id: 'q2' as const,
-    question: '새 제품 처음 쓸 때?',
-    options: [
-      { key: 'A' as const, label: '자주 빨개지거나 트러블 올라와' },
-      { key: 'B' as const, label: '대체로 별 반응 없어' },
-    ],
-  },
-  {
-    id: 'q3' as const,
-    question: '오후 2시, 내 피부 상태는?',
-    options: [
-      { key: 'A' as const, label: '아직도 당기거나 그냥 평범해' },
-      { key: 'B' as const, label: 'T존은 번들, 볼은 여전히 당겨' },
-      { key: 'C' as const, label: '얼굴 전체가 번들거려' },
-    ],
-  },
-  {
-    id: 'q4' as const,
-    question: '시술 후 회복 속도는?',
-    options: [
-      { key: 'A' as const, label: '남들보다 오래 빨개지고 민감해져' },
-      { key: 'B' as const, label: '보통이거나 빠른 편이야' },
-    ],
-  },
-  {
-    id: 'q5' as const,
-    question: '피부과 가는 주된 이유는? (복수 선택 가능)',
-    multiSelect: true,
-    options: [
-      { key: 'A' as const, label: '탄력·리프팅·노화 관리' },
-      { key: 'B' as const, label: '기미·잡티·피부톤' },
-      { key: 'C' as const, label: '여드름·모공·피지' },
-      { key: 'D' as const, label: '전반적인 유지관리' },
-    ],
-  },
-  {
-    id: 'q6' as const,
-    question: '마지막으로 연령대를 선택해주세요!',
-    options: [
-{ label: '20대', value: '20s' },
-{ label: '30대', value: '30s' },
-{ label: '40대', value: '40s' },
-{ label: '50대 이상', value: '50s_plus' },
-    ],
-  },
-] as const;
+const QUESTIONS_WITH_AGE = [...DIAGNOSIS_QUESTIONS, AGE_QUESTION, GOAL_QUESTION];
+const QUESTIONS_NO_AGE = [...DIAGNOSIS_QUESTIONS, GOAL_QUESTION];
 
-const TOTAL_STEPS = QUESTIONS.length;
-
-/* ── Component ── */
 export default function SkinQuiz() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
   const [step, setStep] = useState(0);
-  const [answers, setAnswers] = useState<QuizAnswers>({
-    q1: null, q2: null, q3: null, q4: null, q5: null, q6: null,
+  const [answers, setAnswers] = useState<DiagnosisAnswers>({
+    p1: null, p2: null,
+    o1: null, o2: null,
+    i1: null, i2: null,
+    h1: null, h2: null,
+    a1: null, a2: null,
   });
-  const [q5Selections, setQ5Selections] = useState<string[]>([]);
-  const [hasBirthDate, setHasBirthDate] = useState(false);
+  const [ageGroup, setAgeGroup] = useState<AgeGroup | null>(null);
+  const [goalSelections, setGoalSelections] = useState<SkinGoalKey[]>([]);
+  const [hasAgeGroup, setHasAgeGroup] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
-  const [result, setResult] = useState<SkinTribe | null>(null);
   const [saving, setSaving] = useState(false);
 
-  // Check if user already has age_group → skip Q6
+  // age_group 있으면 연령대 문항 skip
   useEffect(() => {
     if (!user) return;
     supabase
       .from('user_profiles')
-      .select('birth_date, age_group')
+      .select('age_group')
       .eq('id', user.id)
       .single()
       .then(({ data }) => {
-        if (data?.birth_date || data?.age_group) setHasBirthDate(true);
+        if (data?.age_group) {
+          setHasAgeGroup(true);
+          setAgeGroup(data.age_group as AgeGroup);
+        }
       });
   }, [user]);
 
-  const effectiveQuestions = hasBirthDate
-    ? QUESTIONS.filter((q) => q.id !== 'q6')
-    : QUESTIONS;
+  const effectiveQuestions = useMemo(
+    () => (hasAgeGroup ? QUESTIONS_NO_AGE : QUESTIONS_WITH_AGE),
+    [hasAgeGroup],
+  );
 
   const currentQ = effectiveQuestions[step];
   const isFirst = step === 0;
   const isLast = step === effectiveQuestions.length - 1;
+  const isAgeQ = currentQ.id === 'age';
+  const isGoalQ = currentQ.id === 'goal';
 
   const saveResults = useCallback(
-    async (tribe: SkinTribe, ans: QuizAnswers) => {
+    async (
+      finalAnswers: DiagnosisAnswers,
+      finalAge: AgeGroup | null,
+      finalGoals: SkinGoalKey[],
+    ) => {
       if (!user) return;
       setSaving(true);
+
+      const scores = calculateScores(finalAnswers, finalAge);
+      const tribe = mapScoresToTribe(scores);
+      const skinGoal = mapGoalToSkinGoal(finalGoals);
+
+      // 1. user_profiles UPDATE
       const updates: Record<string, unknown> = {
+        score_p: scores.p,
+        score_o: scores.o,
+        score_i: scores.i,
+        score_h: scores.h,
+        score_a: scores.a,
+        diagnosis_updated_at: new Date().toISOString(),
         skin_tribe: tribe,
-        skin_goal: mapQ5ToGoal(ans.q5),
+        skin_goal: skinGoal,
         quiz_completed_at: new Date().toISOString(),
       };
-      if (!hasBirthDate && ans.q6) {
-        updates.age_group = (ans.q6);
+      if (!hasAgeGroup && finalAge) {
+        updates.age_group = finalAge;
       }
-      const { error } = await supabase
+
+      const { error: updateError } = await supabase
         .from('user_profiles')
         .update(updates)
         .eq('id', user.id);
 
-      if (error) {
-        console.error('Quiz save error:', error);
+      if (updateError) {
+        console.error('Quiz save error (user_profiles):', updateError);
         toast.error('저장에 실패했지만 결과는 확인할 수 있어요');
       }
+
+      // 2. diagnosis_snapshots INSERT
+      const { error: snapshotError } = await supabase
+        .from('diagnosis_snapshots')
+        .insert({
+          user_id: user.id,
+          score_p: scores.p,
+          score_o: scores.o,
+          score_i: scores.i,
+          score_h: scores.h,
+          score_a: scores.a,
+          source: 'quiz',
+        });
+
+      if (snapshotError) {
+        console.error('Quiz save error (diagnosis_snapshots):', snapshotError);
+      }
+
       setSaving(false);
     },
-    [user, hasBirthDate],
+    [user, hasAgeGroup],
   );
 
-  const isMultiSelect = 'multiSelect' in currentQ && (currentQ as any).multiSelect;
-
   const handleSelect = (key: string) => {
-    if (transitioning) return;
-    const qId = currentQ.id as keyof QuizAnswers;
+    if (transitioning || saving) return;
 
-    // Q5 multi-select: toggle selection, don't auto-advance
-    if (isMultiSelect) {
-      setQ5Selections(prev =>
-        prev.includes(key) ? prev.filter(k => k !== key) : [...prev, key]
+    // 연령대 (단일선택)
+    if (isAgeQ) {
+      setAgeGroup(key as AgeGroup);
+      setTransitioning(true);
+      setTimeout(() => {
+        setStep((s) => s + 1);
+        setTransitioning(false);
+      }, 300);
+      return;
+    }
+
+    // skin_goal (멀티선택, 자동 진행 X)
+    if (isGoalQ) {
+      setGoalSelections((prev) =>
+        prev.includes(key as SkinGoalKey)
+          ? prev.filter((k) => k !== key)
+          : [...prev, key as SkinGoalKey],
       );
       return;
     }
 
-    const updated = { ...answers, [qId]: key };
+    // 5축 문항 (단일선택, 자동 진행)
+    const opt = currentQ.options.find((o) => o.key === key);
+    if (!opt) return;
+    const updated: DiagnosisAnswers = {
+      ...answers,
+      [currentQ.id as FiveAxisQuestionId]: opt.score as ScoreValue,
+    };
     setAnswers(updated);
 
-    // Auto-advance after 0.3s
     setTransitioning(true);
-    setTimeout(async () => {
-      if (isLast) {
-        const tribe = classifySkinTribe(updated);
-        await saveResults(tribe, updated);
-        navigate('/quiz-result', { replace: true });
-      } else {
-        setStep((s) => s + 1);
-      }
+    setTimeout(() => {
+      setStep((s) => s + 1);
       setTransitioning(false);
     }, 300);
   };
 
-  const handleQ5Next = async () => {
-    if (q5Selections.length === 0) return;
-    // Save first selection as primary goal
-    const updated = { ...answers, q5: q5Selections[0] as any };
-    setAnswers(updated);
-
+  const handleGoalComplete = async () => {
+    if (goalSelections.length === 0) return;
     setTransitioning(true);
-    setTimeout(async () => {
-      if (isLast) {
-        const tribe = classifySkinTribe(updated);
-        await saveResults(tribe, updated);
-        navigate('/quiz-result', { replace: true });
-      } else {
-        setStep((s) => s + 1);
-      }
-      setTransitioning(false);
-    }, 300);
+    await saveResults(answers, ageGroup, goalSelections);
+    setTransitioning(false);
+    navigate('/quiz-result', { replace: true });
   };
 
   const handleBack = () => {
@@ -192,50 +181,35 @@ export default function SkinQuiz() {
   };
 
   const handleSkip = async () => {
-    if (!user) { navigate('/'); return; }
+    if (!user) {
+      navigate('/');
+      return;
+    }
     await supabase
-  .from('user_profiles')
-  .update({
-    skin_tribe: 'combo_balanced',
-    age_group: null,          // ← 추가
-    quiz_completed_at: new Date().toISOString(),
-  })
+      .from('user_profiles')
+      .update({
+        quiz_completed_at: new Date().toISOString(),
+      })
       .eq('id', user.id);
     navigate('/', { replace: true });
   };
 
-  // ── Result Screen ──
-  if (result) {
-    const info = SKIN_TRIBE_LABELS[result];
-    return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center px-6 text-center">
-        <div className="text-6xl mb-4 animate-bounce">{info.emoji}</div>
-        <h1 className="text-xl font-bold text-foreground mb-1">나의 피부족은</h1>
-        <p className="text-2xl font-extrabold text-primary mb-3">{info.name}</p>
-        <p className="text-sm text-muted-foreground leading-relaxed mb-8 max-w-xs">
-          {info.desc}
-        </p>
-        <Button
-          className="w-full max-w-xs rounded-xl h-12 font-bold bg-accent text-accent-foreground hover:bg-accent/90"
-          onClick={() => navigate('/', { replace: true })}
-          disabled={saving}
-        >
-          {saving ? '저장 중...' : '홈으로 이동'}
-        </Button>
-      </div>
-    );
-  }
+  const selectedValue: string | null = (() => {
+    if (isAgeQ) return ageGroup;
+    if (isGoalQ) return null;
+    const score = answers[currentQ.id as FiveAxisQuestionId];
+    if (score === null || score === undefined) return null;
+    return currentQ.options.find((o) => o.score === score)?.key ?? null;
+  })();
 
-  // ── Quiz Screen ──
   const progressPct = ((step + 1) / effectiveQuestions.length) * 100;
-  const selectedValue = answers[currentQ.id as keyof QuizAnswers];
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <div className="flex items-center justify-between px-4 pt-[calc(var(--safe-top)+12px)] pb-2">
         <button
-          onClick={() => step > 0 ? handleBack() : navigate(-1)}
+          onClick={() => (step > 0 ? handleBack() : navigate(-1))}
           className="p-1 text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="w-5 h-5" />
@@ -263,9 +237,7 @@ export default function SkinQuiz() {
 
       {/* Question */}
       <div className="flex-1 flex flex-col px-6">
-        <h2 className="text-lg font-bold text-foreground mb-1">
-          Q{step + 1}.
-        </h2>
+        <h2 className="text-lg font-bold text-foreground mb-1">Q{step + 1}.</h2>
         <p className="text-base font-semibold text-foreground mb-6">
           {currentQ.question}
         </p>
@@ -273,14 +245,14 @@ export default function SkinQuiz() {
         {/* Options */}
         <div className="space-y-3">
           {currentQ.options.map((opt) => {
-            const isSelected = isMultiSelect
-              ? q5Selections.includes(opt.key)
+            const isSelected = isGoalQ
+              ? goalSelections.includes(opt.key as SkinGoalKey)
               : selectedValue === opt.key;
             return (
               <button
                 key={opt.key}
                 onClick={() => handleSelect(opt.key)}
-                disabled={transitioning}
+                disabled={transitioning || saving}
                 className={`w-full text-left px-5 py-4 rounded-2xl border-2 transition-all duration-200 text-sm font-medium
                   ${
                     isSelected
@@ -294,14 +266,16 @@ export default function SkinQuiz() {
             );
           })}
         </div>
-        {isMultiSelect && q5Selections.length > 0 && (
+
+        {/* 멀티선택 완료 버튼 (goal 문항) */}
+        {isGoalQ && goalSelections.length > 0 && (
           <div className="mt-4">
             <Button
               className="w-full rounded-xl h-12 font-bold bg-accent text-accent-foreground hover:bg-accent/90"
-              onClick={handleQ5Next}
-              disabled={transitioning}
+              onClick={handleGoalComplete}
+              disabled={transitioning || saving}
             >
-              다음 ({q5Selections.length}개 선택)
+              {saving ? '저장 중...' : `완료 (${goalSelections.length}개 선택)`}
             </Button>
           </div>
         )}
@@ -309,12 +283,13 @@ export default function SkinQuiz() {
 
       {/* Back button */}
       <div className="px-6 pb-[calc(var(--safe-bottom)+24px)] pt-4">
-        {!isFirst && (
+        {!isFirst && !isLast && (
           <Button
             variant="ghost"
             size="sm"
             className="text-muted-foreground"
             onClick={handleBack}
+            disabled={transitioning || saving}
           >
             <ChevronLeft className="w-4 h-4 mr-1" /> 이전
           </Button>

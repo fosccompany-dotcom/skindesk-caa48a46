@@ -1,4 +1,12 @@
 /**
+ * @deprecated Use `src/lib/skinDiagnosis.ts` (5-axis P/O/I/H/A system) for new code.
+ *
+ * This module is kept for legacy compatibility (SkinMatch, Profile, CalendarPage,
+ * personalizedCycle still read `skin_tribe`). `mapScoresToTribe()` in skinDiagnosis.ts
+ * bridges the new 5-axis scores to these legacy `SkinTribe` values.
+ *
+ * This file will be removed in Stage 3 (skin_tribe code cleanup).
+ *
  * Skin Tribe Classification Logic
  * 6 skin tribes: desert_sensitive, dry_calm, combo_sensitive, combo_balanced, oily_sensitive, oily_strong
  */
