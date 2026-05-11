@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect, useRef, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
-export type SeasonKey = 'reset' | 'recovery' | 'maintain' | 'boost' | 'special';
+export type SeasonKey = 'no_care' | 'maintain' | 'boost' | 'special';
 
 interface SeasonCtx {
   currentSeason: SeasonKey | null;
@@ -30,7 +30,10 @@ export function SeasonProvider({ children }: { children: ReactNode }) {
         .eq('id', user.id)
         .single();
       if (data?.current_season) {
-        _setCurrentSeason(data.current_season as SeasonKey);
+        const raw = data.current_season as string;
+        const safe: SeasonKey =
+          raw === 'reset' || raw === 'recovery' ? 'no_care' : (raw as SeasonKey);
+        _setCurrentSeason(safe);
       }
       if (data?.name) {
         _setNickname(data.name);

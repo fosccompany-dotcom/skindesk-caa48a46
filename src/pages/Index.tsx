@@ -479,8 +479,7 @@ const Index = () => {
               </PopoverTrigger>
               <PopoverContent align="end" sideOffset={6} className="w-48 p-1 rounded-xl">
                 {([
-                  { key: "reset", emoji: "🌵", label: "Reset" },
-                  { key: "recovery", emoji: "🌿", label: "Recovery" },
+                  { key: "no_care", emoji: "💤", label: "Rest" },
                   { key: "maintain", emoji: "💜", label: "Maintain" },
                   { key: "boost", emoji: "🌹", label: "Boost" },
                   { key: "special", emoji: "🌸", label: "Special" },

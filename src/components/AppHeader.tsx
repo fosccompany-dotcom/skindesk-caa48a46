@@ -18,8 +18,7 @@ interface AppHeaderProps {
 }
 
 const MODES: { key: SeasonKey; emoji: string; label: string }[] = [
-  { key: "reset", emoji: "🌵", label: "Reset" },
-  { key: "recovery", emoji: "🌿", label: "Recovery" },
+  { key: "no_care", emoji: "💤", label: "Rest" },
   { key: "maintain", emoji: "💜", label: "Maintain" },
   { key: "boost", emoji: "🌹", label: "Boost" },
   { key: "special", emoji: "🌸", label: "Special" },
