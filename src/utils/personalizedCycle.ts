@@ -6,7 +6,6 @@ export type ManagementLevel = 'tight' | 'maintain' | 'none';
 export interface PersonalizationInputs {
   birthDate?: string | null;     // ISO date string
   skinType?: string | null;      // '건성' | '지성' | '복합성' | '민감성' | '중성'
-  skinTribe?: string | null;
   managementLevel?: ManagementLevel; // face zone level
 }
 
@@ -47,11 +46,10 @@ export function getPersonalizedCycle(
 
   const adjustedDays = Math.max(7, Math.round(baseCycleDays * modeFactor * ageFactor * skinFactor));
 
-  const tribeMsg = inputs.skinTribe ? `${inputs.skinTribe} 타입` : null;
   const ageMsg = ageBand === 'young' ? '회복력이 좋아 살짝 여유롭게' : ageBand === 'mature' ? '효과 유지를 위해 조금 더 짧게' : '표준 주기로';
   const skinMsg = inputs.skinType === '민감성' ? '민감 피부엔 충분한 회복 기간을 두고' : inputs.skinType === '지성' ? '지성 피부 특성상 조금 더 자주' : null;
   const modeMsg = modeLabel === '타이트' ? '타이트 관리 모드로' : modeLabel === '여유' ? '여유 관리 모드로' : '유지 관리 모드로';
-  const message = [tribeMsg, modeMsg, ageMsg, skinMsg].filter(Boolean).join(' · ');
+  const message = [modeMsg, ageMsg, skinMsg].filter(Boolean).join(' · ');
 
   return { adjustedDays, modeFactor, ageFactor, skinFactor, modeLabel, ageBand, message };
 }

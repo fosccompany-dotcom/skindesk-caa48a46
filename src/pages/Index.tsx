@@ -120,7 +120,7 @@ const Index = () => {
   const dateLocale = language === "en" ? enLocale : language === "zh" ? zhLocale : koLocale;
   const WEEKDAYS = [t("weekday_sun"), t("weekday_mon"), t("weekday_tue"), t("weekday_wed"), t("weekday_thu"), t("weekday_fri"), t("weekday_sat")];
   const [nextStepInfo, setNextStepInfo] = useState<{ quizDone: boolean; logCount: number; lastDate: string | null; lastName: string | null }>({ quizDone: false, logCount: 0, lastDate: null, lastName: null });
-  const [userProfile, setUserProfile] = useState<{ skin_type: string | null; birth_date: string | null; skin_tribe: string | null }>({ skin_type: null, birth_date: null, skin_tribe: null });
+  const [userProfile, setUserProfile] = useState<{ skin_type: string | null; birth_date: string | null }>({ skin_type: null, birth_date: null });
   const { settings: mgmtSettings } = useManagementSettings();
   const [langOpen, setLangOpen] = useState(false);
   const langDropdownRef = useRef<HTMLDivElement>(null);
@@ -210,7 +210,7 @@ const Index = () => {
       if (resRes.data) setReservations(resRes.data as Reservation[]);
 
       const [profRes, lastRecRes] = await Promise.all([
-        supabase.from("user_profiles").select("quiz_completed_at,total_log_count,skin_type,birth_date,skin_tribe").eq("id", user.id).maybeSingle(),
+        supabase.from("user_profiles").select("quiz_completed_at,total_log_count,skin_type,birth_date").eq("id", user.id).maybeSingle(),
         supabase.from("treatment_records").select("date,treatment_name").eq("user_id", user.id).order("date", { ascending: false }).limit(1).maybeSingle(),
       ]);
       setNextStepInfo({
@@ -222,7 +222,6 @@ const Index = () => {
       setUserProfile({
         skin_type: profRes.data?.skin_type ?? null,
         birth_date: profRes.data?.birth_date ?? null,
-        skin_tribe: profRes.data?.skin_tribe ?? null,
       });
     };
     loadDashboard();

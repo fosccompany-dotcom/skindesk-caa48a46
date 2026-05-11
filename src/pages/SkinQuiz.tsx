@@ -10,7 +10,6 @@ import {
   AGE_QUESTION,
   GOAL_QUESTION,
   calculateScores,
-  mapScoresToTribe,
   mapGoalToSkinGoal,
   type DiagnosisAnswers,
   type AgeGroup,
@@ -77,7 +76,6 @@ export default function SkinQuiz() {
       setSaving(true);
 
       const scores = calculateScores(finalAnswers, finalAge);
-      const tribe = mapScoresToTribe(scores);
       const skinGoal = mapGoalToSkinGoal(finalGoals);
 
       // 1. user_profiles UPDATE
@@ -88,7 +86,6 @@ export default function SkinQuiz() {
         score_h: scores.h,
         score_a: scores.a,
         diagnosis_updated_at: new Date().toISOString(),
-        skin_tribe: tribe,
         skin_goal: skinGoal,
         quiz_completed_at: new Date().toISOString(),
       };

@@ -146,13 +146,13 @@ const CalendarPage = () => {
   const { records, updateRecord, deleteRecord } = useRecords();
   const { nickname } = useSeason();
   const { settings: mgmtSettings } = useManagementSettings();
-  const [userProfile, setUserProfile] = useState<{ skin_type: string | null; birth_date: string | null; skin_tribe: string | null }>({ skin_type: null, birth_date: null, skin_tribe: null });
+  const [userProfile, setUserProfile] = useState<{ skin_type: string | null; birth_date: string | null }>({ skin_type: null, birth_date: null });
   useEffect(() => {
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
-      const { data } = await supabase.from('user_profiles').select('skin_type,birth_date,skin_tribe').eq('id', user.id).maybeSingle();
-      if (data) setUserProfile({ skin_type: data.skin_type ?? null, birth_date: data.birth_date ?? null, skin_tribe: data.skin_tribe ?? null });
+      const { data } = await supabase.from('user_profiles').select('skin_type,birth_date').eq('id', user.id).maybeSingle();
+      if (data) setUserProfile({ skin_type: data.skin_type ?? null, birth_date: data.birth_date ?? null });
     })();
   }, []);
 
@@ -211,7 +211,6 @@ const CalendarPage = () => {
       const { adjustedDays, message: recMsg } = getPersonalizedCycle(cycle.cycleDays, {
         birthDate: userProfile.birth_date,
         skinType: userProfile.skin_type,
-        skinTribe: userProfile.skin_tribe,
         managementLevel: mgmtSettings.face,
       }, today);
       let nextDate = addDays(lastDate, adjustedDays);

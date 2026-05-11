@@ -53,7 +53,7 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { CLINIC_PRESETS } from "@/constants/clinicPresets";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
-import { SKIN_TRIBE_LABELS, type SkinTribe } from "@/lib/skinTribeClassifier";
+import { AXIS_META, type AxisKey, type FiveAxisScores } from "@/lib/skinDiagnosis";
 import { Progress } from "@/components/ui/progress";
 
 
@@ -316,7 +316,7 @@ const Profile = () => {
   };
   const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState("");
-  const [skinTribe, setSkinTribe] = useState<string | null>(null);
+  const [scores, setScores] = useState<FiveAxisScores | null>(null);
   const [selectedGugun, setSelectedGugun] = useState("");
 
   const { records, updateRecord } = useRecords();
@@ -416,7 +416,21 @@ const Profile = () => {
       if (data.name) setNickname(data.name);
       setBloomStage(data.bloom_stage || 1);
       setTotalLogCount(data.total_log_count || 0);
-      setSkinTribe(data.skin_tribe ?? null);
+      if (
+        data.score_p !== null ||
+        data.score_o !== null ||
+        data.score_i !== null ||
+        data.score_h !== null ||
+        data.score_a !== null
+      ) {
+        setScores({
+          p: data.score_p ?? 0,
+          o: data.score_o ?? 0,
+          i: data.score_i ?? 0,
+          h: data.score_h ?? 0,
+          a: data.score_a ?? 0,
+        });
+      }
       // 로드 완료 후 다음 렌더부터 자동저장 활성화
       requestAnimationFrame(() => {
         profileLoaded.current = true;
@@ -722,46 +736,63 @@ const Profile = () => {
                 <h2 className="font-semibold text-xs text-muted-foreground">관리 세팅</h2>
               </div>
 
-              {/* 내 피부족 */}
-              <div id="skin-tribe" className="space-y-2">
-                <Label className="text-xs">내 피부족</Label>
-                <div className="flex items-center justify-between rounded-xl border border-border bg-muted/30 px-3 py-2.5">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl">{skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.emoji ?? '⚖️') : '⚖️'}</span>
-                    <p className="text-sm font-semibold text-foreground">
-                      {skinTribe ? (SKIN_TRIBE_LABELS[skinTribe as SkinTribe]?.name ?? '복합 균형족') : '아직 결과 없음'}
-                    </p>
+              {/* 내 피부 진단 (5축) */}
+              <div id="skin-diagnosis" className="space-y-2">
+                <Label className="text-xs">내 피부 진단</Label>
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-muted/30 px-3 py-2.5">
+                  <div className="flex items-center gap-1 min-w-0 flex-1">
+                    {scores ? (
+                      <div className="flex gap-2 text-xs">
+                        {(['p', 'o', 'i', 'h', 'a'] as AxisKey[]).map((axis) => (
+                          <span key={axis} className="flex items-baseline gap-0.5">
+                            <span className={`font-bold ${AXIS_META[axis].color}`}>
+                              {axis.toUpperCase()}
+                            </span>
+                            <span className="font-semibold text-foreground">
+                              {scores[axis]}
+                            </span>
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">아직 진단 결과 없음</p>
+                    )}
                   </div>
-                  <div className="flex gap-1.5">
-                    {skinTribe && (
-                      <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-7 px-2" onClick={() => navigate('/quiz-result')}>
+                  <div className="flex gap-1.5 shrink-0">
+                    {scores && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs text-muted-foreground h-7 px-2"
+                        onClick={() => navigate('/quiz-result')}
+                      >
                         결과 보기
                       </Button>
                     )}
                     <Button
-  variant="outline"
-  size="sm"
-  className="text-xs h-7 px-2"
-  onClick={async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        const { error: updateError } = await supabase
-          .from('user_profiles')
-          .update({ quiz_completed_at: null })
-          .eq('id', user.id);
-        if (updateError) {
-          console.error('[퀴즈 시작] update 실패', updateError);
-        }
-      }
-      navigate('/quiz');
-    } catch (e) {
-      console.error('[퀴즈 시작] 예외', e);
-      navigate('/quiz');
-    }
-  }}
->
-                      {skinTribe ? '다시 하기' : '퀴즈 시작'}
+                      variant="outline"
+                      size="sm"
+                      className="text-xs h-7 px-2"
+                      onClick={async () => {
+                        try {
+                          const { data: { user } } = await supabase.auth.getUser();
+                          if (user) {
+                            const { error: updateError } = await supabase
+                              .from('user_profiles')
+                              .update({ quiz_completed_at: null })
+                              .eq('id', user.id);
+                            if (updateError) {
+                              console.error('[퀴즈 시작] update 실패', updateError);
+                            }
+                          }
+                          navigate('/quiz');
+                        } catch (e) {
+                          console.error('[퀴즈 시작] 예외', e);
+                          navigate('/quiz');
+                        }
+                      }}
+                    >
+                      {scores ? '다시 하기' : '퀴즈 시작'}
                     </Button>
                   </div>
                 </div>
