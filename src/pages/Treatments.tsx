@@ -8,7 +8,6 @@ import {
   ChevronDown, 
   ChevronUp, 
   Heart, 
-  TrendingUp, 
   ChevronRight,
   Target
 } from 'lucide-react';
@@ -20,7 +19,6 @@ import {
 } from '@/data/treatmentCatalog';
 import { CLINIC_PRESETS } from '@/constants/clinicPresets';
 import { cn } from '@/lib/utils';
-import ParseTreatmentModal from '@/components/ParseTreatmentModal';
 import { useTreatmentFavorites } from '@/hooks/useTreatmentFavorites';
 
 const FilterRow = ({ label, children, section }: { label: string; children: React.ReactNode; section: string }) => (
@@ -46,7 +44,7 @@ const Treatments = () => {
   const [selectedAreas, setSelectedAreas] = useState<string[]>([]);
   const [selectedEffects, setSelectedEffects] = useState<string[]>([]);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set(['보톡스', '필러']));
-  const [isParseModalOpen, setParseModalOpen] = useState(false);
+  
 
   const { favorites, toggleFavorite } = useTreatmentFavorites();
 
@@ -118,20 +116,6 @@ const Treatments = () => {
         <ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
       </button>
 
-      {/* AI 파싱 CTA */}
-      <button
-        onClick={() => setParseModalOpen(true)}
-        className="w-full mb-4 flex items-center gap-3 px-4 py-3.5 rounded-2xl text-primary-foreground shadow-lg active:scale-[0.98] transition-all bg-orange-900"
-      >
-        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-white/20 shrink-0">
-          <TrendingUp className="h-5 w-5" />
-        </div>
-        <div className="flex-1 text-left">
-          <p className="text-sm font-bold">시술 정보 자동 분석하기</p>
-          <p className="text-[10px] opacity-90 mt-0.5">링크나 텍스트만 넣으면 최저가 정보를 정리해드려요</p>
-        </div>
-        <ChevronRight className="h-4 w-4 opacity-70" />
-      </button>
 
       <div className="space-y-6">
         <FilterRow label="클리닉/지점" section="clinic">
@@ -257,12 +241,6 @@ const Treatments = () => {
         })}
       </div>
       </div>
-
-      {isParseModalOpen && (
-        <ParseTreatmentModal
-          onClose={() => setParseModalOpen(false)}
-        />
-      )}
     </div>
   );
 };
