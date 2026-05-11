@@ -239,14 +239,6 @@ const Treatments = () => {
             </div>
           );
         })}
-      </div>
-      </div>
-
-      {isParseModalOpen && (
-        <ParseTreatmentModal
-          onClose={() => setParseModalOpen(false)}
-        />
-      )}
     </div>
   );
 };
