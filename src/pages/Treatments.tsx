@@ -239,6 +239,8 @@ const Treatments = () => {
             </div>
           );
         })}
+      </div>
+      </div>
     </div>
   );
 };
