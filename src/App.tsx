@@ -11,6 +11,7 @@ import CalendarPage from "./pages/CalendarPage";
 import Profile from "./pages/Profile";
 import Treatments from "./pages/Treatments";
 import ClinicEvents from "./pages/ClinicEvents";
+import Admin from "./pages/Admin";
 import Cycles from "./pages/Cycles";
 import StatusList from "./pages/StatusList";
 import Farewell from "./pages/Farewell";
@@ -78,6 +79,7 @@ const App = () => (
                     
                     <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
                     <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
+                    <Route path="/admin"    element={<PrivateRoute><Admin /></PrivateRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>

@@ -51,6 +51,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { CLINIC_PRESETS } from "@/constants/clinicPresets";
+import { useFavoriteClinics, useAllClinicBrands } from "@/hooks/useFavoriteClinics";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { AXIS_META, type AxisKey, type FiveAxisScores } from "@/lib/skinDiagnosis";
@@ -301,19 +302,10 @@ const Profile = () => {
   const [goals, setGoals] = useState<string[]>([]);
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
-  const [favClinics, setFavClinics] = useState<string[]>(() => {
-    try {
-      const s = localStorage.getItem('favorite_clinics');
-      return s ? JSON.parse(s) : [];
-    } catch { return []; }
-  });
-  const toggleFavClinic = (id: string) => {
-    setFavClinics(prev => {
-      const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      localStorage.setItem('favorite_clinics', JSON.stringify(next));
-      return next;
-    });
-  };
+  // DB 기반 즐겨찾기 클리닉 (user_favorite_clinics)
+  const { favorites: favBrands, isFavorite: isFavBrand, toggleFavorite: toggleFavBrand } = useFavoriteClinics();
+  const { brands: allBrands, loading: brandsLoading } = useAllClinicBrands();
+  const [brandSearch, setBrandSearch] = useState('');
   const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState("");
   const [scores, setScores] = useState<FiveAxisScores | null>(null);
@@ -1043,7 +1035,7 @@ const Profile = () => {
             </CardContent>
           </Card>
 
-          {/* ── 즐겨찾기 클리닉 ── */}
+          {/* ── 즐겨찾기 클리닉 (DB 기반, 25개 brand) ── */}
           <Card id="fav-clinics" className="rounded-2xl border-border/50">
             <CardContent className="p-4 space-y-3">
               <div className="flex items-center gap-2">
@@ -1051,43 +1043,67 @@ const Profile = () => {
                 <div className="flex-1">
                   <h3 className="font-semibold text-xs">즐겨찾기 클리닉</h3>
                   <p className="text-[10px] text-muted-foreground">
-                    선택한 병원의 이달의 이벤트를 한눈에 볼 수 있어요
+                    선택한 병원의 이번 달 이벤트를 시술 화면에서 볼 수 있어요
                   </p>
                 </div>
-                {favClinics.length > 0 && (
-                  <Badge variant="secondary" className="text-[10px]">{favClinics.length}</Badge>
+                {favBrands.length > 0 && (
+                  <Badge variant="secondary" className="text-[10px]">{favBrands.length}</Badge>
                 )}
               </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {CLINIC_PRESETS.map(c => {
-                  const active = favClinics.includes(c.id);
-                  return (
-                    <button
-                      key={c.id}
-                      onClick={() => toggleFavClinic(c.id)}
-                      className={cn(
-                        "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left",
-                        active
-                          ? "bg-primary/10 border-primary/40 text-primary"
-                          : "bg-card border-border/50 text-foreground"
-                      )}
-                    >
-                      <Building2 className="h-3.5 w-3.5 shrink-0" />
-                      <span className="truncate flex-1">{c.label}</span>
-                      {active && <Check className="h-3.5 w-3.5 shrink-0" />}
-                    </button>
-                  );
-                })}
+
+              {/* 검색 */}
+              <div className="relative">
+                <input
+                  type="text"
+                  placeholder="병원 이름 검색..."
+                  value={brandSearch}
+                  onChange={(e) => setBrandSearch(e.target.value)}
+                  className="w-full text-xs bg-muted/40 border border-border rounded-xl px-3 py-2 focus:outline-none focus:border-primary/40"
+                />
               </div>
-              {favClinics.length > 0 && (
+
+              {/* 클리닉 리스트 */}
+              {brandsLoading ? (
+                <div className="text-center py-4 text-xs text-muted-foreground">불러오는 중...</div>
+              ) : (
+                <div className="grid grid-cols-2 gap-1.5 max-h-[280px] overflow-y-auto">
+                  {allBrands
+                    .filter((b) =>
+                      brandSearch.trim() === ''
+                        ? true
+                        : b.name.toLowerCase().includes(brandSearch.toLowerCase()),
+                    )
+                    .map((b) => {
+                      const active = isFavBrand(b.id);
+                      return (
+                        <button
+                          key={b.id}
+                          onClick={() => toggleFavBrand(b.id)}
+                          className={cn(
+                            "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left",
+                            active
+                              ? "bg-primary/10 border-primary/40 text-primary"
+                              : "bg-card border-border/50 text-foreground",
+                          )}
+                        >
+                          <Building2 className="h-3.5 w-3.5 shrink-0" />
+                          <span className="truncate flex-1">{b.name}</span>
+                          {active && <Check className="h-3.5 w-3.5 shrink-0" />}
+                        </button>
+                      );
+                    })}
+                </div>
+              )}
+
+              {favBrands.length > 0 && (
                 <Button
                   variant="outline"
                   size="sm"
                   className="w-full rounded-xl text-xs gap-1.5"
-                  onClick={() => navigate('/treatments/events')}
+                  onClick={() => navigate('/treatments')}
                 >
                   <Heart className="h-3.5 w-3.5" />
-                  이달의 이벤트 보러가기
+                  내 클리닉 이벤트 보러가기
                 </Button>
               )}
             </CardContent>
