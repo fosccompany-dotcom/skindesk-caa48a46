@@ -275,13 +275,14 @@ const Index = () => {
     setPrivacyConsentOpen(false);
   };
 
-  // Onboarding — only show after quiz is completed (logged-in users only)
+  // Onboarding coachmark — show after quiz is completed
   const [onboardingOpen, setOnboardingOpen] = useState(false);
+  // Diagnosis onboarding modal — show when user hasn't completed the quiz yet
+  const [diagnosisOnboardingOpen, setDiagnosisOnboardingOpen] = useState(false);
   useEffect(() => {
     if (!user) return;
-    const done = localStorage.getItem("skindesk_onboarding_done");
-    if (done) return;
-    // Check if quiz is completed before showing onboarding
+    const coachDone = localStorage.getItem("skindesk_onboarding_done");
+    const diagDismissed = localStorage.getItem("skindesk_diagnosis_onboarding_dismissed");
     supabase.
     from('user_profiles').
     select('quiz_completed_at').
@@ -289,7 +290,9 @@ const Index = () => {
     single().
     then(({ data }) => {
       if (data?.quiz_completed_at) {
-        setOnboardingOpen(true);
+        if (!coachDone) setOnboardingOpen(true);
+      } else if (!diagDismissed) {
+        setDiagnosisOnboardingOpen(true);
       }
     });
   }, [user]);
@@ -298,6 +301,13 @@ const Index = () => {
     localStorage.setItem("skindesk_onboarding_done", "true");
     searchParams.delete("onboarding");
     setSearchParams(searchParams, { replace: true });
+  };
+  const handleSkipDiagnosisOnboarding = () => {
+    setDiagnosisOnboardingOpen(false);
+  };
+  const handleDontShowDiagnosisOnboarding = () => {
+    setDiagnosisOnboardingOpen(false);
+    localStorage.setItem("skindesk_diagnosis_onboarding_dismissed", "true");
   };
 
   // Stats
