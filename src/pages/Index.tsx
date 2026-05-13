@@ -58,6 +58,7 @@ import AddReservationModal from "@/components/AddReservationModal";
 import EditReservationSheet from "@/components/EditReservationSheet";
 import ParseTreatmentModal from "@/components/ParseTreatmentModal";
 import OnboardingFlow from "@/components/OnboardingFlow";
+import SkinDiagnosisOnboardingModal from "@/components/SkinDiagnosisOnboardingModal";
 import { supabase } from "@/integrations/supabase/client";
 
 import { useAuth } from "@/context/AuthContext";
