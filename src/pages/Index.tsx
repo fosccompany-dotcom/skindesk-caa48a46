@@ -826,6 +826,11 @@ const Index = () => {
       
 
       <OnboardingFlow open={onboardingOpen} onClose={handleCloseOnboarding} />
+      <SkinDiagnosisOnboardingModal
+        open={diagnosisOnboardingOpen}
+        onSkip={handleSkipDiagnosisOnboarding}
+        onDontShowAgain={handleDontShowDiagnosisOnboarding}
+      />
 
       {/* Privacy Consent Modal for OAuth users */}
       {privacyConsentOpen &&
