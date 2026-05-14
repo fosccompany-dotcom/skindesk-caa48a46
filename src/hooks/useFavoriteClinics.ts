@@ -90,11 +90,11 @@ export function useFavoriteClinics() {
       // 이미 있는지 체크
       if (favorites.some((f) => f.brand_id === brandId)) return;
 
-      // 다음 priority
+      // 다음 priority (priority CHECK constraint으로 인해 1부터 시작)
       const nextPriority =
         favorites.length === 0
-          ? 0
-          : Math.max(...favorites.map((f) => f.priority)) + 1;
+          ? 1
+          : Math.max(...favorites.map((f) => f.priority), 0) + 1;
 
       // Optimistic UI: 즉시 favorites에 추가
       const tempId = `temp-${Date.now()}`;
