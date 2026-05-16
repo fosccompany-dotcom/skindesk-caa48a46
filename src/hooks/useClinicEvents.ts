@@ -55,17 +55,17 @@ function normalizeRow(row: any): ClinicEventRow {
 }
 
 /**
- * 사용자 시술 화면용 — 즐겨찾기 brand의 발행된 활성 이벤트
+ * 사용자 시술 화면용 — 활성화된 지점(location)의 발행된 활성 이벤트
  *
- * @param favoriteBrandIds 즐겨찾기 brand id 배열
+ * @param activeLocationIds 활성화된 지점 id 배열 (user_favorite_clinics에서 location_id NOT NULL인 것)
  */
-export function useUserClinicEvents(favoriteBrandIds: string[]) {
+export function useUserClinicEvents(activeLocationIds: string[]) {
   const [events, setEvents] = useState<ClinicEventRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   const load = useCallback(async () => {
     setLoading(true);
-    if (favoriteBrandIds.length === 0) {
+    if (activeLocationIds.length === 0) {
       setEvents([]);
       setLoading(false);
       return;
@@ -76,7 +76,7 @@ export function useUserClinicEvents(favoriteBrandIds: string[]) {
     const { data, error } = await supabase
       .from('clinic_events')
       .select(SELECT_FIELDS)
-      .in('brand_id', favoriteBrandIds)
+      .in('location_id', activeLocationIds)
       .eq('is_published', true)
       .or(`end_date.is.null,end_date.gte.${today}`)
       .order('start_date', { ascending: false });
@@ -88,7 +88,7 @@ export function useUserClinicEvents(favoriteBrandIds: string[]) {
       setEvents((data ?? []).map(normalizeRow));
     }
     setLoading(false);
-  }, [favoriteBrandIds]);
+  }, [activeLocationIds]);
 
   useEffect(() => {
     load();

@@ -34,8 +34,8 @@ const formatDateMonthDay = (iso: string | null | undefined): string | null => {
 
 const Treatments = () => {
   const navigate = useNavigate();
-  const { favorites: favBrands, favoriteBrandIds, loading: favLoading } = useFavoriteClinics();
-  const { events, loading: eventsLoading } = useUserClinicEvents(favoriteBrandIds);
+  const { favorites: favBrands, activeLocationIds, loading: favLoading } = useFavoriteClinics();
+  const { events, loading: eventsLoading } = useUserClinicEvents(activeLocationIds);
 
   const [sortKey, setSortKey] = useState<SortKey>('discount');
   const [selectedBrandId, setSelectedBrandId] = useState<string | null>(null);

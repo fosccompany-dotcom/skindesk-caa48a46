@@ -1,8 +1,13 @@
 /**
  * useFavoriteClinics
  *
- * DB-backed favorite clinic brands (`user_favorite_clinics` table).
- * Provides list + add / remove + reorder operations.
+ * DB-backed favorite clinic brands + locations (`user_favorite_clinics` table).
+ *
+ * Data model:
+ *   - Brand mark row: (user, brand_id, location_id=NULL)
+ *   - Active location row: (user, brand_id, location_id=<UUID>)
+ *
+ * 한 user가 같은 brand에 brand-mark 1개 + 여러 location row를 동시 가질 수 있음.
  */
 
 import { useCallback, useEffect, useState } from 'react';
@@ -15,25 +20,32 @@ export interface ClinicBrandLite {
   slug: string | null;
 }
 
+export interface FavoriteRow {
+  id: string;
+  brand_id: string;
+  location_id: string | null; // NULL = brand mark
+  priority: number;
+  brand: ClinicBrandLite | null;
+}
+
 export interface FavoriteClinic {
-  id: string;              // user_favorite_clinics.id
-  brand_id: string;        // clinic_brands.id
+  id: string;
+  brand_id: string;
   priority: number;
   brand: ClinicBrandLite | null;
 }
 
 export function useFavoriteClinics() {
-  const [favorites, setFavorites] = useState<FavoriteClinic[]>([]);
+  const [rows, setRows] = useState<FavoriteRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
 
-  // load
   const reload = useCallback(async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       setUserId(null);
-      setFavorites([]);
+      setRows([]);
       setLoading(false);
       return;
     }
@@ -41,20 +53,21 @@ export function useFavoriteClinics() {
 
     const { data, error } = await supabase
       .from('user_favorite_clinics')
-      .select('id, clinic_brand_id, priority, clinic_brands(id, name, slug)')
+      .select('id, clinic_brand_id, clinic_location_id, priority, clinic_brands(id, name, slug)')
       .eq('user_id', user.id)
       .order('priority', { ascending: true });
 
     if (error) {
       console.error('[useFavoriteClinics] load error:', error);
-      setFavorites([]);
+      setRows([]);
       setLoading(false);
       return;
     }
 
-    const mapped: FavoriteClinic[] = (data ?? []).map((row: any) => ({
+    const mapped: FavoriteRow[] = (data ?? []).map((row: any) => ({
       id: row.id,
       brand_id: row.clinic_brand_id,
+      location_id: row.clinic_location_id ?? null,
       priority: row.priority,
       brand: row.clinic_brands
         ? {
@@ -64,7 +77,7 @@ export function useFavoriteClinics() {
           }
         : null,
     }));
-    setFavorites(mapped);
+    setRows(mapped);
     setLoading(false);
   }, []);
 
@@ -72,78 +85,91 @@ export function useFavoriteClinics() {
     reload();
   }, [reload]);
 
-  /** brand 즐겨찾기 추가 (이미 있으면 무시) */
+  /** 현재 user의 brand-mark 즐겨찾기 (location_id NULL) */
+  const favorites: FavoriteClinic[] = rows
+    .filter((r) => r.location_id === null)
+    .map((r) => ({ id: r.id, brand_id: r.brand_id, priority: r.priority, brand: r.brand }));
+
+  /** 즐겨찾기한 brand id 배열 */
+  const favoriteBrandIds = favorites.map((f) => f.brand_id);
+
+  /** 활성화된 location id 배열 (location_id NOT NULL) */
+  const activeLocationIds = rows.filter((r) => r.location_id !== null).map((r) => r.location_id!) as string[];
+
+  /** brand가 즐겨찾기 됐는지 */
+  const isFavorite = useCallback(
+    (brandId: string) => rows.some((r) => r.brand_id === brandId && r.location_id === null),
+    [rows],
+  );
+
+  /** location이 활성화 됐는지 */
+  const isActiveLocation = useCallback(
+    (locationId: string) => rows.some((r) => r.location_id === locationId),
+    [rows],
+  );
+
+  /** uid 보충 헬퍼 */
+  const ensureUserId = useCallback(async (): Promise<string | null> => {
+    if (userId) return userId;
+    const { data: { user } } = await supabase.auth.getUser();
+    const uid = user?.id ?? null;
+    if (uid) setUserId(uid);
+    return uid;
+  }, [userId]);
+
+  /** brand 즐겨찾기 추가 (brand-mark row) */
   const addFavorite = useCallback(
     async (brandId: string) => {
-      // userId 자동 보충 (state lag 대비)
-      let uid = userId;
+      const uid = await ensureUserId();
       if (!uid) {
-        const { data: { user } } = await supabase.auth.getUser();
-        uid = user?.id ?? null;
-        if (uid) setUserId(uid);
-      }
-      if (!uid) {
-        console.warn('[useFavoriteClinics] no userId, abort add');
         toast.error('로그인이 필요해요');
         return;
       }
-      // 이미 있는지 체크
-      if (favorites.some((f) => f.brand_id === brandId)) return;
+      if (isFavorite(brandId)) return;
 
-      // 다음 priority (priority CHECK constraint으로 인해 1부터 시작)
       const nextPriority =
-        favorites.length === 0
-          ? 1
-          : Math.max(...favorites.map((f) => f.priority), 0) + 1;
+        rows.length === 0 ? 1 : Math.max(...rows.map((r) => r.priority), 0) + 1;
 
-      // Optimistic UI: 즉시 favorites에 추가
+      // Optimistic
       const tempId = `temp-${Date.now()}`;
-      const optimistic: FavoriteClinic = {
+      const optimistic: FavoriteRow = {
         id: tempId,
         brand_id: brandId,
+        location_id: null,
         priority: nextPriority,
         brand: null,
       };
-      setFavorites((prev) => [...prev, optimistic]);
+      setRows((prev) => [...prev, optimistic]);
 
-      const { error } = await supabase
-        .from('user_favorite_clinics')
-        .insert({
-          user_id: uid,
-          clinic_brand_id: brandId,
-          priority: nextPriority,
-        });
+      const { error } = await supabase.from('user_favorite_clinics').insert({
+        user_id: uid,
+        clinic_brand_id: brandId,
+        clinic_location_id: null,
+        priority: nextPriority,
+      } as any);
 
       if (error) {
-        console.error('[useFavoriteClinics] add error:', error);
-        // 롤백
-        setFavorites((prev) => prev.filter((f) => f.id !== tempId));
+        console.error('[useFavoriteClinics] add brand error:', error);
+        setRows((prev) => prev.filter((r) => r.id !== tempId));
         toast.error(`즐겨찾기 추가 실패: ${error.message ?? '알 수 없는 오류'}`);
         return;
       }
-      // 성공 → 정확한 데이터로 reload
       await reload();
     },
-    [userId, favorites, reload],
+    [ensureUserId, isFavorite, rows, reload],
   );
 
-  /** brand 즐겨찾기 제거 */
+  /** brand 즐겨찾기 제거 (brand-mark + 해당 brand의 모든 location row까지 삭제) */
   const removeFavorite = useCallback(
     async (brandId: string) => {
-      let uid = userId;
-      if (!uid) {
-        const { data: { user } } = await supabase.auth.getUser();
-        uid = user?.id ?? null;
-        if (uid) setUserId(uid);
-      }
+      const uid = await ensureUserId();
       if (!uid) {
         toast.error('로그인이 필요해요');
         return;
       }
 
-      // Optimistic UI: 즉시 제거
-      const prevFavorites = favorites;
-      setFavorites((prev) => prev.filter((f) => f.brand_id !== brandId));
+      const prevRows = rows;
+      setRows((prev) => prev.filter((r) => r.brand_id !== brandId));
 
       const { error } = await supabase
         .from('user_favorite_clinics')
@@ -152,42 +178,118 @@ export function useFavoriteClinics() {
         .eq('clinic_brand_id', brandId);
 
       if (error) {
-        console.error('[useFavoriteClinics] remove error:', error);
-        // 롤백
-        setFavorites(prevFavorites);
+        console.error('[useFavoriteClinics] remove brand error:', error);
+        setRows(prevRows);
         toast.error(`즐겨찾기 제거 실패: ${error.message ?? '알 수 없는 오류'}`);
         return;
       }
       await reload();
     },
-    [userId, favorites, reload],
+    [ensureUserId, rows, reload],
   );
 
-  /** 토글 (있으면 제거, 없으면 추가) */
+  /** brand 토글 */
   const toggleFavorite = useCallback(
     async (brandId: string) => {
-      const exists = favorites.some((f) => f.brand_id === brandId);
-      if (exists) await removeFavorite(brandId);
+      if (isFavorite(brandId)) await removeFavorite(brandId);
       else await addFavorite(brandId);
     },
-    [favorites, addFavorite, removeFavorite],
+    [isFavorite, addFavorite, removeFavorite],
   );
 
-  const isFavorite = useCallback(
-    (brandId: string) => favorites.some((f) => f.brand_id === brandId),
-    [favorites],
+  /** 지점 활성화 추가 */
+  const addLocation = useCallback(
+    async (brandId: string, locationId: string) => {
+      const uid = await ensureUserId();
+      if (!uid) {
+        toast.error('로그인이 필요해요');
+        return;
+      }
+      if (isActiveLocation(locationId)) return;
+
+      const nextPriority =
+        rows.length === 0 ? 1 : Math.max(...rows.map((r) => r.priority), 0) + 1;
+
+      const tempId = `temp-loc-${Date.now()}`;
+      const optimistic: FavoriteRow = {
+        id: tempId,
+        brand_id: brandId,
+        location_id: locationId,
+        priority: nextPriority,
+        brand: null,
+      };
+      setRows((prev) => [...prev, optimistic]);
+
+      const { error } = await supabase.from('user_favorite_clinics').insert({
+        user_id: uid,
+        clinic_brand_id: brandId,
+        clinic_location_id: locationId,
+        priority: nextPriority,
+      } as any);
+
+      if (error) {
+        console.error('[useFavoriteClinics] add location error:', error);
+        setRows((prev) => prev.filter((r) => r.id !== tempId));
+        toast.error(`지점 추가 실패: ${error.message ?? '알 수 없는 오류'}`);
+        return;
+      }
+      await reload();
+    },
+    [ensureUserId, isActiveLocation, rows, reload],
   );
 
-  const favoriteBrandIds = favorites.map((f) => f.brand_id);
+  /** 지점 활성화 제거 */
+  const removeLocation = useCallback(
+    async (locationId: string) => {
+      const uid = await ensureUserId();
+      if (!uid) {
+        toast.error('로그인이 필요해요');
+        return;
+      }
+
+      const prevRows = rows;
+      setRows((prev) => prev.filter((r) => r.location_id !== locationId));
+
+      const { error } = await supabase
+        .from('user_favorite_clinics')
+        .delete()
+        .eq('user_id', uid)
+        .eq('clinic_location_id', locationId);
+
+      if (error) {
+        console.error('[useFavoriteClinics] remove location error:', error);
+        setRows(prevRows);
+        toast.error(`지점 제거 실패: ${error.message ?? '알 수 없는 오류'}`);
+        return;
+      }
+      await reload();
+    },
+    [ensureUserId, rows, reload],
+  );
+
+  /** 지점 토글 */
+  const toggleLocation = useCallback(
+    async (brandId: string, locationId: string) => {
+      if (isActiveLocation(locationId)) await removeLocation(locationId);
+      else await addLocation(brandId, locationId);
+    },
+    [isActiveLocation, addLocation, removeLocation],
+  );
 
   return {
+    rows,
     favorites,
     favoriteBrandIds,
+    activeLocationIds,
     loading,
     isFavorite,
+    isActiveLocation,
     addFavorite,
     removeFavorite,
     toggleFavorite,
+    addLocation,
+    removeLocation,
+    toggleLocation,
     reload,
   };
 }

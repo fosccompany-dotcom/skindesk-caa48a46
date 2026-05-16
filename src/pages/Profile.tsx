@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback, Fragment } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   AlertDialog,
@@ -52,6 +52,8 @@ import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { CLINIC_PRESETS } from "@/constants/clinicPresets";
 import { useFavoriteClinics, useAllClinicBrands } from "@/hooks/useFavoriteClinics";
+import BrandLocationsList from "@/components/BrandLocationsList";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { AXIS_META, type AxisKey, type FiveAxisScores } from "@/lib/skinDiagnosis";
@@ -303,9 +305,17 @@ const Profile = () => {
   const [targetAreas, setTargetAreas] = useState<BodyArea[]>([]);
   const [regions, setRegions] = useState<string[]>([]);
   // DB 기반 즐겨찾기 클리닉 (user_favorite_clinics)
-  const { favorites: favBrands, isFavorite: isFavBrand, toggleFavorite: toggleFavBrand } = useFavoriteClinics();
+  const {
+    favorites: favBrands,
+    isFavorite: isFavBrand,
+    toggleFavorite: toggleFavBrand,
+    isActiveLocation,
+    toggleLocation,
+    activeLocationIds,
+  } = useFavoriteClinics();
   const { brands: allBrands, loading: brandsLoading } = useAllClinicBrands();
   const [brandSearch, setBrandSearch] = useState('');
+  const [expandedBrandId, setExpandedBrandId] = useState<string | null>(null);
   const { currentSeason, setCurrentSeason: setSeasonGlobal } = useSeason();
   const [selectedSido, setSelectedSido] = useState("");
   const [scores, setScores] = useState<FiveAxisScores | null>(null);
@@ -1062,11 +1072,11 @@ const Profile = () => {
                 />
               </div>
 
-              {/* 클리닉 리스트 */}
+              {/* 클리닉 리스트 (Brand 카드 + 펼침 시 지점 토글) */}
               {brandsLoading ? (
                 <div className="text-center py-4 text-xs text-muted-foreground">불러오는 중...</div>
               ) : (
-                <div className="grid grid-cols-2 gap-1.5 max-h-[280px] overflow-y-auto">
+                <div className="grid grid-cols-2 gap-1.5 max-h-[400px] overflow-y-auto">
                   {allBrands
                     .filter((b) =>
                       brandSearch.trim() === ''
@@ -1075,23 +1085,58 @@ const Profile = () => {
                     )
                     .map((b) => {
                       const active = isFavBrand(b.id);
+                      const expanded = expandedBrandId === b.id;
                       return (
-                        <button
-                          key={b.id}
-                          onClick={() => toggleFavBrand(b.id)}
-                          className={cn(
-                            "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left",
-                            active
-                              ? "bg-primary/10 border-primary/40 text-primary"
-                              : "bg-card border-border/50 text-foreground",
+                        <Fragment key={b.id}>
+                          <div
+                            onClick={() => toggleFavBrand(b.id)}
+                            className={cn(
+                              "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left cursor-pointer",
+                              active
+                                ? "bg-primary/10 border-primary/40 text-primary"
+                                : "bg-card border-border/50 text-foreground",
+                            )}
+                          >
+                            <Building2 className="h-3.5 w-3.5 shrink-0" />
+                            <span className="truncate flex-1">{b.name}</span>
+                            {active && (
+                              <>
+                                <Check className="h-3.5 w-3.5 shrink-0" />
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedBrandId(expanded ? null : b.id);
+                                  }}
+                                  className="shrink-0 p-0.5 rounded hover:bg-primary/10"
+                                  aria-label="지점 펼치기"
+                                >
+                                  {expanded ? (
+                                    <ChevronUp className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <ChevronDown className="h-3.5 w-3.5" />
+                                  )}
+                                </button>
+                              </>
+                            )}
+                          </div>
+                          {active && expanded && (
+                            <BrandLocationsList
+                              brandId={b.id}
+                              isActiveLocation={isActiveLocation}
+                              onToggleLocation={toggleLocation}
+                            />
                           )}
-                        >
-                          <Building2 className="h-3.5 w-3.5 shrink-0" />
-                          <span className="truncate flex-1">{b.name}</span>
-                          {active && <Check className="h-3.5 w-3.5 shrink-0" />}
-                        </button>
+                        </Fragment>
                       );
                     })}
+                </div>
+              )}
+
+              {/* 활성 지점 안내 */}
+              {favBrands.length > 0 && activeLocationIds.length === 0 && (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-[10px] text-amber-700">
+                  💡 즐겨찾기된 클리닉의 ▼ 버튼을 눌러 지점을 선택하면 이벤트를 볼 수 있어요
                 </div>
               )}
 
