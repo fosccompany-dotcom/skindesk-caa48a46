@@ -53,7 +53,6 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { CLINIC_PRESETS } from "@/constants/clinicPresets";
 import { useFavoriteClinics, useAllClinicBrands } from "@/hooks/useFavoriteClinics";
 import BrandLocationsList from "@/components/BrandLocationsList";
-import { ChevronDown, ChevronUp } from "lucide-react";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
 import { AXIS_META, type AxisKey, type FiveAxisScores } from "@/lib/skinDiagnosis";
@@ -306,11 +305,13 @@ const Profile = () => {
   const [regions, setRegions] = useState<string[]>([]);
   // DB 기반 즐겨찾기 클리닉 (user_favorite_clinics)
   const {
+    rows: favRows,
     favorites: favBrands,
     isFavorite: isFavBrand,
     toggleFavorite: toggleFavBrand,
     isActiveLocation,
     toggleLocation,
+    removeLocation,
     activeLocationIds,
   } = useFavoriteClinics();
   const { brands: allBrands, loading: brandsLoading } = useAllClinicBrands();
@@ -1133,10 +1134,42 @@ const Profile = () => {
                 </div>
               )}
 
-              {/* 활성 지점 안내 */}
+              {/* 활성 지점 안내 (지점 미선택 시) */}
               {favBrands.length > 0 && activeLocationIds.length === 0 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-[10px] text-amber-700">
                   💡 즐겨찾기된 클리닉의 ▼ 버튼을 눌러 지점을 선택하면 이벤트를 볼 수 있어요
+                </div>
+              )}
+
+              {/* 활성 지점 칩 리스트 (선택된 지점들) */}
+              {activeLocationIds.length > 0 && (
+                <div className="space-y-2 pt-2 border-t border-border/40">
+                  <div className="flex items-center gap-1">
+                    <MapPin className="h-3 w-3 text-rose-500" />
+                    <p className="text-[10px] font-semibold text-foreground">
+                      활성 지점 ({activeLocationIds.length}개)
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {favRows
+                      .filter((r) => r.location_id !== null)
+                      .map((r) => {
+                        const brandName = r.brand?.name ?? '?';
+                        const branchName = r.location?.branch_name ?? '?';
+                        return (
+                          <button
+                            key={r.id}
+                            onClick={() => r.location_id && removeLocation(r.location_id)}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-50 border border-rose-200 text-rose-700 text-[10px] font-medium hover:bg-rose-100 transition-colors"
+                          >
+                            <span>
+                              {brandName} · {branchName}
+                            </span>
+                            <X className="h-2.5 w-2.5 shrink-0" />
+                          </button>
+                        );
+                      })}
+                  </div>
                 </div>
               )}
 
