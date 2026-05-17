@@ -14,6 +14,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+/** 활성 지점 최대 개수 — 시술 이벤트 비교 최적화 */
+export const MAX_ACTIVE_LOCATIONS = 5;
+
 export interface ClinicBrandLite {
   id: string;
   name: string;
@@ -107,6 +110,9 @@ export function useFavoriteClinics() {
 
   /** 활성화된 location id 배열 (location_id NOT NULL) */
   const activeLocationIds = rows.filter((r) => r.location_id !== null).map((r) => r.location_id!) as string[];
+
+  /** 활성 지점이 최대치에 도달했는지 */
+  const isAtLocationLimit = activeLocationIds.length >= MAX_ACTIVE_LOCATIONS;
 
   /** brand가 즐겨찾기 됐는지 */
   const isFavorite = useCallback(
@@ -219,6 +225,13 @@ export function useFavoriteClinics() {
       }
       if (isActiveLocation(locationId)) return;
 
+      // 활성 지점 최대 개수 체크
+      const currentActiveCount = rows.filter((r) => r.location_id !== null).length;
+      if (currentActiveCount >= MAX_ACTIVE_LOCATIONS) {
+        toast.error(`활성 지점은 최대 ${MAX_ACTIVE_LOCATIONS}개까지 가능해요`);
+        return;
+      }
+
       // priority는 1~5 CHECK 제약 있어 모든 row에 1 고정
       const FIXED_PRIORITY = 1;
 
@@ -293,6 +306,7 @@ export function useFavoriteClinics() {
     favorites,
     favoriteBrandIds,
     activeLocationIds,
+    isAtLocationLimit,
     loading,
     isFavorite,
     isActiveLocation,
