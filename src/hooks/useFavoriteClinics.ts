@@ -20,12 +20,18 @@ export interface ClinicBrandLite {
   slug: string | null;
 }
 
+export interface ClinicLocationLite {
+  id: string;
+  branch_name: string;
+}
+
 export interface FavoriteRow {
   id: string;
   brand_id: string;
   location_id: string | null; // NULL = brand mark
   priority: number;
   brand: ClinicBrandLite | null;
+  location: ClinicLocationLite | null;
 }
 
 export interface FavoriteClinic {
@@ -53,7 +59,7 @@ export function useFavoriteClinics() {
 
     const { data, error } = await supabase
       .from('user_favorite_clinics')
-      .select('id, clinic_brand_id, clinic_location_id, priority, created_at, clinic_brands(id, name, slug)')
+      .select('id, clinic_brand_id, clinic_location_id, priority, created_at, clinic_brands(id, name, slug), clinic_locations(id, branch_name)')
       .eq('user_id', user.id)
       .order('created_at', { ascending: true });
 
@@ -74,6 +80,12 @@ export function useFavoriteClinics() {
             id: row.clinic_brands.id,
             name: row.clinic_brands.name,
             slug: row.clinic_brands.slug ?? null,
+          }
+        : null,
+      location: row.clinic_locations
+        ? {
+            id: row.clinic_locations.id,
+            branch_name: row.clinic_locations.branch_name,
           }
         : null,
     }));
