@@ -53,9 +53,9 @@ export function useFavoriteClinics() {
 
     const { data, error } = await supabase
       .from('user_favorite_clinics')
-      .select('id, clinic_brand_id, clinic_location_id, priority, clinic_brands(id, name, slug)')
+      .select('id, clinic_brand_id, clinic_location_id, priority, created_at, clinic_brands(id, name, slug)')
       .eq('user_id', user.id)
-      .order('priority', { ascending: true });
+      .order('created_at', { ascending: true });
 
     if (error) {
       console.error('[useFavoriteClinics] load error:', error);
@@ -127,8 +127,8 @@ export function useFavoriteClinics() {
       }
       if (isFavorite(brandId)) return;
 
-      const nextPriority =
-        rows.length === 0 ? 1 : Math.max(...rows.map((r) => r.priority), 0) + 1;
+      // priority는 1~5 CHECK 제약 있어 모든 row에 1 고정 (정렬은 created_at)
+      const FIXED_PRIORITY = 1;
 
       // Optimistic
       const tempId = `temp-${Date.now()}`;
@@ -136,7 +136,7 @@ export function useFavoriteClinics() {
         id: tempId,
         brand_id: brandId,
         location_id: null,
-        priority: nextPriority,
+        priority: FIXED_PRIORITY,
         brand: null,
       };
       setRows((prev) => [...prev, optimistic]);
@@ -145,7 +145,7 @@ export function useFavoriteClinics() {
         user_id: uid,
         clinic_brand_id: brandId,
         clinic_location_id: null,
-        priority: nextPriority,
+        priority: FIXED_PRIORITY,
       } as any);
 
       if (error) {
@@ -207,15 +207,15 @@ export function useFavoriteClinics() {
       }
       if (isActiveLocation(locationId)) return;
 
-      const nextPriority =
-        rows.length === 0 ? 1 : Math.max(...rows.map((r) => r.priority), 0) + 1;
+      // priority는 1~5 CHECK 제약 있어 모든 row에 1 고정
+      const FIXED_PRIORITY = 1;
 
       const tempId = `temp-loc-${Date.now()}`;
       const optimistic: FavoriteRow = {
         id: tempId,
         brand_id: brandId,
         location_id: locationId,
-        priority: nextPriority,
+        priority: FIXED_PRIORITY,
         brand: null,
       };
       setRows((prev) => [...prev, optimistic]);
@@ -224,7 +224,7 @@ export function useFavoriteClinics() {
         user_id: uid,
         clinic_brand_id: brandId,
         clinic_location_id: locationId,
-        priority: nextPriority,
+        priority: FIXED_PRIORITY,
       } as any);
 
       if (error) {
