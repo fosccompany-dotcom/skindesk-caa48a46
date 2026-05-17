@@ -51,7 +51,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSeason, SeasonKey } from "@/context/SeasonContext";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 import { CLINIC_PRESETS } from "@/constants/clinicPresets";
-import { useFavoriteClinics, useAllClinicBrands } from "@/hooks/useFavoriteClinics";
+import { useFavoriteClinics, useAllClinicBrands, MAX_ACTIVE_LOCATIONS } from "@/hooks/useFavoriteClinics";
 import BrandLocationsList from "@/components/BrandLocationsList";
 import BloomAvatar from "@/components/BloomAvatar";
 import { getBloomInfo, getActiveDays, STAGES } from "@/utils/bloomLevel";
@@ -313,6 +313,7 @@ const Profile = () => {
     toggleLocation,
     removeLocation,
     activeLocationIds,
+    isAtLocationLimit,
   } = useFavoriteClinics();
   const { brands: allBrands, loading: brandsLoading } = useAllClinicBrands();
   const [brandSearch, setBrandSearch] = useState('');
@@ -1054,12 +1055,15 @@ const Profile = () => {
                 <div className="flex-1">
                   <h3 className="font-semibold text-xs">즐겨찾기 클리닉</h3>
                   <p className="text-[10px] text-muted-foreground">
-                    선택한 병원의 이번 달 이벤트를 시술 화면에서 볼 수 있어요
+                    이벤트 비교를 위해 활성 지점은 최대 {MAX_ACTIVE_LOCATIONS}개까지 선택할 수 있어요
                   </p>
                 </div>
-                {favBrands.length > 0 && (
-                  <Badge variant="secondary" className="text-[10px]">{favBrands.length}</Badge>
-                )}
+                <Badge
+                  variant={isAtLocationLimit ? "destructive" : "secondary"}
+                  className="text-[10px]"
+                >
+                  지점 {activeLocationIds.length}/{MAX_ACTIVE_LOCATIONS}
+                </Badge>
               </div>
 
               {/* 검색 */}
@@ -1126,6 +1130,7 @@ const Profile = () => {
                               brandId={b.id}
                               isActiveLocation={isActiveLocation}
                               onToggleLocation={toggleLocation}
+                              isAtLocationLimit={isAtLocationLimit}
                             />
                           )}
                         </Fragment>
@@ -1147,8 +1152,11 @@ const Profile = () => {
                   <div className="flex items-center gap-1">
                     <MapPin className="h-3 w-3 text-rose-500" />
                     <p className="text-[10px] font-semibold text-foreground">
-                      활성 지점 ({activeLocationIds.length}개)
+                      활성 지점 ({activeLocationIds.length}/{MAX_ACTIVE_LOCATIONS}개)
                     </p>
+                    {isAtLocationLimit && (
+                      <span className="text-[9px] text-amber-600 ml-1">· 가득 참</span>
+                    )}
                   </div>
                   <div className="flex flex-wrap gap-1.5">
                     {favRows

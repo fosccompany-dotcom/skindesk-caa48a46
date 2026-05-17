@@ -1,17 +1,20 @@
 import { useClinicLocations } from '@/hooks/useClinicLocations';
-import { Check, MapPin } from 'lucide-react';
+import { Check, MapPin, Lock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface BrandLocationsListProps {
   brandId: string;
   isActiveLocation: (locationId: string) => boolean;
   onToggleLocation: (brandId: string, locationId: string) => void;
+  /** 활성 지점이 최대치에 도달했는지 — true면 새 location 추가 비활성화 */
+  isAtLocationLimit?: boolean;
 }
 
 export default function BrandLocationsList({
   brandId,
   isActiveLocation,
   onToggleLocation,
+  isAtLocationLimit = false,
 }: BrandLocationsListProps) {
   const { locations, loading } = useClinicLocations(brandId);
 
@@ -42,6 +45,8 @@ export default function BrandLocationsList({
       <div className="grid grid-cols-2 gap-1">
         {locations.map((loc) => {
           const active = isActiveLocation(loc.id);
+          // 활성도 아니고 최대치 도달이면 disabled
+          const disabled = !active && isAtLocationLimit;
           return (
             <button
               key={loc.id}
@@ -53,11 +58,17 @@ export default function BrandLocationsList({
                 'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-[11px] font-medium transition-all text-left',
                 active
                   ? 'bg-primary/15 border-primary/40 text-primary'
+                  : disabled
+                  ? 'bg-muted/30 border-border/30 text-muted-foreground/50 cursor-not-allowed'
                   : 'bg-background border-border/40 text-foreground',
               )}
             >
               <span className="truncate flex-1">{loc.branch_name}</span>
-              {active && <Check className="h-3 w-3 shrink-0" />}
+              {active ? (
+                <Check className="h-3 w-3 shrink-0" />
+              ) : disabled ? (
+                <Lock className="h-2.5 w-2.5 shrink-0 opacity-50" />
+              ) : null}
             </button>
           );
         })}
