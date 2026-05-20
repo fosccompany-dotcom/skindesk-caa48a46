@@ -114,9 +114,23 @@ export function useFavoriteClinics() {
   /** 활성 지점이 최대치에 도달했는지 */
   const isAtLocationLimit = activeLocationIds.length >= MAX_ACTIVE_LOCATIONS;
 
-  /** brand가 즐겨찾기 됐는지 */
+  /** brand가 즐겨찾기 됐는지 (brand-mark row 존재 — 옛 로직, 호환용) */
   const isFavorite = useCallback(
     (brandId: string) => rows.some((r) => r.brand_id === brandId && r.location_id === null),
+    [rows],
+  );
+
+  /** 그 brand에 활성 지점이 1개 이상 있는지 — UI active 판단의 새 기준 */
+  const hasActiveLocations = useCallback(
+    (brandId: string) =>
+      rows.some((r) => r.brand_id === brandId && r.location_id !== null),
+    [rows],
+  );
+
+  /** 그 brand에 활성 지점 개수 */
+  const countActiveLocations = useCallback(
+    (brandId: string) =>
+      rows.filter((r) => r.brand_id === brandId && r.location_id !== null).length,
     [rows],
   );
 
@@ -309,6 +323,8 @@ export function useFavoriteClinics() {
     isAtLocationLimit,
     loading,
     isFavorite,
+    hasActiveLocations,
+    countActiveLocations,
     isActiveLocation,
     addFavorite,
     removeFavorite,
