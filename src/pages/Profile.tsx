@@ -306,9 +306,8 @@ const Profile = () => {
   // DB 기반 즐겨찾기 클리닉 (user_favorite_clinics)
   const {
     rows: favRows,
-    favorites: favBrands,
-    isFavorite: isFavBrand,
-    toggleFavorite: toggleFavBrand,
+    hasActiveLocations,
+    countActiveLocations,
     isActiveLocation,
     toggleLocation,
     removeLocation,
@@ -1089,43 +1088,40 @@ const Profile = () => {
                         : b.name.toLowerCase().includes(brandSearch.toLowerCase()),
                     )
                     .map((b) => {
-                      const active = isFavBrand(b.id);
+                      const active = hasActiveLocations(b.id);
+                      const activeCount = countActiveLocations(b.id);
                       const expanded = expandedBrandId === b.id;
                       return (
                         <Fragment key={b.id}>
-                          <div
-                            onClick={() => toggleFavBrand(b.id)}
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setExpandedBrandId(expanded ? null : b.id)
+                            }
                             className={cn(
-                              "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left cursor-pointer",
+                              "flex items-center gap-2 px-3 py-2.5 rounded-xl border text-xs font-medium transition-all text-left w-full",
                               active
                                 ? "bg-primary/10 border-primary/40 text-primary"
+                                : expanded
+                                ? "bg-muted/40 border-border/60 text-foreground"
                                 : "bg-card border-border/50 text-foreground",
                             )}
                           >
                             <Building2 className="h-3.5 w-3.5 shrink-0" />
                             <span className="truncate flex-1">{b.name}</span>
                             {active && (
-                              <>
-                                <Check className="h-3.5 w-3.5 shrink-0" />
-                                <button
-                                  type="button"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setExpandedBrandId(expanded ? null : b.id);
-                                  }}
-                                  className="shrink-0 p-0.5 rounded hover:bg-primary/10"
-                                  aria-label="지점 펼치기"
-                                >
-                                  {expanded ? (
-                                    <ChevronUp className="h-3.5 w-3.5" />
-                                  ) : (
-                                    <ChevronDown className="h-3.5 w-3.5" />
-                                  )}
-                                </button>
-                              </>
+                              <span className="shrink-0 text-[10px] px-1.5 py-0.5 rounded-full bg-primary/20 text-primary font-semibold">
+                                {activeCount}
+                              </span>
                             )}
-                          </div>
-                          {active && expanded && (
+                            {active && <Check className="h-3.5 w-3.5 shrink-0" />}
+                            {expanded ? (
+                              <ChevronUp className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                            ) : (
+                              <ChevronDown className="h-3.5 w-3.5 shrink-0 opacity-60" />
+                            )}
+                          </button>
+                          {expanded && (
                             <BrandLocationsList
                               brandId={b.id}
                               isActiveLocation={isActiveLocation}
@@ -1140,9 +1136,9 @@ const Profile = () => {
               )}
 
               {/* 활성 지점 안내 (지점 미선택 시) */}
-              {favBrands.length > 0 && activeLocationIds.length === 0 && (
+              {activeLocationIds.length === 0 && (
                 <div className="bg-amber-50 border border-amber-200 rounded-xl px-3 py-2 text-[10px] text-amber-700">
-                  💡 즐겨찾기된 클리닉의 ▼ 버튼을 눌러 지점을 선택하면 이벤트를 볼 수 있어요
+                  💡 병원 카드를 눌러 지점을 선택하면 이벤트를 볼 수 있어요
                 </div>
               )}
 
