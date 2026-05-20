@@ -1177,7 +1177,7 @@ const Profile = () => {
                 </div>
               )}
 
-              {favBrands.length > 0 && (
+              {activeLocationIds.length > 0 && (
                 <Button
                   variant="outline"
                   size="sm"
