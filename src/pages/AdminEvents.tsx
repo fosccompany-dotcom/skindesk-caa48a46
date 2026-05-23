@@ -47,13 +47,45 @@ import {
   ArrowLeft,
   LogOut,
   Maximize2,
+  Plus,
+  Trash2,
+  Brain,
 } from 'lucide-react';
+import { DialogDescription } from '@/components/ui/dialog';
 import { useAuth } from '@/context/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 type ReviewStatus = 'pending' | 'approved' | 'rejected' | 'expired';
+
+type CorrectionInput = {
+  field: string;
+  original: string;
+  corrected: string;
+  notes: string;
+};
+
+const CORRECTION_FIELDS: { value: string; label: string }[] = [
+  { value: 'treatment_name', label: '시술명' },
+  { value: 'category', label: '카테고리' },
+  { value: 'price_krw', label: '이벤트가' },
+  { value: 'original_price_krw', label: '정상가' },
+  { value: 'session_count', label: '횟수' },
+  { value: 'is_unlimited', label: '무제한 여부' },
+  { value: 'bundle_size', label: '번들 크기' },
+  { value: 'combo_items', label: '조합 시술' },
+  { value: 'conditions', label: '조건' },
+  { value: 'body_areas', label: '부위' },
+  { value: 'notice_type', label: '공지 종류' },
+  { value: 'title', label: '제목' },
+  { value: 'description', label: '설명' },
+  { value: 'start_date', label: '시작일' },
+  { value: 'end_date', label: '종료일' },
+  { value: 'hours_text', label: '영업시간' },
+  { value: 'is_closed', label: '휴진 여부' },
+  { value: 'other', label: '기타' },
+];
 
 type EventRow = {
   id: string;
@@ -152,6 +184,11 @@ const AdminEvents = () => {
 
   // 이미지 풀스크린
   const [fullImage, setFullImage] = useState<string | null>(null);
+
+  // 반려 + 정정 다이얼로그
+  const [rejectOpen, setRejectOpen] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [corrections, setCorrections] = useState<CorrectionInput[]>([]);
 
   // ---------- 어드민 권한 ----------
   useEffect(() => {
@@ -284,6 +321,82 @@ const AdminEvents = () => {
   const closeDetail = () => {
     setDetailEvent(null);
     setDetailTreatments([]);
+  };
+
+  // ---------- 반려 다이얼로그 핸들러 ----------
+  const openReject = () => {
+    if (!detailEvent) return;
+    setRejectReason(detailEvent.admin_note || '');
+    setCorrections([]);
+    setRejectOpen(true);
+  };
+  const addCorrection = () => {
+    setCorrections([...corrections, { field: '', original: '', corrected: '', notes: '' }]);
+  };
+  const updateCorrection = (i: number, key: keyof CorrectionInput, value: string) => {
+    setCorrections(corrections.map((c, idx) => (idx === i ? { ...c, [key]: value } : c)));
+  };
+  const removeCorrection = (i: number) => {
+    setCorrections(corrections.filter((_, idx) => idx !== i));
+  };
+
+  const confirmReject = async () => {
+    if (!detailEvent) return;
+    setActioning(true);
+    try {
+      const validCorrections = corrections.filter((c) => c.field && (c.original || c.corrected));
+
+      // 1) 정정값 기록 (있을 때만)
+      if (validCorrections.length > 0) {
+        const { error: cErr } = await supabase
+          .from('parse_corrections' as any)
+          .insert(
+            validCorrections.map((c) => ({
+              event_id: detailEvent.id,
+              brand_id: detailEvent.brand_id,
+              location_id: detailEvent.location_id,
+              field: c.field,
+              original_value: c.original || null,
+              corrected_value: c.corrected || null,
+              notes: c.notes || null,
+              created_by: user!.id,
+            })) as any,
+          );
+        if (cErr) throw cErr;
+      }
+
+      // 2) 이벤트 반려 처리
+      const updates: any = {
+        review_status: 'rejected',
+        admin_note: rejectReason || null,
+      };
+      if (editTitle !== detailEvent.title) updates.title = editTitle;
+      if (editStartDate && editStartDate !== detailEvent.start_date) updates.start_date = editStartDate;
+      if ((editEndDate || null) !== detailEvent.end_date) updates.end_date = editEndDate || null;
+
+      const { error } = await supabase
+        .from('clinic_events')
+        .update(updates)
+        .eq('id', detailEvent.id);
+      if (error) throw error;
+
+      toast({
+        title: '❌ 반려됨',
+        description:
+          validCorrections.length > 0
+            ? `${detailEvent.title} — 정정 ${validCorrections.length}건 기록 (다음 파싱에 학습 적용)`
+            : detailEvent.title,
+      });
+      setRejectOpen(false);
+      closeDetail();
+      fetchCounts();
+      fetchEvents(activeTab);
+    } catch (e: any) {
+      console.error(e);
+      toast({ title: '반려 실패', description: e.message, variant: 'destructive' });
+    } finally {
+      setActioning(false);
+    }
   };
 
   const applyAction = async (action: 'approve' | 'reject' | 'save') => {
@@ -614,8 +727,8 @@ const AdminEvents = () => {
                     <Button variant="outline" onClick={() => applyAction('save')} disabled={actioning}>
                       저장만
                     </Button>
-                    <Button variant="destructive" onClick={() => applyAction('reject')} disabled={actioning}>
-                      <XCircle className="h-4 w-4 mr-1" /> 반려
+                    <Button variant="destructive" onClick={openReject} disabled={actioning}>
+                      <XCircle className="h-4 w-4 mr-1" /> 반려 + 정정 입력
                     </Button>
                     <Button onClick={() => applyAction('approve')} disabled={actioning}>
                       <CheckCircle2 className="h-4 w-4 mr-1" /> 승인
@@ -632,7 +745,7 @@ const AdminEvents = () => {
                       </Button>
                     )}
                     {detailEvent.review_status !== 'rejected' && (
-                      <Button variant="destructive" onClick={() => applyAction('reject')} disabled={actioning}>
+                      <Button variant="destructive" onClick={openReject} disabled={actioning}>
                         반려로 변경
                       </Button>
                     )}
@@ -648,6 +761,133 @@ const AdminEvents = () => {
       <Dialog open={!!fullImage} onOpenChange={(o) => !o && setFullImage(null)}>
         <DialogContent className="max-w-6xl max-h-[95vh] p-2 overflow-auto">
           {fullImage && <img src={fullImage} alt="원본" className="w-full h-auto" />}
+        </DialogContent>
+      </Dialog>
+
+      {/* 반려 + 정정 다이얼로그 */}
+      <Dialog open={rejectOpen} onOpenChange={setRejectOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <XCircle className="h-5 w-5 text-destructive" />
+              반려 + 정정값 기록
+            </DialogTitle>
+            <DialogDescription>
+              LLM이 잘못 인식한 필드를 정정값으로 입력하면, <b>같은 브랜드의 다음 파싱에서 자동 학습</b>됩니다 (in-context learning).
+              정정값이 없어도 반려는 가능합니다.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div>
+              <Label className="text-xs">반려 사유 / 전체 메모</Label>
+              <Textarea
+                value={rejectReason}
+                onChange={(e) => setRejectReason(e.target.value)}
+                rows={2}
+                className="text-sm mt-1"
+                placeholder="예: 이벤트 아닌 일반 안내, 가격 정보 부정확, 다른 지점 정보 혼입 등"
+              />
+            </div>
+
+            <Separator />
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="text-xs flex items-center gap-1.5">
+                  <Brain className="h-3.5 w-3.5" />
+                  필드별 정정값 ({corrections.length})
+                </Label>
+                <Button size="sm" variant="outline" onClick={addCorrection}>
+                  <Plus className="h-3.5 w-3.5 mr-1" /> 정정 추가
+                </Button>
+              </div>
+
+              {corrections.length === 0 ? (
+                <p className="text-xs text-muted-foreground bg-muted/30 rounded p-3 text-center">
+                  정정값 없음. "정정 추가"로 LLM 학습 데이터 만들기.
+                </p>
+              ) : (
+                <div className="space-y-3">
+                  {corrections.map((c, i) => (
+                    <div key={i} className="border rounded-lg p-3 space-y-2 bg-muted/20">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-muted-foreground">정정 #{i + 1}</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => removeCorrection(i)}
+                          className="h-6 w-6 p-0"
+                        >
+                          <Trash2 className="h-3.5 w-3.5 text-destructive" />
+                        </Button>
+                      </div>
+                      <div className="grid grid-cols-12 gap-2">
+                        <div className="col-span-3">
+                          <Label className="text-[10px]">필드</Label>
+                          <Select
+                            value={c.field}
+                            onValueChange={(v) => updateCorrection(i, 'field', v)}
+                          >
+                            <SelectTrigger className="h-8 text-xs">
+                              <SelectValue placeholder="선택" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {CORRECTION_FIELDS.map((f) => (
+                                <SelectItem key={f.value} value={f.value} className="text-xs">
+                                  {f.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="col-span-4">
+                          <Label className="text-[10px]">원본 (LLM 추출)</Label>
+                          <Input
+                            value={c.original}
+                            onChange={(e) => updateCorrection(i, 'original', e.target.value)}
+                            placeholder="예: 리투우"
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <div className="col-span-5">
+                          <Label className="text-[10px]">정정값 (정답)</Label>
+                          <Input
+                            value={c.corrected}
+                            onChange={(e) => updateCorrection(i, 'corrected', e.target.value)}
+                            placeholder="예: 리투오"
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                      </div>
+                      <Input
+                        value={c.notes}
+                        onChange={(e) => updateCorrection(i, 'notes', e.target.value)}
+                        placeholder="메모 (선택, 예: '자주 발생하는 오타')"
+                        className="h-7 text-xs"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejectOpen(false)} disabled={actioning}>
+              취소
+            </Button>
+            <Button variant="destructive" onClick={confirmReject} disabled={actioning}>
+              {actioning ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <>
+                  반려 확정
+                  {corrections.length > 0 && ` (정정 ${corrections.length}건 학습)`}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

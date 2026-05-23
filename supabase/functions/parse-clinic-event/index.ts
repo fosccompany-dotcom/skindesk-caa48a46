@@ -187,6 +187,26 @@ serve(async (req: Request) => {
     }
     const brand_id = loc.brand_id;
 
+    // 이 브랜드의 glossary (정정 학습 데이터) 조회 — in-context learning용
+    let glossarySection = "";
+    if (brand_id) {
+      const { data: glossary } = await supabase.rpc("get_brand_glossary" as any, {
+        p_brand_id: brand_id,
+        p_limit: 30,
+      });
+      if (glossary && Array.isArray(glossary) && glossary.length > 0) {
+        const lines = (glossary as any[]).map(
+          (g) => `  - [${g.field}] "${g.term}" → "${g.canonical}" (${g.usage_count}회)`,
+        );
+        glossarySection = `
+
+★ 이 브랜드의 알려진 정정 패턴 (어드민이 과거 반려/수정한 사례, 반드시 반영) ★
+${lines.join("\n")}
+
+위 패턴이 raw_message나 이미지에 나타나면 자동으로 canonical 값으로 추출하세요.`;
+      }
+    }
+
     // 이미지 URL이면 다운로드해서 base64
     let finalImageBase64 = image_base64;
     let finalImageType = image_type;
@@ -241,7 +261,7 @@ serve(async (req: Request) => {
         // Gemini Flash 우선 (속도·비용). 품질 부족 시 anthropic/claude-sonnet-4로 전환.
         model: "google/gemini-2.5-flash",
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: SYSTEM_PROMPT + glossarySection },
           { role: "user", content: userContent },
         ],
         tools: [TOOL_SCHEMA],
