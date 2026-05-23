@@ -15,6 +15,8 @@ const LAYER_LABEL: Record<string, string> = {
   epidermis: '표피', dermis: '진피', subcutaneous: '피하',
 };
 
+type PkgPayMethod = '카드' | '현금' | '포인트' | '서비스';
+
 interface ParsedRecord {
   date: string;
   treatmentName: string;
@@ -25,6 +27,7 @@ interface ParsedRecord {
   memo: string | null;
   selected: boolean;
   expanded: boolean;
+  payMethod: PkgPayMethod;
 }
 
 interface BundleTreatment {
@@ -45,6 +48,7 @@ interface ParsedBundle {
   treatments: BundleTreatment[];
   selected: boolean;
   expanded: boolean;
+  payMethod: PkgPayMethod;
 }
 
 interface ChargeRecord {
@@ -53,8 +57,6 @@ interface ChargeRecord {
   clinic: string | null;
   label: string;
 }
-
-type PkgPayMethod = '카드' | '현금' | '포인트' | '서비스';
 
 interface ParsedPackage {
   date: string;
@@ -104,7 +106,21 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const [pkgs, setPkgs] = useState<ParsedPackage[]>([]);
   const [balanceInfo, setBalanceInfo] = useState<BalanceInfo | null>(null);
   const [isRemainingContext, setIsRemainingContext] = useState(false);
+  const [defaultPayMethod, setDefaultPayMethod] = useState<PkgPayMethod>('카드');
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // 결제수단 매핑 (UI 값 → DB 저장 값)
+  const PAY_METHOD_MAP: Record<PkgPayMethod, string> = {
+    '카드': 'card', '현금': 'cash', '포인트': 'point', '서비스': 'service',
+  };
+
+  // 전체 일괄 결제수단 변경
+  const applyBulkPayMethod = (method: PkgPayMethod) => {
+    setParsed(prev => prev ? prev.map(r => ({ ...r, payMethod: method })) : null);
+    setBundles(prev => prev.map(b => ({ ...b, payMethod: method })));
+    setPkgs(prev => prev.map(p => ({ ...p, payMethod: method })));
+    setDefaultPayMethod(method);
+  };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -135,7 +151,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
             date: todayStr, name: pkgName,
             total_sessions: total, used_sessions: used,
             clinic: null, amount_paid: null, memo: null,
-            selected: true, payMethod: '포인트',
+            selected: true, payMethod: defaultPayMethod,
             duplicateAction: null,
           });
         }
@@ -261,12 +277,17 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         }
       }
 
+      // ── 결제수단 자동 감지: 충전 컨텍스트(신규충전·충전금 등 또는 charges 존재)면 기본 '포인트', 아니면 '카드' ──
+      const hasChargeContext = /신규\s*충전|충전금|충전\s*완료|충전\s*[+\-]?\s*\d/.test(inputText) || (data?.charges?.length ?? 0) > 0;
+      const detectedMethod: PkgPayMethod = hasChargeContext ? '포인트' : '카드';
+      setDefaultPayMethod(detectedMethod);
+
       // ── 클라이언트 사이드 패키지 파싱 (N-M회차 패턴) ──
       const clientPkgs = parsePackagesFromText(inputText);
       // 병원명을 AI 결과에서 가져오기
       const clinicHint = data?.records?.[0]?.clinic || data?.bundles?.[0]?.clinic || data?.packages?.[0]?.clinic || data?.charges?.[0]?.clinic
         || inputText.match(/(\S+의원|\S+피부과|\S+클리닉|\S+병원)/)?.[1] || '';
-      clientPkgs.forEach(p => { if (!p.clinic) p.clinic = clinicHint; });
+      clientPkgs.forEach(p => { if (!p.clinic) p.clinic = clinicHint; p.payMethod = detectedMethod; });
 
       // AI 파싱된 패키지 + 클라이언트 파싱된 패키지 합치기 (정규화 기반 중복 제거)
       const normForDedup = (n: string) => n.toLowerCase().replace(/[\s()（）]/g, '');
@@ -275,7 +296,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
         const todayStr = new Date().toISOString().split('T')[0];
         allPkgs = data.packages.map((p: any) => ({
           ...p, clinic: p.clinic || clinicHint, date: p.date || todayStr,
-          selected: true, payMethod: '포인트' as PkgPayMethod, duplicateAction: null,
+          selected: true, payMethod: detectedMethod, duplicateAction: null,
         }));
       }
       // 클라이언트 파싱 결과 중 AI가 이미 추출하지 않은 것만 추가
@@ -323,6 +344,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
             })),
             selected: true,
             expanded: true,
+            payMethod: detectedMethod,
           }
         )));
       }
@@ -338,6 +360,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
               bodyArea: r.bodyArea || 'face',
               selected: true,
               expanded: false,
+              payMethod: detectedMethod,
             }))
           : []
       );
@@ -391,34 +414,65 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           skinLayer: r.skinLayer, bodyArea: r.bodyArea,
           clinic: r.clinic || '', satisfaction: undefined, notes: undefined,
           memo: r.memo || undefined, amount_paid: r.amount_paid ?? undefined,
+          payment_method: PAY_METHOD_MAP[r.payMethod] as any,
           input_method: 'ai_parsed',
           clinic_kakao_id: null,
           clinic_district: r.clinic ? extractDistrict(r.clinic) : null,
           clinic_address: null,
         });
+
+        // 결제내역(payment_records) 추가 — 서비스(무료)는 제외
+        if (r.payMethod !== '서비스' && r.amount_paid && r.amount_paid > 0) {
+          await supabase.from('payment_records').insert({
+            user_id: user.id, date: r.date, clinic: r.clinic || '',
+            clinic_type: '밴스', treatment_name: r.treatmentName,
+            amount: r.amount_paid, method: PAY_METHOD_MAP[r.payMethod],
+            record_type: 'treatment_payment', memo: r.memo || null,
+          });
+
+          // 포인트 결제면 해당 병원 잔액에서 차감
+          if (r.payMethod === '포인트' && r.clinic) {
+            const { data: bal } = await supabase
+              .from('clinic_balances').select('balance')
+              .eq('user_id', user.id).eq('clinic', r.clinic).maybeSingle();
+            if (bal && bal.balance > 0) {
+              await supabase.from('clinic_balances').upsert({
+                user_id: user.id, clinic: r.clinic,
+                balance: Math.max(0, bal.balance - r.amount_paid),
+                updated_at: new Date().toISOString(),
+              }, { onConflict: 'user_id,clinic' });
+            }
+          }
+        }
       }
     }
 
     const selectedBundles = bundles.filter(b => b.selected);
     for (const b of selectedBundles) {
-      await supabase.from('payment_records').insert({
-        user_id: user.id, date: b.date, clinic: b.clinic || '',
-        clinic_type: '밴스', treatment_name: b.bundleName,
-        amount: b.amount_paid || 0, method: 'cash', record_type: 'treatment_payment', memo: b.memo || null,
-      });
+      // 결제내역(payment_records) 추가 — 서비스(무료)는 제외
+      if (b.payMethod !== '서비스' && (b.amount_paid || 0) > 0) {
+        await supabase.from('payment_records').insert({
+          user_id: user.id, date: b.date, clinic: b.clinic || '',
+          clinic_type: '밴스', treatment_name: b.bundleName,
+          amount: b.amount_paid || 0, method: PAY_METHOD_MAP[b.payMethod],
+          record_type: 'treatment_payment', memo: b.memo || null,
+        });
+      }
       for (const t of b.treatments) {
         await addRecord({
           date: t.date, packageId: '', treatmentName: t.treatmentName,
           skinLayer: t.skinLayer, bodyArea: t.bodyArea,
           clinic: t.clinic || b.clinic || '', satisfaction: undefined,
           notes: undefined, memo: t.memo || b.memo || undefined, amount_paid: undefined,
+          payment_method: PAY_METHOD_MAP[b.payMethod] as any,
           input_method: 'ai_parsed',
           clinic_kakao_id: null,
           clinic_district: (t.clinic || b.clinic) ? extractDistrict(t.clinic || b.clinic || '') : null,
           clinic_address: null,
         });
       }
-      if ((b.amount_paid || 0) > 0 && b.clinic) {
+      // 포인트 결제면 해당 병원 잔액에서 차감
+      if (b.payMethod === '포인트' && (b.amount_paid || 0) > 0 && b.clinic) {
         const { data: bBal } = await supabase
           .from('clinic_balances').select('balance')
           .eq('user_id', user.id).eq('clinic', b.clinic).maybeSingle();
@@ -651,6 +705,32 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                   <button onClick={() => { setParsed(null); setBundles([]); setCharges([]); setPkgs([]); setBalanceInfo(null); }} className="text-xs text-primary font-medium">뒤로 가서 다시 입력</button>
                 </div>
               </div>
+
+              {/* ── 전체 결제수단 일괄 변경 ── */}
+              {((parsed?.length ?? 0) > 0 || bundles.length > 0 || pkgs.length > 0) && (
+                <div className="bg-amber-50/60 border border-amber-200/70 rounded-xl px-3 py-2.5">
+                  <p className="text-[10px] text-amber-700 mb-1.5 font-semibold flex items-center gap-1">
+                    💡 전체 결제수단 일괄 변경
+                    <span className="text-[9px] text-amber-600/80 font-normal">(개별 카드에서도 변경 가능)</span>
+                  </p>
+                  <div className="flex gap-1.5">
+                    {(['포인트', '카드', '현금', '서비스'] as PkgPayMethod[]).map(m => (
+                      <button key={m}
+                        onClick={() => applyBulkPayMethod(m)}
+                        className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
+                          defaultPayMethod === m
+                            ? m === '포인트' ? 'border-emerald-400 bg-emerald-100 text-emerald-700'
+                            : m === '카드' ? 'border-blue-400 bg-blue-100 text-blue-700'
+                            : m === '현금' ? 'border-green-400 bg-green-100 text-green-700'
+                            : 'border-gray-400 bg-gray-200 text-gray-700'
+                            : 'border-gray-200 bg-white text-gray-500 hover:border-primary/40'
+                        )}>
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* 충전 배너 */}
               {charges.map((c, i) => (
@@ -899,6 +979,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                           <div className="flex items-center gap-1.5 flex-wrap mb-0.5">
                             <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/15 text-primary border border-primary/30 font-semibold">세트</span>
                             {b.memo && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200">{b.memo}</span>}
+                            <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border',
+                              b.payMethod === '포인트' ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                              : b.payMethod === '카드' ? 'bg-blue-50 text-blue-600 border-blue-200'
+                              : b.payMethod === '현금' ? 'bg-green-50 text-green-600 border-green-200'
+                              : 'bg-gray-100 text-gray-500 border-gray-200'
+                            )}>{b.payMethod}</span>
                           </div>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {b.treatments.map((t, ti) => (
@@ -961,6 +1047,26 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                               </div>
                             ))}
                           </div>
+                          {/* 결제수단 */}
+                          <div>
+                            <label className="text-[10px] text-gray-400 mb-1.5 block">결제수단</label>
+                            <div className="flex gap-1.5">
+                              {(['포인트', '카드', '현금', '서비스'] as PkgPayMethod[]).map(m => (
+                                <button key={m}
+                                  onClick={() => updateBundle(i, 'payMethod', m)}
+                                  className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
+                                    b.payMethod === m
+                                      ? m === '포인트' ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
+                                      : m === '카드' ? 'border-blue-300 bg-blue-50 text-blue-600'
+                                      : m === '현금' ? 'border-green-300 bg-green-50 text-green-600'
+                                      : 'border-gray-300 bg-gray-100 text-gray-500'
+                                      : 'border-gray-200 bg-gray-50 text-gray-400'
+                                  )}>
+                                  {m}
+                                </button>
+                              ))}
+                            </div>
+                          </div>
                         </div>
                       )}
                     </div>
@@ -986,6 +1092,12 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             <span className="text-sm font-semibold text-gray-900">{r.treatmentName}</span>
                             <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border', SKIN_LAYER_COLOR[r.skinLayer])}>{LAYER_LABEL[r.skinLayer]}</span>
                             {r.memo && <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 border border-gray-200">{r.memo}</span>}
+                            <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full border',
+                              r.payMethod === '포인트' ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
+                              : r.payMethod === '카드' ? 'bg-blue-50 text-blue-600 border-blue-200'
+                              : r.payMethod === '현금' ? 'bg-green-50 text-green-600 border-green-200'
+                              : 'bg-gray-100 text-gray-500 border-gray-200'
+                            )}>{r.payMethod}</span>
                           </div>
                           <p className="text-[11px] text-gray-500 mt-0.5">
                             {r.date}{r.clinic && ` · ${r.clinic}`}
@@ -1032,6 +1144,26 @@ export default function ParseTreatmentModal({ onClose }: Props) {
                             <input type="text" value={r.memo ?? ''} placeholder="이벤트, 1회체험가 등"
                               onChange={e => updateField(i, 'memo', e.target.value || null)}
                               className="w-full bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1.5 text-xs text-gray-900 focus:outline-none focus:border-primary/50" />
+                          </div>
+                          {/* 결제수단 */}
+                          <div>
+                            <label className="text-[10px] text-gray-400 mb-1.5 block">결제수단</label>
+                            <div className="flex gap-1.5">
+                              {(['포인트', '카드', '현금', '서비스'] as PkgPayMethod[]).map(m => (
+                                <button key={m}
+                                  onClick={() => updateField(i, 'payMethod', m)}
+                                  className={cn('flex-1 py-1.5 rounded-lg text-[11px] font-semibold border transition-all',
+                                    r.payMethod === m
+                                      ? m === '포인트' ? 'border-emerald-300 bg-emerald-50 text-emerald-600'
+                                      : m === '카드' ? 'border-blue-300 bg-blue-50 text-blue-600'
+                                      : m === '현금' ? 'border-green-300 bg-green-50 text-green-600'
+                                      : 'border-gray-300 bg-gray-100 text-gray-500'
+                                      : 'border-gray-200 bg-gray-50 text-gray-400'
+                                  )}>
+                                  {m}
+                                </button>
+                              ))}
+                            </div>
                           </div>
                         </div>
                       )}
