@@ -9,6 +9,8 @@ const BottomNav = () => {
   const { t } = useLanguage();
 
   if (['/signup', '/farewell'].includes(location.pathname)) return null;
+  // 어드민 페이지에서는 모바일 하단 네비 숨김 (데스크톱 UI)
+  if (location.pathname.startsWith('/admin')) return null;
 
   // 5-item nav with Calendar as the centered highlight
   const navItems = [

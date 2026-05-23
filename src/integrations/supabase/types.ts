@@ -133,16 +133,23 @@ export type Database = {
       }
       clinic_events: {
         Row: {
+          admin_note: string | null
           brand_id: string | null
+          confidence_score: number | null
           created_at: string | null
           description: string | null
           discount_amount: number | null
           discount_pct: number | null
           end_date: string | null
+          hours_text: string | null
           id: string
           image_url: string | null
+          is_closed: boolean
           is_published: boolean | null
-          location_id: string | null
+          location_id: string
+          notice_type: string
+          raw_message: string | null
+          review_status: string
           source_type: string | null
           source_url: string | null
           start_date: string
@@ -150,16 +157,23 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          admin_note?: string | null
           brand_id?: string | null
+          confidence_score?: number | null
           created_at?: string | null
           description?: string | null
           discount_amount?: number | null
           discount_pct?: number | null
           end_date?: string | null
+          hours_text?: string | null
           id?: string
           image_url?: string | null
+          is_closed?: boolean
           is_published?: boolean | null
-          location_id?: string | null
+          location_id: string
+          notice_type?: string
+          raw_message?: string | null
+          review_status?: string
           source_type?: string | null
           source_url?: string | null
           start_date: string
@@ -167,16 +181,23 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          admin_note?: string | null
           brand_id?: string | null
+          confidence_score?: number | null
           created_at?: string | null
           description?: string | null
           discount_amount?: number | null
           discount_pct?: number | null
           end_date?: string | null
+          hours_text?: string | null
           id?: string
           image_url?: string | null
+          is_closed?: boolean
           is_published?: boolean | null
-          location_id?: string | null
+          location_id?: string
+          notice_type?: string
+          raw_message?: string | null
+          review_status?: string
           source_type?: string | null
           source_url?: string | null
           start_date?: string
@@ -239,6 +260,7 @@ export type Database = {
           is_active: boolean | null
           is_overseas: boolean | null
           kakao_backfill_status: string | null
+          kakao_channel_id: string | null
           kakao_place_id: string | null
           landmark: string | null
           latitude: number | null
@@ -258,6 +280,7 @@ export type Database = {
           is_active?: boolean | null
           is_overseas?: boolean | null
           kakao_backfill_status?: string | null
+          kakao_channel_id?: string | null
           kakao_place_id?: string | null
           landmark?: string | null
           latitude?: number | null
@@ -277,6 +300,7 @@ export type Database = {
           is_active?: boolean | null
           is_overseas?: boolean | null
           kakao_backfill_status?: string | null
+          kakao_channel_id?: string | null
           kakao_place_id?: string | null
           landmark?: string | null
           latitude?: number | null
@@ -315,15 +339,20 @@ export type Database = {
           body_areas: string[] | null
           branch_note: string | null
           brand_id: string | null
+          bundle_size: number
           catalog_id: string | null
           category: string | null
+          combo_items: string[] | null
+          conditions: string | null
           created_at: string | null
           description: string | null
           discount_pct: number | null
           effective_from: string
           effective_to: string | null
           effects: string[] | null
+          event_id: string | null
           id: string
+          is_unlimited: boolean
           location_id: string | null
           original_price_krw: number | null
           package_option_id: string | null
@@ -331,6 +360,7 @@ export type Database = {
           price_range_text: string | null
           price_unit: string | null
           raw_text: string | null
+          session_count: number | null
           source_type: string | null
           source_url: string | null
           treatment_name: string
@@ -340,15 +370,20 @@ export type Database = {
           body_areas?: string[] | null
           branch_note?: string | null
           brand_id?: string | null
+          bundle_size?: number
           catalog_id?: string | null
           category?: string | null
+          combo_items?: string[] | null
+          conditions?: string | null
           created_at?: string | null
           description?: string | null
           discount_pct?: number | null
           effective_from?: string
           effective_to?: string | null
           effects?: string[] | null
+          event_id?: string | null
           id?: string
+          is_unlimited?: boolean
           location_id?: string | null
           original_price_krw?: number | null
           package_option_id?: string | null
@@ -356,6 +391,7 @@ export type Database = {
           price_range_text?: string | null
           price_unit?: string | null
           raw_text?: string | null
+          session_count?: number | null
           source_type?: string | null
           source_url?: string | null
           treatment_name: string
@@ -365,15 +401,20 @@ export type Database = {
           body_areas?: string[] | null
           branch_note?: string | null
           brand_id?: string | null
+          bundle_size?: number
           catalog_id?: string | null
           category?: string | null
+          combo_items?: string[] | null
+          conditions?: string | null
           created_at?: string | null
           description?: string | null
           discount_pct?: number | null
           effective_from?: string
           effective_to?: string | null
           effects?: string[] | null
+          event_id?: string | null
           id?: string
+          is_unlimited?: boolean
           location_id?: string | null
           original_price_krw?: number | null
           package_option_id?: string | null
@@ -381,6 +422,7 @@ export type Database = {
           price_range_text?: string | null
           price_unit?: string | null
           raw_text?: string | null
+          session_count?: number | null
           source_type?: string | null
           source_url?: string | null
           treatment_name?: string

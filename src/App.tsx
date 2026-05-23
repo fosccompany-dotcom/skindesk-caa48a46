@@ -25,6 +25,8 @@ import QuizResult from "./pages/QuizResult";
 import SkinMatch from "./pages/SkinMatch";
 import ResetPassword from "./pages/ResetPassword";
 import Settings from "./pages/Settings";
+import AdminEvents from "./pages/AdminEvents";
+import AdminUsers from "./pages/AdminUsers";
 import NotFound from "./pages/NotFound";
 import BottomNav from "./components/BottomNav";
 import GlobalFAB from "./components/GlobalFAB";
@@ -79,7 +81,9 @@ const App = () => (
                     
                     <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
                     <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-                    <Route path="/admin"    element={<PrivateRoute><Admin /></PrivateRoute>} />
+                    <Route path="/admin"        element={<PrivateRoute><AdminEvents /></PrivateRoute>} />
+                    <Route path="/admin/events" element={<PrivateRoute><AdminEvents /></PrivateRoute>} />
+                    <Route path="/admin/users"  element={<PrivateRoute><AdminUsers /></PrivateRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>

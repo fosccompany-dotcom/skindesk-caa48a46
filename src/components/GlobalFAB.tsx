@@ -9,6 +9,7 @@ import { useRecords } from '@/context/RecordsContext';
 import { TreatmentRecord } from '@/types/skin';
 
 const HIDDEN_PATHS = ['/signup', '/farewell'];
+const HIDDEN_PREFIXES = ['/admin']; // 어드민 페이지에서 FAB 숨김
 const FAB_COACH_KEY = 'skindesk_fab_coach_done';
 const FAB_POS_KEY = 'skindesk_fab_pos';
 
@@ -112,6 +113,7 @@ const GlobalFAB = () => {
   }, [pos, clamp]);
 
   if (HIDDEN_PATHS.includes(location.pathname)) return null;
+  if (HIDDEN_PREFIXES.some(p => location.pathname.startsWith(p))) return null;
 
   const handleFabClick = () => {
     if (movedRef.current) { movedRef.current = false; return; }
