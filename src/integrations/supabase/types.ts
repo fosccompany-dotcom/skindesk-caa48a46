@@ -87,6 +87,8 @@ export type Database = {
           total_branches_kr: number | null
           total_branches_overseas: number | null
           updated_at: string | null
+          v1_excluded_reason: string | null
+          v1_target_status: string
           website: string | null
         }
         Insert: {
@@ -107,6 +109,8 @@ export type Database = {
           total_branches_kr?: number | null
           total_branches_overseas?: number | null
           updated_at?: string | null
+          v1_excluded_reason?: string | null
+          v1_target_status?: string
           website?: string | null
         }
         Update: {
@@ -127,6 +131,8 @@ export type Database = {
           total_branches_kr?: number | null
           total_branches_overseas?: number | null
           updated_at?: string | null
+          v1_excluded_reason?: string | null
+          v1_target_status?: string
           website?: string | null
         }
         Relationships: []
@@ -449,6 +455,20 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_brand_summary"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clinic_treatments_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "v_pending_review_events"
+            referencedColumns: ["event_id"]
           },
           {
             foreignKeyName: "clinic_treatments_location_id_fkey"
@@ -944,6 +964,7 @@ export type Database = {
       user_favorite_clinics: {
         Row: {
           clinic_brand_id: string
+          clinic_location_id: string | null
           created_at: string
           id: string
           priority: number
@@ -951,6 +972,7 @@ export type Database = {
         }
         Insert: {
           clinic_brand_id: string
+          clinic_location_id?: string | null
           created_at?: string
           id?: string
           priority: number
@@ -958,6 +980,7 @@ export type Database = {
         }
         Update: {
           clinic_brand_id?: string
+          clinic_location_id?: string | null
           created_at?: string
           id?: string
           priority?: number
@@ -984,6 +1007,27 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_brand_summary"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorite_clinics_clinic_location_id_fkey"
+            columns: ["clinic_location_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_favorite_clinics_clinic_location_id_fkey"
+            columns: ["clinic_location_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "user_favorite_clinics_clinic_location_id_fkey"
+            columns: ["clinic_location_id"]
+            isOneToOne: false
+            referencedRelation: "v_kakao_no_match"
+            referencedColumns: ["location_id"]
           },
           {
             foreignKeyName: "user_favorite_clinics_user_id_fkey"
@@ -1230,6 +1274,15 @@ export type Database = {
         Returns: Json
       }
       is_admin: { Args: never; Returns: boolean }
+      is_owner: { Args: never; Returns: boolean }
+      is_reviewer_or_higher: { Args: never; Returns: boolean }
+      lookup_user_id_by_email: {
+        Args: { p_email: string }
+        Returns: {
+          email: string
+          user_id: string
+        }[]
+      }
       review_clinic_event: {
         Args: { p_action: string; p_event_id: string }
         Returns: Json
