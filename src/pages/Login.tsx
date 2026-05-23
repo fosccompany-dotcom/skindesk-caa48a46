@@ -26,6 +26,21 @@ const Login = () => {
   const [resetOpen, setResetOpen] = useState(false);
   const [resetEmail, setResetEmail] = useState('');
   const [resetLoading, setResetLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
+  const [savePassword, setSavePassword] = useState(false);
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('bloomlog_saved_email');
+    const savedPw = localStorage.getItem('bloomlog_saved_password');
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+    if (savedPw) {
+      setPassword(savedPw);
+      setSavePassword(true);
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +50,10 @@ const Login = () => {
     if (error) {
       toast({ title: error.message, variant: 'destructive' });
     } else {
+      if (rememberMe) localStorage.setItem('bloomlog_saved_email', email);
+      else localStorage.removeItem('bloomlog_saved_email');
+      if (savePassword) localStorage.setItem('bloomlog_saved_password', password);
+      else localStorage.removeItem('bloomlog_saved_password');
       navigate('/');
     }
   };
