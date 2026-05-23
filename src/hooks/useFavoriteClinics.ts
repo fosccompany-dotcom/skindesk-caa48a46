@@ -170,6 +170,7 @@ export function useFavoriteClinics() {
         location_id: null,
         priority: FIXED_PRIORITY,
         brand: null,
+        location: null,
       };
       setRows((prev) => [...prev, optimistic]);
 
