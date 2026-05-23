@@ -2,7 +2,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
 import Index from "./pages/Index";
 import Points from "./pages/Points";
 import Packages from "./pages/Packages";
@@ -42,6 +43,22 @@ const queryClient = new QueryClient();
 
 import ErrorBoundary from "./components/ErrorBoundary";
 
+// 어드민 경로에서는 모바일 max-width(430px) 제약 해제 → 풀 데스크톱 폭
+const AppShell = ({ children }: { children: React.ReactNode }) => {
+  const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
+  return (
+    <div
+      className={cn(
+        "min-h-screen bg-background relative",
+        !isAdmin && "app-container"
+      )}
+    >
+      {children}
+    </div>
+  );
+};
+
 const App = () => (
   <ErrorBoundary>
   <QueryClientProvider client={queryClient}>
@@ -55,7 +72,7 @@ const App = () => (
             <CyclesProvider>
               <RecordsProvider>
                 <ManagementSettingsProvider>
-                <div className="app-container min-h-screen bg-background relative">
+                <AppShell>
                   <Routes>
                     {/* 공개 라우트 */}
                     <Route path="/login" element={<Login />} />
@@ -89,7 +106,7 @@ const App = () => (
                   </Routes>
                   <GlobalFAB />
                   <BottomNav />
-                </div>
+                </AppShell>
                 </ManagementSettingsProvider>
               </RecordsProvider>
             </CyclesProvider>
