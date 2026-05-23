@@ -186,10 +186,27 @@ const Login = () => {
               />
             </div>
           </div>
+          <div className="flex items-center gap-4 pt-1">
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+              <Checkbox
+                checked={rememberMe}
+                onCheckedChange={(v) => setRememberMe(v === true)}
+              />
+              로그인 유지
+            </label>
+            <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+              <Checkbox
+                checked={savePassword}
+                onCheckedChange={(v) => setSavePassword(v === true)}
+              />
+              비밀번호 저장
+            </label>
+          </div>
           <Button type="submit" className="w-full h-11 rounded-xl text-sm font-semibold" disabled={loading}>
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             {t('login')}
           </Button>
+
         </form>
 
         {/* Forgot Password */}
