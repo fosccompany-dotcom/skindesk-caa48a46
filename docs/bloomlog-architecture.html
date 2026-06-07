@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bloomlog — 시스템 · DB · 기능 명세</title>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#171a23; --panel2:#1e222d; --line:#2a2f3c;
+    --txt:#e6e8ee; --muted:#9aa3b2; --dim:#6b7382;
+    --A:#5b9dff; --A-bg:#12243f; --B:#ff7a8a; --B-bg:#3a1820;
+    --admin:#caa96e; --admin-bg:#2e2616;
+    --ok:#4ade80; --warn:#fbbf24; --bad:#f87171;
+    --accent:#8b7bf0; --accent2:#4fd1c5;
+    --radius:14px; --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,monospace;
+    --sans:-apple-system,"Pretendard","Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font-family:var(--sans);line-height:1.65;font-size:15px}
+  a{color:var(--A);text-decoration:none}
+  code{font-family:var(--mono);background:var(--panel2);padding:1px 6px;border-radius:5px;font-size:.86em;color:#d7c4ff}
+  h2{font-size:1.7rem;margin:0 0 6px;letter-spacing:-.02em}
+  h3{font-size:1.2rem;margin:30px 0 10px;letter-spacing:-.01em}
+  h4{font-size:1rem;margin:18px 0 8px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:600}
+  .layout{display:flex;max-width:1400px;margin:0 auto}
+  /* sidebar */
+  nav.toc{position:sticky;top:0;height:100vh;width:248px;flex:0 0 248px;overflow-y:auto;
+    background:var(--panel);border-right:1px solid var(--line);padding:22px 14px}
+  nav.toc .brand{font-weight:800;font-size:1.15rem;letter-spacing:-.02em;padding:0 10px 4px}
+  nav.toc .brand span{color:var(--accent)}
+  nav.toc .sub{color:var(--dim);font-size:.74rem;padding:0 10px 16px;border-bottom:1px solid var(--line);margin-bottom:12px}
+  nav.toc a{display:block;color:var(--muted);padding:7px 10px;border-radius:8px;font-size:.86rem;font-weight:500}
+  nav.toc a:hover{background:var(--panel2);color:var(--txt)}
+  nav.toc a .n{color:var(--dim);margin-right:8px;font-variant-numeric:tabular-nums}
+  /* content */
+  main{flex:1;min-width:0;padding:40px 46px 120px}
+  section{margin-bottom:64px;scroll-margin-top:20px}
+  .lead{color:var(--muted);max-width:760px}
+  .hero{background:linear-gradient(135deg,#1a1f2e 0%,#221a2e 100%);border:1px solid var(--line);
+    border-radius:var(--radius);padding:34px 36px;margin-bottom:44px}
+  .hero h1{margin:0 0 6px;font-size:2.5rem;letter-spacing:-.03em}
+  .hero h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+  .hero .tag{color:var(--muted);font-size:1.05rem}
+  .pill{display:inline-block;font-size:.72rem;font-weight:700;padding:3px 10px;border-radius:20px;margin:2px 4px 2px 0;border:1px solid}
+  .pill.a{color:var(--A);border-color:var(--A);background:var(--A-bg)}
+  .pill.b{color:var(--B);border-color:var(--B);background:var(--B-bg)}
+  .pill.ad{color:var(--admin);border-color:var(--admin);background:var(--admin-bg)}
+  .pill.g{color:var(--dim);border-color:var(--line);background:var(--panel2)}
+  .grid{display:grid;gap:16px}
+  .g2{grid-template-columns:repeat(2,1fr)} .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:1080px){.g3,.g4{grid-template-columns:repeat(2,1fr)}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+  .card h4{margin-top:0}
+  .stat{font-size:2rem;font-weight:800;letter-spacing:-.02em}
+  .stat small{font-size:.8rem;color:var(--dim);font-weight:500;display:block;text-transform:none;letter-spacing:0}
+  .mermaid{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:22px;margin:16px 0;text-align:center;overflow-x:auto}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.86rem;background:var(--panel);border-radius:var(--radius);overflow:hidden}
+  th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+  th{background:var(--panel2);color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em}
+  tr:last-child td{border-bottom:none}
+  td.k{font-family:var(--mono);color:#d7c4ff;white-space:nowrap}
+  .badge{font-family:var(--mono);font-size:.7rem;padding:1px 6px;border-radius:4px;font-weight:700}
+  .pk{background:#3a2e10;color:var(--admin)} .fk{background:#10243a;color:var(--A)} .nn{background:#102a1a;color:var(--ok)}
+  /* db table card */
+  .tbl{border-radius:var(--radius);overflow:hidden;border:1px solid var(--line);margin-bottom:18px}
+  .tbl>.head{padding:11px 16px;font-family:var(--mono);font-weight:700;font-size:.95rem;display:flex;justify-content:space-between;align-items:center}
+  .tbl.a>.head{background:var(--A-bg);color:var(--A);border-bottom:1px solid var(--A)}
+  .tbl.b>.head{background:var(--B-bg);color:var(--B);border-bottom:1px solid var(--B)}
+  .tbl.ad>.head{background:var(--admin-bg);color:var(--admin);border-bottom:1px solid var(--admin)}
+  .tbl .head .cnt{font-family:var(--sans);font-size:.7rem;color:var(--dim);font-weight:500}
+  .tbl table{margin:0;border-radius:0}
+  .colcell{font-family:var(--mono);font-size:.82rem}
+  .ty{color:var(--dim);font-size:.78rem;font-family:var(--mono)}
+  .note{font-size:.82rem;color:var(--muted);padding:8px 14px;background:var(--panel2);border-top:1px solid var(--line)}
+  .callout{border-left:3px solid var(--accent);background:var(--panel2);padding:12px 18px;border-radius:8px;margin:14px 0;font-size:.9rem}
+  .callout.warn{border-color:var(--warn)} .callout.bad{border-color:var(--bad)}
+  ul.feat{list-style:none;padding:0;margin:6px 0}
+  ul.feat li{padding:4px 0 4px 22px;position:relative;font-size:.9rem}
+  ul.feat li:before{content:"▸";position:absolute;left:4px;color:var(--accent)}
+  .route{font-family:var(--mono);font-size:.8rem;color:var(--accent2)}
+  .legend{display:flex;gap:18px;flex-wrap:wrap;font-size:.8rem;color:var(--muted);margin:8px 0 18px}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .st-ok{color:var(--ok)} .st-warn{color:var(--warn)} .st-bad{color:var(--bad)}
+  .foot{color:var(--dim);font-size:.8rem;border-top:1px solid var(--line);padding-top:20px;margin-top:40px}
+  .scroll{overflow-x:auto}
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc">
+  <div class="brand">Bloom<span>log</span></div>
+  <div class="sub">시스템 · DB · 기능 명세서</div>
+  <a href="#overview"><span class="n">01</span>개요 &amp; 스택</a>
+  <a href="#arch"><span class="n">02</span>시스템 아키텍처</a>
+  <a href="#domains"><span class="n">03</span>두 도메인 구조</a>
+  <a href="#db"><span class="n">04</span>DB 구조 (ERD)</a>
+  <a href="#tables"><span class="n">05</span>테이블 상세</a>
+  <a href="#payment"><span class="n">06</span>결제 3단계 플로우</a>
+  <a href="#diagnosis"><span class="n">07</span>5축 진단 시스템</a>
+  <a href="#auth"><span class="n">08</span>인증 &amp; RBAC</a>
+  <a href="#parsing"><span class="n">09</span>AI 파싱 파이프라인</a>
+  <a href="#features"><span class="n">10</span>기능 명세 (라우트)</a>
+  <a href="#functions"><span class="n">11</span>Edge Fn &amp; RPC</a>
+  <a href="#debt"><span class="n">12</span>기술 부채</a>
+</nav>
+
+<main>
+  <div class="hero">
+    <h1>Bloom<span>log</span></h1>
+    <div class="tag">피부·바디 시술 기록 &amp; 주기 관리 — <em>Your Personal Skin Coordinator</em></div>
+    <div style="margin-top:14px">
+      <span class="pill g">React 18 + TS</span><span class="pill g">Vite</span><span class="pill g">Tailwind + shadcn/ui</span>
+      <span class="pill g">Supabase</span><span class="pill g">Edge Functions</span><span class="pill g">Capacitor (Android)</span>
+    </div>
+    <div style="margin-top:10px;color:var(--dim);font-size:.85rem">
+      제품명 <b style="color:var(--txt)">Bloomlog</b> · 도메인 bloomlog.kr · 호스팅 skindesk.lovable.app ·
+      <code>SKINDESK</code>는 Lovable 내부 코드네임 · Supabase <code>gaharylmkilooukxnipk</code>
+    </div>
+  </div>
+
+  <!-- 01 OVERVIEW -->
+  <section id="overview">
+    <h2>01 · 개요 &amp; 스택</h2>
+    <p class="lead">피부과·미용 클리닉을 정기적으로 이용하는 20~40대 여성이 <b>여러 병원에 흩어진 시술 기록·시술권·포인트·결제·주기</b>를 한 곳에서 관리하는 개인용 앱. 경쟁(강남언니·굿닥)이 병원 마케팅 플랫폼이라면, Bloomlog는 <b>사용자 중심</b> 개인 관리 앱이다. 핵심 가치 = 쌓이는 시술 이력에 의한 락인(lock-in) + 익명 통계 데이터 자산.</p>
+    <div class="grid g4" style="margin-top:18px">
+      <div class="card"><div class="stat">16<small>DB 테이블</small></div></div>
+      <div class="card"><div class="stat">5<small>뷰 (view)</small></div></div>
+      <div class="card"><div class="stat">11<small>RPC 함수</small></div></div>
+      <div class="card"><div class="stat">4<small>Edge Functions</small></div></div>
+      <div class="card"><div class="stat">24<small>라우트 (페이지)</small></div></div>
+      <div class="card"><div class="stat">5<small>전역 Context</small></div></div>
+      <div class="card"><div class="stat">3<small>RBAC 권한 단계</small></div></div>
+      <div class="card"><div class="stat">3<small>다국어 (한/영/중)</small></div></div>
+    </div>
+    <h4>기술 스택</h4>
+    <div class="scroll"><table>
+      <tr><th>영역</th><th>기술</th></tr>
+      <tr><td>프론트엔드</td><td class="k">React 18 · TypeScript · Vite 5</td></tr>
+      <tr><td>UI</td><td class="k">Tailwind CSS · shadcn/ui (Radix) · lucide-react · recharts</td></tr>
+      <tr><td>라우팅</td><td class="k">React Router DOM v6</td></tr>
+      <tr><td>상태</td><td class="k">Context API + useState (주력) · TanStack Query (일부)</td></tr>
+      <tr><td>폼/검증</td><td class="k">react-hook-form · zod</td></tr>
+      <tr><td>백엔드</td><td class="k">Supabase — Auth · PostgreSQL · RLS · Realtime · Edge Functions (Deno)</td></tr>
+      <tr><td>AI</td><td class="k">Lovable AI Gateway → google/gemini-2.5-flash (tool-calling)</td></tr>
+      <tr><td>모바일</td><td class="k">Capacitor 6 (Android, io.bloomlog.app)</td></tr>
+      <tr><td>패키지/배포</td><td class="k">Bun · Lovable (auto-deploy on push)</td></tr>
+    </table></div>
+  </section>
+
+  <!-- 02 ARCH -->
+  <section id="arch">
+    <h2>02 · 시스템 아키텍처</h2>
+    <p class="lead">단일 React SPA가 Supabase에 직접 붙는 <b>서버리스 구조</b>. 데이터는 대부분 클라이언트 Context가 Supabase를 직접 호출해 관리하고, AI 파싱·계정삭제 등 권한·비밀키가 필요한 작업만 Edge Function을 경유한다.</p>
+    <div class="mermaid">
+flowchart TB
+  subgraph CL["🖥️ 클라이언트 (React SPA / Capacitor)"]
+    direction TB
+    UI["페이지 24개 + shadcn/ui"]
+    CTX["전역 Context<br/>Auth · Season · Cycles · Records · ManagementSettings"]
+    LIB["도메인 로직<br/>clinicPayments · skinDiagnosis · skinRecommendation · adminAuth"]
+    UI --> CTX --> LIB
+  end
+  subgraph SB["☁️ Supabase (gaharylmkilooukxnipk)"]
+    direction TB
+    AUTH["Auth<br/>Email · Google · Kakao OAuth"]
+    PG[("PostgreSQL<br/>16 tables · RLS · triggers")]
+    RT["Realtime<br/>(treatment_cycles 구독)"]
+    EF["Edge Functions (Deno)"]
+  end
+  GW["🤖 Lovable AI Gateway<br/>Gemini 2.5 Flash"]
+  CL -->|"supabase-js (anon key + RLS)"| AUTH
+  CL -->|"직접 CRUD"| PG
+  CL -->|"구독"| RT
+  CL -->|"invoke"| EF
+  EF -->|"service role"| PG
+  EF -->|"파싱 요청"| GW
+  classDef sb fill:#12243f,stroke:#5b9dff,color:#e6e8ee;
+  classDef cl fill:#1e222d,stroke:#8b7bf0,color:#e6e8ee;
+  classDef gw fill:#3a1820,stroke:#ff7a8a,color:#e6e8ee;
+  class AUTH,PG,RT,EF sb; class UI,CTX,LIB cl; class GW gw;
+    </div>
+
+    <h3>Provider 중첩 순서 <code>src/App.tsx</code></h3>
+    <div class="mermaid">
+flowchart LR
+  EB[ErrorBoundary] --> QC[QueryClient] --> TT[Tooltip] --> LG[Language] --> BR[BrowserRouter] --> AU[Auth] --> SE[Season] --> CY[Cycles] --> RE[Records] --> MS[ManagementSettings] --> RT[Routes]
+  classDef n fill:#171a23,stroke:#2a2f3c,color:#e6e8ee;
+  class EB,QC,TT,LG,BR,AU,SE,CY,RE,MS,RT n;
+    </div>
+
+    <h3>상태 관리 — 2원화 (주의)</h3>
+    <div class="grid g2">
+      <div class="card">
+        <h4 style="color:var(--A)">Context + 직접 supabase 호출 (주력)</h4>
+        <ul class="feat">
+          <li><code>RecordsContext</code> — 시술 기록 CRUD + Bloom 단계 계산</li>
+          <li><code>CyclesContext</code> — 주기 (Realtime 구독)</li>
+          <li><code>SeasonContext</code> — 관리모드 4단계 (DB)</li>
+          <li>컨텍스트 간 갱신은 <code>window.dispatchEvent('skindesk:data-changed')</code> 커스텀 이벤트로 강제 <span class="st-warn">(안티패턴)</span></li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4 style="color:var(--accent2)">localStorage</h4>
+        <ul class="feat">
+          <li><code>ManagementSettingsContext</code> — 부위별 관리강도 (tight/maintain/none)</li>
+          <li><code>skindesk_*</code> 키 — 테마·온보딩·FAB 위치·탭 순서</li>
+          <li><code>bloomlog_saved_email/password</code> — 로그인 기억</li>
+        </ul>
+        <div class="callout warn" style="margin-bottom:0">TanStack Query는 설치돼 있으나 실제 데이터 흐름의 대부분은 Context가 담당. 혼재 주의.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 DOMAINS -->
+  <section id="domains">
+    <h2>03 · 두 도메인 구조 ⭐</h2>
+    <p class="lead">코드베이스는 사실상 <b>두 시스템이 한 앱·한 DB에 공존</b>한다. 이 경계 이해가 유지보수의 핵심이다.</p>
+    <div class="grid g2">
+      <div class="card" style="border-color:var(--A)">
+        <span class="pill a">도메인 A</span><h3 style="margin-top:8px">개인 시술 기록 (사용자용 · 원래 핵심)</h3>
+        <p style="color:var(--muted);font-size:.9rem">사용자가 자기 시술/결제/포인트/주기/진단을 기록·관리. 모든 행은 <code>user_id</code>로 RLS 분리.</p>
+        <div>
+          <span class="pill a">treatment_records</span><span class="pill a">treatment_packages</span>
+          <span class="pill a">point_transactions</span><span class="pill a">payment_records</span>
+          <span class="pill a">clinic_balances</span><span class="pill a">treatment_cycles</span>
+          <span class="pill a">reservations</span><span class="pill a">user_profiles</span>
+          <span class="pill a">diagnosis_snapshots</span>
+        </div>
+      </div>
+      <div class="card" style="border-color:var(--B)">
+        <span class="pill b">도메인 B</span><h3 style="margin-top:8px">클리닉 이벤트 카탈로그 ("Workstream B")</h3>
+        <p style="color:var(--muted);font-size:.9rem">어드민이 카톡/SMS/배너 이미지를 <b>AI 파싱</b>해 클리닉 이벤트·시술 가격 DB를 구축, 사용자에게 노출. 검수 워크플로우 + 파싱 피드백 루프.</p>
+        <div>
+          <span class="pill b">clinic_brands</span><span class="pill b">clinic_locations</span>
+          <span class="pill b">clinic_events</span><span class="pill b">clinic_treatments</span>
+          <span class="pill b">package_options</span><span class="pill b">parse_corrections</span>
+          <span class="pill b">treatment_glossary</span>
+        </div>
+      </div>
+    </div>
+    <div class="callout">🔗 <b>두 도메인의 다리:</b> <code>user_favorite_clinics</code> — 사용자(A)가 클리닉 브랜드/지점(B)을 즐겨찾기. 계층은 <code>clinic_brands → clinic_locations → clinic_events → clinic_treatments</code>.</div>
+  </section>
+
+  <!-- 04 DB ERD -->
+  <section id="db">
+    <h2>04 · DB 구조 (ER 다이어그램)</h2>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--A)"></span> 도메인 A (개인)</span>
+      <span><span class="dot" style="background:var(--B)"></span> 도메인 B (클리닉 카탈로그)</span>
+      <span><span class="dot" style="background:var(--admin)"></span> 어드민</span>
+      <span><span class="badge pk">PK</span> 기본키</span>
+      <span><span class="badge fk">FK</span> 외래키</span>
+    </div>
+    <div class="mermaid">
+erDiagram
+  user_profiles ||--o{ diagnosis_snapshots : "score 히스토리"
+  user_profiles ||--o{ user_favorite_clinics : "즐겨찾기"
+  treatment_packages ||--o{ treatment_records : "package_uuid"
+  treatment_packages ||--o{ point_transactions : "package_id"
+  treatment_packages ||--o{ package_options : "package_id"
+  payment_records ||--o{ point_transactions : "payment_record_id"
+  clinic_brands ||--o{ clinic_locations : "brand_id"
+  clinic_brands ||--o{ clinic_events : "brand_id"
+  clinic_brands ||--o{ clinic_treatments : "brand_id"
+  clinic_brands ||--o{ user_favorite_clinics : "clinic_brand_id"
+  clinic_locations ||--o{ clinic_events : "location_id"
+  clinic_locations ||--o{ clinic_treatments : "location_id"
+  clinic_locations ||--o{ user_favorite_clinics : "clinic_location_id"
+  clinic_events ||--o{ clinic_treatments : "event_id"
+  package_options ||--o{ clinic_treatments : "package_option_id"
+  clinic_brands ||--o{ parse_corrections : "brand_id"
+  clinic_brands ||--o{ treatment_glossary : "brand_id"
+  clinic_events ||--o{ parse_corrections : "event_id"
+    </div>
+    <p style="color:var(--dim);font-size:.82rem">※ <code>user_id</code>는 Supabase <code>auth.users</code>를 가리키며 모든 도메인 A 테이블에 존재(RLS 키). <code>parse_corrections</code>/<code>treatment_glossary</code>는 DB(마이그레이션)엔 있으나 자동생성 <code>types.ts</code>엔 아직 미반영.</p>
+  </section>
+
+  <!-- 05 TABLES -->
+  <section id="tables">
+    <h2>05 · 테이블 상세 명세</h2>
+    <p class="lead">전체 16개 테이블의 컬럼·타입·키. <span class="badge pk">PK</span> 기본키 · <span class="badge fk">FK</span> 외래키 · <span class="badge nn">NN</span> NOT NULL.</p>
+
+    <h3 style="color:var(--A)">🟦 도메인 A — 개인 시술 기록</h3>
+
+    <div class="tbl a"><div class="head">user_profiles<span class="cnt">사용자 프로필 + 5축 점수 (PK = auth user id)</span></div>
+      <table>
+        <tr><th>컬럼</th><th>타입</th><th>키</th><th>설명</th></tr>
+        <tr><td class="colcell">id</td><td class="ty">uuid</td><td><span class="badge pk">PK</span></td><td>auth.users.id와 동일</td></tr>
+        <tr><td class="colcell">name / email</td><td class="ty">text</td><td></td><td>닉네임 · 이메일</td></tr>
+        <tr><td class="colcell">birth_date / age_group</td><td class="ty">date/text</td><td></td><td>생년월일 · 연령대(20s~50s_plus)</td></tr>
+        <tr><td class="colcell">skin_type / skin_goal</td><td class="ty">text</td><td></td><td>피부타입 · 목표</td></tr>
+        <tr><td class="colcell">score_p / o / i / h / a</td><td class="ty">int</td><td></td><td><b>5축 진단 점수</b> (0~10)</td></tr>
+        <tr><td class="colcell">diagnosis_updated_at</td><td class="ty">timestamptz</td><td></td><td>최근 진단 시각</td></tr>
+        <tr><td class="colcell">current_season</td><td class="ty">text</td><td></td><td>관리모드 no_care/maintain/boost/special</td></tr>
+        <tr><td class="colcell">bloom_stage / total_log_count</td><td class="ty">int</td><td><span class="badge nn">NN</span></td><td>게이미피케이션 단계 · 누적 기록수</td></tr>
+        <tr><td class="colcell">concerns / goals / regions / target_areas</td><td class="ty">text[]</td><td></td><td>관심 고민·목표·지역·부위</td></tr>
+        <tr><td class="colcell">quiz_completed_at / privacy_agreed_at / deleted_at</td><td class="ty">timestamptz</td><td></td><td>퀴즈완료 · 약관동의 · 소프트삭제</td></tr>
+        <tr><td class="colcell">skin_tribe</td><td class="ty">text</td><td></td><td><span class="st-bad">deprecated</span> (이전 분류체계)</td></tr>
+      </table>
+    </div>
+
+    <div class="tbl a"><div class="head">treatment_records<span class="cnt">개인 시술 기록 (플로우 3의 주체)</span></div>
+      <table>
+        <tr><th>컬럼</th><th>타입</th><th>키</th><th>설명</th></tr>
+        <tr><td class="colcell">id</td><td class="ty">uuid</td><td><span class="badge pk">PK</span></td><td></td></tr>
+        <tr><td class="colcell">user_id</td><td class="ty">uuid</td><td><span class="badge nn">NN</span></td><td>RLS 키</td></tr>
+        <tr><td class="colcell">date / treatment_name</td><td class="ty">date/text</td><td><span class="badge nn">NN</span></td><td>시술일 · 시술명</td></tr>
+        <tr><td class="colcell">treatment_id / shots</td><td class="ty">text/int</td><td></td><td>카탈로그 ID · 샷수</td></tr>
+        <tr><td class="colcell">skin_layer / body_area</td><td class="ty">text</td><td></td><td>표피/진피/피하 · 부위</td></tr>
+        <tr><td class="colcell">clinic / clinic_kakao_id / clinic_district / clinic_address</td><td class="ty">text</td><td></td><td>병원명 + 카카오 위치</td></tr>
+        <tr><td class="colcell">package_uuid</td><td class="ty">uuid</td><td><span class="badge fk">FK</span></td><td>→ treatment_packages.id</td></tr>
+        <tr><td class="colcell">package_id</td><td class="ty">text</td><td></td><td>레거시 문자열 패키지 식별자</td></tr>
+        <tr><td class="colcell">satisfaction</td><td class="ty">int</td><td></td><td>만족도 1~5</td></tr>
+        <tr><td class="colcell">payment_method / payment_amount / amount_paid</td><td class="ty">text/num</td><td></td><td>결제수단 · 금액</td></tr>
+        <tr><td class="colcell">input_method</td><td class="ty">text</td><td></td><td>manual / parse (AI)</td></tr>
+        <tr><td class="colcell">axis_weights</td><td class="ty">jsonb</td><td></td><td>5축 가중치(진단 연동)</td></tr>
+        <tr><td class="colcell">notes / memo</td><td class="ty">text</td><td></td><td>메모</td></tr>
+      </table>
+    </div>
+
+    <div class="grid g2">
+      <div class="tbl a"><div class="head" style="font-size:.85rem">treatment_packages<span class="cnt">시술권</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge nn">NN</span></td></tr>
+          <tr><td class="colcell">name / type</td><td class="ty">text</td></tr>
+          <tr><td class="colcell">total_sessions / used_sessions</td><td class="ty">int</td></tr>
+          <tr><td class="colcell">purchase_price</td><td class="ty">num</td></tr>
+          <tr><td class="colcell">point_transaction_id</td><td><span class="badge fk">FK</span></td></tr>
+          <tr><td class="colcell">clinic / skin_layer / body_area</td><td class="ty">text</td></tr>
+          <tr><td class="colcell">expiry_date</td><td class="ty">date</td></tr>
+        </table>
+        <div class="note">used_sessions++ 는 플로우 3(시술 진행) 시</div>
+      </div>
+      <div class="tbl a"><div class="head" style="font-size:.85rem">point_transactions<span class="cnt">포인트 내역</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge nn">NN</span></td></tr>
+          <tr><td class="colcell">amount / balance</td><td class="ty">num NN</td></tr>
+          <tr><td class="colcell">type</td><td class="ty">charge/package_purchase…</td></tr>
+          <tr><td class="colcell">date / description</td><td class="ty">date/text NN</td></tr>
+          <tr><td class="colcell">package_id</td><td><span class="badge fk">FK</span></td></tr>
+          <tr><td class="colcell">payment_record_id</td><td><span class="badge fk">FK</span></td></tr>
+          <tr><td class="colcell">clinic</td><td class="ty">text</td></tr>
+        </table>
+        <div class="note">잔액(balance) 스냅샷 보관형</div>
+      </div>
+      <div class="tbl a"><div class="head" style="font-size:.85rem">payment_records<span class="cnt">실결제 내역 (플로우 1)</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge nn">NN</span></td></tr>
+          <tr><td class="colcell">amount / charged_amount</td><td class="ty">num</td></tr>
+          <tr><td class="colcell">method / record_type</td><td class="ty">cash/card…</td></tr>
+          <tr><td class="colcell">clinic / clinic_type / clinic_kakao_id / clinic_district</td><td class="ty">text</td></tr>
+          <tr><td class="colcell">date / treatment_name</td><td class="ty">date/text NN</td></tr>
+          <tr><td class="colcell">shop_category / memo</td><td class="ty">text</td></tr>
+        </table>
+      </div>
+      <div class="tbl a"><div class="head" style="font-size:.85rem">clinic_balances<span class="cnt">병원별 잔액</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge nn">NN</span></td></tr>
+          <tr><td class="colcell">clinic</td><td class="ty">text NN</td></tr>
+          <tr><td class="colcell">balance</td><td class="ty">num NN</td></tr>
+          <tr><td class="colcell">clinic_kakao_id / shop_category</td><td class="ty">text</td></tr>
+          <tr><td class="colcell">updated_at</td><td class="ty">timestamptz</td></tr>
+        </table>
+        <div class="note">병원별 선불 포인트 잔액</div>
+      </div>
+      <div class="tbl a"><div class="head" style="font-size:.85rem">treatment_cycles<span class="cnt">시술 주기 (Realtime)</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge nn">NN</span></td></tr>
+          <tr><td class="colcell">treatment_name / cycle_days</td><td class="ty">text/int NN</td></tr>
+          <tr><td class="colcell">last_treatment_date</td><td class="ty">date NN</td></tr>
+          <tr><td class="colcell">is_custom_cycle</td><td class="ty">bool</td></tr>
+          <tr><td class="colcell">skin_layer / body_area / clinic / product</td><td class="ty">text</td></tr>
+        </table>
+        <div class="note">CyclesContext가 postgres_changes 구독</div>
+      </div>
+      <div class="tbl a"><div class="head" style="font-size:.85rem">reservations<span class="cnt">예약</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge nn">NN</span></td></tr>
+          <tr><td class="colcell">date / time</td><td class="ty">date/text</td></tr>
+          <tr><td class="colcell">clinic / treatment_name</td><td class="ty">text NN</td></tr>
+          <tr><td class="colcell">skin_layer / body_area</td><td class="ty">text</td></tr>
+          <tr><td class="colcell">clinic_kakao_id / district / address</td><td class="ty">text</td></tr>
+        </table>
+      </div>
+      <div class="tbl a"><div class="head" style="font-size:.85rem">diagnosis_snapshots<span class="cnt">진단 히스토리</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge fk">FK</span> → user_profiles</td></tr>
+          <tr><td class="colcell">score_p/o/i/h/a</td><td class="ty">int</td></tr>
+          <tr><td class="colcell">snapshot_at</td><td class="ty">timestamptz NN</td></tr>
+          <tr><td class="colcell">source / notes</td><td class="ty">text</td></tr>
+        </table>
+        <div class="note">퀴즈 완료 시마다 INSERT</div>
+      </div>
+      <div class="tbl a"><div class="head" style="font-size:.85rem">user_favorite_clinics<span class="cnt">🔗 즐겨찾기 (A↔B 다리)</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">user_id</td><td><span class="badge fk">FK</span> → user_profiles</td></tr>
+          <tr><td class="colcell">clinic_brand_id</td><td><span class="badge fk">FK</span> → clinic_brands</td></tr>
+          <tr><td class="colcell">clinic_location_id</td><td><span class="badge fk">FK</span> → clinic_locations</td></tr>
+          <tr><td class="colcell">priority</td><td class="ty">int NN</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <h3 style="color:var(--B)">🟥 도메인 B — 클리닉 이벤트 카탈로그</h3>
+
+    <div class="tbl b"><div class="head">clinic_brands<span class="cnt">클리닉 브랜드 (최상위) + v1 수집 타깃 관리</span></div>
+      <table>
+        <tr><th>컬럼</th><th>타입</th><th>키</th><th>설명</th></tr>
+        <tr><td class="colcell">id</td><td class="ty">uuid</td><td><span class="badge pk">PK</span></td><td></td></tr>
+        <tr><td class="colcell">name / slug</td><td class="ty">text</td><td><span class="badge nn">NN</span></td><td>브랜드명 · 슬러그</td></tr>
+        <tr><td class="colcell">classification / description / website</td><td class="ty">text</td><td></td><td>분류·설명·홈페이지</td></tr>
+        <tr><td class="colcell">event_page_url / has_event_kw / crawl_difficulty</td><td class="ty">text/bool</td><td></td><td>크롤 대상 메타</td></tr>
+        <tr><td class="colcell">v1_target_status</td><td class="ty">text NN</td><td></td><td>candidate / active / excluded</td></tr>
+        <tr><td class="colcell">v1_excluded_reason</td><td class="ty">text</td><td></td><td>no_event_page / access_blocked…</td></tr>
+        <tr><td class="colcell">total_branches_kr / overseas</td><td class="ty">int</td><td></td><td>지점수</td></tr>
+        <tr><td class="colcell">http_status / html_chars / last_audit_at / source_version</td><td class="ty">int/ts</td><td></td><td>크롤 감사 로그</td></tr>
+        <tr><td class="colcell">is_active</td><td class="ty">bool</td><td></td><td>활성 여부</td></tr>
+      </table>
+    </div>
+
+    <div class="tbl b"><div class="head">clinic_locations<span class="cnt">지점 (brand 하위) — 카카오 연동</span></div>
+      <table>
+        <tr><th>컬럼</th><th>타입</th><th>키</th><th>설명</th></tr>
+        <tr><td class="colcell">id</td><td class="ty">uuid</td><td><span class="badge pk">PK</span></td><td></td></tr>
+        <tr><td class="colcell">brand_id</td><td class="ty">uuid</td><td><span class="badge fk">FK</span> <span class="badge nn">NN</span></td><td>→ clinic_brands</td></tr>
+        <tr><td class="colcell">branch_name</td><td class="ty">text NN</td><td></td><td>지점명</td></tr>
+        <tr><td class="colcell">address / landmark / region_sido / region_gugun</td><td class="ty">text</td><td></td><td>주소·지역</td></tr>
+        <tr><td class="colcell">latitude / longitude</td><td class="ty">num</td><td></td><td>좌표</td></tr>
+        <tr><td class="colcell">kakao_place_id</td><td class="ty">text</td><td></td><td>카카오맵 장소 ID</td></tr>
+        <tr><td class="colcell">kakao_channel_id</td><td class="ty">text</td><td></td><td>카카오톡 채널 ID (메시지 수집)</td></tr>
+        <tr><td class="colcell">kakao_backfill_status</td><td class="ty">text</td><td></td><td>백필 상태 (cron)</td></tr>
+        <tr><td class="colcell">business_hours / phone / is_overseas / is_active</td><td class="ty">text/bool</td><td></td><td>영업정보</td></tr>
+      </table>
+    </div>
+
+    <div class="tbl b"><div class="head">clinic_events<span class="cnt">이벤트/공지 캠페인 (AI 파싱 단위) — 검수 워크플로우</span></div>
+      <table>
+        <tr><th>컬럼</th><th>타입</th><th>키</th><th>설명</th></tr>
+        <tr><td class="colcell">id</td><td class="ty">uuid</td><td><span class="badge pk">PK</span></td><td></td></tr>
+        <tr><td class="colcell">location_id</td><td class="ty">uuid</td><td><span class="badge fk">FK</span> <span class="badge nn">NN</span></td><td>→ clinic_locations</td></tr>
+        <tr><td class="colcell">brand_id</td><td class="ty">uuid</td><td><span class="badge fk">FK</span></td><td>→ clinic_brands</td></tr>
+        <tr><td class="colcell">title / description</td><td class="ty">text</td><td><span class="badge nn">NN</span></td><td>캠페인 제목</td></tr>
+        <tr><td class="colcell">notice_type</td><td class="ty">text NN</td><td></td><td>event / schedule / other</td></tr>
+        <tr><td class="colcell">start_date / end_date</td><td class="ty">date</td><td></td><td>이벤트 기간</td></tr>
+        <tr><td class="colcell">hours_text / is_closed</td><td class="ty">text/bool</td><td></td><td>영업·휴진 (schedule용)</td></tr>
+        <tr><td class="colcell">review_status</td><td class="ty">text NN</td><td></td><td><b>pending/approved/rejected/expired</b></td></tr>
+        <tr><td class="colcell">is_published</td><td class="ty">bool</td><td></td><td>트리거로 review_status와 sync</td></tr>
+        <tr><td class="colcell">confidence_score</td><td class="ty">int</td><td></td><td>AI 신뢰도 0~100 (≥80 자동승인)</td></tr>
+        <tr><td class="colcell">raw_message / image_url / source_type / source_url</td><td class="ty">text</td><td></td><td>원본 (kakao/sms/homepage/manual)</td></tr>
+        <tr><td class="colcell">discount_amount / discount_pct / admin_note</td><td class="ty">num/text</td><td></td><td>할인·검수메모</td></tr>
+      </table>
+    </div>
+
+    <div class="tbl b"><div class="head">clinic_treatments<span class="cnt">시술 단위 (event 하위, 가격·조합·패키지)</span></div>
+      <table>
+        <tr><th>컬럼</th><th>타입</th><th>키</th><th>설명</th></tr>
+        <tr><td class="colcell">id</td><td class="ty">uuid</td><td><span class="badge pk">PK</span></td><td></td></tr>
+        <tr><td class="colcell">event_id</td><td class="ty">uuid</td><td><span class="badge fk">FK</span></td><td>→ clinic_events (소속 캠페인)</td></tr>
+        <tr><td class="colcell">brand_id / location_id</td><td class="ty">uuid</td><td><span class="badge fk">FK</span></td><td>→ brands / locations</td></tr>
+        <tr><td class="colcell">package_option_id</td><td class="ty">uuid</td><td><span class="badge fk">FK</span></td><td>→ package_options</td></tr>
+        <tr><td class="colcell">treatment_name / category</td><td class="ty">text</td><td><span class="badge nn">NN</span></td><td>시술명·카테고리</td></tr>
+        <tr><td class="colcell">price_krw / original_price_krw / discount_pct</td><td class="ty">int/num</td><td></td><td>이벤트가·정상가·할인</td></tr>
+        <tr><td class="colcell">price_unit</td><td class="ty">text</td><td></td><td>session/shot/package/experience/subscription</td></tr>
+        <tr><td class="colcell">session_count / is_unlimited / bundle_size</td><td class="ty">int/bool</td><td></td><td>횟수·무제한·번들(1+1=2)</td></tr>
+        <tr><td class="colcell">combo_items</td><td class="ty">text[]</td><td></td><td>조합 시술 배열</td></tr>
+        <tr><td class="colcell">body_areas / effects</td><td class="ty">text[]</td><td></td><td>부위·효과</td></tr>
+        <tr><td class="colcell">conditions / branch_note / price_range_text</td><td class="ty">text</td><td></td><td>조건·비고</td></tr>
+        <tr><td class="colcell">effective_from / effective_to</td><td class="ty">date</td><td></td><td>유효기간</td></tr>
+        <tr><td class="colcell">catalog_id / raw_text / source_type</td><td class="ty">text</td><td></td><td>카탈로그 매핑·원문</td></tr>
+      </table>
+    </div>
+
+    <div class="grid g2">
+      <div class="tbl b"><div class="head" style="font-size:.85rem">package_options<span class="cnt">패키지 옵션 (다국어)</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">package_id</td><td><span class="badge fk">FK</span> → treatment_packages</td></tr>
+          <tr><td class="colcell">category / name</td><td class="ty">text NN</td></tr>
+          <tr><td class="colcell">category_en/zh · name_en/zh</td><td class="ty">text</td></tr>
+          <tr><td class="colcell">sub_type / is_default / sort_order</td><td class="ty">text/bool/int</td></tr>
+        </table>
+      </div>
+      <div class="tbl b"><div class="head" style="font-size:.85rem">parse_corrections <span style="color:var(--warn)">⚠ types 미반영</span><span class="cnt">정정 audit</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">event_id / brand_id / location_id</td><td><span class="badge fk">FK</span></td></tr>
+          <tr><td class="colcell">field</td><td class="ty">text NN (정정 필드)</td></tr>
+          <tr><td class="colcell">original_value / corrected_value</td><td class="ty">text</td></tr>
+          <tr><td class="colcell">raw_text_excerpt / notes / created_by</td><td class="ty">text/uuid</td></tr>
+        </table>
+        <div class="note">INSERT 시 트리거가 glossary 누적</div>
+      </div>
+      <div class="tbl b"><div class="head" style="font-size:.85rem">treatment_glossary <span style="color:var(--warn)">⚠ types 미반영</span><span class="cnt">브랜드별 정규화 사전</span></div>
+        <table>
+          <tr><td class="colcell">id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">brand_id</td><td><span class="badge fk">FK</span> → clinic_brands</td></tr>
+          <tr><td class="colcell">term → canonical</td><td class="ty">text NN (오타→표준)</td></tr>
+          <tr><td class="colcell">field / usage_count / last_seen_at</td><td class="ty">text/int/ts</td></tr>
+        </table>
+        <div class="note">UNIQUE(brand_id, term, field) · 파싱 프롬프트에 주입</div>
+      </div>
+      <div class="tbl ad"><div class="head" style="font-size:.85rem">admin_users<span class="cnt">RBAC</span></div>
+        <table>
+          <tr><td class="colcell">user_id</td><td><span class="badge pk">PK</span></td></tr>
+          <tr><td class="colcell">role</td><td class="ty">owner/admin/reviewer NN</td></tr>
+          <tr><td class="colcell">granted_by / granted_at / notes</td><td class="ty">uuid/ts/text</td></tr>
+        </table>
+        <div class="note">락아웃 방지 트리거 (오너 자기강등·삭제 불가)</div>
+      </div>
+    </div>
+
+    <h4>뷰 (View) 5종</h4>
+    <div class="scroll"><table>
+      <tr><th>뷰</th><th>용도</th></tr>
+      <tr><td class="k">v_searchable_treatments</td><td>시술 검색용 비정규화 뷰 (brand·location·price 조인) — search_treatments RPC가 사용</td></tr>
+      <tr><td class="k">v_admin_locations_brand</td><td>어드민 지점↔브랜드 조인</td></tr>
+      <tr><td class="k">v_brand_summary</td><td>브랜드 요약 집계</td></tr>
+      <tr><td class="k">v_pending_review_events</td><td>검수 대기 이벤트 목록</td></tr>
+      <tr><td class="k">v_kakao_no_match</td><td>카카오 매칭 실패 지점 (백필 점검)</td></tr>
+    </table></div>
+  </section>
+
+  <!-- 06 PAYMENT -->
+  <section id="payment">
+    <h2>06 · 결제 3단계 플로우</h2>
+    <p class="lead">피부과 선불 포인트제를 모델링한 핵심 비즈니스 로직. <code>src/lib/clinicPayments.ts</code> 상단 주석이 1차 자료 — <b>수정 전 필독</b>. 돈 계산 로직이므로 가장 위험(테스트 0).</p>
+    <div class="mermaid">
+flowchart TD
+  subgraph F1["💳 플로우 1 — 현금/카드 → 포인트 충전"]
+    A1["현금/카드 결제"] --> A2["payment_records (실결제)"]
+    A2 --> A3["point_transactions (charge)"]
+    A3 --> A4["clinic_balances + 충전액"]
+  end
+  subgraph F2["🎟️ 플로우 2 — 시술권 구매 (포인트 차감, 실결제 X)"]
+    B1["시술권 구매"] --> B2["treatment_packages 생성"]
+    B2 --> B3["point_transactions (package_purchase)"]
+    B3 --> B4["clinic_balances − 구매가"]
+  end
+  subgraph F3["🪄 플로우 3 — 시술 진행 (잔액 변동 X)"]
+    C1["시술 받음"] --> C2["treatment_records INSERT"]
+    C2 --> C3["treatment_packages.used_sessions + 1"]
+  end
+  classDef f1 fill:#12243f,stroke:#5b9dff,color:#e6e8ee;
+  classDef f2 fill:#2e2616,stroke:#caa96e,color:#e6e8ee;
+  classDef f3 fill:#102a1a,stroke:#4ade80,color:#e6e8ee;
+  class A1,A2,A3,A4 f1; class B1,B2,B3,B4 f2; class C1,C2,C3 f3;
+    </div>
+    <div class="callout">플로우 2·3은 <b>실결제가 아님</b> — 포인트(선불잔액) 내부 이동/소진일 뿐. <code>payment_records</code>는 플로우 1에서만 생성.</div>
+  </section>
+
+  <!-- 07 DIAGNOSIS -->
+  <section id="diagnosis">
+    <h2>07 · 5축 진단 시스템 (P·O·I·H·A)</h2>
+    <p class="lead">Baumann 피부유형 지표(BSTI) 기반 5축 진단. <code>SkinQuiz</code>(문항) → 점수화 → <code>QuizResult</code>(레이더차트) → <code>SkinMatch</code>(추천). <code>skinDiagnosis.ts</code> + <code>skinRecommendation.ts</code>.</p>
+    <div class="grid g3">
+      <div class="card"><h4 style="color:#ff9eb5">P · Pigment</h4>색소·미백 <span class="ty">score_p</span></div>
+      <div class="card"><h4 style="color:#ffd27a">O · Oil/Pore</h4>유분·모공 <span class="ty">score_o</span></div>
+      <div class="card"><h4 style="color:#7affb0">I · Inflammation</h4>염증·여드름 <span class="ty">score_i</span></div>
+      <div class="card"><h4 style="color:#7ac8ff">H · Hydration</h4>수분 <span class="ty">score_h</span></div>
+      <div class="card"><h4 style="color:#c79eff">A · Aging</h4>노화·리프팅 <span class="ty">score_a</span></div>
+      <div class="card" style="display:flex;align-items:center;color:var(--muted);font-size:.85rem">각 0~10점 · <code>user_profiles</code> 저장 · 변경 시 <code>diagnosis_snapshots</code> 누적</div>
+    </div>
+    <div class="mermaid">
+flowchart LR
+  Q["SkinQuiz 10문항"] -->|점수화| SC["FiveAxisScores 0~10"]
+  SC --> UP["user_profiles.score_p~a"]
+  SC --> SN["diagnosis_snapshots INSERT"]
+  SC --> QR["QuizResult RadarChart"]
+  SC --> RM["skinRecommendation 매핑"]
+  RM --> SM["SkinMatch 추천"]
+  classDef n fill:#171a23,stroke:#8b7bf0,color:#e6e8ee
+  class Q,SC,UP,SN,QR,RM,SM n
+    </div>
+    <p style="color:var(--dim);font-size:.82rem">축→시술 매핑 예: A(노화)→shrink·thermage·inmode·doublo / I(염증)→exosome·rejuran·cryo / H(수분)→skinbooster. I≥7이면 고에너지 시술은 신중 권고.</p>
+  </section>
+
+  <!-- 08 AUTH -->
+  <section id="auth">
+    <h2>08 · 인증 &amp; 권한 (RBAC)</h2>
+    <div class="grid g2">
+      <div class="card">
+        <h4>인증</h4>
+        <ul class="feat">
+          <li><code>AuthContext</code> — Supabase Auth 세션 전역 관리 (onAuthStateChange)</li>
+          <li>OAuth: 이메일 · Google · Kakao</li>
+          <li><code>PrivateRoute</code> — 미인증 시 <code>/login</code> 리다이렉트</li>
+          <li>프리뷰 환경(<code>preview--</code>, <code>lovableproject.com</code>) 예외 통과</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h4>RBAC 3단계 — 2중 방어</h4>
+        <ul class="feat">
+          <li><b>클라이언트 1차:</b> <code>adminAuth.ts</code> 이메일 화이트리스트</li>
+          <li><b>서버 2차:</b> <code>admin_users</code> + RLS 함수</li>
+          <li><code>is_owner()</code> / <code>is_admin()</code> / <code>is_reviewer_or_higher()</code></li>
+          <li>락아웃 방지 트리거 (오너 자기강등·삭제 불가)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="mermaid">
+flowchart TB
+  O["👑 owner<br/>(fosccompany@gmail.com)"] -->|모든 권한 + DELETE + 어드민 관리| AD["🛠️ admin<br/>INSERT/UPDATE 이벤트·시술"]
+  AD -->|쓰기 가능| RV["👁️ reviewer<br/>읽기/검수만 (쓰기 X)"]
+  RV -->|읽기| U["👤 일반 사용자<br/>is_published=true 이벤트만"]
+  classDef o fill:#2e2616,stroke:#caa96e,color:#e6e8ee;
+  classDef n fill:#171a23,stroke:#2a2f3c,color:#e6e8ee;
+  class O o; class AD,RV,U n;
+    </div>
+    <h4>clinic_events 검수 상태 머신</h4>
+    <div class="mermaid">
+stateDiagram-v2
+  [*] --> pending: AI 파싱 INSERT
+  pending --> approved: confidence≥80 자동 / 어드민 승인
+  pending --> rejected: 어드민 반려 → parse_corrections 기록
+  approved --> expired: end_date 경과 (cron)
+  approved --> pending: 게시 취소
+  rejected --> approved: 재승인
+  note right of approved: is_published=true ↔ 트리거 sync
+    </div>
+  </section>
+
+  <!-- 09 PARSING -->
+  <section id="parsing">
+    <h2>09 · AI 파싱 파이프라인 (도메인 B 핵심)</h2>
+    <p class="lead">어드민이 카톡/SMS/배너를 입력하면 Edge Function이 Gemini로 구조화 추출 → 검수 → 반려 시 정정이 <b>brand별 사전(glossary)</b>에 누적되어 다음 파싱 정확도를 높이는 <b>피드백 루프</b>.</p>
+    <div class="mermaid">
+sequenceDiagram
+  participant AD as 어드민 (AdminEvents)
+  participant EF as parse-clinic-event (Edge)
+  participant GL as treatment_glossary
+  participant GW as Lovable AI Gateway (Gemini)
+  participant DB as clinic_events / clinic_treatments
+  AD->>EF: location_id + raw_message/image
+  EF->>GL: get_brand_glossary(brand_id)
+  GL-->>EF: 정규화 사전 (term→canonical)
+  EF->>GW: system prompt + glossary + 입력
+  GW-->>EF: 구조화 JSON (campaign + treatments[])
+  EF->>DB: clinic_events INSERT + clinic_treatments 일괄
+  Note over DB: confidence≥80 자동 approved
+  AD->>DB: 검수 (승인/반려)
+  AD->>GL: 반려 시 parse_corrections INSERT → 트리거가 glossary 누적
+    </div>
+    <div class="grid g2">
+      <div class="card"><h4>parse-treatment</h4><p style="font-size:.88rem;color:var(--muted)">개인 시술 기록용. 카톡 캡처/영수증에서 records·bundles·charges·packages·balance 추출. <code>ParseTreatmentModal</code>에서 호출. <span class="badge fk">verify_jwt=false</span></p></div>
+      <div class="card"><h4>parse-clinic-event</h4><p style="font-size:.88rem;color:var(--muted)">클리닉 이벤트용. "X or Y" 자동 분리, 1+1 번들, 무제한 등 정교 규칙. <span class="st-warn">config.toml 미등록 → verify_jwt 기본 true</span></p></div>
+    </div>
+  </section>
+
+  <!-- 10 FEATURES -->
+  <section id="features">
+    <h2>10 · 기능 명세 (라우트별)</h2>
+    <div class="legend">
+      <span><span class="dot" style="background:var(--dim)"></span> 공개</span>
+      <span><span class="dot" style="background:var(--A)"></span> 인증 필요</span>
+      <span><span class="dot" style="background:var(--admin)"></span> 어드민</span>
+    </div>
+    <h4>공개 라우트</h4>
+    <div class="scroll"><table>
+      <tr><th>라우트</th><th>페이지</th><th>기능</th></tr>
+      <tr><td class="route">/login</td><td>Login</td><td>이메일/Google/Kakao 로그인, 언어 선택, 자격 기억</td></tr>
+      <tr><td class="route">/signup</td><td>Signup</td><td>회원가입 + 약관 동의 (redirect onboarding)</td></tr>
+      <tr><td class="route">/reset-password</td><td>ResetPassword</td><td>비밀번호 재설정</td></tr>
+      <tr><td class="route">/privacy · /terms</td><td>Privacy · Terms</td><td>개인정보처리방침 · 이용약관 (한/영/중)</td></tr>
+      <tr><td class="route">/farewell</td><td>Farewell</td><td>계정 삭제 후 작별 화면</td></tr>
+    </table></div>
+    <h4>진단 흐름 (인증)</h4>
+    <div class="scroll"><table>
+      <tr><th>라우트</th><th>페이지</th><th>기능</th></tr>
+      <tr><td class="route">/skin-quiz · /quiz</td><td>SkinQuiz</td><td>5축 진단 10문항 → score_p~a 저장 + 스냅샷</td></tr>
+      <tr><td class="route">/quiz-result</td><td>QuizResult</td><td>레이더차트 5축 시각화 + 진단 히스토리</td></tr>
+      <tr><td class="route">/skin-match</td><td>SkinMatch</td><td>5축 점수 기반 시술/클리닉 추천</td></tr>
+    </table></div>
+    <h4>핵심 앱 (인증)</h4>
+    <div class="scroll"><table>
+      <tr><th>라우트</th><th>페이지</th><th>기능</th></tr>
+      <tr><td class="route">/</td><td>Index</td><td>홈 대시보드 · Bloom 게이미피케이션 · 온보딩 · 진단 유도</td></tr>
+      <tr><td class="route">/treatments</td><td>Treatments</td><td>시술 기록 목록 · 추가(수동/AI파싱) · 즐겨찾기</td></tr>
+      <tr><td class="route">/treatments/events</td><td>ClinicEvents <span class="pill b">B</span></td><td>클리닉 이벤트/시술 가격 카탈로그 노출·검색</td></tr>
+      <tr><td class="route">/points</td><td>Points</td><td>병원별 잔여 시술권 + 포인트 잔액 + 결제 내역</td></tr>
+      <tr><td class="route">/packages</td><td>Packages</td><td>시술권(패키지) 관리 · 잔여 횟수</td></tr>
+      <tr><td class="route">/cycles</td><td>Cycles</td><td>시술 주기 설정·D-day (Realtime)</td></tr>
+      <tr><td class="route">/calendar</td><td>CalendarPage</td><td>캘린더 — 기록/예약 통합 뷰, 히스토리 탭</td></tr>
+      <tr><td class="route">/status</td><td>StatusList</td><td>상태/현황 목록</td></tr>
+      <tr><td class="route">/profile</td><td>Profile</td><td>프로필 · 5축 점수 · 디바운스 자동저장</td></tr>
+      <tr><td class="route">/settings</td><td>Settings</td><td>설정 · 테마 · 데이터 백업(JSON)/초기화 · 계정삭제</td></tr>
+    </table></div>
+    <h4>어드민</h4>
+    <div class="scroll"><table>
+      <tr><th>라우트</th><th>페이지</th><th>기능</th></tr>
+      <tr><td class="route">/admin · /admin/events</td><td>AdminEvents <span class="pill ad">RBAC</span></td><td>이벤트 검수 — AI 파싱 입력·승인/반려·정정(glossary 학습). 풀 데스크톱 폭</td></tr>
+      <tr><td class="route">/admin/users</td><td>AdminUsers <span class="pill ad">owner</span></td><td>어드민 사용자 관리 — 이메일로 추가, 권한 부여</td></tr>
+    </table></div>
+  </section>
+
+  <!-- 11 FUNCTIONS -->
+  <section id="functions">
+    <h2>11 · Edge Functions &amp; RPC</h2>
+    <h4>Edge Functions (Deno)</h4>
+    <div class="scroll"><table>
+      <tr><th>함수</th><th>용도</th><th>verify_jwt</th></tr>
+      <tr><td class="k">parse-treatment</td><td>개인 시술 기록 텍스트/이미지 파싱 (Gemini)</td><td class="st-ok">false</td></tr>
+      <tr><td class="k">parse-clinic-event</td><td>클리닉 이벤트 파싱 + glossary 주입 (도메인 B)</td><td class="st-warn">미등록 → 기본 true ⚠</td></tr>
+      <tr><td class="k">search-clinic</td><td>클리닉 검색</td><td class="st-ok">false</td></tr>
+      <tr><td class="k">delete-account</td><td>계정 삭제</td><td class="st-ok">false</td></tr>
+    </table></div>
+    <h4>RPC 함수 (PostgreSQL)</h4>
+    <div class="scroll"><table>
+      <tr><th>함수</th><th>용도</th></tr>
+      <tr><td class="k">is_owner / is_admin / is_reviewer_or_higher</td><td>RBAC 권한 체크 (RLS에서 호출)</td></tr>
+      <tr><td class="k">lookup_user_id_by_email(p_email)</td><td>이메일→user_id (owner 전용, 어드민 추가 UI)</td></tr>
+      <tr><td class="k">review_clinic_event(p_event_id, p_action)</td><td>이벤트 승인/반려 처리</td></tr>
+      <tr><td class="k">search_treatments(p_query, p_category, p_region…)</td><td>시술 검색 (v_searchable_treatments 기반, 페이지네이션)</td></tr>
+      <tr><td class="k">get_brand_glossary(p_brand_id)</td><td>브랜드 정규화 사전 조회 (파싱 주입)</td></tr>
+      <tr><td class="k">compute_bloom_stage(log_count)</td><td>기록수→Bloom 단계 계산</td></tr>
+      <tr><td class="k">fn_expire_clinic_events</td><td>만료 이벤트 expired 처리 (cron)</td></tr>
+      <tr><td class="k">fn_run_crawl_cron / fn_run_kakao_backfill_cron</td><td>크롤·카카오 백필 배치 (cron)</td></tr>
+    </table></div>
+  </section>
+
+  <!-- 12 DEBT -->
+  <section id="debt">
+    <h2>12 · 알려진 기술 부채</h2>
+    <div class="grid g2">
+      <div class="card"><h4 class="st-bad">우선순위 높음</h4><ul class="feat">
+        <li><b>테스트 공백</b> — 사실상 0. 특히 결제 플로우(돈 계산)에 테스트 없음 → 최우선 보강</li>
+        <li><b>config.toml 불일치</b> — parse-clinic-event 미등록, 인증 동작이 parse-treatment와 다름</li>
+        <li><b>.env git 추적 중</b> — anon 키라 치명적이진 않으나 위생상 정리 필요</li>
+      </ul></div>
+      <div class="card"><h4 class="st-warn">중간</h4><ul class="feat">
+        <li><b>AI 벤더 종속</b> — 파싱이 LOVABLE_API_KEY + Lovable Gateway에 묶임</li>
+        <li><b>하드코딩 오너</b> — RBAC·adminAuth에 특정 UUID/이메일 박힘</li>
+        <li><b>대형 파일</b> — AddTreatmentModal(1287) · Profile(1219) · ParseTreatmentModal(1199)</li>
+        <li><b>상태 2원화</b> — Context + 커스텀 이벤트 갱신(안티패턴)</li>
+      </ul></div>
+      <div class="card"><h4 class="st-ok">낮음</h4><ul class="feat">
+        <li><b>console.* ~29개</b> — 프로덕션 정리</li>
+        <li><b>deprecated 잔재</b> — skin_tribe (types.ts 3건)</li>
+        <li><b>git 위생</b> — Lovable 자동 커밋이 전부 "Changes"</li>
+        <li><b>도메인 불일치</b> — bloomlog.kr vs 인앱 bloomlog.io</li>
+        <li><b>types.ts 미반영</b> — parse_corrections·treatment_glossary 누락</li>
+      </ul></div>
+    </div>
+    <div class="foot">
+      생성: 2026-06-07 · 코드베이스 전수 분석 기반 · 1차 자료 = 코드 + <code>supabase/migrations/</code> + 자동생성 <code>types.ts</code>.
+      이 문서는 분석 시점 기준이며, 스키마 변경 시 갱신 필요.
+    </div>
+  </section>
+</main>
+</div>
+
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+  mermaid.initialize({
+    startOnLoad:true, theme:'base',
+    themeVariables:{
+      background:'#171a23', primaryColor:'#1e222d', primaryTextColor:'#e6e8ee',
+      primaryBorderColor:'#2a2f3c', lineColor:'#6b7382', secondaryColor:'#12243f',
+      tertiaryColor:'#171a23', fontFamily:'-apple-system,Segoe UI,sans-serif', fontSize:'13px',
+      clusterBkg:'#12141c', clusterBorder:'#2a2f3c'
+    }
+  });
+  // scrollspy
+  const links=[...document.querySelectorAll('nav.toc a')];
+  const map=new Map(links.map(a=>[a.getAttribute('href').slice(1),a]));
+  const obs=new IntersectionObserver((es)=>{es.forEach(e=>{if(e.isIntersecting){
+    links.forEach(l=>l.style.background='');const a=map.get(e.target.id);
+    if(a){a.style.background='var(--panel2)';a.style.color='var(--txt)';}}})},
+    {rootMargin:'-10% 0px -80% 0px'});
+  document.querySelectorAll('section').forEach(s=>obs.observe(s));
+</script>
+</body>
+</html>
