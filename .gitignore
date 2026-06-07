@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# oh-my-claudecode tooling artifacts
+.omc/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
