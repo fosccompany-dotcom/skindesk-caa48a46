@@ -8,3 +8,10 @@ verify_jwt = false
 
 [functions.parse-treatment]
 verify_jwt = false
+
+# parse-clinic-event는 어드민/내부에서만 트리거됨(클라이언트 미호출).
+# service role로 RLS를 우회해 clinic_events/clinic_treatments에 쓰므로,
+# 익명 호출 차단을 위해 JWT 검증을 유지한다(기본값 true를 명시).
+# TODO: 함수 내부에서 is_admin() 검증을 추가하면 더 안전함.
+[functions.parse-clinic-event]
+verify_jwt = true

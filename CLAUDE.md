@@ -110,13 +110,13 @@
 
 1. **테스트 공백** — 사실상 테스트 없음([`src/test/example.test.ts`](src/test/example.test.ts) 1개). 특히 **결제 플로우에 테스트 0** → 최우선 보강 대상
 2. **git 위생** — Lovable 자동 커밋이 전부 `"Changes"` 메시지. 이력 추적 어려움
-3. **config.toml 불일치** — `parse-clinic-event`가 미등록이라 인증 동작이 `parse-treatment`와 다름. 배포 시 확인
+3. **config.toml** — ✅ 해소됨. `parse-clinic-event`를 `verify_jwt = true`로 명시 등록(어드민/내부 전용, service role로 RLS 우회 쓰기 → 익명 호출 차단). 후속: 함수 내부 `is_admin()` 검증 추가 권장
 4. **AI 벤더 종속** — 파싱이 `LOVABLE_API_KEY` + Lovable AI Gateway에 종속
 5. **하드코딩된 오너 식별자** — RBAC 마이그레이션·adminAuth에 특정 UUID/이메일(`fosccompany@gmail.com`) 박힘. 오너 이전 시 수정 필요
 6. **대형 파일** — [`AddTreatmentModal.tsx`](src/components/AddTreatmentModal.tsx)(~1287줄), [`Profile.tsx`](src/pages/Profile.tsx)(~1219줄), [`ParseTreatmentModal.tsx`](src/components/ParseTreatmentModal.tsx)(~1199줄) — 분해 후보
 7. **console.* 다수(~29개)** — 프로덕션 정리 대상
 8. **deprecated 잔재** — `skin_tribe` 관련 코드 일부 잔존 가능
-9. **`.env` git 추적 중** — 루트 `.env`가 저장소에 커밋돼 있음(anon/publishable 키라 치명적이진 않으나 위생상 비권장). `.gitignore` 등록 + 추적 해제 검토 필요
+9. **`.env` git 추적 중** — 루트 `.env`가 커밋돼 있으나 내용은 **공개용 키 3개뿐**(`VITE_SUPABASE_PROJECT_ID`·`VITE_SUPABASE_URL`·anon `PUBLISHABLE_KEY`). 셋 다 클라이언트 번들에 어차피 노출되는 공개 값이라 **실질 비밀 없음**. Lovable 빌드가 커밋된 `.env`에 의존할 수 있어 추적 해제는 위험 대비 실익이 낮음 → **현행 유지 권장**. (service role 키는 절대 커밋 금지)
 
 ---
 
