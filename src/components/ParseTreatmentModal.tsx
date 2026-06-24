@@ -91,6 +91,7 @@ type Tab = 'text' | 'image';
 
 export default function ParseTreatmentModal({ onClose }: Props) {
   const { addRecord } = useRecords();
+  const { language } = useLanguage();
   const [tab, setTab]                 = useState<Tab>('text');
   const [text, setText]               = useState('');
   const [imageFile, setImageFile]     = useState<File | null>(null);
