@@ -54,8 +54,12 @@ Deno.serve(async (req) => {
     const upstream = new FormData();
     upstream.append('model', 'openai/gpt-4o-mini-transcribe');
     upstream.append('file', file, `recording.${ext}`);
-    // language hint: Korean primary, but let model auto-detect for mixed content
-    upstream.append('language', 'ko');
+    // 언어 모드에 맞춰 인식 언어 지정 (ISO-639-1)
+    const langRaw = (inForm.get('language')?.toString() || '').toLowerCase();
+    const langMap: Record<string, string> = { ko: 'ko', en: 'en', zh: 'zh' };
+    const lang = langMap[langRaw];
+    if (lang) upstream.append('language', lang);
+    // 미지정 시 자동 감지
 
     const resp = await fetch('https://ai.gateway.lovable.dev/v1/audio/transcriptions', {
       method: 'POST',
