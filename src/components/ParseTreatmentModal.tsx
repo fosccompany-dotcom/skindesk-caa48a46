@@ -109,6 +109,70 @@ export default function ParseTreatmentModal({ onClose }: Props) {
   const [defaultPayMethod, setDefaultPayMethod] = useState<PkgPayMethod>('카드');
   const fileRef = useRef<HTMLInputElement>(null);
 
+  // ── STT (음성 입력) ──
+  const [recording, setRecording] = useState(false);
+  const [transcribing, setTranscribing] = useState(false);
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  const startRecording = async () => {
+    setError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      streamRef.current = stream;
+      const mimeType = ['audio/webm', 'audio/mp4'].find(t => MediaRecorder.isTypeSupported(t));
+      if (!mimeType) {
+        stream.getTracks().forEach(t => t.stop());
+        setError('이 브라우저는 음성 녹음을 지원하지 않습니다.');
+        return;
+      }
+      const recorder = new MediaRecorder(stream, { mimeType });
+      chunksRef.current = [];
+      recorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
+      recorder.onstop = async () => {
+        streamRef.current?.getTracks().forEach(t => t.stop());
+        streamRef.current = null;
+        const blob = new Blob(chunksRef.current, { type: recorder.mimeType });
+        if (blob.size < 1024) {
+          setError('녹음이 너무 짧습니다. 다시 시도해 주세요.');
+          return;
+        }
+        setTranscribing(true);
+        try {
+          const form = new FormData();
+          const ext = recorder.mimeType.includes('mp4') ? 'mp4' : 'webm';
+          form.append('file', blob, `recording.${ext}`);
+          const { data, error: fnErr } = await supabase.functions.invoke('transcribe-audio', { body: form });
+          if (fnErr) throw new Error(fnErr.message);
+          if (data?.error) throw new Error(data.error);
+          const transcript = (data?.text || '').trim();
+          if (transcript) {
+            setText(prev => prev ? `${prev}\n${transcript}` : transcript);
+          } else {
+            setError('음성을 인식하지 못했습니다.');
+          }
+        } catch (e: any) {
+          setError(e.message || '음성 변환 중 오류가 발생했습니다.');
+        } finally {
+          setTranscribing(false);
+        }
+      };
+      recorder.start();
+      recorderRef.current = recorder;
+      setRecording(true);
+    } catch (e: any) {
+      setError('마이크 권한이 필요합니다.');
+    }
+  };
+
+  const stopRecording = () => {
+    if (recorderRef.current && recorderRef.current.state !== 'inactive') {
+      recorderRef.current.stop();
+    }
+    setRecording(false);
+  };
+
   // 결제수단 매핑 (UI 값 → DB 저장 값)
   const PAY_METHOD_MAP: Record<PkgPayMethod, string> = {
     '카드': 'card', '현금': 'cash', '포인트': 'point', '서비스': 'service',
