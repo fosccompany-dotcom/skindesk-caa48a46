@@ -145,6 +145,7 @@ export default function ParseTreatmentModal({ onClose }: Props) {
           const form = new FormData();
           const ext = recorder.mimeType.includes('mp4') ? 'mp4' : 'webm';
           form.append('file', blob, `recording.${ext}`);
+          form.append('language', language);
           const { data, error: fnErr } = await supabase.functions.invoke('transcribe-audio', { body: form });
           if (fnErr) throw new Error(fnErr.message);
           if (data?.error) throw new Error(data.error);
