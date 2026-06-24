@@ -600,6 +600,105 @@ export type Database = {
           },
         ]
       }
+      parse_corrections: {
+        Row: {
+          brand_id: string | null
+          corrected_value: string | null
+          created_at: string
+          created_by: string | null
+          event_id: string | null
+          field: string
+          id: string
+          location_id: string | null
+          notes: string | null
+          original_value: string | null
+          raw_text_excerpt: string | null
+        }
+        Insert: {
+          brand_id?: string | null
+          corrected_value?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_id?: string | null
+          field: string
+          id?: string
+          location_id?: string | null
+          notes?: string | null
+          original_value?: string | null
+          raw_text_excerpt?: string | null
+        }
+        Update: {
+          brand_id?: string | null
+          corrected_value?: string | null
+          created_at?: string
+          created_by?: string | null
+          event_id?: string | null
+          field?: string
+          id?: string
+          location_id?: string | null
+          notes?: string | null
+          original_value?: string | null
+          raw_text_excerpt?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "parse_corrections_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parse_corrections_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["brand_id"]
+          },
+          {
+            foreignKeyName: "parse_corrections_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_brand_summary"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parse_corrections_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_events"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parse_corrections_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "v_pending_review_events"
+            referencedColumns: ["event_id"]
+          },
+          {
+            foreignKeyName: "parse_corrections_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "parse_corrections_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["location_id"]
+          },
+          {
+            foreignKeyName: "parse_corrections_location_id_fkey"
+            columns: ["location_id"]
+            isOneToOne: false
+            referencedRelation: "v_kakao_no_match"
+            referencedColumns: ["location_id"]
+          },
+        ]
+      }
       payment_records: {
         Row: {
           amount: number
@@ -812,6 +911,61 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      treatment_glossary: {
+        Row: {
+          brand_id: string | null
+          canonical: string
+          created_at: string
+          field: string
+          id: string
+          last_seen_at: string
+          term: string
+          usage_count: number
+        }
+        Insert: {
+          brand_id?: string | null
+          canonical: string
+          created_at?: string
+          field: string
+          id?: string
+          last_seen_at?: string
+          term: string
+          usage_count?: number
+        }
+        Update: {
+          brand_id?: string | null
+          canonical?: string
+          created_at?: string
+          field?: string
+          id?: string
+          last_seen_at?: string
+          term?: string
+          usage_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatment_glossary_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_brands"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "treatment_glossary_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_admin_locations_brand"
+            referencedColumns: ["brand_id"]
+          },
+          {
+            foreignKeyName: "treatment_glossary_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "v_brand_summary"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       treatment_packages: {
         Row: {
@@ -1272,6 +1426,15 @@ export type Database = {
       fn_run_kakao_backfill_cron: {
         Args: { p_batch_size?: number }
         Returns: Json
+      }
+      get_brand_glossary: {
+        Args: { p_brand_id: string; p_limit?: number }
+        Returns: {
+          canonical: string
+          field: string
+          term: string
+          usage_count: number
+        }[]
       }
       is_admin: { Args: never; Returns: boolean }
       is_owner: { Args: never; Returns: boolean }
