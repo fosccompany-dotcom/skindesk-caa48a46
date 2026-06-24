@@ -708,7 +708,31 @@ export default function ParseTreatmentModal({ onClose }: Props) {
 
               {tab === 'text' && (
                 <div className="space-y-3">
-                  <p className="text-[11px] text-muted-foreground">병원에서 받은 문자나 카톡 내용을 그대로 붙여넣으세요</p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-[11px] text-muted-foreground">문자/카톡 내용을 붙여넣거나 마이크로 말해보세요</p>
+                    <button
+                      type="button"
+                      onClick={recording ? stopRecording : startRecording}
+                      disabled={transcribing}
+                      className={cn(
+                        'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] font-medium border transition-colors',
+                        recording
+                          ? 'bg-rose-50 border-rose-300 text-rose-600 animate-pulse'
+                          : transcribing
+                          ? 'bg-gray-100 border-gray-200 text-gray-400'
+                          : 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20'
+                      )}
+                      aria-label={recording ? '녹음 중지' : '음성 입력'}
+                    >
+                      {transcribing ? (
+                        <><Loader2 size={12} className="animate-spin" /> 변환 중…</>
+                      ) : recording ? (
+                        <><Square size={11} className="fill-current" /> 중지</>
+                      ) : (
+                        <><Mic size={12} /> 음성 입력</>
+                      )}
+                    </button>
+                  </div>
                   <textarea value={text} onChange={e => setText(e.target.value)}
                     placeholder={"[Web발신]\n[미금 밴스의원]\n[2026-02-17] -1,518,000원 ★E_세르프 600샷\n[2026-01-29] -108,900원 ★1월 한정이벤트_엑셀V레이저+피코토닝+관리+진정팩"}
                     className="w-full h-40 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs text-gray-800 placeholder:text-gray-300 resize-none focus:outline-none focus:border-primary/50" />
