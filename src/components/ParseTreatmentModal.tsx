@@ -4,6 +4,7 @@ import { cn, extractDistrict } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import ClinicSearchInput from './ClinicSearchInput';
 import { useRecords } from '@/context/RecordsContext';
+import { useLanguage } from '@/i18n/LanguageContext';
 import { SkinLayer, BodyArea } from '@/types/skin';
 
 const SKIN_LAYER_COLOR: Record<string, string> = {
