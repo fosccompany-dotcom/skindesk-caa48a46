@@ -236,18 +236,23 @@ ${lines.join("\n")}
     let finalImageType = image_type;
     if (image_url && !image_base64) {
       assertSafeImageUrl(image_url); // SSRF guard: block internal/metadata targets
+      // redirect: "manual" — 기본값 "follow"면 공개 호스트가 302로 내부 주소를
+      // 가리키는 것만으로 위 가드가 통째로 무력화된다 (가드는 최초 URL에만 적용됨).
       const imgRes = await fetch(image_url, {
+        redirect: "manual",
         headers: {
           "User-Agent":
             "Mozilla/5.0 (compatible; BloomLogBot/1.0)",
           "Referer": image_url.replace(/\/upload\/.*$/, "/web/event"),
         },
       });
+      if (imgRes.status >= 300 && imgRes.status < 400) {
+        return jsonResponse({ error: "이미지 다운로드 실패: 리다이렉트는 허용되지 않습니다" }, 400);
+      }
       if (!imgRes.ok) {
-        return jsonResponse(
-          { error: `이미지 다운로드 실패: ${imgRes.status} ${image_url}` },
-          400,
-        );
+        // 상태코드·URL을 그대로 돌려주면 내부 주소 스캐닝의 오라클이 된다
+        console.error(`parse-clinic-event: 이미지 다운로드 실패 ${imgRes.status} ${image_url}`);
+        return jsonResponse({ error: "이미지 다운로드 실패" }, 400);
       }
       finalImageType = imgRes.headers.get("content-type") || "image/jpeg";
       const buf = new Uint8Array(await imgRes.arrayBuffer());
@@ -444,21 +449,35 @@ function assertSafeImageUrl(raw: string): void {
     throw new Error("invalid image_url");
   }
   if (u.protocol !== "https:") throw new Error("image_url must be https");
-  const host = u.hostname.toLowerCase();
+  if (u.port && u.port !== "443") throw new Error("image_url port not allowed");
+
+  // URL.hostname은 IPv6 리터럴을 대괄호째 돌려준다 ("[::1]").
+  // 벗기지 않으면 아래 IPv6 검사가 전부 매치되지 않는 죽은 코드가 된다.
+  const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, "");
+
+  // 10진수/16진수 IPv4(https://2130706433)는 URL 파서가 점표기로 정규화한 뒤
+  // hostname에 넣어주므로 아래 IPv4 정규식이 그대로 잡는다.
   const blocked =
     host === "localhost" ||
-    host === "0.0.0.0" ||
-    host === "::1" ||
     host === "metadata.google.internal" ||
     host.endsWith(".internal") ||
     host.endsWith(".local") ||
+    // IPv4
+    /^0\./.test(host) ||
     /^127\./.test(host) ||
     /^10\./.test(host) ||
     /^192\.168\./.test(host) ||
     /^169\.254\./.test(host) ||
     /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-    host.startsWith("fd") ||
-    host.startsWith("fe80");
+    /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(host) || // 100.64/10 CGNAT
+    /^192\.0\.0\./.test(host) ||
+    /^198\.1[89]\./.test(host) ||
+    // IPv6 (대괄호 제거 후)
+    host === "::" ||
+    host === "::1" ||
+    /^::ffff:/.test(host) || // IPv4-mapped
+    /^f[cd]/.test(host) || // fc00::/7 unique-local
+    /^fe80/.test(host);
   if (blocked) throw new Error("image_url host not allowed");
 }
 
