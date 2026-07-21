@@ -36,6 +36,7 @@ import { RecordsProvider } from "./context/RecordsContext";
 import { LanguageProvider } from "@/i18n/LanguageContext";
 import { AuthProvider } from "./context/AuthContext";
 import { PrivateRoute } from "./components/PrivateRoute";
+import { AdminRoute } from "./components/AdminRoute";
 import { SeasonProvider } from "./context/SeasonContext";
 import { ManagementSettingsProvider } from "./context/ManagementSettingsContext";
 
@@ -98,9 +99,9 @@ const App = () => (
                     
                     <Route path="/profile"  element={<PrivateRoute><Profile /></PrivateRoute>} />
                     <Route path="/settings" element={<PrivateRoute><Settings /></PrivateRoute>} />
-                    <Route path="/admin"        element={<PrivateRoute><AdminEvents /></PrivateRoute>} />
-                    <Route path="/admin/events" element={<PrivateRoute><AdminEvents /></PrivateRoute>} />
-                    <Route path="/admin/users"  element={<PrivateRoute><AdminUsers /></PrivateRoute>} />
+                    <Route path="/admin"        element={<AdminRoute><AdminEvents /></AdminRoute>} />
+                    <Route path="/admin/events" element={<AdminRoute><AdminEvents /></AdminRoute>} />
+                    <Route path="/admin/users"  element={<AdminRoute><AdminUsers /></AdminRoute>} />
 
                     <Route path="*" element={<NotFound />} />
                   </Routes>

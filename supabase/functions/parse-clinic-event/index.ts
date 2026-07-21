@@ -149,6 +149,30 @@ serve(async (req: Request) => {
   }
 
   try {
+    // ── Admin auth gate ──────────────────────────────────────────
+    // verify_jwt=true only proves "a valid JWT" — the PUBLIC anon key qualifies.
+    // Require a real logged-in admin before any service-role catalog write.
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const { data: { user }, error: authErr } = await authClient.auth.getUser(
+      authHeader.replace("Bearer ", ""),
+    );
+    if (authErr || !user) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+    const { data: isAdmin, error: adminErr } = await authClient.rpc("is_admin");
+    if (adminErr || isAdmin !== true) {
+      return jsonResponse({ error: "Forbidden: admin only" }, 403);
+    }
+    // ─────────────────────────────────────────────────────────────
+
     const body = await req.json();
     const {
       location_id,
@@ -211,18 +235,24 @@ ${lines.join("\n")}
     let finalImageBase64 = image_base64;
     let finalImageType = image_type;
     if (image_url && !image_base64) {
+      assertSafeImageUrl(image_url); // SSRF guard: block internal/metadata targets
+      // redirect: "manual" — 기본값 "follow"면 공개 호스트가 302로 내부 주소를
+      // 가리키는 것만으로 위 가드가 통째로 무력화된다 (가드는 최초 URL에만 적용됨).
       const imgRes = await fetch(image_url, {
+        redirect: "manual",
         headers: {
           "User-Agent":
             "Mozilla/5.0 (compatible; BloomLogBot/1.0)",
           "Referer": image_url.replace(/\/upload\/.*$/, "/web/event"),
         },
       });
+      if (imgRes.status >= 300 && imgRes.status < 400) {
+        return jsonResponse({ error: "이미지 다운로드 실패: 리다이렉트는 허용되지 않습니다" }, 400);
+      }
       if (!imgRes.ok) {
-        return jsonResponse(
-          { error: `이미지 다운로드 실패: ${imgRes.status} ${image_url}` },
-          400,
-        );
+        // 상태코드·URL을 그대로 돌려주면 내부 주소 스캐닝의 오라클이 된다
+        console.error(`parse-clinic-event: 이미지 다운로드 실패 ${imgRes.status} ${image_url}`);
+        return jsonResponse({ error: "이미지 다운로드 실패" }, 400);
       }
       finalImageType = imgRes.headers.get("content-type") || "image/jpeg";
       const buf = new Uint8Array(await imgRes.arrayBuffer());
@@ -278,20 +308,22 @@ ${lines.join("\n")}
       if (llmRes.status === 402) {
         return jsonResponse({ error: "AI 크레딧 부족" }, 402);
       }
-      return jsonResponse({ error: "LLM 분석 오류", details: errText.substring(0, 500) }, 500);
+      return jsonResponse({ error: "LLM 분석 오류" }, 500); // detail in server logs only
     }
 
     const result = await llmRes.json();
     const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall?.function?.arguments) {
-      return jsonResponse({ error: "파싱 결과 없음", raw: result }, 500);
+      console.error("No tool call in LLM response:", JSON.stringify(result));
+      return jsonResponse({ error: "파싱 결과 없음" }, 500);
     }
 
     let parsed: { campaign: any; treatments: any[] };
     try {
       parsed = JSON.parse(toolCall.function.arguments);
     } catch (e) {
-      return jsonResponse({ error: "JSON 파싱 실패: " + (e as Error).message }, 500);
+      console.error("tool args JSON parse failed:", e);
+      return jsonResponse({ error: "파싱 실패" }, 500);
     }
 
     const { campaign, treatments } = parsed;
@@ -402,12 +434,52 @@ ${lines.join("\n")}
     });
   } catch (err) {
     console.error("Unhandled error:", err);
-    return jsonResponse(
-      { error: "서버 오류: " + (err as Error).message },
-      500,
-    );
+    return jsonResponse({ error: "서버 오류" }, 500); // detail in server logs only
   }
 });
+
+// SSRF guard: only fetch public https image URLs; reject internal/loopback/
+// link-local/cloud-metadata targets so an attacker-supplied image_url cannot
+// probe the internal network or metadata endpoints.
+function assertSafeImageUrl(raw: string): void {
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    throw new Error("invalid image_url");
+  }
+  if (u.protocol !== "https:") throw new Error("image_url must be https");
+  if (u.port && u.port !== "443") throw new Error("image_url port not allowed");
+
+  // URL.hostname은 IPv6 리터럴을 대괄호째 돌려준다 ("[::1]").
+  // 벗기지 않으면 아래 IPv6 검사가 전부 매치되지 않는 죽은 코드가 된다.
+  const host = u.hostname.toLowerCase().replace(/^\[|\]$/g, "");
+
+  // 10진수/16진수 IPv4(https://2130706433)는 URL 파서가 점표기로 정규화한 뒤
+  // hostname에 넣어주므로 아래 IPv4 정규식이 그대로 잡는다.
+  const blocked =
+    host === "localhost" ||
+    host === "metadata.google.internal" ||
+    host.endsWith(".internal") ||
+    host.endsWith(".local") ||
+    // IPv4
+    /^0\./.test(host) ||
+    /^127\./.test(host) ||
+    /^10\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^169\.254\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+    /^100\.(6[4-9]|[7-9]\d|1[01]\d|12[0-7])\./.test(host) || // 100.64/10 CGNAT
+    /^192\.0\.0\./.test(host) ||
+    /^198\.1[89]\./.test(host) ||
+    // IPv6 (대괄호 제거 후)
+    host === "::" ||
+    host === "::1" ||
+    /^::ffff:/.test(host) || // IPv4-mapped
+    /^f[cd]/.test(host) || // fc00::/7 unique-local
+    /^fe80/.test(host);
+  if (blocked) throw new Error("image_url host not allowed");
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
