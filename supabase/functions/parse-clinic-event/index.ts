@@ -149,6 +149,30 @@ serve(async (req: Request) => {
   }
 
   try {
+    // ── Admin auth gate ──────────────────────────────────────────
+    // verify_jwt=true only proves "a valid JWT" — the PUBLIC anon key qualifies.
+    // Require a real logged-in admin before any service-role catalog write.
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader?.startsWith("Bearer ")) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+    const authClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_ANON_KEY")!,
+      { global: { headers: { Authorization: authHeader } } },
+    );
+    const { data: { user }, error: authErr } = await authClient.auth.getUser(
+      authHeader.replace("Bearer ", ""),
+    );
+    if (authErr || !user) {
+      return jsonResponse({ error: "Unauthorized" }, 401);
+    }
+    const { data: isAdmin, error: adminErr } = await authClient.rpc("is_admin");
+    if (adminErr || isAdmin !== true) {
+      return jsonResponse({ error: "Forbidden: admin only" }, 403);
+    }
+    // ─────────────────────────────────────────────────────────────
+
     const body = await req.json();
     const {
       location_id,
@@ -211,6 +235,7 @@ ${lines.join("\n")}
     let finalImageBase64 = image_base64;
     let finalImageType = image_type;
     if (image_url && !image_base64) {
+      assertSafeImageUrl(image_url); // SSRF guard: block internal/metadata targets
       const imgRes = await fetch(image_url, {
         headers: {
           "User-Agent":
@@ -278,20 +303,22 @@ ${lines.join("\n")}
       if (llmRes.status === 402) {
         return jsonResponse({ error: "AI 크레딧 부족" }, 402);
       }
-      return jsonResponse({ error: "LLM 분석 오류", details: errText.substring(0, 500) }, 500);
+      return jsonResponse({ error: "LLM 분석 오류" }, 500); // detail in server logs only
     }
 
     const result = await llmRes.json();
     const toolCall = result.choices?.[0]?.message?.tool_calls?.[0];
     if (!toolCall?.function?.arguments) {
-      return jsonResponse({ error: "파싱 결과 없음", raw: result }, 500);
+      console.error("No tool call in LLM response:", JSON.stringify(result));
+      return jsonResponse({ error: "파싱 결과 없음" }, 500);
     }
 
     let parsed: { campaign: any; treatments: any[] };
     try {
       parsed = JSON.parse(toolCall.function.arguments);
     } catch (e) {
-      return jsonResponse({ error: "JSON 파싱 실패: " + (e as Error).message }, 500);
+      console.error("tool args JSON parse failed:", e);
+      return jsonResponse({ error: "파싱 실패" }, 500);
     }
 
     const { campaign, treatments } = parsed;
@@ -402,12 +429,38 @@ ${lines.join("\n")}
     });
   } catch (err) {
     console.error("Unhandled error:", err);
-    return jsonResponse(
-      { error: "서버 오류: " + (err as Error).message },
-      500,
-    );
+    return jsonResponse({ error: "서버 오류" }, 500); // detail in server logs only
   }
 });
+
+// SSRF guard: only fetch public https image URLs; reject internal/loopback/
+// link-local/cloud-metadata targets so an attacker-supplied image_url cannot
+// probe the internal network or metadata endpoints.
+function assertSafeImageUrl(raw: string): void {
+  let u: URL;
+  try {
+    u = new URL(raw);
+  } catch {
+    throw new Error("invalid image_url");
+  }
+  if (u.protocol !== "https:") throw new Error("image_url must be https");
+  const host = u.hostname.toLowerCase();
+  const blocked =
+    host === "localhost" ||
+    host === "0.0.0.0" ||
+    host === "::1" ||
+    host === "metadata.google.internal" ||
+    host.endsWith(".internal") ||
+    host.endsWith(".local") ||
+    /^127\./.test(host) ||
+    /^10\./.test(host) ||
+    /^192\.168\./.test(host) ||
+    /^169\.254\./.test(host) ||
+    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
+    host.startsWith("fd") ||
+    host.startsWith("fe80");
+  if (blocked) throw new Error("image_url host not allowed");
+}
 
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
